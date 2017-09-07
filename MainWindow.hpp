@@ -10,6 +10,7 @@ public:
                wxWindowID id,
                const wxPoint& pos = wxDefaultPosition,
                const wxSize& size = wxDefaultSize);
+
 };
 
 #endif // MYWINDOW_HPP
