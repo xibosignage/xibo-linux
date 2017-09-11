@@ -4,11 +4,14 @@
 
 MainWindow::MainWindow(wxWindow* parent,
                        wxWindowID id,
+                       bool disableMouse,
                        const wxPoint& pos,
-                       const wxSize& size) :
+                       const wxSize& size,
+                       long style) :
     // wxSIMPLE_BORDER (removing window decorations) should be called during window initialization
-    wxFrame(parent, id, wxString{}, pos, size, wxSIMPLE_BORDER)
+    wxFrame(parent, id, wxString{}, pos, size, style)
 {
     // wxCURSOR_ARROW to return arrow
-    SetCursor(wxCursor(wxCURSOR_BLANK));
+    if(disableMouse)
+        SetCursor(wxCursor(wxCURSOR_BLANK));
 }

@@ -8,8 +8,10 @@ class MainWindow : public wxFrame
 public:
     MainWindow(wxWindow *parent,
                wxWindowID id,
+               bool disableMouse,
                const wxPoint& pos = wxDefaultPosition,
-               const wxSize& size = wxDefaultSize);
+               const wxSize& size = wxDefaultSize,
+               long style = wxDEFAULT_FRAME_STYLE);
 
 };
 
