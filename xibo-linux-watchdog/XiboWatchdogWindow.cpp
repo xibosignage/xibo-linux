@@ -5,10 +5,14 @@
 #include <wx/textctrl.h>
 #include <wx/button.h>
 
+#include <thread>
+#include <functional>
 #include <iostream>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+
+wxDEFINE_EVENT(XIBO_PLAYER_TERMINATED, wxCommandEvent);
 
 XiboWatchdogWindow::XiboWatchdogWindow() :
     wxFrame(nullptr, wxID_ANY, "Xibo Watchdog", wxDefaultPosition, wxSize(640, 480))
@@ -19,7 +23,21 @@ XiboWatchdogWindow::XiboWatchdogWindow() :
     InitLogEdit();
     InitButtons();
 
+    Bind(XIBO_PLAYER_TERMINATED, [=](wxCommandEvent& event){
+        LogMessage(event.GetString());
+        m_processThread.join();
+    }, wxID_ANY);
+
     SetSizer(m_mainSizer);
+}
+
+XiboWatchdogWindow::~XiboWatchdogWindow()
+{
+    if(m_processThread.joinable())
+    {
+        kill(m_processId, SIGTERM);
+        m_processThread.join();
+    }
 }
 
 void XiboWatchdogWindow::InitMenuBar()
@@ -67,29 +85,36 @@ void XiboWatchdogWindow::LogMessage(const wxString& logMessage)
     m_logEdit->AppendText(logMessage + "\n");
 }
 
-void XiboWatchdogWindow::OnAppOpened(wxCommandEvent& WXUNUSED(event))
+void XiboWatchdogWindow::CreateProcess()
 {
-    pid_t processId = fork();
-    if(processId > 0)
+    m_processId = fork();
+    if(m_processId > 0)
     {
-        LogMessage("Xibo Player started. Process ID: " + wxString::FromDouble(processId));
+        LogMessage("Xibo Player started. Process ID: " + wxString::FromDouble(m_processId));
         int status;
         waitpid(-1, &status, 0);
-        LogMessage("Xibo Player exit with status: " + wxString::FromDouble(status));
+        wxCommandEvent* event = new wxCommandEvent(XIBO_PLAYER_TERMINATED);
+        event->SetString("Xibo Player exited with status: " + wxString::FromDouble(status));
+        wxQueueEvent(this, event);
     }
     else
     {
-        if(processId == 0)
+        if(m_processId == 0)
         {
-            char* args[] = {"./xibo-linux", NULL};
+            char* args[] = {const_cast<char*>("./xibo-linux"), NULL};
             execv("./xibo-linux", args);
-            std::cout << "now child" << errno << std::endl;
         }
         else
         {
             LogMessage("Can't start Xibo Player. Error code: " + wxString::FromDouble(errno));
         }
     }
+}
+
+void XiboWatchdogWindow::OnAppOpened(wxCommandEvent& WXUNUSED(event))
+{
+    auto funct = std::bind(&XiboWatchdogWindow::CreateProcess, this);
+    m_processThread = std::thread(funct);
 }
 
 void XiboWatchdogWindow::OnLogAdded(wxCommandEvent& WXUNUSED(event))
