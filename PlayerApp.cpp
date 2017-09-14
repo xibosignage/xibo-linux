@@ -1,4 +1,4 @@
-#include "XiboApp.hpp"
+#include "PlayerApp.hpp"
 
 #include <wx/mediactrl.h>
 #include <wx/cmdline.h>
@@ -7,12 +7,12 @@
 const int DEFAULT_XPOS = 0;
 const int DEFAULT_YPOS = 0;
 
-XiboApp::XiboApp()
+PlayerApp::PlayerApp()
 {
 
 }
 
-void XiboApp::OnInitCmdLine(wxCmdLineParser& parser)
+void PlayerApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
     parser.AddSwitch("f", "fullscreen", "run app in fullscreen");
     parser.AddSwitch("t", "stay-on-top", "Put the window over other windows");
@@ -24,7 +24,7 @@ void XiboApp::OnInitCmdLine(wxCmdLineParser& parser)
 
 }
 
-bool XiboApp::OnCmdLineParsed(wxCmdLineParser& parser)
+bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
     m_fullscreen = parser.Found("f");
     m_stayOnTop = parser.Found("t");
@@ -45,17 +45,17 @@ bool XiboApp::OnCmdLineParsed(wxCmdLineParser& parser)
 }
 
 
-bool XiboApp::OnInit()
+bool PlayerApp::OnInit()
 {
     return wxApp::OnInit();
 }
 
-int XiboApp::OnExit()
+int PlayerApp::OnExit()
 {
     return wxApp::OnExit();
 }
 
-void XiboApp::ShowMainWindow()
+void PlayerApp::ShowMainWindow()
 {
     int width = (m_width == INVALID_SIZE) ? wxDefaultSize.GetWidth() : m_width;
     int height = (m_height == INVALID_SIZE) ? wxDefaultSize.GetHeight() : m_height;

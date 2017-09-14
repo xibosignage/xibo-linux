@@ -10,9 +10,9 @@ QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS
 QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 
 SOURCES += main.cpp \
-    XiboApp.cpp \
-    MainWindow.cpp
+    MainWindow.cpp \
+    PlayerApp.cpp
 
 HEADERS += \
     MainWindow.hpp \
-    XiboApp.hpp
+    PlayerApp.hpp
