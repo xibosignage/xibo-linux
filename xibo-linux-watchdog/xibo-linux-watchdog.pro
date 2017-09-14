@@ -10,9 +10,11 @@ QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS
 QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 
 SOURCES += main.cpp \
-    XiboWatchdogApp.cpp \
-    XiboWatchdogWindow.cpp
+    MainWindow.cpp \
+    WatchdogApp.cpp \
+    PlayerProcessHandler.cpp
 
 HEADERS += \
-    XiboWatchdogApp.hpp \
-    XiboWatchdogWindow.hpp
+    WatchdogApp.hpp \
+    MainWindow.hpp \
+    PlayerProcessHandler.hpp

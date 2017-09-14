@@ -4,6 +4,6 @@
     #include <wx/wx.h>
 #endif
 
-#include "XiboWatchdogApp.hpp"
+#include "WatchdogApp.hpp"
 
-wxIMPLEMENT_APP(XiboWatchdogApp);
+wxIMPLEMENT_APP(WatchdogApp);

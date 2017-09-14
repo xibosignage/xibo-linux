@@ -3,10 +3,10 @@
 
 #include <wx/app.h>
 
-class XiboWatchdogApp : public wxApp
+class WatchdogApp : public wxApp
 {
 public:
-    XiboWatchdogApp();
+    WatchdogApp();
 
     bool OnInit() override;
     int OnExit() override;
