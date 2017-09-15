@@ -55,18 +55,22 @@ void MainWindow::InitLogEdit()
 
 void MainWindow::InitButtons()
 {
-    m_startPlayerBtn = new wxButton(this, wxID_OPEN, "Start Xibo Player");
-    m_stopPlayerBtn = new wxButton(this, wxID_STOP, "Stop Xibo Player");
-    m_stopPlayerBtn->Disable();
+    m_startPlayerBtn = new wxButton(this, wxID_ANY, "Start Xibo Player");
+    m_terminatePlayerBtn = new wxButton(this, wxID_ANY, "Terminate Xibo Player");
+    m_terminatePlayerBtn->Disable();
+    m_killPlayerBtn = new wxButton(this, wxID_ANY, "Kill Xibo Player");
+    m_killPlayerBtn->Disable();
     m_btnSizer = new wxBoxSizer(wxHORIZONTAL);
 
-    Bind(wxEVT_BUTTON, &MainWindow::OnAppStarted, this, wxID_OPEN);
-    Bind(wxEVT_BUTTON, &MainWindow::OnAppStopped, this, wxID_STOP);
-
+    m_startPlayerBtn->Bind(wxEVT_BUTTON, &MainWindow::OnBtnPlayerStart, this);
+    m_terminatePlayerBtn->Bind(wxEVT_BUTTON, &MainWindow::OnBtnPlayerTerminated, this);
+    m_killPlayerBtn->Bind(wxEVT_BUTTON, &MainWindow::OnBtnPlayerKilled, this);
 
     m_btnSizer->Add(m_startPlayerBtn);
     m_btnSizer->AddSpacer(20);
-    m_btnSizer->Add(m_stopPlayerBtn);
+    m_btnSizer->Add(m_terminatePlayerBtn);
+    m_btnSizer->AddSpacer(20);
+    m_btnSizer->Add(m_killPlayerBtn);
 
     m_mainSizer->Add(m_btnSizer, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
 }
@@ -76,30 +80,63 @@ void MainWindow::LogMessage(const wxString& logMessage)
     m_logEdit->AppendText(logMessage + "\n");
 }
 
-void MainWindow::OnAppStopped(wxCommandEvent& WXUNUSED(event))
-{
-    m_playerApp->Stop();
-    LogMessage("Player will be restarted in " + wxString::FromDouble(DEFAULT_RESTART_TIME / 1000) + " seconds");
-    m_restartTimer.StartOnce(DEFAULT_RESTART_TIME);
-}
-
 void MainWindow::OnRestartTimerFinished(wxTimerEvent& WXUNUSED(event))
 {
-    m_startPlayerBtn->Disable();
-    m_stopPlayerBtn->Enable();
-    m_playerApp->Run();
+    if(!m_playerApp->isRunning())
+    {
+        m_playerApp->Run();
+    }
 }
 
-void MainWindow::OnAppStarted(wxCommandEvent& WXUNUSED(event))
+void MainWindow::OnBtnPlayerStart(wxCommandEvent& WXUNUSED(event))
 {
-    m_startPlayerBtn->Disable();
-    m_stopPlayerBtn->Enable();
-    m_playerApp->Run();
+    if(!m_playerApp->isRunning())
+    {
+        m_playerApp->Run();
+    }
 }
 
-void MainWindow::OnPlayerTerminated(wxCommandEvent& event)
+void MainWindow::OnBtnPlayerTerminated(wxCommandEvent& WXUNUSED(event))
 {
-    m_startPlayerBtn->Enable();
-    m_stopPlayerBtn->Disable();
-    LogMessage(event.GetString());
+    if(m_playerApp->isRunning())
+    {
+        m_playerApp->Stop(SIGTERM);
+    }
+}
+
+void MainWindow::OnBtnPlayerKilled(wxCommandEvent& WXUNUSED(event))
+{
+    if(m_playerApp->isRunning())
+    {
+        m_playerApp->Stop(SIGKILL);
+    }
+}
+
+void MainWindow::OnPlayerStarted(wxCommandEvent& event)
+{
+    UpdateButtons();
+    LogMessage("Xibo Player started. Process ID: " + wxString::FromDouble(event.GetInt()));
+}
+
+void MainWindow::OnPlayerStartedError(wxCommandEvent& event)
+{
+    LogMessage("Can't start Xibo Player. Error code: " + wxString::FromDouble(event.GetInt()));
+}
+
+void MainWindow::OnPlayerClosed(wxCommandEvent& event)
+{
+    UpdateButtons();
+    LogMessage("Xibo Player exited with status: " + wxString::FromDouble(event.GetInt()));
+    if(event.GetInt() != SIGTERM && event.GetInt() != 0)
+    {
+        LogMessage("Player will be restarted in " + wxString::FromDouble(DEFAULT_RESTART_TIME / 1000) + " seconds");
+        m_restartTimer.StartOnce(DEFAULT_RESTART_TIME);
+    }
+}
+
+void MainWindow::UpdateButtons()
+{
+    m_startPlayerBtn->Enable(!m_playerApp->isRunning());
+    m_terminatePlayerBtn->Enable(m_playerApp->isRunning());
+    m_killPlayerBtn->Enable(m_playerApp->isRunning());
 }

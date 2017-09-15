@@ -5,39 +5,39 @@
 #include <memory>
 
 class MainWindow;
-class wxMenuItem;
 class PlayerProcessHandler;
+class wxMenuItem;
 
 class SystemTrayIcon : public wxTaskBarIcon
 {
 public:
-
-    // TODO: rewrite custom ids
-    enum SystemTrayMenu
-    {
-        START_PLAYER = wxID_HIGHEST + 1,
-        CLOSE_PLAYER,
-        RESTORE_WATCHDOG,
-        HIDE_WATCHDOG,
-        CLOSE_WATCHDOG
-    };
-
     SystemTrayIcon(MainWindow* parentWindow,
-                   const std::shared_ptr<PlayerProcessHandler>& player);
+                   const std::shared_ptr<PlayerProcessHandler>& playerApp);
 
 protected:
     wxMenu* CreatePopupMenu() override;
 
 private:
-    void BindMenuToEvents();
+    void BindTrayMenuToEvents();
+    void BindClosePlayerMenuToEvents();
 
 private:
+    enum SystemTrayMenu
+    {
+        START_PLAYER = wxID_HIGHEST + 1,
+        CLOSE_PLAYER,
+        TERMINATE_PLAYER,
+        KILL_PLAYER,
+        RESTORE_WATCHDOG,
+        HIDE_WATCHDOG,
+        CLOSE_WATCHDOG
+    };
+
     wxMenu* m_trayMenu = nullptr;
-    bool m_playerRunning = false;
-    bool m_watchdogSHown = true;
+    wxMenu* m_closePlayerMenu = nullptr;
 
     MainWindow* m_parentWindow = nullptr;
-    std::shared_ptr<PlayerProcessHandler> m_player;
+    std::shared_ptr<PlayerProcessHandler> m_playerApp;
 
 };
 

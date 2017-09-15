@@ -12,16 +12,18 @@ public:
     PlayerProcessHandler(MainWindow* parentWindow);
     ~PlayerProcessHandler();
 
+    bool isRunning();
     void Run();
-    void Stop();
+    void Stop(int status);
 
 private:
-    void PostEvent(wxEventType type, const wxString& message);
+    void PostProcessEvent(wxEventType type, int value);
     void CreateProcess();
 
 private:
     MainWindow* m_parentWindow = nullptr;
     std::thread m_processThread;
+    bool m_isRunning = false;
     pid_t m_processId;
 
 };

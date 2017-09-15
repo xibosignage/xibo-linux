@@ -5,6 +5,7 @@
 #include <wx/timer.h>
 
 #include <memory>
+#include <signal.h>
 
 class wxButton;
 class wxTextCtrl;
@@ -16,22 +17,28 @@ class MainWindow : public wxFrame
 public:
     MainWindow();
 
-    void LogMessage(const wxString& logMessage);
-    void OnPlayerTerminated(wxCommandEvent& event);
+    void OnPlayerStarted(wxCommandEvent& event);
+    void OnPlayerStartedError(wxCommandEvent& event);
+    void OnPlayerClosed(wxCommandEvent& event);
 
 private:
-    void OnAppStarted(wxCommandEvent& event);
-    void OnAppStopped(wxCommandEvent& event);
+    void OnBtnPlayerStart(wxCommandEvent& event);
+    void OnBtnPlayerTerminated(wxCommandEvent& event);
+    void OnBtnPlayerKilled(wxCommandEvent& event);
     void OnRestartTimerFinished(wxTimerEvent& event);
+
+    void LogMessage(const wxString& logMessage);
 
     void InitMenuBar();
     void InitLogEdit();
     void InitButtons();
+    void UpdateButtons();
 
 private:
     wxTextCtrl* m_logEdit = nullptr;
     wxButton* m_startPlayerBtn = nullptr;
-    wxButton* m_stopPlayerBtn = nullptr;
+    wxButton* m_terminatePlayerBtn = nullptr;
+    wxButton* m_killPlayerBtn = nullptr;
     wxSizer* m_btnSizer = nullptr;
     wxSizer* m_mainSizer = nullptr;
     wxMenu* m_menu = nullptr;

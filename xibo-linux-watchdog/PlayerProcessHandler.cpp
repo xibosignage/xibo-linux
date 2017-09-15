@@ -5,7 +5,6 @@
 #include <functional>
 #include <iostream>
 #include <unistd.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 
 wxDEFINE_EVENT(PLAYER_TERMINATED, wxCommandEvent);
@@ -20,23 +19,32 @@ PlayerProcessHandler::PlayerProcessHandler(MainWindow* parentWindow) :
         {
            m_processThread.join();
         }
+        m_isRunning = false;
         wxQueueEvent(m_parentWindow, new wxCommandEvent(event));
-    }, wxID_ANY);
+    });
 
     Bind(PLAYER_STARTED, [=](wxCommandEvent& event){
-        m_parentWindow->LogMessage(event.GetString());
-    }, wxID_ANY);
+        m_isRunning = true;
+        wxQueueEvent(m_parentWindow, new wxCommandEvent(event));
+    });
 
     Bind(PLAYER_STARTED_ERROR, [=](wxCommandEvent& event){
-        m_parentWindow->LogMessage(event.GetString());
-    }, wxID_ANY);
+        wxQueueEvent(m_parentWindow, new wxCommandEvent(event));
+    });
 
-    m_parentWindow->Bind(PLAYER_TERMINATED, &MainWindow::OnPlayerTerminated, m_parentWindow);
+    m_parentWindow->Bind(PLAYER_TERMINATED, &MainWindow::OnPlayerClosed, m_parentWindow);
+    m_parentWindow->Bind(PLAYER_STARTED, &MainWindow::OnPlayerStarted, m_parentWindow);
+    m_parentWindow->Bind(PLAYER_STARTED_ERROR, &MainWindow::OnPlayerStartedError, m_parentWindow);
 }
 
 PlayerProcessHandler::~PlayerProcessHandler()
 {
-    Stop();
+    Stop(SIGTERM);
+}
+
+bool PlayerProcessHandler::isRunning()
+{
+    return m_isRunning;
 }
 
 void PlayerProcessHandler::CreateProcess()
@@ -45,10 +53,10 @@ void PlayerProcessHandler::CreateProcess()
     m_processId = fork();
     if(m_processId > 0)
     {
-        PostEvent(PLAYER_STARTED, "Xibo Player started. Process ID: " + wxString::FromDouble(m_processId));
         int status;
+        PostProcessEvent(PLAYER_STARTED, m_processId);
         waitpid(-1, &status, 0);
-        PostEvent(PLAYER_TERMINATED, "Xibo Player exited with status: " + wxString::FromDouble(status));
+        PostProcessEvent(PLAYER_TERMINATED, status);
     }
     else
     {
@@ -59,7 +67,7 @@ void PlayerProcessHandler::CreateProcess()
         }
         else
         {
-            PostEvent(PLAYER_STARTED_ERROR, "Can't start Xibo Player. Error code: " + wxString::FromDouble(errno));
+            PostProcessEvent(PLAYER_STARTED_ERROR, errno);
         }
     }
 }
@@ -70,18 +78,18 @@ void PlayerProcessHandler::Run()
     m_processThread = std::thread(funct);
 }
 
-void PlayerProcessHandler::Stop()
+void PlayerProcessHandler::Stop(int status)
 {
     if(m_processThread.joinable())
     {
-        kill(m_processId, SIGTERM);
+        kill(m_processId, status);
         m_processThread.join();
     }
 }
 
-void PlayerProcessHandler::PostEvent(wxEventType type, const wxString& message)
+void PlayerProcessHandler::PostProcessEvent(wxEventType type, int value)
 {
     wxCommandEvent event(type);
-    event.SetString(message);
+    event.SetInt(value);
     wxPostEvent(this, event);
 }
