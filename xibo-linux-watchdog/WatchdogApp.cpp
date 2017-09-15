@@ -11,6 +11,7 @@ bool WatchdogApp::OnInit()
     auto mainWindow = new MainWindow;
     mainWindow->Center();
     mainWindow->Show(true);
+    SetTopWindow(mainWindow);
     return wxApp::OnInit();
 }
 

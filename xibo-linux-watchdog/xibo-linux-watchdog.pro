@@ -12,9 +12,11 @@ QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 SOURCES += main.cpp \
     MainWindow.cpp \
     WatchdogApp.cpp \
-    PlayerProcessHandler.cpp
+    PlayerProcessHandler.cpp \
+    SystemTrayIcon.cpp
 
 HEADERS += \
     WatchdogApp.hpp \
     MainWindow.hpp \
-    PlayerProcessHandler.hpp
+    PlayerProcessHandler.hpp \
+    SystemTrayIcon.hpp

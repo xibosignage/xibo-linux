@@ -1,14 +1,18 @@
 #include "MainWindow.hpp"
 #include "PlayerProcessHandler.hpp"
+#include "SystemTrayIcon.hpp"
 
 #include <wx/menu.h>
 #include <wx/sizer.h>
 #include <wx/textctrl.h>
 #include <wx/button.h>
 
+#include <iostream>
+
 MainWindow::MainWindow() :
     wxFrame(nullptr, wxID_ANY, "Xibo Watchdog", wxDefaultPosition, wxSize(640, 480))
 {
+    m_icon = std::make_unique<SystemTrayIcon>();
     m_playerApp = std::make_unique<PlayerProcessHandler>(this);
     m_mainSizer = new wxBoxSizer(wxVERTICAL);
 
@@ -21,14 +25,14 @@ MainWindow::MainWindow() :
 
 void MainWindow::InitMenuBar()
 {
-    auto menuBar = new wxMenuBar;
-    auto menu = new wxMenu();
+    m_menuBar = new wxMenuBar;
+    m_menu = new wxMenu;
 
-    menu->Append(wxID_HELP, _T("&Help"));
-    menu->Append(wxID_CLOSE, _T("&Close"));
-    menuBar->Append(menu, _T("&About"));
+    m_menu->Append(wxID_HELP, _T("&Help"));
+    m_menu->Append(wxID_CLOSE, _T("&Close"));
+    m_menuBar->Append(m_menu, _T("&About"));
 
-    SetMenuBar(menuBar);
+    SetMenuBar(m_menuBar);
 }
 
 void MainWindow::InitLogEdit()
@@ -43,6 +47,7 @@ void MainWindow::InitLogEdit()
     m_mainSizer->AddSpacer(15);
 }
 
+
 void MainWindow::InitButtons()
 {
     m_startPlayerBtn = new wxButton(this, wxID_OPEN, "Start Xibo Player");
@@ -52,6 +57,7 @@ void MainWindow::InitButtons()
 
     Bind(wxEVT_BUTTON, &MainWindow::OnAppStarted, this, wxID_OPEN);
     Bind(wxEVT_BUTTON, &MainWindow::OnAppStopped, this, wxID_STOP);
+
 
     m_btnSizer->Add(m_startPlayerBtn);
     m_btnSizer->AddSpacer(20);

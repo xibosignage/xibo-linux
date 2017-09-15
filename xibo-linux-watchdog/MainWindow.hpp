@@ -7,6 +7,7 @@
 class wxButton;
 class wxTextCtrl;
 class PlayerProcessHandler;
+class SystemTrayIcon;
 
 class MainWindow : public wxFrame
 {
@@ -30,8 +31,11 @@ private:
     wxButton* m_stopPlayerBtn = nullptr;
     wxSizer* m_btnSizer = nullptr;
     wxSizer* m_mainSizer = nullptr;
+    wxMenu* m_menu = nullptr;
+    wxMenuBar* m_menuBar = nullptr;
 
     std::unique_ptr<PlayerProcessHandler> m_playerApp;
+    std::unique_ptr<SystemTrayIcon> m_icon;
 
 };
 

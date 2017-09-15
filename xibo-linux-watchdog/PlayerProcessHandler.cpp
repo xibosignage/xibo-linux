@@ -40,6 +40,7 @@ PlayerProcessHandler::~PlayerProcessHandler()
 
 void PlayerProcessHandler::CreateProcess()
 {
+    // TODO: check for existence
     m_processId = fork();
     if(m_processId > 0)
     {
