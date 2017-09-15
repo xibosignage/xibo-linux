@@ -34,8 +34,8 @@ private:
     wxMenu* m_menu = nullptr;
     wxMenuBar* m_menuBar = nullptr;
 
-    std::unique_ptr<PlayerProcessHandler> m_playerApp;
-    std::unique_ptr<SystemTrayIcon> m_icon;
+    std::shared_ptr<PlayerProcessHandler> m_playerApp;
+    std::unique_ptr<SystemTrayIcon> m_systemTrayIcon;
 
 };
 

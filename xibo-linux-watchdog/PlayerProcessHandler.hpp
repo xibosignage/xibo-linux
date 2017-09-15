@@ -9,7 +9,7 @@ class MainWindow;
 class PlayerProcessHandler : public wxEvtHandler
 {
 public:
-    PlayerProcessHandler(MainWindow* parent);
+    PlayerProcessHandler(MainWindow* parentWindow);
     ~PlayerProcessHandler();
 
     void Run();
@@ -20,7 +20,7 @@ private:
     void CreateProcess();
 
 private:
-    MainWindow* m_parent = nullptr;
+    MainWindow* m_parentWindow = nullptr;
     std::thread m_processThread;
     pid_t m_processId;
 

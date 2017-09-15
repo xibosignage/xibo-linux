@@ -12,8 +12,8 @@
 MainWindow::MainWindow() :
     wxFrame(nullptr, wxID_ANY, "Xibo Watchdog", wxDefaultPosition, wxSize(640, 480))
 {
-    m_icon = std::make_unique<SystemTrayIcon>();
-    m_playerApp = std::make_unique<PlayerProcessHandler>(this);
+    m_playerApp = std::make_shared<PlayerProcessHandler>(this);
+    m_systemTrayIcon = std::make_unique<SystemTrayIcon>(this, m_playerApp);
     m_mainSizer = new wxBoxSizer(wxVERTICAL);
 
     InitMenuBar();

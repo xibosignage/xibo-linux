@@ -12,25 +12,26 @@ wxDEFINE_EVENT(PLAYER_TERMINATED, wxCommandEvent);
 wxDEFINE_EVENT(PLAYER_STARTED, wxCommandEvent);
 wxDEFINE_EVENT(PLAYER_STARTED_ERROR, wxCommandEvent);
 
-PlayerProcessHandler::PlayerProcessHandler(MainWindow* parent) : m_parent(parent)
+PlayerProcessHandler::PlayerProcessHandler(MainWindow* parentWindow) :
+    m_parentWindow(parentWindow)
 {
     Bind(PLAYER_TERMINATED, [=](wxCommandEvent& event){
         if(m_processThread.joinable())
         {
            m_processThread.join();
         }
-        wxQueueEvent(m_parent, new wxCommandEvent(event));
+        wxQueueEvent(m_parentWindow, new wxCommandEvent(event));
     }, wxID_ANY);
 
     Bind(PLAYER_STARTED, [=](wxCommandEvent& event){
-        m_parent->LogMessage(event.GetString());
+        m_parentWindow->LogMessage(event.GetString());
     }, wxID_ANY);
 
     Bind(PLAYER_STARTED_ERROR, [=](wxCommandEvent& event){
-        m_parent->LogMessage(event.GetString());
+        m_parentWindow->LogMessage(event.GetString());
     }, wxID_ANY);
 
-    m_parent->Bind(PLAYER_TERMINATED, &MainWindow::OnPlayerTerminated, m_parent);
+    m_parentWindow->Bind(PLAYER_TERMINATED, &MainWindow::OnPlayerTerminated, m_parentWindow);
 }
 
 PlayerProcessHandler::~PlayerProcessHandler()
