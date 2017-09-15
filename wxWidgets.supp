@@ -344,3 +344,183 @@
    fun:_ZN10wxStockGDI7GetFontENS_4ItemE
    fun:_ZN11wxGTKDCImplC1EP4wxDC
 }
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:FcValueSave
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libX11.so.6.3.0
+   fun:_XReply
+   fun:XSync
+   fun:gdk_flush
+   fun:gtk_main
+   fun:_ZN14wxGUIEventLoop5DoRunEv
+   fun:_ZN15wxEventLoopBase3RunEv
+   fun:_ZN16wxAppConsoleBase8MainLoopEv
+   fun:_ZN16wxAppConsoleBase5OnRunEv
+   fun:_ZN9wxAppBase5OnRunEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:_Z16wxGetWorkAreaX11P6ScreenRiS1_S1_S1_
+   fun:_ZL34wx_gdk_screen_get_monitor_workareaP10_GdkScreeniP13_GdkRectangle
+   fun:_ZNK16wxDisplayImplGTK13GetClientAreaEv
+   fun:_ZNK9wxDisplay13GetClientAreaEv
+   fun:_ZN20wxTopLevelWindowBase8DoCentreEi
+   fun:_ZN12wxWindowBase6CenterEi
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   obj:/usr/lib/x86_64-linux-gnu/libgdk-x11-2.0.so.0.2400.30
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:XGetWindowProperty
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:FcValueSave
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XEnq
+   obj:/usr/lib/x86_64-linux-gnu/libX11.so.6.3.0
+   fun:_XReply
+   fun:XInternAtom
+   fun:_Z16wxGetWorkAreaX11P6ScreenRiS1_S1_S1_
+   fun:_ZL34wx_gdk_screen_get_monitor_workareaP10_GdkScreeniP13_GdkRectangle
+   fun:_ZNK16wxDisplayImplGTK13GetClientAreaEv
+   fun:_ZNK9wxDisplay13GetClientAreaEv
+   fun:_ZN20wxTopLevelWindowBase8DoCentreEi
+   fun:_ZN12wxWindowBase6CenterEi
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
