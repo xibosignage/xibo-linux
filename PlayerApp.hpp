@@ -7,10 +7,10 @@
 const int INVALID_POS = -1;
 const int INVALID_SIZE = -1;
 
-class XiboApp : public wxApp
+class PlayerApp : public wxApp
 {
 public:
-    XiboApp();
+    PlayerApp();
 
     void OnInitCmdLine(wxCmdLineParser& parser) override;
     bool OnCmdLineParsed(wxCmdLineParser& parser) override;

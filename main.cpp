@@ -4,6 +4,6 @@
     #include <wx/wx.h>
 #endif
 
-#include "XiboApp.hpp"
+#include "PlayerApp.hpp"
 
-wxIMPLEMENT_APP(XiboApp);
+wxIMPLEMENT_APP(PlayerApp);
