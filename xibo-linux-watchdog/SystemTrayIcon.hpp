@@ -11,6 +11,8 @@ class PlayerProcessHandler;
 class SystemTrayIcon : public wxTaskBarIcon
 {
 public:
+
+    // TODO: rewrite custom ids
     enum SystemTrayMenu
     {
         START_PLAYER = wxID_HIGHEST + 1,

@@ -9,12 +9,17 @@
 
 #include <iostream>
 
+const int DEFAULT_RESTART_TIME = 5000;
+
 MainWindow::MainWindow() :
-    wxFrame(nullptr, wxID_ANY, "Xibo Watchdog", wxDefaultPosition, wxSize(640, 480))
+    wxFrame(nullptr, wxID_ANY, "Xibo Watchdog", wxDefaultPosition, wxSize(640, 480)),
+    m_restartTimer(this)
 {
     m_playerApp = std::make_shared<PlayerProcessHandler>(this);
     m_systemTrayIcon = std::make_unique<SystemTrayIcon>(this, m_playerApp);
     m_mainSizer = new wxBoxSizer(wxVERTICAL);
+
+    Bind(wxEVT_TIMER, &MainWindow::OnRestartTimerFinished, this);
 
     InitMenuBar();
     InitLogEdit();
@@ -74,6 +79,15 @@ void MainWindow::LogMessage(const wxString& logMessage)
 void MainWindow::OnAppStopped(wxCommandEvent& WXUNUSED(event))
 {
     m_playerApp->Stop();
+    LogMessage("Player will be restarted in " + wxString::FromDouble(DEFAULT_RESTART_TIME / 1000) + " seconds");
+    m_restartTimer.StartOnce(DEFAULT_RESTART_TIME);
+}
+
+void MainWindow::OnRestartTimerFinished(wxTimerEvent& WXUNUSED(event))
+{
+    m_startPlayerBtn->Disable();
+    m_stopPlayerBtn->Enable();
+    m_playerApp->Run();
 }
 
 void MainWindow::OnAppStarted(wxCommandEvent& WXUNUSED(event))
