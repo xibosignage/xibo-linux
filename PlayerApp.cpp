@@ -44,7 +44,6 @@ bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
     return true;
 }
 
-
 bool PlayerApp::OnInit()
 {
     return wxApp::OnInit();
