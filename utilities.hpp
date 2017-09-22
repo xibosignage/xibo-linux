@@ -2,9 +2,11 @@
 #define UTILITIES_HPP
 
 #include "Parser.hpp"
+#include "constants.hpp"
 
 #include <memory>
 #include <optional>
+#include <iostream>
 #include <wx/xml/xml.h>
 
 namespace utilities
@@ -21,10 +23,12 @@ namespace utilities
         return {};
     }
 
-    template <> inline std::optional<wxString> GetValue(const wxString& optionName)
-    {
-        return optionName;
-    }
+    template <> std::optional<wxString> GetValue(const wxString& optionName);
+    template <> std::optional<ScaleType> GetValue(const wxString& optionName);
+    template <> std::optional<Align> GetValue(const wxString& optionName);
+    template <> std::optional<Valign> GetValue(const wxString& optionName);
+    template <> std::optional<Render> GetValue(const wxString& optionName);
+
 }
 
 #endif // UTILITIES_HPP

@@ -12,7 +12,7 @@
 
 struct Region : XiboObject
 {
-    void InitOptions(std::map<wxString, wxString> options);
+    void InitOptions(std::map<wxString, wxString> options) override;
 
     int id;
     int width;

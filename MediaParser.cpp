@@ -1,5 +1,6 @@
 #include "MediaParser.hpp"
 #include "MediaFactory.hpp"
+#include "utilities.hpp"
 
 #include <iostream>
 
@@ -30,8 +31,8 @@ Media* MediaParser::GetAttributes(wxXmlNode* node)
 {
     std::cout << "parse media" << std::endl;
     auto media = MediaFactory().createMedia(node->GetAttribute("type"));
-    media->id = std::stoi(node->GetAttribute("id").ToStdString());
-    media->duration = std::stoi(node->GetAttribute("duration").ToStdString());
-    //media->render = std::stoi(node->GetAttribute("render").ToStdString())
+    media->id = utilities::GetValue<int>(node->GetAttribute("id")).value();
+    media->duration = utilities::GetValue<int>(node->GetAttribute("duration")).value();
+    media->render = utilities::GetValue<Render>(node->GetAttribute("render")).value();
     return media;
 }

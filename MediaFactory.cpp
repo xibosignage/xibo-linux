@@ -2,12 +2,13 @@
 
 #include "Media.hpp"
 #include "Video.hpp"
+#include "Image.hpp"
 
 Media* MediaFactory::createMedia(const wxString& type)
 {
     if(type == "image")
     {
-        return new Media;
+        return new Image;
     }
     else if(type == "video")
     {

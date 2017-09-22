@@ -11,6 +11,8 @@
 class Layout : public XiboObject
 {
 public:
+    void InitOptions(std::map<wxString, wxString>) override { }
+
     int schemaVersion;
     int width;
     int height;

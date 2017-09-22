@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "LayoutParser.hpp"
-#include "Video.hpp"
+#include "Image.hpp"
 #include "utilities.hpp"
 
 const int DEFAULT_XPOS = 0;
@@ -30,7 +30,7 @@ void PlayerApp::OnInitCmdLine(wxCmdLineParser& parser)
 
 void PlayerApp::TestParser()
 {
-    wxXmlDocument doc("85.xlf");
+    wxXmlDocument doc("20.xlf");
     wxXmlNode* root = doc.GetRoot();
 
     auto layout = std::shared_ptr<Layout>(utilities::GetParser<LayoutParser>(root)->Parse());
@@ -40,9 +40,9 @@ void PlayerApp::TestParser()
         std::cout << "region " << region->id << " " << region->width << " " << region->height << " " << region->top << " " << region->left << " " << region->options.loop << std::endl;
         for(auto media : region->medias)
         {
-            if(auto video = dynamic_cast<Video*>(media.get()))
-                std::cout << video->options.mute << " ";
-            std::cout << media->id << " " << media->duration << " " << media->options.uri << std::endl;
+            if(auto image = dynamic_cast<Image*>(media.get()))
+                std::cout << (int)image->options.align << " " << (int)image->options.scaleType << " " << (int)image->options.valign << " ";
+            std::cout << (int)media->render << " " << media->id << " " << media->duration << " " << media->options.uri << std::endl;
         }
     }
 }

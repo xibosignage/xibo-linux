@@ -31,10 +31,10 @@ Layout* LayoutParser::GetAttributes(wxXmlNode* node)
 {
     std::cout << "parse layout" << std::endl;
     Layout* layout = new Layout;
-    layout->schemaVersion = std::stoi(node->GetAttribute("schemaVersion").ToStdString());
-    layout->width = std::stoi(node->GetAttribute("width").ToStdString());
-    layout->height = std::stoi(node->GetAttribute("height").ToStdString());
-    layout->backgroundImage = node->GetAttribute("background");
-    layout->backgroundColor = node->GetAttribute("bgcolor");
+    layout->schemaVersion = utilities::GetValue<int>(node->GetAttribute("schemaVersion")).value();
+    layout->width = utilities::GetValue<int>(node->GetAttribute("width")).value();
+    layout->height = utilities::GetValue<int>(node->GetAttribute("height")).value();
+    layout->backgroundImage = utilities::GetValue<wxString>(node->GetAttribute("background")).value();
+    layout->backgroundColor = utilities::GetValue<wxString>(node->GetAttribute("bgcolor")).value();
     return layout;
 }

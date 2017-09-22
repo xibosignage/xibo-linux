@@ -22,7 +22,8 @@ SOURCES += main.cpp \
     MediaParser.cpp \
     MediaFactory.cpp \
     Transition.cpp \
-    Image.cpp
+    Image.cpp \
+    utilities.cpp
 
 HEADERS += \
     MainWindow.hpp \
@@ -39,4 +40,5 @@ HEADERS += \
     MediaFactory.hpp \
     Transition.hpp \
     utilities.hpp \
-    Image.hpp
+    Image.hpp \
+    constants.hpp

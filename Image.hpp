@@ -7,13 +7,13 @@
 class Image : public Media
 {
 public:
-    void InitOptions(std::map<wxString, wxString> options) override;
+    void InitOptions(std::map<wxString, wxString>) override;
 
     struct Options : Media::BaseOptions
     {
-        int scaleType;
-        int align;
-        int valign;
+        ScaleType scaleType;
+        Align align;
+        Valign valign;
     } options;
 };
 

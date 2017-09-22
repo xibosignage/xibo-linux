@@ -2,6 +2,7 @@
 #define MEDIA_HPP
 
 #include "XiboObject.hpp"
+#include "constants.hpp"
 
 #include <map>
 #include <wx/string.h>
@@ -9,13 +10,9 @@
 class Media : public XiboObject
 {
 public:
-    virtual void InitOptions(std::map<wxString, wxString> options);
+    void InitOptions(std::map<wxString, wxString> options) override;
 
-    enum Render
-    {
-        HTML,
-        Native
-    } render;
+    Render render;
 
     int id;
     int duration;

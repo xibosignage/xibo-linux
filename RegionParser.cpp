@@ -36,10 +36,10 @@ Region* RegionParser::GetAttributes(wxXmlNode* node)
 {
     std::cout << "parse region" << std::endl;
     Region* region = new Region;
-    region->id = std::stoi(node->GetAttribute("id").ToStdString());
-    region->width = std::stoi(node->GetAttribute("width").ToStdString());
-    region->height = std::stoi(node->GetAttribute("height").ToStdString());
-    region->top = std::stoi(node->GetAttribute("top").ToStdString());
-    region->left = std::stoi(node->GetAttribute("left").ToStdString());
+    region->id = utilities::GetValue<int>(node->GetAttribute("id")).value();
+    region->width = utilities::GetValue<int>(node->GetAttribute("width")).value();
+    region->height = utilities::GetValue<int>(node->GetAttribute("height")).value();
+    region->top = utilities::GetValue<int>(node->GetAttribute("top")).value();
+    region->left = utilities::GetValue<int>(node->GetAttribute("left")).value();
     return region;
 }
