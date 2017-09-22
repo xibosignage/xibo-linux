@@ -4,6 +4,10 @@
 #include <wx/cmdline.h>
 #include <iostream>
 
+#include "LayoutParser.hpp"
+#include "Video.hpp"
+#include "utilities.hpp"
+
 const int DEFAULT_XPOS = 0;
 const int DEFAULT_YPOS = 0;
 
@@ -22,6 +26,25 @@ void PlayerApp::OnInitCmdLine(wxCmdLineParser& parser)
     parser.AddOption("x", wxString{}, "set x position to the window app", wxCMD_LINE_VAL_NUMBER);
     parser.AddOption("y", wxString{}, "set y position to the window app", wxCMD_LINE_VAL_NUMBER);
 
+}
+
+void PlayerApp::TestParser()
+{
+    wxXmlDocument doc("85.xlf");
+    wxXmlNode* root = doc.GetRoot();
+
+    auto layout = std::shared_ptr<Layout>(utilities::GetParser<LayoutParser>(root)->Parse());
+    std::cout << layout->schemaVersion << " " << layout->width << " " << layout->height << " " << layout->backgroundColor << " " << layout->backgroundImage << std::endl;
+    for(auto region : layout->regions)
+    {
+        std::cout << "region " << region->id << " " << region->width << " " << region->height << " " << region->top << " " << region->left << " " << region->options.loop << std::endl;
+        for(auto media : region->medias)
+        {
+            if(auto video = dynamic_cast<Video*>(media.get()))
+                std::cout << video->options.mute << " ";
+            std::cout << media->id << " " << media->duration << " " << media->options.uri << std::endl;
+        }
+    }
 }
 
 bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
@@ -46,7 +69,8 @@ bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 bool PlayerApp::OnInit()
 {
-    return wxApp::OnInit();
+    TestParser();
+    return false;
 }
 
 int PlayerApp::OnExit()

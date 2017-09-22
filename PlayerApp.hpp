@@ -19,6 +19,7 @@ public:
 
 private:
     void ShowMainWindow();
+    void TestParser();
 
 private:
     MainWindow* m_mainWindow = nullptr;

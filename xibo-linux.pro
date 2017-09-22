@@ -3,9 +3,6 @@ CONFIG += console
 CONFIG -= app_bundle c++11
 CONFIG -= qt
 
-QMAKE_CC = gcc-7
-QMAKE_CXX = g++-7
-
 wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
 wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
 LIBS += $$wxLinkOptions
