@@ -1,6 +1,7 @@
 #include "MainWindow.hpp"
+#include "VideoRender.hpp"
 
-#include "wx/frame.h"
+#include <wx/frame.h>
 
 MainWindow::MainWindow(wxWindow* parent,
                        wxWindowID id,
@@ -13,4 +14,8 @@ MainWindow::MainWindow(wxWindow* parent,
     // wxCURSOR_ARROW to return arrow
     if(disableMouse)
         SetCursor(wxCursor(wxCURSOR_BLANK));
+
+    auto video = new VideoRender(this, "test.mp4", wxDefaultPosition, wxSize(500, 500), true, false);
+
+    video->Play();
 }
