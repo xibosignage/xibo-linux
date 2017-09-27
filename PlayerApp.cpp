@@ -1,6 +1,5 @@
 #include "PlayerApp.hpp"
 
-#include <wx/mediactrl.h>
 #include <wx/cmdline.h>
 #include <iostream>
 
@@ -47,6 +46,7 @@ bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
 
 bool PlayerApp::OnInit()
 {
+    wxInitAllImageHandlers();
     return wxApp::OnInit();
 }
 
@@ -63,12 +63,12 @@ void PlayerApp::ShowMainWindow()
     int ypos = (m_ypos == INVALID_POS) ? DEFAULT_YPOS : m_ypos;
     long style = m_fullscreen ? wxDEFAULT_FRAME_STYLE : wxSIMPLE_BORDER;
 
-    m_mainWindow = new MainWindow(nullptr,
-                                  wxID_ANY,
-                                  m_disableMouse,
-                                  wxPoint(xpos, ypos),
-                                  wxSize(width, height),
-                                  style);
+    m_mainWindow = new Layout(nullptr,
+                              wxID_ANY,
+                              m_disableMouse,
+                              wxPoint(xpos, ypos),
+                              wxSize(width, height),
+                              style);
 
     // m_mainWindow->GetWindowStyle() & ~wxSTAY_ON_TOP to remove it from top
     if(m_stayOnTop)

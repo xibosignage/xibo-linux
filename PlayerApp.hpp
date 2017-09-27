@@ -2,7 +2,7 @@
 #define MYAPP_HPP
 
 #include <wx/app.h>
-#include "MainWindow.hpp"
+#include "Layout.hpp"
 
 const int INVALID_POS = -1;
 const int INVALID_SIZE = -1;
@@ -21,7 +21,8 @@ private:
     void ShowMainWindow();
 
 private:
-    MainWindow* m_mainWindow = nullptr;
+    Layout* m_mainWindow = nullptr;
+
     bool m_fullscreen = false;
     bool m_stayOnTop = false;
     bool m_disableMouse = false;
