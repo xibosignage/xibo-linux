@@ -15,7 +15,7 @@ MainWindow::MainWindow(wxWindow* parent,
     if(disableMouse)
         SetCursor(wxCursor(wxCURSOR_BLANK));
 
-    auto video = new VideoRender(this, "test.mp4", wxDefaultPosition, wxSize(500, 500), true, false);
+    auto video = new VideoRender(this, "00007.MTS", wxDefaultPosition, wxSize(500, 500), false, false);
 
     video->Play();
 }
