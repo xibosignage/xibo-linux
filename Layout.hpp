@@ -15,6 +15,9 @@ public:
            long style = wxDEFAULT_FRAME_STYLE);
 
 private:
+    void OnPaint(wxPaintEvent& event);
+
+private:
     wxBoxSizer* m_sizer;
 
 };
