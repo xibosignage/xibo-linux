@@ -1,7 +1,7 @@
 #ifndef RENDER_HPP
 #define RENDER_HPP
 
-#include <wx/window.h>
+#include "Media.hpp"
 #include <wx/image.h>
 
 class ImageRender : public wxWindow

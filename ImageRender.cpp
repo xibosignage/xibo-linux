@@ -3,9 +3,6 @@
 #include <wx/image.h>
 #include <wx/dcclient.h>
 
-#include <iostream>
-
-
 ImageRender::ImageRender(wxWindow* parent,
                          const wxString& fileName,
                          const wxPoint& pos,
@@ -15,7 +12,6 @@ ImageRender::ImageRender(wxWindow* parent,
     m_image.SetOption(wxIMAGE_OPTION_MAX_WIDTH, size.GetWidth());
     m_image.SetOption(wxIMAGE_OPTION_MAX_HEIGHT, size.GetHeight());
     m_image.LoadFile(fileName, wxBITMAP_TYPE_ANY);
-
 
     Bind(wxEVT_PAINT, &ImageRender::OnPaint, this);
 }

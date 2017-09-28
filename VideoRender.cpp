@@ -3,17 +3,18 @@
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
 
+#include <iostream>
+
 VideoRender::VideoRender(wxWindow* parent,
                          const wxString& fileName,
                          const wxPoint& pos,
-                         const wxSize& size,
-                         bool looped,
-                         bool muted) :
-    wxMediaCtrl(parent, wxID_ANY, fileName, pos, size),
-    m_looped(looped)
+                         const wxSize& size) :
+    wxMediaCtrl(parent, wxID_ANY, fileName, pos, size, wxBORDER_NONE)
 {
-    Bind(wxEVT_MEDIA_FINISHED, &VideoRender::OnVideoStopped, this);
+}
 
+void VideoRender::InitVolume(bool muted)
+{
     if(muted)
     {
         SetVolume(MIN_VOLUME);
@@ -21,14 +22,6 @@ VideoRender::VideoRender(wxWindow* parent,
     else
     {
         SetVolume(MAX_VOLUME);
-    }
-}
-
-void VideoRender::OnVideoStopped(wxMediaEvent& WXUNUSED(event))
-{
-    if(m_looped)
-    {
-        Play();
     }
 }
 

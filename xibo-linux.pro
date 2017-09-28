@@ -1,6 +1,6 @@
 TEMPLATE = app
 CONFIG += console c++17
-CONFIG -= app_bundle
+CONFIG -= app_bundle c++11
 CONFIG -= qt
 
 wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
@@ -13,11 +13,19 @@ QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 SOURCES += main.cpp \
     PlayerApp.cpp \
     Layout.cpp \
+    Media.cpp \
+    VideoRender.cpp \
+    Video.cpp \
     ImageRender.cpp \
-    VideoRender.cpp
+    Region.cpp \
+    Image.cpp
 
 HEADERS += \
     PlayerApp.hpp \
     Layout.hpp \
+    Media.hpp \
+    VideoRender.hpp \
+    Video.hpp \
     ImageRender.hpp \
-    VideoRender.hpp
+    Region.hpp \
+    Image.hpp

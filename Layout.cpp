@@ -1,6 +1,7 @@
 #include "Layout.hpp"
-#include "ImageRender.hpp"
-#include "VideoRender.hpp"
+#include "Image.hpp"
+#include "Video.hpp"
+#include "Region.hpp"
 
 #include <wx/frame.h>
 #include <wx/mediactrl.h>
@@ -14,7 +15,8 @@ Layout::Layout(wxWindow* parent,
                const wxPoint& pos,
                const wxSize& size,
                long style) :
-    wxFrame(parent, id, wxString{}, pos, size, style)
+    wxFrame(parent, id, wxString{}, pos, size, style),
+    m_backgroundImage("8621.jpg")
 {
     // wxCURSOR_ARROW to return arrow
     if(disableMouse)
@@ -22,14 +24,34 @@ Layout::Layout(wxWindow* parent,
 
     Bind(wxEVT_PAINT, &Layout::OnPaint, this);
 
-    new ImageRender{this, "8621.jpg", wxDefaultPosition,  wxSize(1366, 768)};
-    new ImageRender{this, "8633.png", wxPoint(420, 420),  wxSize(150, 150)};
-    new ImageRender{this, "8630.jpg", wxPoint(285, 285),  wxSize(150, 150)};
-    new ImageRender{this, "8627.jpg", wxPoint(150, 150),  wxSize(150, 150)};
-    new ImageRender{this, "8624.jpg", wxPoint(15, 15),  wxSize(150, 150)};
+    m_sizer = std::make_unique<wxBoxSizer>(wxVERTICAL);
 
-    auto video = new VideoRender{this, "00007.MTS", wxPoint(700, 300), wxSize(450, 450), false, false};
-    video->Play();
+    auto region1 = new Region{this, wxPoint(420, 420),  wxSize(150, 150), 2};
+    region1->AddMedia({std::make_shared<Image>("8624.jpg"),
+                       std::make_shared<Image>("8627.jpg"),
+                       std::make_shared<Image>("8630.jpg"),
+                       std::make_shared<Image>("8633.png")});
+    auto region2 = new Region{this, wxPoint(285, 285),  wxSize(150, 150), 2};
+    region2->AddMedia({std::make_shared<Image>("8627.jpg"),
+                       std::make_shared<Image>("8630.jpg"),
+                       std::make_shared<Image>("8633.png"),
+                       std::make_shared<Image>("8624.jpg")});
+    auto region3 = new Region{this, wxPoint(150, 150),  wxSize(150, 150), 2};
+    region3->AddMedia({std::make_shared<Image>("8630.jpg"),
+                       std::make_shared<Image>("8633.png"),
+                       std::make_shared<Image>("8624.jpg"),
+                       std::make_shared<Image>("8627.jpg")});
+    auto region4 = new Region{this, wxPoint(15, 15),  wxSize(150, 150), 2};
+    region4->AddMedia({std::make_shared<Image>("8633.png"),
+                       std::make_shared<Image>("8624.jpg"),
+                       std::make_shared<Image>("8627.jpg"),
+                       std::make_shared<Image>("8630.jpg")});
+
+    auto region5 = new Region{this, wxPoint(700, 300), wxSize(450, 450), 2};
+    region5->AddMedia(std::make_shared<Video>("00007.MTS", false, false));
+
+    SetSizer(m_sizer.get());
+
 }
 
 void Layout::OnPaint(wxPaintEvent& WXUNUSED(event))
@@ -37,4 +59,5 @@ void Layout::OnPaint(wxPaintEvent& WXUNUSED(event))
     wxPaintDC dc(this);
     dc.SetBrush(wxBrush(wxColour("black")));
     dc.DrawRectangle(0, 0, GetSize().GetWidth(), GetSize().GetHeight());
+    dc.DrawBitmap(wxBitmap(m_backgroundImage), 0, 0, false);
 }

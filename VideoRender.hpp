@@ -9,14 +9,9 @@ public:
     VideoRender(wxWindow* parent,
                 const wxString& fileName,
                 const wxPoint& pos,
-                const wxSize& size,
-                bool looped,
-                bool muted);
+                const wxSize& size);
 
-    void OnVideoStopped(wxMediaEvent& event);
-
-private:
-    bool m_looped;
+    void InitVolume(bool muted);
 
 };
 

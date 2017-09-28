@@ -2,7 +2,10 @@
 #define MYWINDOW_HPP
 
 #include <wx/frame.h>
+#include <wx/image.h>
 #include <wx/sizer.h>
+
+#include <memory>
 
 class Layout : public wxFrame
 {
@@ -18,7 +21,8 @@ private:
     void OnPaint(wxPaintEvent& event);
 
 private:
-    wxBoxSizer* m_sizer;
+    std::unique_ptr<wxBoxSizer> m_sizer;
+    wxImage m_backgroundImage;
 
 };
 
