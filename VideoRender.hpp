@@ -13,9 +13,6 @@ public:
 
     void InitVolume(bool muted);
 
-private:
-    void OnErase(wxEraseEvent& event);
-
 };
 
 #endif // VIDEORENDER_HPP

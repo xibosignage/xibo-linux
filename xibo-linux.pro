@@ -19,7 +19,8 @@ SOURCES += main.cpp \
     Video.cpp \
     ImageRender.cpp \
     Region.cpp \
-    Image.cpp
+    Image.cpp \
+    VideoBackend.cpp
 
 HEADERS += \
     PlayerApp.hpp \
@@ -30,4 +31,4 @@ HEADERS += \
     ImageRender.hpp \
     Region.hpp \
     Image.hpp \
-    test.hpp
+    VideoBackend.hpp
