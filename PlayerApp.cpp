@@ -39,7 +39,7 @@ bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
         m_ypos = INVALID_POS;
 
     ShowMainWindow();
-
+   
     return true;
 }
 
