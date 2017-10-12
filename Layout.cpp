@@ -7,6 +7,8 @@
 #include <wx/mediactrl.h>
 #include <wx/dcclient.h>
 
+#include <iostream>
+
 Layout::Layout(wxWindow* parent,
                wxWindowID id,
                bool disableMouse,
@@ -23,6 +25,9 @@ Layout::Layout(wxWindow* parent,
     Bind(wxEVT_PAINT, &Layout::OnPaint, this);
 
     m_sizer = std::make_unique<wxBoxSizer>(wxVERTICAL);
+
+    auto region = new Region{this, wxPoint(0, 0),  wxSize(1024, 640), 2};
+    region->AddMedia({std::make_shared<Video>("28304.mp4", false, true)});
 
     SetSizer(m_sizer.get());
 
