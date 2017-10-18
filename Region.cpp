@@ -1,15 +1,23 @@
 #include "Region.hpp"
+#include "MainLayout.hpp"
 
 #include <iostream>
+#include "Image.hpp"
 
-Region::Region(wxWindow* parent,
+int Region::instanceCount = 0;
+
+Region::Region(MainLayout* parent,
                const wxPoint& pos,
                const wxSize& size,
-               int duration) :
+               int duration,
+               int zindex) :
     wxWindow(parent, wxID_ANY, pos, size),
-    m_duration(duration)
+    m_layout(parent),
+    m_duration(duration),
+    m_zindex(zindex),
+    m_creationOrder(instanceCount++)
 {
-    m_timer.Start(duration * 1000);
+    //m_timer.Start(duration * 1000);
 
     m_timer.Bind(wxEVT_TIMER, [=](wxTimerEvent& WXUNUSED(event)){
         if(m_medias.size() > 1)
@@ -21,13 +29,14 @@ Region::Region(wxWindow* parent,
             m_medias[m_currentIndex]->Show();
         }
     });
+
 }
 
 void Region::AddMedia(const std::shared_ptr<Media>& media)
 {
     assert(media);
 
-    media->InitRender(GetParent(), GetPosition(),  GetSize());
+    media->InitRender(GetParent(), this, GetPosition(),  GetSize());
     m_medias.push_back(media);
 }
 
@@ -42,4 +51,10 @@ void Region::AddMedia(std::initializer_list<std::shared_ptr<Media>> medias)
     }
 
     m_medias[m_currentIndex]->Show();
+
+}
+
+MainLayout* Region::GetLayout()
+{
+    return  m_layout;
 }

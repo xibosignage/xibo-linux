@@ -10,7 +10,7 @@ Video::Video(const wxString& fileName, bool looped, bool muted) :
 
 }
 
-void Video::InitRender(wxWindow* parent, const wxPoint& pos, const wxSize& size)
+void Video::InitRender(wxWindow* parent, Region* region, const wxPoint& pos, const wxSize& size)
 {
     m_videoRender = std::make_unique<VideoRender>(parent, m_fileName, pos, size);
     m_videoRender->InitVolume(m_muted);

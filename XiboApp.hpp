@@ -2,26 +2,32 @@
 #define MYAPP_HPP
 
 #include <wx/app.h>
-#include "Layout.hpp"
+#include <memory>
 
 const int INVALID_POS = -1;
 const int INVALID_SIZE = -1;
 
-class PlayerApp : public wxApp
+class MainLayout;
+class EventsQueue;
+
+class XiboApp : public wxApp
 {
 public:
-    PlayerApp();
+    XiboApp();
 
     void OnInitCmdLine(wxCmdLineParser& parser) override;
     bool OnCmdLineParsed(wxCmdLineParser& parser) override;
     bool OnInit() override;
     int OnExit() override;
 
+    EventsQueue& GetEventsQueue();
+
 private:
     void ShowMainWindow();
 
 private:
-    Layout* m_mainWindow = nullptr;
+    MainLayout* m_mainWindow = nullptr;
+    std::unique_ptr<EventsQueue> m_eventsQueue;
 
     bool m_fullscreen = false;
     bool m_stayOnTop = false;
@@ -32,5 +38,7 @@ private:
     long m_ypos = INVALID_POS;
 
 };
+
+wxDECLARE_APP(XiboApp);
 
 #endif // MYAPP_HPP

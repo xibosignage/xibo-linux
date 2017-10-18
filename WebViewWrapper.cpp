@@ -19,11 +19,10 @@ WebViewWrapper::WebViewWrapper(wxWindow* parent, wxWindowID id, const wxString& 
 {
     auto parentGtkWindow = parent->GetHandle();
 
-    g_signal_connect(parentGtkWindow, "screen-changed", G_CALLBACK(UpdateVisualRgba), nullptr);
-    UpdateVisualRgba(parentGtkWindow, nullptr, nullptr);
+//    g_signal_connect(parentGtkWindow, "screen-changed", G_CALLBACK(UpdateVisualRgba), nullptr);
+//    UpdateVisualRgba(parentGtkWindow, nullptr, nullptr);
 
     m_webView = wxWebView::New(parent, id, url, pos, size, backend, style, name);
-
 
     WebKitWebView* nativeWebView = WEBKIT_WEB_VIEW(m_webView->GetNativeBackend());
     webkit_web_view_set_transparent(nativeWebView, true);

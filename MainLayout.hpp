@@ -7,10 +7,12 @@
 
 #include <memory>
 
-class Layout : public wxFrame
+wxDECLARE_EVENT(TEST_PAINT, wxCommandEvent);
+
+class MainLayout : public wxFrame
 {
 public:
-    Layout(wxWindow *parent,
+    MainLayout(wxWindow *parent,
            wxWindowID id,
            bool disableMouse,
            const wxPoint& pos = wxDefaultPosition,
@@ -24,6 +26,7 @@ private:
     std::unique_ptr<wxBoxSizer> m_sizer;
     wxImage m_backgroundImage;
 
+    void Test(wxCommandEvent& ev);
 };
 
 #endif // MYWINDOW_HPP

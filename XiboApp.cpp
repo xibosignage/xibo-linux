@@ -1,4 +1,6 @@
-#include "PlayerApp.hpp"
+#include "XiboApp.hpp"
+#include "MainLayout.hpp"
+#include "EventsQueue.hpp"
 
 #include <wx/cmdline.h>
 #include <iostream>
@@ -6,12 +8,12 @@
 const int DEFAULT_XPOS = 0;
 const int DEFAULT_YPOS = 0;
 
-PlayerApp::PlayerApp()
+XiboApp::XiboApp()
 {
-
+    m_eventsQueue = std::make_unique<EventsQueue>();
 }
 
-void PlayerApp::OnInitCmdLine(wxCmdLineParser& parser)
+void XiboApp::OnInitCmdLine(wxCmdLineParser& parser)
 {
     parser.AddSwitch("f", "fullscreen", "run app in fullscreen");
     parser.AddSwitch("t", "stay-on-top", "Put the window over other windows");
@@ -23,7 +25,7 @@ void PlayerApp::OnInitCmdLine(wxCmdLineParser& parser)
 
 }
 
-bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
+bool XiboApp::OnCmdLineParsed(wxCmdLineParser& parser)
 {
     m_fullscreen = parser.Found("f");
     m_stayOnTop = parser.Found("t");
@@ -44,18 +46,23 @@ bool PlayerApp::OnCmdLineParsed(wxCmdLineParser& parser)
 }
 
 
-bool PlayerApp::OnInit()
+bool XiboApp::OnInit()
 {
     wxInitAllImageHandlers();
     return wxApp::OnInit();
 }
 
-int PlayerApp::OnExit()
+int XiboApp::OnExit()
 {
     return wxApp::OnExit();
 }
 
-void PlayerApp::ShowMainWindow()
+EventsQueue& XiboApp::GetEventsQueue()
+{
+    return *m_eventsQueue.get();
+}
+
+void XiboApp::ShowMainWindow()
 {
     int width = (m_width == INVALID_SIZE) ? wxDefaultSize.GetWidth() : m_width;
     int height = (m_height == INVALID_SIZE) ? wxDefaultSize.GetHeight() : m_height;
@@ -63,12 +70,12 @@ void PlayerApp::ShowMainWindow()
     int ypos = (m_ypos == INVALID_POS) ? DEFAULT_YPOS : m_ypos;
     long style = m_fullscreen ? wxDEFAULT_FRAME_STYLE : wxSIMPLE_BORDER;
 
-    m_mainWindow = new Layout(nullptr,
+    m_mainWindow = new MainLayout(nullptr,
                               wxID_ANY,
                               m_disableMouse,
                               wxPoint(xpos, ypos),
                               wxSize(width, height),
-                              style);
+                              wxDEFAULT_FRAME_STYLE);
 
     // m_mainWindow->GetWindowStyle() & ~wxSTAY_ON_TOP to remove it from top
     if(m_stayOnTop)

@@ -1,4 +1,6 @@
 #include "Image.hpp"
+#include "Region.hpp"
+#include "ImageRender.hpp"
 
 Image::Image(const wxString& fileName) :
     m_fileName(fileName)
@@ -6,9 +8,9 @@ Image::Image(const wxString& fileName) :
 
 }
 
-void Image::InitRender(wxWindow* parent, const wxPoint& pos, const wxSize& size)
+void Image::InitRender(wxWindow* parent, Region* region, const wxPoint& pos, const wxSize& size)
 {
-    m_imageRender = std::make_unique<ImageRender>(parent, m_fileName, pos, size);
+    m_imageRender = std::make_unique<ImageRender>(parent, region, m_fileName, pos, size);
 }
 
 void Image::Hide()

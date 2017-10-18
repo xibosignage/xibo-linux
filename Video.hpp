@@ -13,7 +13,7 @@ public:
           bool looped,
           bool muted);
 
-    void InitRender(wxWindow* parent, const wxPoint& pos, const wxSize& size) override;
+    void InitRender(wxWindow* parent, Region* region, const wxPoint& pos, const wxSize& size) override;
     void Hide() override;
     void Show() override;
 
