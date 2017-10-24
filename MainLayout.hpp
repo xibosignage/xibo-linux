@@ -1,32 +1,21 @@
-#ifndef MYWINDOW_HPP
-#define MYWINDOW_HPP
+#pragma once
 
-#include <wx/frame.h>
-#include <wx/image.h>
-#include <wx/sizer.h>
+#include <gtkmm/window.h>
+#include <gtkmm/image.h>
+#include <gtkmm/fixed.h>
 
-#include <memory>
-
-wxDECLARE_EVENT(TEST_PAINT, wxCommandEvent);
-
-class MainLayout : public wxFrame
+class MainLayout : public Gtk::Window
 {
+
 public:
-    MainLayout(wxWindow *parent,
-           wxWindowID id,
-           bool disableMouse,
-           const wxPoint& pos = wxDefaultPosition,
-           const wxSize& size = wxDefaultSize,
-           long style = wxDEFAULT_FRAME_STYLE);
+    MainLayout();
+    virtual ~MainLayout();
+
+protected:
+    void on_window_realize();
 
 private:
-    void OnPaint(wxPaintEvent& event);
+    Gtk::Image m_background;
+    Gtk::Fixed m_mainContainer;
 
-private:
-    std::unique_ptr<wxBoxSizer> m_sizer;
-    wxImage m_backgroundImage;
-
-    void Test(wxCommandEvent& ev);
 };
-
-#endif // MYWINDOW_HPP

@@ -3,35 +3,24 @@ TEMPLATE = app
 CONFIG -= app_bundle c++11
 CONFIG -= qt console
 
-wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
-wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
+thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-video-1.0 webkitgtk-3.0)
+thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-video-1.0 webkitgtk-3.0)
 
-thirdPartyCXXFLAGS = $$system(pkg-config --cflags webkitgtk-3.0)
-thirdPartyLinkOptions = $$system(pkg-config --libs webkitgtk-3.0)
-
-LIBS += $$wxLinkOptions $$thirdPartyLinkOptions
-QMAKE_CXXFLAGS += $$wxCXXFLAGS $$thirdPartyCXXFLAGS -std=c++17
+LIBS += $$thirdPartyLinkOptions
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -std=c++14
 
 SOURCES += main.cpp \
-    Media.cpp \
-    VideoRender.cpp \
-    Video.cpp \
-    ImageRender.cpp \
+    MainLayout.cpp \
     Region.cpp \
+    Media.cpp \
     Image.cpp \
-    WebViewWrapper.cpp \
-    XiboApp.cpp \
-    EventsQueue.cpp \
-    MainLayout.cpp
+    Video.cpp \
+    WebView.cpp
 
 HEADERS += \
-    Media.hpp \
-    VideoRender.hpp \
-    Video.hpp \
-    ImageRender.hpp \
+    MainLayout.hpp \
     Region.hpp \
+    Media.hpp \
     Image.hpp \
-    WebViewWrapper.hpp \
-    XiboApp.hpp \
-    EventsQueue.hpp \
-    MainLayout.hpp
+    Video.hpp \
+    WebView.hpp

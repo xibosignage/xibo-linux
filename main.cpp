@@ -1,9 +1,12 @@
-#include <wx/wxprec.h>
+#include "MainLayout.hpp"
+#include <gtkmm/application.h>
 
-#ifndef WX_PRECOMP
-    #include <wx/wx.h>
-#endif
+#include <iostream>
 
-#include "XiboApp.hpp"
+int main (int argc, char *argv[])
+{
+  auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
+  MainLayout layout;
 
-wxIMPLEMENT_APP(XiboApp);
+  return app->run(layout);
+}
