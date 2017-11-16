@@ -5,7 +5,7 @@
 
 int main (int argc, char *argv[])
 {
-  auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
+  auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
   MainLayout layout;
 
   return app->run(layout);
