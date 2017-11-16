@@ -1,0 +1,526 @@
+{
+   <libgio-2.0.so>
+   Memcheck:Leak
+   ...
+   obj:/*/libgio-*
+}
+
+{
+   <g_dbus>
+   Memcheck:Leak
+   ...
+   fun:g_dbus*
+}
+
+{
+   </usr/*lib*/libpango* wxControl::*>
+   Memcheck:Leak
+   ...
+   obj:/usr/*lib*/libpango*
+   ...
+   fun:_ZNK9wxControl*
+}
+
+{
+   <pango_layout_get_lines>
+   Memcheck:Leak
+   ...
+   fun:pango_layout_get_lines
+}
+
+{
+   <gtk_init_check>
+   Memcheck:Leak
+   ...
+   fun:gtk_init_check
+}
+{
+   <libglib-2.0.so.0.3200.4>
+   Memcheck:Leak
+   ...
+   obj:/*/libglib-*
+}
+
+{
+   <ld-2.13.so>
+   Memcheck:Leak
+   ...
+   obj:/*/ld-2*
+}
+
+{
+   <pango_*>
+   Memcheck:Leak
+   ...
+   fun:pango_*
+}
+
+{
+   <libgobject*>
+   Memcheck:Leak
+   ...
+   obj:/*/libgobject*
+}
+
+{
+   <CreateStatusBar>
+   Memcheck:Leak
+   ...
+   fun:_ZN11wxFrameBase15CreateStatusBarEiliRK8wxString
+   fun:_ZN7MyFrameC1ERK8wxString
+   fun:_ZN5MyApp6OnInitEv
+}
+
+{
+   <libpangocairo*>
+   Memcheck:Leak
+   ...
+   obj:/*/libpangocairo*
+}
+
+{
+   <gtk_icon_theme_lookup_icon etc>
+   Memcheck:Leak
+   ...
+   fun:g?k_
+}
+
+{
+   <gtk_icon_theme_lookup_icon etc>
+   Memcheck:Leak
+   ...
+   fun:FcFontList
+}
+
+{
+   <fedora theme>
+   Memcheck:Leak
+   ...
+   fun:_ZN6Oxygen5Style*
+}
+{
+   <fedora theme>
+   Memcheck:Leak
+   ...
+   fun:theme_init
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   ...
+   obj:/usr/*lib*/libfontconfig*
+   fun:FcConfigSubstituteWithPat
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   ...
+   fun:gdk_window_process_updates
+   fun:_ZN8wxWindow6UpdateEv
+   fun:_ZN11wxStatusBar18DoUpdateStatusTextEi
+   fun:_ZN15wxStatusBarBase13SetStatusTextERK8wxStringi
+   fun:_ZN11wxFrameBase10DoGiveHelpERK8wxStringb
+   fun:_ZN11wxFrameBase11OnMenuCloseER11wxMenuEvent
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN5MyApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:_Z19wxClientDisplayRectPiS_S_S_
+   fun:_Z22wxGetClientDisplayRectv
+   fun:_ZN20wxTopLevelWindowBase14GetDefaultSizeEv
+   fun:_ZN20wxTopLevelWindowBase12WidthDefaultEi
+   fun:_ZN19wxTopLevelWindowGTK6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrame6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrameC1EP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7MyFrameC1ERK8wxString
+   fun:_ZN5MyApp6OnInitEv
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   ...
+   fun:g_type_register_static
+   fun:g_type_register_static_simple
+   fun:gtk_menu_bar_get_type
+   fun:gtk_menu_bar_new
+   fun:_ZN9wxMenuBar4InitEmPP6wxMenuPK8wxStringl
+   fun:_ZN9wxMenuBarC1Ev
+   fun:_ZN7MyFrameC1ERK8wxString
+   fun:_ZN5MyApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:_XReply
+   fun:XSync
+   fun:gdk_flush
+   fun:gtk_main
+   fun:_ZN14wxGUIEventLoop3RunEv
+   fun:_ZN16wxAppConsoleBase8MainLoopEv
+   fun:_ZN16wxAppConsoleBase5OnRunEv
+   fun:_ZN9wxAppBase5OnRunEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   fun:g_realloc
+   ...
+   fun:g_type_add_interface_static
+   fun:gtk_box_get_type
+   fun:gtk_vbox_get_type
+   fun:gtk_vbox_new
+   fun:_ZL14wx_gtk_box_new14GtkOrientationi
+   fun:_ZN19wxTopLevelWindowGTK6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrame6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrameC1EP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7MyFrameC1ERK8wxString
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:calloc
+   fun:XShmCreateImage
+   ...
+   fun:gdk_draw_rgb_image
+   fun:_ZN8wxBitmap23CreateFromImageAsPixmapERK7wxImagei
+   fun:_ZN8wxBitmapC1ERK7wxImagei
+   fun:_ZN8wxBitmapC1EPKPKc
+   fun:_ZN6wxIconC1EPKPKc
+   fun:_ZN7MyFrameC1ERK8wxString
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   ...
+   fun:gtk_widget_get_pango_context
+   fun:_ZNK16wxNativeFontInfo9GetFamilyEv
+   fun:_ZN6wxFontC1ERK16wxNativeFontInfo
+   fun:_ZN9wxControl33GetDefaultAttributesFromGTKWidgetEP10_GtkWidgetbi
+   fun:_ZNK9wxControl20GetDefaultAttributesEv
+   fun:_ZNK12wxWindowBase7GetFontEv
+   fun:_ZNK8wxWindow13GetCharHeightEv
+   fun:_ZN11wxStatusBar6CreateEP8wxWindowilRK8wxString
+   fun:_ZN11wxStatusBarC1EP8wxWindowilRK8wxString
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_XEnq
+   ...
+   fun:_XReply
+   fun:XGetImage
+   fun:XGetSubImage
+   ...
+   fun:gdk_drawable_copy_to_image
+   fun:gdk_drawable_copy_to_image
+   fun:gdk_pixbuf_get_from_drawable
+   fun:_ZL14PixmapToPixbufP12_GdkDrawableP10_GdkPixbufii
+   fun:_ZNK8wxBitmap9GetPixbufEv
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:FcDirCacheLoad
+   ...
+   fun:FcConfigBuildFonts
+   fun:FcInitLoadConfigAndFonts
+   fun:FcInit
+   fun:FcConfigGetCurrent
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:realloc
+   fun:FcFontSetAdd
+   ...
+   fun:FcConfigBuildFonts
+   fun:FcInitLoadConfigAndFonts
+   fun:FcInit
+   fun:FcConfigGetCurrent
+   fun:FcInitBringUptoDate
+   fun:FcFontList
+   obj:/usr/*lib*/libpangoft*
+   fun:_ZNK16wxNativeFontInfo9GetFamilyEv
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   fun:_XEnq
+   ...
+   fun:_XReply
+   fun:XInternAtom
+   fun:_Z19wxClientDisplayRectPiS_S_S_
+   fun:_Z22wxGetClientDisplayRectv
+   fun:_ZN20wxTopLevelWindowBase14GetDefaultSizeEv
+   fun:_ZN20wxTopLevelWindowBase12WidthDefaultEi
+   fun:_ZN19wxTopLevelWindowGTK6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrame6CreateEP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+   fun:_ZN7wxFrameC1EP8wxWindowiRK8wxStringRK7wxPointRK6wxSizelS4_
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   obj:/usr/*lib*/libfontconfig.*
+   ...
+   obj:/usr/*lib*/libfontconfig.*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:_XrmInternalStringToQuark
+   fun:_XlcGetCharSet
+   fun:_XlcAddCT
+   fun:_XlcInitCTInfo
+   ...
+   fun:_XlcCreateLC
+   fun:_XlcUtf8Loader
+   fun:_XOpenLC
+   fun:_XlcCurrentLC
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:wcscoll_l
+   fun:g_utf8_collate
+   fun:wxCompareFamilies
+   ...
+   fun:qsort_r
+   fun:_ZN16wxFontEnumerator18EnumerateFacenamesE14wxFontEncodingb
+   fun:_ZN16wxFontEnumerator12GetFacenamesE14wxFontEncodingb
+   fun:_ZN16wxFontEnumerator15IsValidFacenameERK8wxString
+   fun:_ZN22wxSystemSettingsNative7GetFontE12wxSystemFont
+   fun:_ZN10wxStockGDI7GetFontENS_4ItemE
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr8
+   fun:wcscmp
+   fun:wcscoll_l
+   fun:g_utf8_collate
+   fun:wxCompareFamilies
+   ...
+   fun:qsort_r
+   fun:_ZN16wxFontEnumerator18EnumerateFacenamesE14wxFontEncodingb
+   fun:_ZN16wxFontEnumerator12GetFacenamesE14wxFontEncodingb
+   fun:_ZN16wxFontEnumerator15IsValidFacenameERK8wxString
+   fun:_ZN22wxSystemSettingsNative7GetFontE12wxSystemFont
+   fun:_ZN10wxStockGDI7GetFontENS_4ItemE
+   fun:_ZN11wxGTKDCImplC1EP4wxDC
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:FcValueSave
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   obj:/usr/lib/x86_64-linux-gnu/libX11.so.6.3.0
+   fun:_XReply
+   fun:XSync
+   fun:gdk_flush
+   fun:gtk_main
+   fun:_ZN14wxGUIEventLoop5DoRunEv
+   fun:_ZN15wxEventLoopBase3RunEv
+   fun:_ZN16wxAppConsoleBase8MainLoopEv
+   fun:_ZN16wxAppConsoleBase5OnRunEv
+   fun:_ZN9wxAppBase5OnRunEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:_Z16wxGetWorkAreaX11P6ScreenRiS1_S1_S1_
+   fun:_ZL34wx_gdk_screen_get_monitor_workareaP10_GdkScreeniP13_GdkRectangle
+   fun:_ZNK16wxDisplayImplGTK13GetClientAreaEv
+   fun:_ZNK9wxDisplay13GetClientAreaEv
+   fun:_ZN20wxTopLevelWindowBase8DoCentreEi
+   fun:_ZN12wxWindowBase6CenterEi
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   obj:/usr/lib/x86_64-linux-gnu/libgdk-x11-2.0.so.0.2400.30
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XUpdateAtomCache
+   fun:XInternAtom
+   fun:gdk_x11_atom_to_xatom_for_display
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:XGetWindowProperty
+   fun:gdk_x11_screen_supports_net_wm_hint
+   fun:_ZN19wxTopLevelWindowGTK4ShowEb
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:FcValueSave
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.9.0
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:_XEnq
+   obj:/usr/lib/x86_64-linux-gnu/libX11.so.6.3.0
+   fun:_XReply
+   fun:XInternAtom
+   fun:_Z16wxGetWorkAreaX11P6ScreenRiS1_S1_S1_
+   fun:_ZL34wx_gdk_screen_get_monitor_workareaP10_GdkScreeniP13_GdkRectangle
+   fun:_ZNK16wxDisplayImplGTK13GetClientAreaEv
+   fun:_ZNK9wxDisplay13GetClientAreaEv
+   fun:_ZN20wxTopLevelWindowBase8DoCentreEi
+   fun:_ZN12wxWindowBase6CenterEi
+   fun:_ZN11WatchdogApp6OnInitEv
+   fun:_ZN16wxAppConsoleBase10CallOnInitEv
+   fun:_Z7wxEntryRiPPw
+   fun:_Z7wxEntryRiPPc
+   fun:main
+}
