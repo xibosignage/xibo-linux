@@ -1,19 +1,20 @@
 #include "Image.hpp"
 #include "Region.hpp"
 
-Image::Image(const std::string& fileName) :
-    m_fileName(fileName)
+Image::Image(const std::string& filename) :
+    m_filename(filename)
 {
 }
 
-void Image::init(Region* region, const Point& pos, const Size& size, int zindex)
+void Image::init(MyRegion* region, const Point& pos, const Size& size, int zindex)
 {
     Media::init(region, pos, size, zindex);
 
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_fileName, size.width, size.height);
+    auto pixbuf = Gdk::Pixbuf::create_from_file(m_filename, size.width, size.height);
     m_handler.set(pixbuf);
-    region->add(m_handler);
     m_handler.show();
+
+    region->add(m_handler);
 }
 
 void Image::hide()
@@ -28,5 +29,5 @@ void Image::show()
 
 std::string Image::get_filename() const
 {
-    return m_fileName;
+    return m_filename;
 }

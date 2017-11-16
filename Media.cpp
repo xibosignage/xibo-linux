@@ -30,7 +30,7 @@ bool Media::IsVisible() const
     return m_visible;
 }
 
-void Media::init(Region* , const Point& pos, const Size& size, int zindex)
+void Media::init(MyRegion* , const Point& pos, const Size& size, int zindex)
 {
     m_zindex = zindex;
     m_pos = pos;

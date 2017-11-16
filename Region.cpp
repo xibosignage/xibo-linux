@@ -5,7 +5,8 @@
 #include <cassert>
 #include <glibmm.h>
 
-Region::Region(const Point& pos,
+MyRegion::MyRegion(MainLayout* layout,
+               const Point& pos,
                const Size& size,
                int duration,
                int zindex) :
@@ -14,21 +15,22 @@ Region::Region(const Point& pos,
     m_duration(duration),
     m_zindex(zindex)
 {
+    layout->add_to_container(this, pos);
 
-    Glib::signal_timeout().connect([=](){
-        if(m_medias.size() > 1)
-        {
-            m_previousIndex = m_currentIndex;
-            m_medias[m_previousIndex]->hide();
+//    Glib::signal_timeout().connect([=](){
+//        if(m_medias.size() > 1)
+//        {
+//            m_previousIndex = m_currentIndex;
+//            m_medias[m_previousIndex]->hide();
 
-            m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
-            m_medias[m_currentIndex]->show();
-        }
-        return true;
-    }, m_duration * 1000);
+//            m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
+//            m_medias[m_currentIndex]->show();
+//        }
+//        return true;
+//    }, m_duration * 1000);
 }
 
-void Region::add_media(const std::shared_ptr<Media>& media)
+void MyRegion::add_media(const std::shared_ptr<Media>& media)
 {
     assert(media);
 
@@ -36,7 +38,7 @@ void Region::add_media(const std::shared_ptr<Media>& media)
     m_medias.push_back(media);
 }
 
-void Region::add_media(std::initializer_list<std::shared_ptr<Media>> medias)
+void MyRegion::add_media(std::initializer_list<std::shared_ptr<Media>> medias)
 {
     assert(medias.size() > 0);
 
@@ -48,4 +50,14 @@ void Region::add_media(std::initializer_list<std::shared_ptr<Media>> medias)
 
     m_medias[m_currentIndex]->show();
 
+}
+
+Point MyRegion::position() const
+{
+    return m_pos;
+}
+
+Size MyRegion::size() const
+{
+    return m_size;
 }

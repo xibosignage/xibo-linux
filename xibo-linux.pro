@@ -1,13 +1,17 @@
 TEMPLATE = app
-#CONFIG += console
-CONFIG -= app_bundle c++11
+CONFIG += c++14
+CONFIG -= app_bundle
 CONFIG -= qt console
 
-thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-video-1.0 webkitgtk-3.0)
-thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-video-1.0 webkitgtk-3.0)
+#QMAKE_CXXFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+#QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+#QMAKE_LFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+
+thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
+thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 
 LIBS += $$thirdPartyLinkOptions
-QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -std=c++14
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated
 
 SOURCES += main.cpp \
     MainLayout.cpp \
@@ -15,7 +19,8 @@ SOURCES += main.cpp \
     Media.cpp \
     Image.cpp \
     Video.cpp \
-    WebView.cpp
+    WebView.cpp \
+    VideoHandler.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -23,4 +28,6 @@ HEADERS += \
     Media.hpp \
     Image.hpp \
     Video.hpp \
-    WebView.hpp
+    WebView.hpp \
+    VideoHandler.hpp \
+    BindWrapper.hpp
