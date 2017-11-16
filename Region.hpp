@@ -1,5 +1,4 @@
-#ifndef REGION_HPP
-#define REGION_HPP
+#pragma once
 
 #include "Media.hpp"
 
@@ -7,16 +6,22 @@
 #include <memory>
 #include <iostream>
 
-class Region : public Gtk::Fixed
+class MainLayout;
+
+class MyRegion : public Gtk::Fixed
 {
 public:
-    Region(const Point& pos,
+    MyRegion(MainLayout* layout,
+           const Point& pos,
            const Size& size,
            int duration,
            int zindex);
 
     void add_media(const std::shared_ptr<Media>& media);
     void add_media(std::initializer_list<std::shared_ptr<Media>> medias);
+
+    Point position() const;
+    Size size() const;
 
 private:
     std::vector<std::shared_ptr<Media>> m_medias;
@@ -30,5 +35,3 @@ private:
     size_t m_previousIndex = 0;
 
 };
-
-#endif // REGION_HPP

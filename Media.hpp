@@ -1,5 +1,4 @@
-#ifndef MEDIA_HPP
-#define MEDIA_HPP
+#pragma once
 
 #include <gtkmm/widget.h>
 
@@ -15,7 +14,7 @@ struct Size
     int height;
 };
 
-class Region;
+class MyRegion;
 
 class Media
 {
@@ -23,7 +22,7 @@ public:
    Media() = default;
    virtual ~Media() { }
 
-   virtual void init(Region* region, const Point& pos, const Size& size, int zindez) = 0;
+   virtual void init(MyRegion* region, const Point& pos, const Size& size, int zindez) = 0;
    virtual void hide() = 0;
    virtual void show() = 0;
    virtual int GetX() const;
@@ -40,5 +39,3 @@ protected:
    bool m_visible = false;
 
 };
-
-#endif // MEDIA_HPP
