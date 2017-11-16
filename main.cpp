@@ -1,12 +1,9 @@
-#include "MainLayout.hpp"
-#include <gtkmm/application.h>
+#include <wx/wxprec.h>
 
-#include <iostream>
+#ifndef WX_PRECOMP
+    #include <wx/wx.h>
+#endif
 
-int main (int argc, char *argv[])
-{
-  auto app = Gtk::Application::create(argc, argv, "org.gtkmm.example");
-  MainLayout layout;
+#include "PlayerApp.hpp"
 
-  return app->run(layout);
-}
+wxIMPLEMENT_APP(PlayerApp);

@@ -1,33 +1,18 @@
 TEMPLATE = app
-CONFIG += c++14
+CONFIG += console c++14
 CONFIG -= app_bundle
-CONFIG -= qt console
+CONFIG -= qt
 
-#QMAKE_CXXFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
-#QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
-#QMAKE_LFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
-
-thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
-thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
-
-LIBS += $$thirdPartyLinkOptions
-QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated
+wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
+wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
+LIBS += $$wxLinkOptions
+QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS
+QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 
 SOURCES += main.cpp \
-    MainLayout.cpp \
-    Region.cpp \
-    Media.cpp \
-    Image.cpp \
-    Video.cpp \
-    WebView.cpp \
-    VideoHandler.cpp
+    MainWindow.cpp \
+    PlayerApp.cpp
 
 HEADERS += \
-    MainLayout.hpp \
-    Region.hpp \
-    Media.hpp \
-    Image.hpp \
-    Video.hpp \
-    WebView.hpp \
-    VideoHandler.hpp \
-    BindWrapper.hpp
+    MainWindow.hpp \
+    PlayerApp.hpp
