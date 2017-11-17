@@ -4,10 +4,14 @@
 #include <gst/video/videooverlay.h>
 #include <gdk/gdkx.h>
 
+#include "constants.hpp"
+
 VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
     m_size(size)
 {
     gst_init(nullptr, nullptr);
+
+    m_logger = spdlog::get(LOGGER);
 
     m_pipeline = gst_pipeline_new("player");
     m_source = gst_element_factory_make("filesrc", "file-source");
@@ -23,7 +27,7 @@ VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
        !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink)
     {
-        throw std::logic_error("One element could not be created");
+        m_logger->critical("One element could not be created");
     }
 
     g_object_set(reinterpret_cast<GObject*>(m_source), "location", filename.c_str(), nullptr);
@@ -64,10 +68,10 @@ VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
 
 VideoHandler::~VideoHandler()
 {
-    printf("Returned, stopping playback\n");
+    m_logger->debug("Returned, stopping playback");
     gst_element_set_state (m_pipeline, GST_STATE_NULL);
 
-    printf("Deleting pipeline\n");
+    m_logger->debug("One element could not be created");
     gst_object_unref(reinterpret_cast<GstObject*>(m_pipeline));
 }
 
@@ -77,7 +81,7 @@ void VideoHandler::realize_cb()
 
     if(!window->ensure_native())
     {
-        throw std::logic_error("Couldn't create native window needed for GstVideoOverlay!");
+        m_logger->critical("Couldn't create native window needed for GstVideoOverlay!");
     }
 
     m_window_handle = GDK_WINDOW_XID(window->gobj());
@@ -96,7 +100,7 @@ GstBusSyncReply VideoHandler::bus_sync_handler(GstBus*, GstMessage* message, gpo
     }
     else
     {
-        printf("Should have obtained video_window_handle by now!");
+        m_logger->error("Should have obtained video_window_handle by now!");
     }
 
     gst_message_unref(message);
@@ -111,7 +115,7 @@ gboolean VideoHandler::cb_message_error(GstBus*, GstMessage* msg, gpointer )
     gst_message_parse_error(msg, &error, &debug);
     g_free(debug);
 
-    printf("Error: %s\n", error->message);
+    m_logger->error("{}", error->message);
     g_error_free(error);
 
     return true;
@@ -119,7 +123,7 @@ gboolean VideoHandler::cb_message_error(GstBus*, GstMessage* msg, gpointer )
 
 gboolean VideoHandler::cb_message_eos(GstBus*, GstMessage*, gpointer)
 {
-    printf("End of stream\n");
+    m_logger->debug("End of stream");
     m_video_ended = true;
     m_signal_video_ended.emit();
     return true;
@@ -128,7 +132,7 @@ gboolean VideoHandler::cb_message_eos(GstBus*, GstMessage*, gpointer)
 void VideoHandler::no_more_pads(GstElement* element, gpointer)
 {
     auto pad = gst_element_get_static_pad(element, "src_1");
-    printf("No more pads\n");
+    m_logger->debug("No more pads");
     if(pad)
     {
         gst_object_unref(pad);
@@ -151,7 +155,10 @@ void VideoHandler::on_pad_added(GstElement* element, GstPad* pad, gpointer data)
 
     // src_0 for video stream
     video_pad = gst_element_get_static_pad(element, "src_0");
-    if(video_pad)
+    // src1 for audio stream
+    audio_pad = gst_element_get_static_pad(element, "src_1");
+
+    if(video_pad && !audio_pad)
     {
         caps = gst_pad_get_current_caps(video_pad);
         if(caps)
@@ -163,7 +170,7 @@ void VideoHandler::on_pad_added(GstElement* element, GstPad* pad, gpointer data)
 
             update_video_size();
 
-            printf("height: %d, width: %d\n", m_best_size.height, m_best_size.width);
+            m_logger->info("height: {}, width: {}", m_best_size.height, m_best_size.width);
             gst_caps_unref(caps);
         }
         sinkpad = gst_element_get_static_pad(converter->video, "sink");
@@ -172,10 +179,7 @@ void VideoHandler::on_pad_added(GstElement* element, GstPad* pad, gpointer data)
 
         gst_object_unref(video_pad);
     }
-
-    // src1 for audio stream
-    audio_pad = gst_element_get_static_pad(element, "src_1");
-    if(audio_pad)
+    else if(audio_pad)
     {
         sinkpad = gst_element_get_static_pad(converter->audio, "sink");
         gst_pad_link(pad, sinkpad);
@@ -211,7 +215,7 @@ void VideoHandler::play()
                              GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 0,
                              GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
-            printf("Error while restarting video\n");
+            m_logger->error("Error while restarting video");
         }
         else
         {
@@ -221,7 +225,7 @@ void VideoHandler::play()
     else
     {
         gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
-        printf("Running...\n");
+        m_logger->debug("Running");
     }
 }
 

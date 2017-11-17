@@ -7,6 +7,8 @@
 #include <gtkmm/bin.h>
 #include <gtkmm/drawingarea.h>
 
+#include "spdlog/spdlog.h"
+
 struct Converter
 {
     GstElement* video;
@@ -51,5 +53,7 @@ private:
 
     sigc::signal<void> m_signal_video_ended;
     bool m_video_ended = false;
+
+    std::shared_ptr<spdlog::logger> m_logger;
 
 };

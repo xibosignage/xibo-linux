@@ -10,8 +10,8 @@ CONFIG -= qt console
 thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 
-LIBS += $$thirdPartyLinkOptions
-QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated
+LIBS += $$thirdPartyLinkOptions -lpthread
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O3 -flto
 
 SOURCES += main.cpp \
     MainLayout.cpp \
@@ -30,4 +30,5 @@ HEADERS += \
     Video.hpp \
     WebView.hpp \
     VideoHandler.hpp \
-    BindWrapper.hpp
+    BindWrapper.hpp \
+    constants.hpp
