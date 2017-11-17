@@ -4,7 +4,7 @@
 #include <gst/video/videooverlay.h>
 #include <gdk/gdkx.h>
 
-VideoHandler::VideoHandler(const std::string& , const Size& size) :
+VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
     m_size(size)
 {
     gst_init(nullptr, nullptr);
@@ -13,20 +13,20 @@ VideoHandler::VideoHandler(const std::string& , const Size& size) :
     m_source = gst_element_factory_make("filesrc", "file-source");
     m_decodebin = gst_element_factory_make("decodebin", "decoder-demuxer");
 
-    m_videoConverter = gst_element_factory_make("videoconvert", "video-converter");
-    m_videoSink = gst_element_factory_make("autovideosink", "video-output");
+    m_video_converter = gst_element_factory_make("videoconvert", "video-converter");
+    m_video_sink = gst_element_factory_make("autovideosink", "video-output");
 
-    m_audioConverter = gst_element_factory_make("audioconvert", "audio-converter");
+    m_audio_converter = gst_element_factory_make("audioconvert", "audio-converter");
     m_volume = gst_element_factory_make("volume", "volume");
-    m_audioSink = gst_element_factory_make("autoaudiosink", "audio-output");
+    m_audio_sink = gst_element_factory_make("autoaudiosink", "audio-output");
 
-    if(!m_pipeline || !m_source || !m_decodebin || !m_videoConverter ||
-       !m_videoSink || !m_audioConverter || !m_volume || !m_audioSink)
+    if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
+       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink)
     {
         throw std::logic_error("One element could not be created");
     }
 
-    g_object_set(reinterpret_cast<GObject*>(m_source), "location", "/home/stivius/video.webm", nullptr);
+    g_object_set(reinterpret_cast<GObject*>(m_source), "location", filename.c_str(), nullptr);
 
     using namespace std::placeholders;
 
@@ -44,25 +44,20 @@ VideoHandler::VideoHandler(const std::string& , const Size& size) :
 
     gst_object_unref(bus);
 
-    gst_bin_add_many(reinterpret_cast<GstBin*>(m_pipeline), m_source, m_decodebin, m_videoConverter, m_videoSink, m_audioConverter, m_volume, m_audioSink, nullptr);
+    gst_bin_add_many(reinterpret_cast<GstBin*>(m_pipeline), m_source, m_decodebin, m_video_converter, m_video_sink, m_audio_converter, m_volume, m_audio_sink, nullptr);
 
     gst_element_link(m_source, m_decodebin);
-    gst_element_link(m_videoConverter, m_videoSink);
-    gst_element_link_many(m_audioConverter, m_volume, m_audioSink, nullptr);
+    gst_element_link(m_video_converter, m_video_sink);
+    gst_element_link_many(m_audio_converter, m_volume, m_audio_sink, nullptr);
 
-    m_converter.video = m_videoConverter;
-    m_converter.audio = m_audioConverter;
+    m_converter.video = m_video_converter;
+    m_converter.audio = m_audio_converter;
 
     auto on_pad_added = get_wrapper<3, void, GstElement*,GstPad*,gpointer>(std::bind(&VideoHandler::on_pad_added, this, _1, _2, _3));
     g_signal_connect_data(m_decodebin, "pad-added", reinterpret_cast<GCallback>(on_pad_added), &m_converter, nullptr, static_cast<GConnectFlags>(0));
 
     auto no_more_pads = get_wrapper<4, void, GstElement*, gpointer>(std::bind(&VideoHandler::no_more_pads, this, _1, _2));
     g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
-
-    printf("Now playing: %s\n", "video2.mp4");
-    gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
-
-    printf("Running...\n");
 
     create_ui();
 }
@@ -78,14 +73,14 @@ VideoHandler::~VideoHandler()
 
 void VideoHandler::realize_cb()
 {
-    auto window = m_videoWindow.get_window();
+    auto window = m_video_window.get_window();
 
     if(!window->ensure_native())
     {
         throw std::logic_error("Couldn't create native window needed for GstVideoOverlay!");
     }
 
-    m_windowHandle = GDK_WINDOW_XID(window->gobj());
+    m_window_handle = GDK_WINDOW_XID(window->gobj());
 }
 
 GstBusSyncReply VideoHandler::bus_sync_handler(GstBus*, GstMessage* message, gpointer)
@@ -93,11 +88,11 @@ GstBusSyncReply VideoHandler::bus_sync_handler(GstBus*, GstMessage* message, gpo
     if(!gst_is_video_overlay_prepare_window_handle_message(message))
         return GST_BUS_PASS;
 
-    if(m_windowHandle != 0)
+    if(m_window_handle != 0)
     {
         auto sink = reinterpret_cast<GstMessage*>(message)->src;
         auto overlay = reinterpret_cast<GstVideoOverlay*>(sink);
-        gst_video_overlay_set_window_handle (overlay, m_windowHandle);
+        gst_video_overlay_set_window_handle (overlay, m_window_handle);
     }
     else
     {
@@ -125,17 +120,8 @@ gboolean VideoHandler::cb_message_error(GstBus*, GstMessage* msg, gpointer )
 gboolean VideoHandler::cb_message_eos(GstBus*, GstMessage*, gpointer)
 {
     printf("End of stream\n");
-    if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME,
-                         GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 0,
-                         GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
-    {
-        printf("failure\n");
-        gtk_main_quit();
-    }
-    else
-    {
-        printf("success\n");
-    }
+    m_video_ended = true;
+    m_signal_video_ended.emit();
     return true;
 }
 
@@ -149,10 +135,10 @@ void VideoHandler::no_more_pads(GstElement* element, gpointer)
     }
     else
     {
-        gst_element_set_state(m_audioConverter, GST_STATE_NULL);
+        gst_element_set_state(m_audio_converter, GST_STATE_NULL);
         gst_element_set_state(m_volume, GST_STATE_NULL);
-        gst_element_set_state(m_audioSink, GST_STATE_NULL);
-        gst_bin_remove_many(reinterpret_cast<GstBin*>(m_pipeline), m_audioConverter, m_volume, m_audioSink, nullptr);
+        gst_element_set_state(m_audio_sink, GST_STATE_NULL);
+        gst_bin_remove_many(reinterpret_cast<GstBin*>(m_pipeline), m_audio_converter, m_volume, m_audio_sink, nullptr);
     }
 }
 
@@ -172,12 +158,12 @@ void VideoHandler::on_pad_added(GstElement* element, GstPad* pad, gpointer data)
         {
             str = gst_caps_get_structure(caps, 0);
 
-            gst_structure_get_int(str, "height", &m_bestSize.height);
-            gst_structure_get_int(str, "width", &m_bestSize.width);
+            gst_structure_get_int(str, "height", &m_best_size.height);
+            gst_structure_get_int(str, "width", &m_best_size.width);
 
             update_video_size();
 
-            printf("height: %d, width: %d\n", m_bestSize.height, m_bestSize.width);
+            printf("height: %d, width: %d\n", m_best_size.height, m_best_size.width);
             gst_caps_unref(caps);
         }
         sinkpad = gst_element_get_static_pad(converter->video, "sink");
@@ -201,10 +187,10 @@ void VideoHandler::on_pad_added(GstElement* element, GstPad* pad, gpointer data)
 
 void VideoHandler::create_ui()
 {
-    m_videoWindow.set_size_request(m_size.width, m_size.height);
-    m_videoWindow.signal_realize().connect(sigc::mem_fun(this, &VideoHandler::realize_cb));
+    m_video_window.set_size_request(m_size.width, m_size.height);
+    m_video_window.signal_realize().connect(sigc::mem_fun(this, &VideoHandler::realize_cb));
 
-    add(m_videoWindow);
+    add(m_video_window);
 }
 
 void VideoHandler::set_volume(double _volume)
@@ -214,12 +200,39 @@ void VideoHandler::set_volume(double _volume)
 
 void VideoHandler::set_size(int width, int height)
 {
-    m_videoWindow.set_size_request(width, height);
+    m_video_window.set_size_request(width, height);
+}
+
+void VideoHandler::play()
+{
+    if(m_video_ended)
+    {
+        if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME,
+                             GST_SEEK_FLAG_FLUSH, GST_SEEK_TYPE_SET, 0,
+                             GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
+        {
+            printf("Error while restarting video\n");
+        }
+        else
+        {
+            m_video_ended = false;
+        }
+    }
+    else
+    {
+        gst_element_set_state (m_pipeline, GST_STATE_PLAYING);
+        printf("Running...\n");
+    }
+}
+
+sigc::signal<void> VideoHandler::signal_video_ended()
+{
+    return m_signal_video_ended;
 }
 
 void VideoHandler::update_video_size()
 {
-    auto neededFactor = (m_bestSize.width / static_cast<float>(m_bestSize.height));
+    auto neededFactor = (m_best_size.width / static_cast<float>(m_best_size.height));
     auto currentFactor = (m_size.width / static_cast<float>(m_size.height));
 
     if(currentFactor > neededFactor)

@@ -53,7 +53,7 @@ MainLayout::MainLayout()
     region6->add_media(std::make_shared<WebView>("file:///home/stivius/build-XiboLinux-Desktop_Qt_5_9_2_GCC_64bit-Debug/test.htm"));
 
     auto region7 = new MyRegion{this, Point{250, 0}, Size{300, 300}, 2, 5};
-    region7->add_media(std::make_shared<Video>("", false, false));
+    region7->add_media(std::make_shared<Video>("/home/stivius/video.webm", true, false));
 
     m_mainContainer.show();
     //m_background.show();

@@ -21,6 +21,8 @@ public:
 
     void set_volume(double volume);
     void set_size(int width, int height);
+    void play();
+    sigc::signal<void> signal_video_ended();
 
 private:
     void create_ui();
@@ -34,17 +36,20 @@ private:
     void on_pad_added(GstElement* element, GstPad* pad, gpointer data);
 
 private:
-    Gtk::DrawingArea m_videoWindow;
-    guintptr m_windowHandle;
-    Size m_size, m_bestSize;
+    Gtk::DrawingArea m_video_window;
+    guintptr m_window_handle;
+    Size m_size, m_best_size;
     GstElement* m_pipeline;
     GstElement* m_source;
     GstElement* m_decodebin;
     GstElement* m_volume;
-    GstElement* m_videoConverter;
-    GstElement* m_videoSink;
-    GstElement* m_audioConverter;
-    GstElement* m_audioSink;
+    GstElement* m_video_converter;
+    GstElement* m_video_sink;
+    GstElement* m_audio_converter;
+    GstElement* m_audio_sink;
     Converter m_converter;
+
+    sigc::signal<void> m_signal_video_ended;
+    bool m_video_ended = false;
 
 };

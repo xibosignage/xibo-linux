@@ -18,8 +18,17 @@ void Video::init(MyRegion* region, const Point& pos, const Size& size, int zinde
     Media::init(region, pos, size, zindex);
 
     m_handler = new VideoHandler{m_filename, m_size};
+
+    m_handler->signal_video_ended().connect([=](){
+        if(m_looped)
+        {
+            m_handler->play();
+        }
+    });
+
     m_handler->set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
     m_handler->show_all();
+    m_handler->play();
 
     region->add(*m_handler);
 }
