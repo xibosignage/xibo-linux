@@ -4,20 +4,19 @@
 #include "XiboObject.hpp"
 #include "Region.hpp"
 
-#include <wx/string.h>
 #include <vector>
 #include <memory>
 
 class Layout : public XiboObject
 {
 public:
-    void InitOptions(std::map<wxString, wxString>) override { }
+    void InitOptions(std::map<std::string, std::string>) override { }
 
     int schemaVersion;
     int width;
     int height;
-    wxString backgroundImage;
-    wxString backgroundColor;
+    std::string backgroundImage;
+    std::string backgroundColor;
 
     std::vector<std::shared_ptr<Region>> regions;
 };

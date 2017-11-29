@@ -4,37 +4,36 @@
 
 #include <iostream>
 
-LayoutParser::LayoutParser(wxXmlNode* _node) : Parser(_node)
+LayoutParser::LayoutParser(const boost::property_tree::ptree& _node) : Parser(_node)
 {
 
 }
 
 Layout* LayoutParser::Parse()
 {
-    auto layout = GetAttributes(m_node);
+    auto layout = GetAttributes(m_tree.get_child("<xmlattr>"));
 
-    auto currentNode = m_node->GetChildren();
-    while(currentNode)
+    for(auto&& pair : m_tree)
     {
-        if(currentNode->GetName() == "region")
+        if(pair.first == "region")
         {
-            auto region = std::shared_ptr<Region>(utilities::GetParser<RegionParser>(currentNode)->Parse());
+            auto region = std::shared_ptr<Region>(utilities::GetParser<RegionParser>(pair.second)->Parse());
             layout->regions.push_back(region);
         }
-        currentNode = currentNode->GetNext();
     }
 
     return layout;
 }
 
-Layout* LayoutParser::GetAttributes(wxXmlNode* node)
+Layout* LayoutParser::GetAttributes(const boost::property_tree::ptree& tree)
 {
     std::cout << "parse layout" << std::endl;
     Layout* layout = new Layout;
-    layout->schemaVersion = utilities::GetValue<int>(node->GetAttribute("schemaVersion")).value();
-    layout->width = utilities::GetValue<int>(node->GetAttribute("width")).value();
-    layout->height = utilities::GetValue<int>(node->GetAttribute("height")).value();
-    layout->backgroundImage = utilities::GetValue<wxString>(node->GetAttribute("background")).value();
-    layout->backgroundColor = utilities::GetValue<wxString>(node->GetAttribute("bgcolor")).value();
+    layout->schemaVersion = tree.get<int>("schemaVersion");
+    layout->width = tree.get<int>("width");
+    layout->height = tree.get<int>("height");
+    layout->backgroundImage = tree.get<std::string>("background");
+    layout->backgroundColor = tree.get<std::string>("bgcolor");
+
     return layout;
 }

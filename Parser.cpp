@@ -1,20 +1,17 @@
 #include "Parser.hpp"
 
-Parser::Parser(wxXmlNode* _node) : m_node(_node)
+Parser::Parser(const boost::property_tree::ptree& tree) : m_tree(tree)
 {
 
 }
 
-std::map<wxString, wxString> Parser::ParseOptions(wxXmlNode* currentNode)
+std::map<std::string, std::string> Parser::ParseOptions(const boost::property_tree::ptree& currentTree)
 {
-    std::map<wxString, wxString> map;
-    while(currentNode)
+    std::map<std::string, std::string> map;
+    for(auto&& pair : currentTree)
     {
-        if(currentNode->GetChildren())
-        {
-            map.insert(std::make_pair(currentNode->GetName(), currentNode->GetChildren()->GetContent()));
-        }
-        currentNode = currentNode->GetNext();
+        map.insert(std::make_pair(pair.first, pair.second.get<std::string>("")));
     }
+
     return map;
 }

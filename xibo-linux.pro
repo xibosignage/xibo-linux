@@ -5,13 +5,14 @@ CONFIG -= qt
 
 wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
 wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
+
 LIBS += $$wxLinkOptions
 QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS -std=gnu++17
 QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS -std=gnu++17
 
+INCLUDEPATH += ../boost_1_65_1
+
 SOURCES += main.cpp \
-    MainWindow.cpp \
-    PlayerApp.cpp \
     Parser.cpp \
     RegionParser.cpp \
     LayoutParser.cpp \
@@ -26,8 +27,6 @@ SOURCES += main.cpp \
     utilities.cpp
 
 HEADERS += \
-    MainWindow.hpp \
-    PlayerApp.hpp \
     Parser.hpp \
     RegionParser.hpp \
     LayoutParser.hpp \

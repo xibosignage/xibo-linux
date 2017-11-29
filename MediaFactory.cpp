@@ -4,7 +4,7 @@
 #include "Video.hpp"
 #include "Image.hpp"
 
-Media* MediaFactory::createMedia(const wxString& type)
+Media* MediaFactory::createMedia(const std::string& type)
 {
     if(type == "image")
     {

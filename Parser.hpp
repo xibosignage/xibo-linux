@@ -4,21 +4,22 @@
 #include <map>
 #include <memory>
 
-#include <wx/string.h>
-#include <wx/xml/xml.h>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 class XiboObject;
 
 class Parser
 {
 public:
-    Parser(wxXmlNode* _node);
-    virtual XiboObject* GetAttributes(wxXmlNode* node) = 0;
+    Parser(const boost::property_tree::ptree& tree);
+    virtual ~Parser() = default;
+    virtual XiboObject* GetAttributes(const boost::property_tree::ptree& tree) = 0;
     virtual XiboObject* Parse() = 0;
-    std::map<wxString, wxString> ParseOptions(wxXmlNode* currentNode);
+    std::map<std::string, std::string> ParseOptions(const boost::property_tree::ptree& currentTree);
 
 protected:
-    wxXmlNode* m_node;
+    boost::property_tree::ptree m_tree;
 
 };
 

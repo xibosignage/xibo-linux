@@ -10,7 +10,7 @@
 class Media : public XiboObject
 {
 public:
-    void InitOptions(std::map<wxString, wxString> options) override;
+    void InitOptions(std::map<std::string, std::string> options) override;
 
     Render render;
 
@@ -19,7 +19,7 @@ public:
 
     struct BaseOptions
     {
-        wxString uri;
+        std::string uri;
     } options;
 
 };

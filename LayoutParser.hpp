@@ -7,10 +7,10 @@
 class LayoutParser : public Parser
 {
 public:
-    LayoutParser(wxXmlNode* _node);
+    LayoutParser(const boost::property_tree::ptree& _node);
 
     Layout* Parse() override;
-    Layout* GetAttributes(wxXmlNode* node) override;
+    Layout* GetAttributes(const boost::property_tree::ptree& node) override;
 };
 
 #endif // LAYOUTPARSER_HPP

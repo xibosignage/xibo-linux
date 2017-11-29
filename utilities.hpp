@@ -7,27 +7,29 @@
 #include <memory>
 #include <optional>
 #include <iostream>
-#include <wx/xml/xml.h>
+
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace utilities
 {
-    template <typename Parser> std::shared_ptr<Parser> GetParser(wxXmlNode* node)
+    template <typename Parser> std::shared_ptr<Parser> GetParser(const boost::property_tree::ptree& tree)
     {
-        return std::make_shared<Parser>(node);
+        return std::make_shared<Parser>(tree);
     }
 
-    template <typename T> std::optional<T> GetValue(const wxString& optionName)
+    template <typename T> std::optional<T> GetValue(const std::string& optionName)
     {
-        if(!optionName.IsEmpty())
-            return std::stoi(optionName.ToStdString());
+        if(!optionName.empty())
+            return std::stoi(optionName);
         return {};
     }
 
-    template <> std::optional<wxString> GetValue(const wxString& optionName);
-    template <> std::optional<ScaleType> GetValue(const wxString& optionName);
-    template <> std::optional<Align> GetValue(const wxString& optionName);
-    template <> std::optional<Valign> GetValue(const wxString& optionName);
-    template <> std::optional<Render> GetValue(const wxString& optionName);
+    template <> std::optional<std::string> GetValue(const std::string& optionName);
+    template <> std::optional<ScaleType> GetValue(const std::string& optionName);
+    template <> std::optional<Align> GetValue(const std::string& optionName);
+    template <> std::optional<Valign> GetValue(const std::string& optionName);
+    template <> std::optional<Render> GetValue(const std::string& optionName);
 
 }
 

@@ -8,7 +8,7 @@ class Media;
 class MediaFactory
 {
 public:
-    Media* createMedia(const wxString& type);
+    Media* createMedia(const std::string& type);
 
 };
 

@@ -4,35 +4,33 @@
 
 #include <iostream>
 
-MediaParser::MediaParser(wxXmlNode* _node) : Parser(_node)
+MediaParser::MediaParser(const boost::property_tree::ptree& _node) : Parser(_node)
 {
 
 }
 
 Media* MediaParser::Parse()
 {
-    auto media = GetAttributes(m_node);
+    auto media = GetAttributes(m_tree.get_child("<xmlattr>"));
 
-    auto currentNode = m_node->GetChildren();
-    while(currentNode)
+    for(auto&& pair : m_tree)
     {
-        if(currentNode->GetName() == "options")
+        if(pair.first == "options")
         {
-            std::map<wxString, wxString> options = ParseOptions(currentNode->GetChildren());
+            std::map<std::string, std::string> options = ParseOptions(pair.second);
             media->InitOptions(options);
         }
-        currentNode = currentNode->GetNext();
     }
 
     return media;
 }
 
-Media* MediaParser::GetAttributes(wxXmlNode* node)
+Media* MediaParser::GetAttributes(const boost::property_tree::ptree& tree)
 {
     std::cout << "parse media" << std::endl;
-    auto media = MediaFactory().createMedia(node->GetAttribute("type"));
-    media->id = utilities::GetValue<int>(node->GetAttribute("id")).value();
-    media->duration = utilities::GetValue<int>(node->GetAttribute("duration")).value();
-    media->render = utilities::GetValue<Render>(node->GetAttribute("render")).value();
+    auto media = MediaFactory().createMedia(tree.get<std::string>("type"));
+    media->id = tree.get<int>("id");
+    media->duration = tree.get<int>("duration");
+    media->render = utilities::GetValue<Render>(tree.get<std::string>("render")).value();
     return media;
 }

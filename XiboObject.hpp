@@ -8,7 +8,7 @@ class XiboObject
 {
 public:
     XiboObject() = default;
-    virtual void InitOptions(std::map<wxString, wxString> options) = 0;
+    virtual void InitOptions(std::map<std::string, std::string> options) = 0;
 
 };
 

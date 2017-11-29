@@ -7,7 +7,7 @@
 class Image : public Media
 {
 public:
-    void InitOptions(std::map<wxString, wxString>) override;
+    void InitOptions(std::map<std::string, std::string>) override;
 
     struct Options : Media::BaseOptions
     {

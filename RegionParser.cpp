@@ -4,42 +4,42 @@
 
 #include <iostream>
 
-RegionParser::RegionParser(wxXmlNode* _node) : Parser(_node)
+RegionParser::RegionParser(const boost::property_tree::ptree& tree) : Parser(tree)
 {
 
 }
 
 Region* RegionParser::Parse()
 {
-    auto region = GetAttributes(m_node);
+    auto region = GetAttributes(m_tree.get_child("<xmlattr>"));
 
-    auto currentNode = m_node->GetChildren();
-    while(currentNode)
+    for(auto&& pair : m_tree)
     {
-        if(currentNode->GetName() == "media")
+        if(pair.first == "media")
         {
-            auto media = std::shared_ptr<Media>(utilities::GetParser<MediaParser>(currentNode)->Parse());
+            auto media = std::shared_ptr<Media>(utilities::GetParser<MediaParser>(pair.second)->Parse());
             region->medias.push_back(media);
         }
-        else if(currentNode->GetName() == "options")
+        else if(pair.first == "options")
         {
-            std::map<wxString, wxString> options = ParseOptions(currentNode->GetChildren());
+            std::map<std::string, std::string> options = ParseOptions(pair.second);
             region->InitOptions(options);
         }
-        currentNode = currentNode->GetNext();
     }
 
     return region;
 }
 
-Region* RegionParser::GetAttributes(wxXmlNode* node)
+Region* RegionParser::GetAttributes(const boost::property_tree::ptree& tree)
 {
     std::cout << "parse region" << std::endl;
     Region* region = new Region;
-    region->id = utilities::GetValue<int>(node->GetAttribute("id")).value();
-    region->width = utilities::GetValue<int>(node->GetAttribute("width")).value();
-    region->height = utilities::GetValue<int>(node->GetAttribute("height")).value();
-    region->top = utilities::GetValue<int>(node->GetAttribute("top")).value();
-    region->left = utilities::GetValue<int>(node->GetAttribute("left")).value();
+    region->id = tree.get<int>("id");
+    region->width = static_cast<int>(tree.get<float>("width"));
+    region->height = static_cast<int>(tree.get<float>("height"));
+    region->top = static_cast<int>(tree.get<float>("top"));
+    region->left = static_cast<int>(tree.get<float>("left"));
+    region->zindex = tree.get<int>("zindex");
+
     return region;
 }

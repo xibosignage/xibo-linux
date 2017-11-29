@@ -1,11 +1,11 @@
 #include "utilities.hpp"
 
-template <> std::optional<wxString> utilities::GetValue(const wxString& optionName)
+template <> std::optional<std::string> utilities::GetValue(const std::string& optionName)
 {
     return optionName;
 }
 
-template <> std::optional<ScaleType> utilities::GetValue(const wxString& optionName)
+template <> std::optional<ScaleType> utilities::GetValue(const std::string& optionName)
 {
     if(!optionName.empty())
     {
@@ -19,7 +19,7 @@ template <> std::optional<ScaleType> utilities::GetValue(const wxString& optionN
     return {};
 }
 
-template <> std::optional<Align> utilities::GetValue(const wxString& optionName)
+template <> std::optional<Align> utilities::GetValue(const std::string& optionName)
 {
     if(!optionName.empty())
     {
@@ -35,7 +35,7 @@ template <> std::optional<Align> utilities::GetValue(const wxString& optionName)
     return {};
 }
 
-template <> std::optional<Valign> utilities::GetValue(const wxString& optionName)
+template <> std::optional<Valign> utilities::GetValue(const std::string& optionName)
 {
     if(!optionName.empty())
     {
@@ -51,7 +51,7 @@ template <> std::optional<Valign> utilities::GetValue(const wxString& optionName
     return {};
 }
 
-template <> std::optional<Render> utilities::GetValue(const wxString& optionName)
+template <> std::optional<Render> utilities::GetValue(const std::string& optionName)
 {
     if(!optionName.empty())
     {

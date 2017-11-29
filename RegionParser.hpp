@@ -7,10 +7,10 @@
 class RegionParser : public Parser
 {
 public:
-    RegionParser(wxXmlNode* _node);
+    RegionParser(const boost::property_tree::ptree& tree);
 
     Region* Parse() override;
-    Region* GetAttributes(wxXmlNode* node) override;
+    Region* GetAttributes(const boost::property_tree::ptree& tree) override;
 };
 
 #endif // REGIONPARSER_HPP

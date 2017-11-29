@@ -7,10 +7,10 @@
 class MediaParser : public Parser
 {
 public:
-    MediaParser(wxXmlNode* _node);
+    MediaParser(const boost::property_tree::ptree& _node);
 
     Media* Parse() override;
-    Media* GetAttributes(wxXmlNode* node) override;
+    Media* GetAttributes(const boost::property_tree::ptree& node) override;
 };
 
 #endif // MEDIAPARSER_HPP

@@ -5,7 +5,7 @@
 
 struct Video : Media
 {
-    void InitOptions(std::map<wxString, wxString> options) override;
+    void InitOptions(std::map<std::string, std::string> options) override;
 
     struct Options : Media::BaseOptions
     {
