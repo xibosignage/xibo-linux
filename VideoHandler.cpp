@@ -96,7 +96,7 @@ GstBusSyncReply VideoHandler::bus_sync_handler(GstBus*, GstMessage* message, gpo
     {
         auto sink = reinterpret_cast<GstMessage*>(message)->src;
         auto overlay = reinterpret_cast<GstVideoOverlay*>(sink);
-        gst_video_overlay_set_window_handle (overlay, m_window_handle);
+        gst_video_overlay_set_window_handle(overlay, m_window_handle);
     }
     else
     {

@@ -11,7 +11,7 @@ thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstrea
 thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 
 LIBS += $$thirdPartyLinkOptions -lpthread
-QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O3 -flto
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2
 
 SOURCES += main.cpp \
     MainLayout.cpp \

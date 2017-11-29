@@ -5,6 +5,9 @@
 #include <gtkmm/scrolledwindow.h>
 #include <webkit/webkit.h>
 
+#include <spdlog/spdlog.h>
+#include "constants.hpp"
+
 class WebView : public Media
 {
 public:
