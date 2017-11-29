@@ -11,26 +11,22 @@ MediaParser::MediaParser(const boost::property_tree::ptree& _node) : Parser(_nod
 
 Media* MediaParser::Parse()
 {
-    auto media = GetAttributes(m_tree.get_child("<xmlattr>"));
-
-    for(auto&& pair : m_tree)
-    {
-        if(pair.first == "options")
-        {
-            std::map<std::string, std::string> options = ParseOptions(pair.second);
-            media->InitOptions(options);
-        }
-    }
+    auto media = InitObject();
 
     return media;
 }
 
-Media* MediaParser::GetAttributes(const boost::property_tree::ptree& tree)
+Media* MediaParser::InitObject()
 {
     std::cout << "parse media" << std::endl;
-    auto media = MediaFactory().createMedia(tree.get<std::string>("type"));
-    media->id = tree.get<int>("id");
-    media->duration = tree.get<int>("duration");
-    media->render = utilities::GetValue<Render>(tree.get<std::string>("render")).value();
+
+    auto attrs = m_tree.get_child("<xmlattr>");
+
+    auto media = MediaFactory().createMedia(attrs.get<std::string>("type"));
+    media->id = attrs.get<int>("id");
+    media->duration = attrs.get<int>("duration");
+    media->render = utilities::GetValue<Render>(attrs.get<std::string>("render")).value();
+    media->uri = m_tree.get_child("options").get<std::string>("uri");
+
     return media;
 }

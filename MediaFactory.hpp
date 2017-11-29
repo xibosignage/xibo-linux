@@ -1,7 +1,7 @@
 #ifndef MEDIAFACTORY_HPP
 #define MEDIAFACTORY_HPP
 
-#include <wx/string.h>
+#include <string>
 
 class Media;
 

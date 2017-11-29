@@ -10,8 +10,6 @@
 class Layout : public XiboObject
 {
 public:
-    void InitOptions(std::map<std::string, std::string>) override { }
-
     int schemaVersion;
     int width;
     int height;

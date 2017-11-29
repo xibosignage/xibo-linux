@@ -5,13 +5,10 @@
 
 struct Video : Media
 {
-    void InitOptions(std::map<std::string, std::string> options) override;
+    Video() = default;
 
-    struct Options : Media::BaseOptions
-    {
-        bool loop;
-        bool mute;
-    } options;
+    bool loop;
+    bool mute;
 };
 
 #endif // VIDEO_HPP

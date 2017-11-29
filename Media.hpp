@@ -5,22 +5,17 @@
 #include "constants.hpp"
 
 #include <map>
-#include <wx/string.h>
 
 class Media : public XiboObject
 {
 public:
-    void InitOptions(std::map<std::string, std::string> options) override;
+    Media() = default;
 
     Render render;
 
     int id;
     int duration;
-
-    struct BaseOptions
-    {
-        std::string uri;
-    } options;
+    std::string uri;
 
 };
 

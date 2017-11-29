@@ -7,14 +7,12 @@
 class Image : public Media
 {
 public:
-    void InitOptions(std::map<std::string, std::string>) override;
+    Image() = default;
 
-    struct Options : Media::BaseOptions
-    {
-        ScaleType scaleType;
-        Align align;
-        Valign valign;
-    } options;
+    ScaleType scaleType;
+    Align align;
+    Valign valign;
+
 };
 
 

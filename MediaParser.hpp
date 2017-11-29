@@ -10,7 +10,7 @@ public:
     MediaParser(const boost::property_tree::ptree& _node);
 
     Media* Parse() override;
-    Media* GetAttributes(const boost::property_tree::ptree& node) override;
+    Media* InitObject() override;
 };
 
 #endif // MEDIAPARSER_HPP

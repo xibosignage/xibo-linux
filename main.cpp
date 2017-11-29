@@ -21,12 +21,12 @@ int main()
     std::cout << layout->schemaVersion << " " << layout->width << " " << layout->height << " " << layout->backgroundColor << " " << layout->backgroundImage << std::endl;
     for(auto region : layout->regions)
     {
-        std::cout << "region " << region->id << " " << region->width << " " << region->height << " " << region->top << " " << region->left << " " << region->zindex << " " << region->options.loop << std::endl;
+        std::cout << "region " << region->id << " " << region->width << " " << region->height << " " << region->top << " " << region->left << " " << region->zindex << " " << region->loop << std::endl;
         for(auto media : region->medias)
         {
             if(auto image = dynamic_cast<Image*>(media.get()))
-                std::cout << (int)image->options.align << " " << (int)image->options.scaleType << " " << (int)image->options.valign << " ";
-            std::cout << (int)media->render << " " << media->id << " " << media->duration << " " << media->options.uri << std::endl;
+                std::cout << (int)image->align << " " << (int)image->scaleType << " " << (int)image->valign << " ";
+            std::cout << (int)media->render << " " << media->id << " " << media->duration << " " << media->uri << std::endl;
         }
     }
 

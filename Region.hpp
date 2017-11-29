@@ -12,8 +12,6 @@
 
 struct Region : XiboObject
 {
-    void InitOptions(std::map<std::string, std::string> options) override;
-
     int id;
     int width;
     int height;
@@ -21,11 +19,8 @@ struct Region : XiboObject
     int left;
     int zindex;
 
-    struct Options
-    {
-        bool loop;
-        Transition transition;
-    } options;
+    bool loop;
+    Transition transition;
 
     std::vector<std::shared_ptr<Media>> medias;
 };

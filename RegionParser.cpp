@@ -11,7 +11,7 @@ RegionParser::RegionParser(const boost::property_tree::ptree& tree) : Parser(tre
 
 Region* RegionParser::Parse()
 {
-    auto region = GetAttributes(m_tree.get_child("<xmlattr>"));
+    auto region = InitObject();
 
     for(auto&& pair : m_tree)
     {
@@ -20,26 +20,26 @@ Region* RegionParser::Parse()
             auto media = std::shared_ptr<Media>(utilities::GetParser<MediaParser>(pair.second)->Parse());
             region->medias.push_back(media);
         }
-        else if(pair.first == "options")
-        {
-            std::map<std::string, std::string> options = ParseOptions(pair.second);
-            region->InitOptions(options);
-        }
     }
 
     return region;
 }
 
-Region* RegionParser::GetAttributes(const boost::property_tree::ptree& tree)
+Region* RegionParser::InitObject()
 {
     std::cout << "parse region" << std::endl;
+
+    auto attrs = m_tree.get_child("<xmlattr>");
+
     Region* region = new Region;
-    region->id = tree.get<int>("id");
-    region->width = static_cast<int>(tree.get<float>("width"));
-    region->height = static_cast<int>(tree.get<float>("height"));
-    region->top = static_cast<int>(tree.get<float>("top"));
-    region->left = static_cast<int>(tree.get<float>("left"));
-    region->zindex = tree.get<int>("zindex");
+    region->id = attrs.get<int>("id");
+    region->width = static_cast<int>(attrs.get<float>("width"));
+    region->height = static_cast<int>(attrs.get<float>("height"));
+    region->top = static_cast<int>(attrs.get<float>("top"));
+    region->left = static_cast<int>(attrs.get<float>("left"));
+    region->zindex = attrs.get<int>("zindex");
+    region->loop = m_tree.get_child("options").get<bool>("loop", false);
+    // transition add
 
     return region;
 }

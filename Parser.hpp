@@ -14,9 +14,9 @@ class Parser
 public:
     Parser(const boost::property_tree::ptree& tree);
     virtual ~Parser() = default;
-    virtual XiboObject* GetAttributes(const boost::property_tree::ptree& tree) = 0;
+
+    virtual XiboObject* InitObject() = 0;
     virtual XiboObject* Parse() = 0;
-    std::map<std::string, std::string> ParseOptions(const boost::property_tree::ptree& currentTree);
 
 protected:
     boost::property_tree::ptree m_tree;

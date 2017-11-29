@@ -11,7 +11,7 @@ LayoutParser::LayoutParser(const boost::property_tree::ptree& _node) : Parser(_n
 
 Layout* LayoutParser::Parse()
 {
-    auto layout = GetAttributes(m_tree.get_child("<xmlattr>"));
+    auto layout = InitObject();
 
     for(auto&& pair : m_tree)
     {
@@ -25,15 +25,18 @@ Layout* LayoutParser::Parse()
     return layout;
 }
 
-Layout* LayoutParser::GetAttributes(const boost::property_tree::ptree& tree)
+Layout* LayoutParser::InitObject()
 {
     std::cout << "parse layout" << std::endl;
+
+    auto attrs = m_tree.get_child("<xmlattr>");
+
     Layout* layout = new Layout;
-    layout->schemaVersion = tree.get<int>("schemaVersion");
-    layout->width = tree.get<int>("width");
-    layout->height = tree.get<int>("height");
-    layout->backgroundImage = tree.get<std::string>("background");
-    layout->backgroundColor = tree.get<std::string>("bgcolor");
+    layout->schemaVersion = attrs.get<int>("schemaVersion");
+    layout->width = attrs.get<int>("width");
+    layout->height = attrs.get<int>("height");
+    layout->backgroundImage = attrs.get<std::string>("background");
+    layout->backgroundColor = attrs.get<std::string>("bgcolor");
 
     return layout;
 }

@@ -10,7 +10,7 @@ public:
     LayoutParser(const boost::property_tree::ptree& _node);
 
     Layout* Parse() override;
-    Layout* GetAttributes(const boost::property_tree::ptree& node) override;
+    Layout* InitObject() override;
 };
 
 #endif // LAYOUTPARSER_HPP

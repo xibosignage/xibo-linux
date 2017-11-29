@@ -10,7 +10,8 @@ public:
     RegionParser(const boost::property_tree::ptree& tree);
 
     Region* Parse() override;
-    Region* GetAttributes(const boost::property_tree::ptree& tree) override;
+    Region* InitObject() override;
+
 };
 
 #endif // REGIONPARSER_HPP
