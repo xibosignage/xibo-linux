@@ -2,12 +2,11 @@
 #define IMAGE_HPP
 
 #include "Media.hpp"
-#include "utilities.hpp"
 
 class Image : public Media
 {
 public:
-    Image() = default;
+    Image(int id, int duration, Render render, const std::string& uri, ScaleType scaleType, Align align, Valign valign);
 
     ScaleType scaleType;
     Align align;

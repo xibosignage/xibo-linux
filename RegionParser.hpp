@@ -4,13 +4,13 @@
 #include "Parser.hpp"
 #include "Region.hpp"
 
-class RegionParser : public Parser
+class RegionParser : public Parser<Region>
 {
 public:
     RegionParser(const boost::property_tree::ptree& tree);
 
-    Region* Parse() override;
-    Region* InitObject() override;
+    std::shared_ptr<Region> Parse();
+    std::shared_ptr<Region> CreateObjectFromAttrs();
 
 };
 

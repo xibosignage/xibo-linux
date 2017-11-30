@@ -4,13 +4,13 @@
 #include "Parser.hpp"
 #include "Layout.hpp"
 
-class LayoutParser : public Parser
+class LayoutParser : public Parser<Layout>
 {
 public:
     LayoutParser(const boost::property_tree::ptree& _node);
 
-    Layout* Parse() override;
-    Layout* InitObject() override;
+    std::shared_ptr<Layout> Parse();
+    std::shared_ptr<Layout> CreateObjectFromAttrs();
 };
 
 #endif // LAYOUTPARSER_HPP

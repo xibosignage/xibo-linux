@@ -1,15 +1,21 @@
 #ifndef LAYOUT_HPP
 #define LAYOUT_HPP
 
-#include "XiboObject.hpp"
 #include "Region.hpp"
 
 #include <vector>
 #include <memory>
 
-class Layout : public XiboObject
+class Layout
 {
 public:
+    Layout();
+    Layout(int schemaVersion,
+           int width,
+           int height,
+           const std::string& backgroundImage,
+           const std::string& backgroundColor);
+
     int schemaVersion;
     int width;
     int height;

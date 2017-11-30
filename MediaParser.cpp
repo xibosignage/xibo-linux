@@ -1,32 +1,24 @@
 #include "MediaParser.hpp"
-#include "MediaFactory.hpp"
 #include "utilities.hpp"
 
-#include <iostream>
+#include "Image.hpp"
+#include "Video.hpp"
 
-MediaParser::MediaParser(const boost::property_tree::ptree& _node) : Parser(_node)
+template <>
+std::shared_ptr<Media> MediaParser<Image>::Create(const boost::property_tree::ptree& options)
 {
+    auto scaleType = utilities::GetValue<ScaleType>(options.get<std::string>("scaleType", "")).value_or(ScaleType::Center);
+    auto align = utilities::GetValue<Align>(options.get<std::string>("align", "")).value_or(Align::Center);
+    auto valign = utilities::GetValue<Valign>(options.get<std::string>("valign", "")).value_or(Valign::Middle);
 
+    return std::shared_ptr<Media>(new Image(m_id, m_duration, m_render, m_uri, scaleType, align, valign));
 }
 
-Media* MediaParser::Parse()
+template <>
+std::shared_ptr<Media> MediaParser<Video>::Create(const boost::property_tree::ptree& options)
 {
-    auto media = InitObject();
+    bool mute = options.get<bool>("mute", false);
+    bool loop = options.get<bool>("loop", false);
 
-    return media;
-}
-
-Media* MediaParser::InitObject()
-{
-    std::cout << "parse media" << std::endl;
-
-    auto attrs = m_tree.get_child("<xmlattr>");
-
-    auto media = MediaFactory().createMedia(attrs.get<std::string>("type"));
-    media->id = attrs.get<int>("id");
-    media->duration = attrs.get<int>("duration");
-    media->render = utilities::GetValue<Render>(attrs.get<std::string>("render")).value();
-    media->uri = m_tree.get_child("options").get<std::string>("uri");
-
-    return media;
+    return std::shared_ptr<Media>(new Video(m_id, m_duration, m_render, m_uri, mute, loop));
 }

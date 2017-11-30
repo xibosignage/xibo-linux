@@ -9,34 +9,34 @@ LayoutParser::LayoutParser(const boost::property_tree::ptree& _node) : Parser(_n
 
 }
 
-Layout* LayoutParser::Parse()
+std::shared_ptr<Layout> LayoutParser::Parse()
 {
-    auto layout = InitObject();
+    auto layout = CreateObjectFromAttrs();
 
     for(auto&& pair : m_tree)
     {
         if(pair.first == "region")
         {
-            auto region = std::shared_ptr<Region>(utilities::GetParser<RegionParser>(pair.second)->Parse());
+            auto region = utilities::GetParser<RegionParser>(pair.second)->Parse();
             layout->regions.push_back(region);
         }
     }
 
+
     return layout;
 }
 
-Layout* LayoutParser::InitObject()
+std::shared_ptr<Layout> LayoutParser::CreateObjectFromAttrs()
 {
     std::cout << "parse layout" << std::endl;
 
     auto attrs = m_tree.get_child("<xmlattr>");
 
-    Layout* layout = new Layout;
-    layout->schemaVersion = attrs.get<int>("schemaVersion");
-    layout->width = attrs.get<int>("width");
-    layout->height = attrs.get<int>("height");
-    layout->backgroundImage = attrs.get<std::string>("background");
-    layout->backgroundColor = attrs.get<std::string>("bgcolor");
+    int schemaVersion = attrs.get<int>("schemaVersion");
+    int width = attrs.get<int>("width");
+    int height = attrs.get<int>("height");
+    std::string backgroundImage = attrs.get<std::string>("background");
+    std::string backgroundColor = attrs.get<std::string>("bgcolor");
 
-    return layout;
+    return std::make_shared<Layout>(schemaVersion, width, height, backgroundImage, backgroundColor);
 }

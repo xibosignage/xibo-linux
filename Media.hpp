@@ -1,20 +1,19 @@
 #ifndef MEDIA_HPP
 #define MEDIA_HPP
 
-#include "XiboObject.hpp"
 #include "constants.hpp"
 
 #include <map>
 
-class Media : public XiboObject
+class Media
 {
 public:
-    Media() = default;
-
-    Render render;
+    Media(int id, int duration, Render render, const std::string& uri);
+    virtual ~Media() = default;
 
     int id;
     int duration;
+    Render render;
     std::string uri;
 
 };

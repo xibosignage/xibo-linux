@@ -17,7 +17,7 @@ int main()
 
 
     auto root = tree.get_child("layout");
-    auto layout = std::shared_ptr<Layout>(utilities::GetParser<LayoutParser>(root)->Parse());
+    auto layout = utilities::GetParser<LayoutParser>(root)->Parse();
     std::cout << layout->schemaVersion << " " << layout->width << " " << layout->height << " " << layout->backgroundColor << " " << layout->backgroundImage << std::endl;
     for(auto region : layout->regions)
     {
@@ -26,7 +26,7 @@ int main()
         {
             if(auto image = dynamic_cast<Image*>(media.get()))
                 std::cout << (int)image->align << " " << (int)image->scaleType << " " << (int)image->valign << " ";
-            std::cout << (int)media->render << " " << media->id << " " << media->duration << " " << media->uri << std::endl;
+            std::cout << "media: " << (int)media->render << " " << media->id << " " << media->duration << " " << media->uri << std::endl;
         }
     }
 

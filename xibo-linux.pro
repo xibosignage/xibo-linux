@@ -21,7 +21,6 @@ SOURCES += main.cpp \
     Media.cpp \
     Video.cpp \
     MediaParser.cpp \
-    MediaFactory.cpp \
     Transition.cpp \
     Image.cpp \
     utilities.cpp
@@ -34,9 +33,7 @@ HEADERS += \
     Region.hpp \
     Media.hpp \
     Video.hpp \
-    XiboObject.hpp \
     MediaParser.hpp \
-    MediaFactory.hpp \
     Transition.hpp \
     utilities.hpp \
     Image.hpp \

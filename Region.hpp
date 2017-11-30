@@ -1,7 +1,6 @@
 #ifndef REGION_HPP
 #define REGION_HPP
 
-#include "XiboObject.hpp"
 #include "Transition.hpp"
 #include "Media.hpp"
 
@@ -10,16 +9,19 @@
 #include <memory>
 #include <wx/string.h>
 
-struct Region : XiboObject
+class Region
 {
+public:
+    Region(int id, int width, int height, int top, int left, int zindex, bool loop);
+
     int id;
     int width;
     int height;
     int top;
     int left;
     int zindex;
-
     bool loop;
+
     Transition transition;
 
     std::vector<std::shared_ptr<Media>> medias;

@@ -5,10 +5,10 @@
 
 struct Video : Media
 {
-    Video() = default;
+    Video(int id, int duration, Render render, const std::string& uri, bool mute, bool loop);
 
-    bool loop;
     bool mute;
+    bool loop;
 };
 
 #endif // VIDEO_HPP

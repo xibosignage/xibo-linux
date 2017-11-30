@@ -7,16 +7,16 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-class XiboObject;
+#include <iostream>
 
+template <typename T>
 class Parser
 {
 public:
-    Parser(const boost::property_tree::ptree& tree);
-    virtual ~Parser() = default;
+    Parser(const boost::property_tree::ptree& tree) : m_tree(tree) { }
 
-    virtual XiboObject* InitObject() = 0;
-    virtual XiboObject* Parse() = 0;
+    std::shared_ptr<T> CreateObjectFromAttrs();
+    std::shared_ptr<T> Parse();
 
 protected:
     boost::property_tree::ptree m_tree;

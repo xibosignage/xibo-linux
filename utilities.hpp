@@ -2,14 +2,15 @@
 #define UTILITIES_HPP
 
 #include "Parser.hpp"
+#include "MediaParser.hpp"
+#include "Image.hpp"
+#include "Video.hpp"
 #include "constants.hpp"
+#include <any>
 
 #include <memory>
 #include <optional>
 #include <iostream>
-
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
 
 namespace utilities
 {

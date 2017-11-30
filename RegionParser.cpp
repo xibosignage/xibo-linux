@@ -9,15 +9,29 @@ RegionParser::RegionParser(const boost::property_tree::ptree& tree) : Parser(tre
 
 }
 
-Region* RegionParser::Parse()
+std::shared_ptr<Region> RegionParser::Parse()
 {
-    auto region = InitObject();
+    auto region = CreateObjectFromAttrs();
 
     for(auto&& pair : m_tree)
     {
         if(pair.first == "media")
         {
-            auto media = std::shared_ptr<Media>(utilities::GetParser<MediaParser>(pair.second)->Parse());
+            std::shared_ptr<Media> media;
+
+            auto type = pair.second.get_child("<xmlattr>").get<std::string>("type");
+            if(type == "image")
+            {
+                media = utilities::GetParser<MediaParser<Image>>(pair.second)->Parse();
+            }
+            else if(type == "video")
+            {
+                media = utilities::GetParser<MediaParser<Video>>(pair.second)->Parse();
+            }
+            else if(type == "audio")
+            {
+                media = utilities::GetParser<MediaParser<Image>>(pair.second)->Parse();
+            }
             region->medias.push_back(media);
         }
     }
@@ -25,21 +39,20 @@ Region* RegionParser::Parse()
     return region;
 }
 
-Region* RegionParser::InitObject()
+std::shared_ptr<Region> RegionParser::CreateObjectFromAttrs()
 {
     std::cout << "parse region" << std::endl;
 
     auto attrs = m_tree.get_child("<xmlattr>");
 
-    Region* region = new Region;
-    region->id = attrs.get<int>("id");
-    region->width = static_cast<int>(attrs.get<float>("width"));
-    region->height = static_cast<int>(attrs.get<float>("height"));
-    region->top = static_cast<int>(attrs.get<float>("top"));
-    region->left = static_cast<int>(attrs.get<float>("left"));
-    region->zindex = attrs.get<int>("zindex");
-    region->loop = m_tree.get_child("options").get<bool>("loop", false);
+    int id = attrs.get<int>("id");
+    int width = static_cast<int>(attrs.get<float>("width"));
+    int height = static_cast<int>(attrs.get<float>("height"));
+    int top = static_cast<int>(attrs.get<float>("top"));
+    int left = static_cast<int>(attrs.get<float>("left"));
+    int zindex = attrs.get<int>("zindex");
+    bool loop = m_tree.get_child("options").get<bool>("loop", false);
     // transition add
 
-    return region;
+    return std::make_shared<Region>(id, width, height, top, left, zindex, loop);
 }
