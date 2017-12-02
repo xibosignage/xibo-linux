@@ -9,20 +9,32 @@
 class Layout
 {
 public:
-    Layout();
-    Layout(int schemaVersion,
+    Layout(int schema_version,
            int width,
            int height,
-           const std::string& backgroundImage,
-           const std::string& backgroundColor);
+           const std::string& background_image,
+           const std::string& background_color);
 
-    int schemaVersion;
-    int width;
-    int height;
-    std::string backgroundImage;
-    std::string backgroundColor;
+    int schema_version() const;
+    int width() const;
+    int height() const;
+    const std::string& background_image() const;
+    const std::string& background_color() const;
 
-    std::vector<std::shared_ptr<Region>> regions;
+    void add_region(const std::shared_ptr<Region>& region);
+
+    // temp
+    std::vector<std::shared_ptr<Region>> regions() const { return m_regions; }
+
+private:
+    int m_schema_version;
+    int m_width;
+    int m_height;
+    std::string m_background_image;
+    std::string m_background_color;
+
+    std::vector<std::shared_ptr<Region>> m_regions;
+
 };
 
 #endif // LAYOUT_HPP

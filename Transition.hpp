@@ -1,28 +1,13 @@
 #ifndef TRANSITION_HPP
 #define TRANSITION_HPP
 
+#include <string>
+
 struct Transition
 {
-    enum Type
-    {
-        FadeIn,
-        FadeOut,
-        Fly
-    } type;
-
-    enum Direction
-    {
-        N,
-        NE,
-        E,
-        SE,
-        S,
-        SW,
-        W,
-        NW
-    } direction;
-
-    int duration;
+    std::string m_type;
+    std::string m_direction;
+    int m_duration;
 };
 
 

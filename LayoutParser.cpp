@@ -4,21 +4,16 @@
 
 #include <iostream>
 
-LayoutParser::LayoutParser(const boost::property_tree::ptree& _node) : Parser(_node)
+std::shared_ptr<Layout> LayoutParser::parse()
 {
-
-}
-
-std::shared_ptr<Layout> LayoutParser::Parse()
-{
-    auto layout = CreateObjectFromAttrs();
+    auto layout = create_from_attrs();
 
     for(auto&& pair : m_tree)
     {
         if(pair.first == "region")
         {
-            auto region = utilities::GetParser<RegionParser>(pair.second)->Parse();
-            layout->regions.push_back(region);
+            auto region = utilities::get_parser<RegionParser>(pair.second)->parse();
+            layout->add_region(region);
         }
     }
 
@@ -26,7 +21,7 @@ std::shared_ptr<Layout> LayoutParser::Parse()
     return layout;
 }
 
-std::shared_ptr<Layout> LayoutParser::CreateObjectFromAttrs()
+std::shared_ptr<Layout> LayoutParser::create_from_attrs()
 {
     std::cout << "parse layout" << std::endl;
 

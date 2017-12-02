@@ -7,10 +7,10 @@
 class LayoutParser : public Parser<Layout>
 {
 public:
-    LayoutParser(const boost::property_tree::ptree& _node);
+    LayoutParser(const boost::property_tree::ptree& tree) : Parser<Layout>(tree) { }
 
-    std::shared_ptr<Layout> Parse();
-    std::shared_ptr<Layout> CreateObjectFromAttrs();
+    std::shared_ptr<Layout> parse();
+    std::shared_ptr<Layout> create_from_attrs();
 };
 
 #endif // LAYOUTPARSER_HPP

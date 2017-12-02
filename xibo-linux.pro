@@ -13,7 +13,6 @@ QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS -std=gnu++17
 INCLUDEPATH += ../boost_1_65_1
 
 SOURCES += main.cpp \
-    Parser.cpp \
     RegionParser.cpp \
     LayoutParser.cpp \
     Layout.cpp \
@@ -22,8 +21,7 @@ SOURCES += main.cpp \
     Video.cpp \
     MediaParser.cpp \
     Transition.cpp \
-    Image.cpp \
-    utilities.cpp
+    Image.cpp
 
 HEADERS += \
     Parser.hpp \
@@ -36,5 +34,4 @@ HEADERS += \
     MediaParser.hpp \
     Transition.hpp \
     utilities.hpp \
-    Image.hpp \
-    constants.hpp
+    Image.hpp
