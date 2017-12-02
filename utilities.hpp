@@ -4,7 +4,6 @@
 #include "Parser.hpp"
 
 #include <memory>
-#include <optional>
 #include <iostream>
 
 namespace utilities

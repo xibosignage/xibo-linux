@@ -1,14 +1,14 @@
 TEMPLATE = app
-CONFIG += console
-CONFIG -= app_bundle c++11
+CONFIG += console c++14
+CONFIG -= app_bundle
 CONFIG -= qt
 
 wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
 wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
 
 LIBS += $$wxLinkOptions
-QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS -std=gnu++17
-QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS -std=gnu++17
+QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS
+QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
 
 INCLUDEPATH += ../boost_1_65_1
 
