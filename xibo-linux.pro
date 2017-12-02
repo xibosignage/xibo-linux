@@ -14,19 +14,18 @@ INCLUDEPATH += ../boost_1_65_1
 
 SOURCES += main.cpp \
     RegionParser.cpp \
-    LayoutParser.cpp \
     Layout.cpp \
     Region.cpp \
     Media.cpp \
     Video.cpp \
     MediaParser.cpp \
     Transition.cpp \
-    Image.cpp
+    Image.cpp \
+    MainParser.cpp
 
 HEADERS += \
     Parser.hpp \
     RegionParser.hpp \
-    LayoutParser.hpp \
     Layout.hpp \
     Region.hpp \
     Media.hpp \
@@ -34,4 +33,5 @@ HEADERS += \
     MediaParser.hpp \
     Transition.hpp \
     utilities.hpp \
-    Image.hpp
+    Image.hpp \
+    MainParser.hpp

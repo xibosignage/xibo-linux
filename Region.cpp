@@ -46,7 +46,7 @@ const Transition& Region::transition() const
     return m_transition;
 }
 
-void Region::addMedia(const std::shared_ptr<Media>& media)
+void Region::add_media(const std::shared_ptr<Media>& media)
 {
     m_medias.push_back(media);
 }

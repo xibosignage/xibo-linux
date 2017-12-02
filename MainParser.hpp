@@ -4,10 +4,10 @@
 #include "Parser.hpp"
 #include "Layout.hpp"
 
-class LayoutParser : public Parser<Layout>
+class MainParser : public Parser<Layout>
 {
 public:
-    LayoutParser(const boost::property_tree::ptree& tree) : Parser<Layout>(tree) { }
+    MainParser(const std::string& file_name);
 
     std::shared_ptr<Layout> parse();
     std::shared_ptr<Layout> create_from_attrs();

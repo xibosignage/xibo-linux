@@ -32,7 +32,7 @@ std::shared_ptr<Region> RegionParser::parse()
             {
                 media = utilities::get_parser<MediaParser<Image>>(pair.second)->parse();
             }
-            region->addMedia(media);
+            region->add_media(media);
         }
     }
 

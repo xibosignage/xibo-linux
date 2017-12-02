@@ -1,10 +1,21 @@
-#include "LayoutParser.hpp"
+#include "MainParser.hpp"
 #include "RegionParser.hpp"
 #include "utilities.hpp"
 
 #include <iostream>
 
-std::shared_ptr<Layout> LayoutParser::parse()
+MainParser::MainParser(const std::string& file_name) :
+    Parser<Layout>(boost::property_tree::ptree{})
+{
+    std::fstream file(file_name);
+
+    boost::property_tree::ptree tree;
+    boost::property_tree::read_xml(file, tree);
+
+    m_tree = tree.get_child("layout");
+}
+
+std::shared_ptr<Layout> MainParser::parse()
 {
     auto layout = create_from_attrs();
 
@@ -17,11 +28,10 @@ std::shared_ptr<Layout> LayoutParser::parse()
         }
     }
 
-
     return layout;
 }
 
-std::shared_ptr<Layout> LayoutParser::create_from_attrs()
+std::shared_ptr<Layout> MainParser::create_from_attrs()
 {
     std::cout << "parse layout" << std::endl;
 
