@@ -11,9 +11,10 @@ class Parser
 {
 public:
     Parser(const boost::property_tree::ptree& tree) : m_tree(tree) { }
+    virtual ~Parser() = default;
 
-    std::shared_ptr<T> create_from_attrs() { }
-    std::shared_ptr<T> parse() { }
+    virtual std::shared_ptr<T> parse() = 0;
+    virtual std::shared_ptr<T> create_from_attrs(const boost::property_tree::ptree& options) = 0;
 
 protected:
     boost::property_tree::ptree m_tree;

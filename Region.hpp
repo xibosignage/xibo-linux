@@ -24,7 +24,7 @@ public:
     void add_media(const std::shared_ptr<Media>& media);
 
     // temp
-    std::vector<std::shared_ptr<Media>> medias() const { return m_medias; }
+    const std::vector<std::shared_ptr<Media>>& medias() const { return m_medias; }
 
 private:
     int m_id;

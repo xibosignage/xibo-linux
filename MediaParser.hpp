@@ -4,7 +4,6 @@
 #include "Parser.hpp"
 #include "Media.hpp"
 #include "Image.hpp"
-#include "Video.hpp"
 
 #include <iostream>
 
@@ -69,9 +68,9 @@ template <typename T>
 class MediaParser : public Parser<T>
 {
 public:
-    MediaParser(const boost::property_tree::ptree& tree) : Parser<T>(tree) { }
+    using Parser<T>::Parser;
 
-    std::shared_ptr<Media> parse()
+    std::shared_ptr<T> parse() override
     {
         std::cout << "parse media" << std::endl;
 
@@ -83,12 +82,10 @@ public:
         m_render = ParserHelper::from_string<Media::Render>(attrs.template get<std::string>("render"));
         m_uri = options.template get<std::string>("uri");
 
-        return create(options);
-
+        return this->create_from_attrs(options);
     }
-    std::shared_ptr<Media> create(const boost::property_tree::ptree&);
 
-private:
+protected:
     int m_id;
     int m_duration;
     Media::Render m_render;

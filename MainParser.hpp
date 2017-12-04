@@ -9,8 +9,8 @@ class MainParser : public Parser<Layout>
 public:
     MainParser(const std::string& file_name);
 
-    std::shared_ptr<Layout> parse();
-    std::shared_ptr<Layout> create_from_attrs();
+    std::shared_ptr<Layout> parse() override;
+    std::shared_ptr<Layout> create_from_attrs(const boost::property_tree::ptree& attrs) override;
 };
 
 #endif // LAYOUTPARSER_HPP

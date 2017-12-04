@@ -1,5 +1,7 @@
 #include "RegionParser.hpp"
 #include "MediaParser.hpp"
+#include "ImageParser.hpp"
+#include "VideoParser.hpp"
 #include "utilities.hpp"
 
 #include <iostream>
@@ -11,27 +13,28 @@ RegionParser::RegionParser(const boost::property_tree::ptree& tree) : Parser(tre
 
 std::shared_ptr<Region> RegionParser::parse()
 {
-    auto region = create_from_attrs();
+    auto region = create_from_attrs(m_tree.get_child("<xmlattr>"));
 
     for(auto&& pair : m_tree)
     {
         if(pair.first == "media")
         {
             std::shared_ptr<Media> media;
-
             auto type = pair.second.get_child("<xmlattr>").get<std::string>("type");
+
             if(type == "image")
             {
-                media = utilities::get_parser<MediaParser<Image>>(pair.second)->parse();
+                media = utilities::get_parser<ImageParser>(pair.second)->parse();
             }
             else if(type == "video")
             {
-                media = utilities::get_parser<MediaParser<Video>>(pair.second)->parse();
+                media = utilities::get_parser<VideoParser>(pair.second)->parse();
             }
             else if(type == "audio")
             {
-                media = utilities::get_parser<MediaParser<Image>>(pair.second)->parse();
+                media = utilities::get_parser<ImageParser>(pair.second)->parse();
             }
+
             region->add_media(media);
         }
     }
@@ -39,11 +42,10 @@ std::shared_ptr<Region> RegionParser::parse()
     return region;
 }
 
-std::shared_ptr<Region> RegionParser::create_from_attrs()
+std::shared_ptr<Region> RegionParser::create_from_attrs(const boost::property_tree::ptree& attrs)
 {
     std::cout << "parse region" << std::endl;
 
-    auto attrs = m_tree.get_child("<xmlattr>");
     auto options = m_tree.get_child("options");
 
     int id = attrs.get<int>("id");

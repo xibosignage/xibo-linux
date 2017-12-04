@@ -14,7 +14,7 @@ int main()
     for(auto&& region : layout->regions())
     {
         std::cout << "region " << region->id() << " " << region->width() << " " << region->height() << " " << region->top() << " " << region->left() << " " << region->zindex() << " " << region->loop() << std::endl;
-        for(auto media : region->medias())
+        for(auto&& media : region->medias())
         {
             if(auto image = dynamic_cast<Image*>(media.get()))
                 std::cout << (int)image->align() << " " << (int)image->scale_type() << " " << (int)image->valign() << " ";

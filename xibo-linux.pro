@@ -18,10 +18,11 @@ SOURCES += main.cpp \
     Region.cpp \
     Media.cpp \
     Video.cpp \
-    MediaParser.cpp \
     Transition.cpp \
     Image.cpp \
-    MainParser.cpp
+    MainParser.cpp \
+    ImageParser.cpp \
+    VideoParser.cpp
 
 HEADERS += \
     Parser.hpp \
@@ -34,4 +35,6 @@ HEADERS += \
     Transition.hpp \
     utilities.hpp \
     Image.hpp \
-    MainParser.hpp
+    MainParser.hpp \
+    ImageParser.hpp \
+    VideoParser.hpp

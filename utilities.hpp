@@ -2,6 +2,8 @@
 #define UTILITIES_HPP
 
 #include "Parser.hpp"
+#include "ImageParser.hpp"
+#include "VideoParser.hpp"
 
 #include <memory>
 #include <iostream>
@@ -12,7 +14,6 @@ namespace utilities
     {
         return std::make_shared<Parser>(tree);
     }
-
 }
 
 #endif // UTILITIES_HPP

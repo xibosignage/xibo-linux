@@ -24,7 +24,7 @@ public:
     void add_region(const std::shared_ptr<Region>& region);
 
     // temp
-    std::vector<std::shared_ptr<Region>> regions() const { return m_regions; }
+    const std::vector<std::shared_ptr<Region>>& regions() const { return m_regions; }
 
 private:
     int m_schema_version;

@@ -17,7 +17,7 @@ MainParser::MainParser(const std::string& file_name) :
 
 std::shared_ptr<Layout> MainParser::parse()
 {
-    auto layout = create_from_attrs();
+    auto layout = create_from_attrs(m_tree.get_child("<xmlattr>"));
 
     for(auto&& pair : m_tree)
     {
@@ -31,11 +31,9 @@ std::shared_ptr<Layout> MainParser::parse()
     return layout;
 }
 
-std::shared_ptr<Layout> MainParser::create_from_attrs()
+std::shared_ptr<Layout> MainParser::create_from_attrs(const boost::property_tree::ptree& attrs)
 {
     std::cout << "parse layout" << std::endl;
-
-    auto attrs = m_tree.get_child("<xmlattr>");
 
     int schemaVersion = attrs.get<int>("schemaVersion");
     int width = attrs.get<int>("width");
