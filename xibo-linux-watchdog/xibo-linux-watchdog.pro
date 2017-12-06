@@ -3,11 +3,15 @@ CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
-wxCXXFLAGS = $$system(wx-config --cxxflags --unicode=yes)
-wxLinkOptions = $$system(wx-config --libs all --unicode=yes)
-LIBS += $$wxLinkOptions
-QMAKE_CXXFLAGS_RELEASE += $$wxCXXFLAGS
-QMAKE_CXXFLAGS_DEBUG += $$wxCXXFLAGS
+#QMAKE_CXXFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+#QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+#QMAKE_LFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
+
+thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0)
+thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0)
+
+LIBS += $$thirdPartyLinkOptions
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS
 
 SOURCES += main.cpp \
     MainWindow.cpp \

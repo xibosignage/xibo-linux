@@ -1,31 +1,27 @@
 #ifndef XIBOWATCHGODWINDOW_HPP
 #define XIBOWATCHGODWINDOW_HPP
 
-#include <wx/frame.h>
-#include <wx/timer.h>
-
+#include <gtkmm/window.h>
 #include <memory>
 #include <signal.h>
 
-class wxButton;
-class wxTextCtrl;
 class PlayerProcessHandler;
 class SystemTrayIcon;
 
-class MainWindow : public wxFrame
+class MainWindow : public Gtk::Window
 {
 public:
     MainWindow();
 
-    void OnPlayerStarted(wxCommandEvent& event);
-    void OnPlayerStartedError(wxCommandEvent& event);
-    void OnPlayerClosed(wxCommandEvent& event);
+//    void OnPlayerStarted(wxCommandEvent& event);
+//    void OnPlayerStartedError(wxCommandEvent& event);
+//    void OnPlayerClosed(wxCommandEvent& event);
 
 private:
-    void OnBtnPlayerStart(wxCommandEvent& event);
-    void OnBtnPlayerTerminated(wxCommandEvent& event);
-    void OnBtnPlayerKilled(wxCommandEvent& event);
-    void OnRestartTimerFinished(wxTimerEvent& event);
+//    void OnBtnPlayerStart(wxCommandEvent& event);
+//    void OnBtnPlayerTerminated(wxCommandEvent& event);
+//    void OnBtnPlayerKilled(wxCommandEvent& event);
+//    void OnRestartTimerFinished(wxTimerEvent& event);
 
     void LogMessage(const wxString& logMessage);
 
