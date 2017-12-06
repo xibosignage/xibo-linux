@@ -16,7 +16,7 @@ MainLayout::MainLayout(int schema_version,
     m_background_image(background_image),
     m_background_color(background_color)
 {
-    set_default_size(640, 480);
+    set_default_size(width, height);
     // set_decorated(false);
     // fullscreen();
     // set_keep_above();
@@ -34,7 +34,7 @@ MainLayout::MainLayout(int schema_version,
 void MainLayout::add_region(const std::shared_ptr<Region>& region)
 {
     auto&& point = region->position();
-    m_mainContainer.put(*region, point.top, point.left);
+    m_mainContainer.put(*region, point.left, point.top);
     m_regions.push_back(region);
 }
 

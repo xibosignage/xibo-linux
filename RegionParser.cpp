@@ -55,5 +55,5 @@ std::shared_ptr<Region> RegionParser::create_from_attrs(const boost::property_tr
     auto direction = options.get<std::string>("transitionDirection", std::string{});
     int duration = options.get<int>("transitionDuration", 0);
 
-    return std::make_shared<Region>(id, Size{width, height}, Point{top, left}, zindex, loop, Transition{type, direction, duration});
+    return std::make_shared<Region>(id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration});
 }
