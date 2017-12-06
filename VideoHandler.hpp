@@ -1,13 +1,11 @@
 #pragma once
 
-// remove
-#include "Media.hpp"
-
 #include <gst/gst.h>
 #include <gtkmm/bin.h>
 #include <gtkmm/drawingarea.h>
+#include <spdlog/spdlog.h>
 
-#include "spdlog/spdlog.h"
+#include "constants.hpp"
 
 struct Converter
 {

@@ -1,24 +1,13 @@
 #include "Video.hpp"
-#include "Region.hpp"
 #include "VideoHandler.hpp"
 
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
 
-Video::Video(const std::string& filename, bool looped, bool muted) :
-    m_filename(filename),
-    m_looped(looped),
-    m_muted(muted)
+Video::Video(int id, int duration, const std::string& uri, bool muted, bool looped) :
+    Media(id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
-
-}
-
-void Video::init(MyRegion* region, const Point& pos, const Size& size, int zindex)
-{
-    Media::init(region, pos, size, zindex);
-
-    m_handler = new VideoHandler{m_filename, m_size};
-
+    m_handler = new VideoHandler{m_uri, Size{}};
     m_handler->signal_video_ended().connect([=](){
         if(m_looped)
         {
@@ -29,8 +18,6 @@ void Video::init(MyRegion* region, const Point& pos, const Size& size, int zinde
     m_handler->set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
     m_handler->show_all();
     m_handler->play();
-
-    region->add(*m_handler);
 }
 
 void Video::hide()
@@ -43,4 +30,24 @@ void Video::show()
 {
     m_handler->show();
     Media::show();
+}
+
+bool Video::muted() const
+{
+    return m_muted;
+}
+
+bool Video::looped() const
+{
+    return m_looped;
+}
+
+void Video::set_size(const Size& size)
+{
+    m_handler->set_size(size.width, size.height);
+}
+
+Gtk::Widget& Video::handler()
+{
+    return *m_handler;
 }

@@ -1,22 +1,21 @@
 #include "Region.hpp"
-#include "MainLayout.hpp"
 
-#include <iostream>
 #include <cassert>
 #include <glibmm.h>
 
-MyRegion::MyRegion(MainLayout* layout,
-               const Point& pos,
-               const Size& size,
-               int duration,
-               int zindex) :
-    m_pos(pos),
+Region::Region(int id,
+                   const Size& size,
+                   const Point& pos,
+                   int zindex,
+                   bool looped,
+                   const Transition& transition) :
+    m_id(id),
     m_size(size),
-    m_duration(duration),
-    m_zindex(zindex)
+    m_pos(pos),
+    m_zindex(zindex),
+    m_looped(looped),
+    m_transition(transition)
 {
-    layout->add_to_container(this, pos);
-
 //    Glib::signal_timeout().connect([=](){
 //        if(m_medias.size() > 1)
 //        {
@@ -30,34 +29,43 @@ MyRegion::MyRegion(MainLayout* layout,
 //    }, m_duration * 1000);
 }
 
-void MyRegion::add_media(const std::shared_ptr<Media>& media)
+// fix it
+// receive parsed object, remove set_size
+void Region::add_media(const std::shared_ptr<Media>& media)
 {
     assert(media);
 
-    media->init(this, m_pos, m_size, m_zindex);
+    media->set_size(m_size);
+    put(media->handler(), 0, 0);
     m_medias.push_back(media);
 }
 
-void MyRegion::add_media(std::initializer_list<std::shared_ptr<Media>> medias)
+int Region::id() const
 {
-    assert(medias.size() > 0);
-
-    for(auto&& media : medias)
-    {
-        add_media(media);
-        media->hide();
-    }
-
-    m_medias[m_currentIndex]->show();
-
+    return m_id;
 }
 
-Point MyRegion::position() const
+const Size& Region::size() const
+{
+    return m_size;
+}
+
+const Point& Region::position() const
 {
     return m_pos;
 }
 
-Size MyRegion::size() const
+int Region::zindex() const
 {
-    return m_size;
+    return m_zindex;
+}
+
+bool Region::looped() const
+{
+    return m_looped;
+}
+
+const Transition& Region::transition() const
+{
+    return m_transition;
 }

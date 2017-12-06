@@ -1,20 +1,40 @@
 #include "Image.hpp"
-#include "Region.hpp"
+#include "constants.hpp"
 
-Image::Image(const std::string& filename) :
-    m_filename(filename)
+#include <spdlog/spdlog.h>
+
+Image::Image(int id, int duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
+    Media(id, duration, Render::Native, uri), m_scale_type(scale_type), m_align(align), m_valign(valign)
 {
-}
-
-void Image::init(MyRegion* region, const Point& pos, const Size& size, int zindex)
-{
-    Media::init(region, pos, size, zindex);
-
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_filename, size.width, size.height);
+    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri);
     m_handler.set(pixbuf);
     m_handler.show();
+}
 
-    region->add(m_handler);
+Image::ScaleType Image::scale_type() const
+{
+    return m_scale_type;
+}
+
+Image::Align Image::align() const
+{
+    return m_align;
+}
+
+Image::Valign Image::valign() const
+{
+    return m_valign;
+}
+
+void Image::set_size(const Size& size)
+{
+    auto pixbuf = m_handler.get_pixbuf()->scale_simple(size.width, size.height, Gdk::InterpType::INTERP_BILINEAR);
+    m_handler.set(pixbuf);
+}
+
+Gtk::Widget& Image::handler()
+{
+    return m_handler;
 }
 
 void Image::hide()
@@ -25,9 +45,4 @@ void Image::hide()
 void Image::show()
 {
     m_handler.show();
-}
-
-std::string Image::get_filename() const
-{
-    return m_filename;
 }

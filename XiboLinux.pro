@@ -13,22 +13,37 @@ thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstre
 LIBS += $$thirdPartyLinkOptions -lpthread
 QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2
 
+INCLUDEPATH += ../boost_1_65_1
+
 SOURCES += main.cpp \
     MainLayout.cpp \
-    Region.cpp \
-    Media.cpp \
-    Image.cpp \
-    Video.cpp \
     WebView.cpp \
-    VideoHandler.cpp
+    VideoHandler.cpp \
+    RegionParser.cpp \
+    Media.cpp \
+    Video.cpp \
+    Transition.cpp \
+    Image.cpp \
+    MainParser.cpp \
+    ImageParser.cpp \
+    VideoParser.cpp \
+    Region.cpp
 
 HEADERS += \
     MainLayout.hpp \
-    Region.hpp \
     Media.hpp \
     Image.hpp \
     Video.hpp \
     WebView.hpp \
     VideoHandler.hpp \
     BindWrapper.hpp \
-    constants.hpp
+    constants.hpp \
+    Parser.hpp \
+    RegionParser.hpp \
+    MediaParser.hpp \
+    Transition.hpp \
+    Image.hpp \
+    MainParser.hpp \
+    ImageParser.hpp \
+    VideoParser.hpp \
+    Region.hpp
