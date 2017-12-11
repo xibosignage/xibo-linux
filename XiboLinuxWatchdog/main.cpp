@@ -9,9 +9,8 @@ int main(int argc, char *argv[])
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
 
-    auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
+    auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibowatchog");
 
-    MainWindow window;
-
+    MainWindow window(app);
     return app->run(window);
 }
