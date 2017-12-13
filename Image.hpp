@@ -30,13 +30,12 @@ public:
         Invalid
     };
 
-    Image(int id, int duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign);
+    Image(const Size& size, int id, int duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign);
 
     ScaleType scale_type() const;
     Align align() const;
     Valign valign() const;
 
-    void set_size(const Size& size) override;
     Gtk::Widget& handler() override;
     void hide() override;
     void show() override;

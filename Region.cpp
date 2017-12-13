@@ -29,17 +29,6 @@ Region::Region(int id,
 //    }, m_duration * 1000);
 }
 
-// fix it
-// receive parsed object, remove set_size
-void Region::add_media(const std::shared_ptr<Media>& media)
-{
-    assert(media);
-
-    media->set_size(m_size);
-    put(media->handler(), 0, 0);
-    m_medias.push_back(media);
-}
-
 int Region::id() const
 {
     return m_id;

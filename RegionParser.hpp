@@ -1,17 +1,26 @@
-#ifndef REGIONPARSER_HPP
-#define REGIONPARSER_HPP
+#pragma once
 
-#include "Parser.hpp"
-#include "Region.hpp"
+#include "MainParser.hpp"
+#include "Transition.hpp"
+#include "constants.hpp"
 
-class RegionParser : public Parser<Region>
+struct ParsedRegion
+{
+    int id;
+    Size size;
+    Point pos;
+    int zindex;
+    bool looped;
+    Transition transition;
+};
+
+class RegionParser
 {
 public:
     RegionParser(const boost::property_tree::ptree& tree);
+    ParsedRegion parse();
 
-    std::shared_ptr<Region> parse() override;
-    std::shared_ptr<Region> create_from_attrs(const boost::property_tree::ptree& attrs) override;
+private:
+    boost::property_tree::ptree m_tree;
 
 };
-
-#endif // REGIONPARSER_HPP

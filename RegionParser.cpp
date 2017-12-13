@@ -1,47 +1,18 @@
 #include "RegionParser.hpp"
-#include "MediaParser.hpp"
-#include "ImageParser.hpp"
-#include "VideoParser.hpp"
-#include "utilities.hpp"
 
 #include <spdlog/spdlog.h>
 
-RegionParser::RegionParser(const boost::property_tree::ptree& tree) : Parser(tree)
+RegionParser::RegionParser(const boost::property_tree::ptree& tree)
+    : m_tree(tree)
 {
 
 }
 
-std::shared_ptr<Region> RegionParser::parse()
-{
-    auto region = create_from_attrs(m_tree.get_child("<xmlattr>"));
-
-    for(auto&& pair : m_tree)
-    {
-        if(pair.first == "media")
-        {
-            std::shared_ptr<Media> media;
-            auto type = pair.second.get_child("<xmlattr>").get<std::string>("type");
-
-            if(type == "image")
-            {
-                media = utilities::get_parser<ImageParser>(pair.second)->parse();
-            }
-            else if(type == "video")
-            {
-                media = utilities::get_parser<VideoParser>(pair.second)->parse();
-            }
-
-            region->add_media(media);
-        }
-    }
-
-    return region;
-}
-
-std::shared_ptr<Region> RegionParser::create_from_attrs(const boost::property_tree::ptree& attrs)
+ParsedRegion RegionParser::parse()
 {
     spdlog::get(LOGGER)->debug("parse region");
 
+    auto attrs = m_tree.get_child("<xmlattr>");
     auto options = m_tree.get_child("options");
 
     int id = attrs.get<int>("id");
@@ -55,5 +26,5 @@ std::shared_ptr<Region> RegionParser::create_from_attrs(const boost::property_tr
     auto direction = options.get<std::string>("transitionDirection", std::string{});
     int duration = options.get<int>("transitionDuration", 0);
 
-    return std::make_shared<Region>(id, Size{width, height}, Point{top, left}, zindex, loop, Transition{type, direction, duration});
+    return ParsedRegion{id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration}};
 }

@@ -9,6 +9,8 @@
 
 class Region;
 class Point;
+class Size;
+class Transition;
 
 class MainLayout : public Gtk::Window
 {
@@ -26,11 +28,18 @@ public:
     const std::string& background_image() const;
     const std::string& background_color() const;
 
-    void add_region(const std::shared_ptr<Region>& region);
+    void add_region(int id,
+                    const Size& size,
+                    const Point& pos,
+                    int zindex,
+                    bool looped,
+                    const Transition& transition);
+    Region& region(size_t index);
+    size_t regions_count() const;
     void show_regions();
 
     // temp
-    const std::vector<std::shared_ptr<Region>>& regions() const { return m_regions; }
+    const std::vector<std::unique_ptr<Region>>& regions() const { return m_regions; }
 
 
 protected:
@@ -49,6 +58,6 @@ private:
     std::string m_background_image;
     std::string m_background_color;
 
-    std::vector<std::shared_ptr<Region>> m_regions;
+    std::vector<std::unique_ptr<Region>> m_regions;
 
 };

@@ -4,10 +4,10 @@
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
 
-Video::Video(int id, int duration, const std::string& uri, bool muted, bool looped) :
+Video::Video(const Size& size, int id, int duration, const std::string& uri, bool muted, bool looped) :
     Media(id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
-    m_handler = new VideoHandler{m_uri, Size{}};
+    m_handler = new VideoHandler{m_uri, size};
     m_handler->signal_video_ended().connect([=](){
         if(m_looped)
         {
@@ -40,11 +40,6 @@ bool Video::muted() const
 bool Video::looped() const
 {
     return m_looped;
-}
-
-void Video::set_size(const Size& size)
-{
-    m_handler->set_size(size.width, size.height);
 }
 
 Gtk::Widget& Video::handler()

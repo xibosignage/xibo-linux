@@ -1,10 +1,9 @@
 #include "Image.hpp"
 #include "Video.hpp"
 #include "Region.hpp"
-
-#include "MainParser.hpp"
 #include "MainLayout.hpp"
 
+#include "MainParser.hpp"
 #include "constants.hpp"
 
 #include <spdlog/spdlog.h>

@@ -11,11 +11,11 @@ class Region : public Gtk::Fixed
 {
 public:
     Region(int id,
-             const Size& size,
-             const Point& pos,
-             int zindex,
-             bool looped,
-             const Transition& transition);
+           const Size& size,
+           const Point& pos,
+           int zindex,
+           bool looped,
+           const Transition& transition);
 
     int id() const;
     const Size& size() const;
@@ -24,9 +24,10 @@ public:
     bool looped() const;
     const Transition& transition() const;
 
-    void add_media(const std::shared_ptr<Media>& media);
+    template <typename MediaType, typename... Args>
+    void add_media(Args... args);
     // temp
-    const std::vector<std::shared_ptr<Media>>& medias() const { return m_medias; }
+    const std::vector<std::unique_ptr<Media>>& medias() const { return m_medias; }
 
 private:
     int m_id;
@@ -36,9 +37,16 @@ private:
     bool m_looped;
     Transition m_transition;
 
-    std::vector<std::shared_ptr<Media>> m_medias;
+    std::vector<std::unique_ptr<Media>> m_medias;
 
     size_t m_currentIndex = 0;
     size_t m_previousIndex = 0;
 
 };
+
+template <typename MediaType, typename... Args>
+void Region::add_media(Args... args)
+{
+    m_medias.push_back(std::make_unique<MediaType>(m_size, std::forward<Args>(args)...));
+    put(m_medias.back()->handler(), 0, 0);
+}

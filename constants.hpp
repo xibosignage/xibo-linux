@@ -6,8 +6,8 @@ const std::string LOGGER = "logger";
 
 struct Point
 {
-    int top;
     int left;
+    int top;
 };
 
 struct Size

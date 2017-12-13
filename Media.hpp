@@ -22,7 +22,6 @@ public:
 
     virtual void hide() = 0;
     virtual void show() = 0;
-    virtual void set_size(const Size& size) = 0;
     virtual Gtk::Widget& handler() = 0;
     virtual bool is_visible() const;
 
