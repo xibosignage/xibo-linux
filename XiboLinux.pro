@@ -1,7 +1,7 @@
 TEMPLATE = app
-CONFIG += c++14
+CONFIG += c++14 console
 CONFIG -= app_bundle
-CONFIG -= qt console
+CONFIG -= qt
 
 #QMAKE_CXXFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
 #QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
@@ -38,7 +38,6 @@ HEADERS += \
     VideoHandler.hpp \
     BindWrapper.hpp \
     constants.hpp \
-    Parser.hpp \
     RegionParser.hpp \
     MediaParser.hpp \
     Transition.hpp \

@@ -1,16 +1,22 @@
-#ifndef LAYOUTPARSER_HPP
-#define LAYOUTPARSER_HPP
+#pragma once
 
-#include "Parser.hpp"
-#include "MainLayout.hpp"
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <vector>
 
-class MainParser : public Parser<MainLayout>
+class MainLayout;
+
+class MainParser
 {
 public:
     MainParser(const std::string& file_name);
+    std::unique_ptr<MainLayout> parse();
 
-    std::shared_ptr<MainLayout> parse() override;
-    std::shared_ptr<MainLayout> create_from_attrs(const boost::property_tree::ptree& attrs) override;
+private:
+    void parse_xml_tree();
+
+private:
+    std::unique_ptr<MainLayout> m_layout;
+    boost::property_tree::ptree m_tree;
+
 };
-
-#endif // LAYOUTPARSER_HPP

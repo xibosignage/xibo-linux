@@ -1,15 +1,20 @@
-#ifndef VIDEOPARSER_HPP
-#define VIDEOPARSER_HPP
+#pragma once
 
 #include "MediaParser.hpp"
-#include "Video.hpp"
 
-class VideoParser : public MediaParser<Video>
+struct ParsedVideo : ParsedMedia
 {
-public:
-    using MediaParser<Video>::MediaParser;
+    ParsedVideo(int _id, int _duration, const std::string& _uri, bool _muted, bool _looped) :
+        ParsedMedia{_id, _duration, _uri}, muted(_muted), looped(_looped) { }
 
-    std::shared_ptr<Video> create_from_attrs(const boost::property_tree::ptree& attrs) override;
+    bool muted;
+    bool looped;
 };
 
-#endif // VIDEOPARSER_HPP
+class VideoParser : public MediaParser<ParsedVideo>
+{
+public:
+    using MediaParser<ParsedVideo>::MediaParser;
+    ParsedVideo parse();
+
+};

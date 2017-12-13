@@ -1,5 +1,4 @@
 #include "WebView.hpp"
-#include "Region.hpp"
 
 WebView::WebView(int id, int duration, const std::string& uri, int modeId, bool transparent) :
     Media(id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),

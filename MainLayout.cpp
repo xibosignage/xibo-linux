@@ -1,9 +1,5 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
-#include "Image.hpp"
-#include "WebView.hpp"
-#include "Video.hpp"
-#include "VideoHandler.hpp"
 
 MainLayout::MainLayout(int schema_version,
                        int width,
@@ -31,11 +27,26 @@ MainLayout::MainLayout(int schema_version,
     m_mainContainer.show();
 }
 
-void MainLayout::add_region(const std::shared_ptr<Region>& region)
+void MainLayout::add_region(int id,
+                            const Size& size,
+                            const Point& pos,
+                            int zindex,
+                            bool looped,
+                            const Transition& transition)
 {
-    auto&& point = region->position();
-    m_mainContainer.put(*region, point.left, point.top);
-    m_regions.push_back(region);
+    m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
+    auto&& point = m_regions.back()->position();
+    m_mainContainer.put(*m_regions.back(), point.left, point.top);
+}
+
+Region& MainLayout::region(size_t index)
+{
+    return *m_regions.at(index);
+}
+
+size_t MainLayout::regions_count() const
+{
+    return m_regions.size();
 }
 
 void MainLayout::show_regions()
