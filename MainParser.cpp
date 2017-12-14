@@ -3,8 +3,6 @@
 #include "ImageParser.hpp"
 #include "VideoParser.hpp"
 
-#include "MainLayout.hpp"
-#include "Region.hpp"
 #include "Image.hpp"
 #include "Video.hpp"
 
@@ -18,8 +16,6 @@ MainParser::MainParser(const std::string& file_name)
     boost::property_tree::read_xml(file, tree);
 
     m_tree = tree.get_child("layout");
-
-    parse();
 }
 
 std::unique_ptr<MainLayout> MainParser::parse()
@@ -49,7 +45,7 @@ void MainParser::parse_xml_tree()
         {
             auto region_node = layout.second;
             auto region = RegionParser(region_node).parse();
-            m_layout->add_region(region.id, region.size, region.pos, region.zindex, region.looped, region.transition);
+            add_region(std::make_index_sequence<std::tuple_size<ParsedRegion>::value>{}, region);
 
             for(auto&& region : region_node)
             {
@@ -59,12 +55,12 @@ void MainParser::parse_xml_tree()
                     if(type == "image")
                     {
                         auto image = ImageParser(region.second).parse();
-                        m_layout->region(m_layout->regions_count() - 1).add_media<Image>(image.id, image.duration, image.uri, image.scale_type, image.align, image.valign);
+                        add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
                     }
                     else if(type == "video")
                     {
                         auto video = VideoParser(region.second).parse();
-                        m_layout->region(m_layout->regions_count() - 1).add_media<Video>(video.id, video.duration, video.uri, video.muted, video.looped);
+                        add_media<Video>(std::make_index_sequence<std::tuple_size<ParsedVideo>::value>{}, video);
                     }
                 }
             }

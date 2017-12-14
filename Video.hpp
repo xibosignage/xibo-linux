@@ -7,7 +7,7 @@ class VideoHandler;
 class Video : public Media
 {
 public:
-    Video(const Size& size, int id, int duration, const std::string& uri, bool muted, bool looped);
+    Video(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, bool muted, bool looped);
 
     bool muted() const;
     bool looped() const;

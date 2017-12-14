@@ -1,7 +1,7 @@
 #include "WebView.hpp"
 
-WebView::WebView(int id, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(uint id, uint duration, bool use_duration, const std::string& uri, int modeId, bool transparent) :
+    Media(id, duration, use_duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
     m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());

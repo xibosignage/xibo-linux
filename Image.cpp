@@ -1,11 +1,10 @@
 #include "Image.hpp"
 
-Image::Image(const Size& size, int id, int duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
-    Media(id, duration, Render::Native, uri), m_scale_type(scale_type), m_align(align), m_valign(valign)
+Image::Image(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
+    Media(id, duration, use_duration, Render::Native, uri), m_scale_type(scale_type), m_align(align), m_valign(valign)
 {
     auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height);
     m_handler.set(pixbuf);
-    m_handler.show();
 }
 
 Image::ScaleType Image::scale_type() const
@@ -31,9 +30,11 @@ Gtk::Widget& Image::handler()
 void Image::hide()
 {
     m_handler.hide();
+    Media::hide();
 }
 
 void Image::show()
 {
     m_handler.show();
+    Media::show();
 }

@@ -26,5 +26,5 @@ ParsedRegion RegionParser::parse()
     auto direction = options.get<std::string>("transitionDirection", std::string{});
     int duration = options.get<int>("transitionDuration", 0);
 
-    return ParsedRegion{id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration}};
+    return std::make_tuple(id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration});
 }

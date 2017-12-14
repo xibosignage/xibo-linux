@@ -6,16 +6,6 @@
 
 #include "constants.hpp"
 
-struct ParsedMedia
-{
-    ParsedMedia(int _id, int _duration, const std::string& _uri) :
-        id(_id), duration(_duration), uri(_uri) { }
-
-    int id;
-    int duration;
-    std::string uri;
-};
-
 template <typename T>
 class MediaParser
 {
@@ -29,12 +19,14 @@ public:
 
         m_id = attrs.template get<int>("id");
         m_duration = attrs.template get<int>("duration");
+        m_use_duration = attrs.template get<bool>("useDuration");
         m_uri = m_options.template get<std::string>("uri");
     }
 
 protected:
     int m_id;
     int m_duration;
+    bool m_use_duration;
     std::string m_uri;
     boost::property_tree::ptree m_options;
 

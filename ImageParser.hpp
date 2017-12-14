@@ -3,16 +3,7 @@
 #include "MediaParser.hpp"
 #include "Image.hpp"
 
-struct ParsedImage : ParsedMedia
-{
-    ParsedImage(int _id, int _duration, const std::string& _uri, Image::ScaleType _scale_type, Image::Align _align, Image::Valign _valign) :
-        ParsedMedia{_id, _duration, _uri}, scale_type(_scale_type), align(_align), valign(_valign) { }
-
-    Image::ScaleType scale_type;
-    Image::Align align;
-    Image::Valign valign;
-};
-
+using ParsedImage = std::tuple<uint, uint, bool, std::string, Image::ScaleType, Image::Align, Image::Valign>;
 
 class ImageParser : public MediaParser<ParsedImage>
 {

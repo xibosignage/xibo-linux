@@ -30,7 +30,7 @@ public:
         Invalid
     };
 
-    Image(const Size& size, int id, int duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign);
+    Image(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign);
 
     ScaleType scale_type() const;
     Align align() const;

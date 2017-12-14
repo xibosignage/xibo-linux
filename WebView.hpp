@@ -11,7 +11,7 @@
 class WebView : public Media
 {
 public:
-    WebView(int id, int duration, const std::string& uri, int modeId, bool transparent);
+    WebView(uint id, uint duration, bool use_duration, const std::string& uri, int modeId, bool transparent);
 
     void hide() override;
     void show() override;

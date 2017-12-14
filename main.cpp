@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
 
     auto logger = spdlog::get(LOGGER);
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
-    logger->debug("{} {}", argc, argv[0]);
 
     MainParser parser("20.xml");
     auto layout = parser.parse();

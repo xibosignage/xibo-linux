@@ -6,7 +6,7 @@ ParsedImage ImageParser::parse()
     auto align = from_align(m_options.get<std::string>("align", "center"));
     auto valign = from_valign(m_options.get<std::string>("valign", "middle"));
 
-    return ParsedImage{m_id, m_duration, m_uri, scale_type, align, valign};
+    return std::make_tuple(m_id, m_duration, m_use_duration, m_uri, scale_type, align, valign);
 }
 
 Image::ScaleType ImageParser::from_scale_type(const std::__cxx11::string& option_name)
