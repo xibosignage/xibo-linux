@@ -50,7 +50,7 @@ private:
 
 private:
     Gtk::Image m_background;
-    Gtk::Fixed m_mainContainer;
+    Gtk::Fixed m_main_container;
 
     int m_schema_version;
     int m_width;

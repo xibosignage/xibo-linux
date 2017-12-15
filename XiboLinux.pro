@@ -10,7 +10,7 @@ CONFIG -= qt
 thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
 
-LIBS += $$thirdPartyLinkOptions -lpthread
+LIBS += $$thirdPartyLinkOptions -L../boost_1_65_1/stage/lib -lpthread -lboost_system -lboost_filesystem
 QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2
 
 INCLUDEPATH += ../boost_1_65_1
@@ -27,7 +27,8 @@ SOURCES += main.cpp \
     MainParser.cpp \
     ImageParser.cpp \
     VideoParser.cpp \
-    Region.cpp
+    Region.cpp \
+    WebViewParser.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -45,4 +46,5 @@ HEADERS += \
     MainParser.hpp \
     ImageParser.hpp \
     VideoParser.hpp \
-    Region.hpp
+    Region.hpp \
+    WebViewParser.hpp

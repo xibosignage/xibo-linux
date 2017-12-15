@@ -20,11 +20,11 @@ ParsedRegion RegionParser::parse()
     int height = static_cast<int>(attrs.get<float>("height"));
     int top = static_cast<int>(attrs.get<float>("top"));
     int left = static_cast<int>(attrs.get<float>("left"));
-    int zindex = attrs.get<int>("zindex");
-    bool loop = options.get<bool>("loop", false);
-    auto type = options.get<std::string>("transitionType",  std::string{});
-    auto direction = options.get<std::string>("transitionDirection", std::string{});
-    int duration = options.get<int>("transitionDuration", 0);
+    int zindex = attrs.get_optional<int>("zindex").value_or(-1);
+    bool loop = options.get_optional<bool>("loop").value_or(false);
+    auto type = options.get_optional<std::string>("transitionType").value_or("");
+    auto direction = options.get_optional<std::string>("transitionDirection").value_or("");
+    int duration = options.get_optional<int>("transitionDuration").value_or(0);
 
     return std::make_tuple(id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration});
 }

@@ -13,18 +13,22 @@ MainLayout::MainLayout(int schema_version,
     m_background_color(background_color)
 {
     set_default_size(width, height);
-    // set_decorated(false);
-    // fullscreen();
-    // set_keep_above();
-    // move(500, 500);
+//    set_decorated(false);
+//    fullscreen();
+//    set_keep_above();
+//    move(500, 500);
 
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
-    auto pixbuf = Gdk::Pixbuf::create_from_file("back.jpg", 640, 360);
-    m_background.set(pixbuf);
-    m_mainContainer.add(m_background);
 
-    add(m_mainContainer);
-    m_mainContainer.show();
+    if(!m_background_image.empty())
+    {
+        auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
+        m_background.set(pixbuf);
+        m_main_container.add(m_background);
+    }
+
+    add(m_main_container);
+    m_main_container.show();
 }
 
 void MainLayout::add_region(int id,
@@ -36,7 +40,7 @@ void MainLayout::add_region(int id,
 {
     m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
     auto&& point = m_regions.back()->position();
-    m_mainContainer.put(*m_regions.back(), point.left, point.top);
+    m_main_container.put(*m_regions.back(), point.left, point.top);
 }
 
 Region& MainLayout::region(size_t index)

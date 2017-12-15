@@ -2,9 +2,11 @@
 #include "RegionParser.hpp"
 #include "ImageParser.hpp"
 #include "VideoParser.hpp"
+#include "WebViewParser.hpp"
 
 #include "Image.hpp"
 #include "Video.hpp"
+#include "WebView.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -27,8 +29,8 @@ std::unique_ptr<MainLayout> MainParser::parse()
     int schemaVersion = attrs.get<int>("schemaVersion");
     int width = attrs.get<int>("width");
     int height = attrs.get<int>("height");
-    std::string backgroundImage = attrs.get<std::string>("background");
-    std::string backgroundColor = attrs.get<std::string>("bgcolor");
+    std::string backgroundImage = attrs.get_optional<std::string>("background").value_or("");
+    std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or("");
 
     m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, backgroundImage, backgroundColor);
 
@@ -61,6 +63,11 @@ void MainParser::parse_xml_tree()
                     {
                         auto video = VideoParser(region.second).parse();
                         add_media<Video>(std::make_index_sequence<std::tuple_size<ParsedVideo>::value>{}, video);
+                    }
+                    else if(type == "twitter" || type == "forecastio" || type == "ticker")
+                    {
+                        auto web = WebViewParser(region.second).parse();
+                        add_media<WebView>(std::make_index_sequence<std::tuple_size<ParsedWebView>::value>{}, web);
                     }
                 }
             }

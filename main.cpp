@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
     auto logger = spdlog::get(LOGGER);
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
 
-    MainParser parser("20.xml");
+    MainParser parser("TwitterMetro/8.xml");
     auto layout = parser.parse();
 
     logger->info("Layout; schema_version: {} width: {} height: {}; back_color: {} back_img: {}",
