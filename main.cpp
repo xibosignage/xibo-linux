@@ -1,15 +1,19 @@
+#include <glibmm.h>
+#include <gtkmm/window.h>
+#include <gtkmm/drawingarea.h>
+#include <gtkmm/fixed.h>
+#include <gtkmm/button.h>
+#include <gtkmm/overlay.h>
+
+#include "constants.hpp"
+#include "VideoHandler.hpp"
+#include "MainLayout.hpp"
+#include "Region.hpp"
 #include "Image.hpp"
 #include "Video.hpp"
-#include "Region.hpp"
-#include "MainLayout.hpp"
-
-#include "MainParser.hpp"
-#include "constants.hpp"
-
 #include <spdlog/spdlog.h>
-#include <gtkmm/application.h>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
@@ -18,34 +22,15 @@ int main(int argc, char *argv[])
     auto logger = spdlog::get(LOGGER);
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
 
-    MainParser parser("TwitterMetro/8.xml");
-    auto layout = parser.parse();
+    MainLayout layout(3, 640, 480, "", "");
 
-    logger->info("Layout; schema_version: {} width: {} height: {}; back_color: {} back_img: {}",
-                  layout->schema_version(), layout->width(), layout->height(),
-                  layout->background_color(), layout->background_image());
+    layout.add_region(1, Size{150, 150}, Point{490, 330}, 1, false, Transition{});
+    layout.regions().back()->add_media<Image>(1, 1, false, "LayerTest/1.jpg", Image::ScaleType::Center, Image::Align::Center, Image::Valign::Middle);
 
-    for(auto&& region : layout->regions())
-    {
-        logger->info("Region {}; width: {} height: {}; top: {} left: {}; zindex: {} looped: {}",
-                      region->id(), region->size().width, region->size().height, region->position().top,
-                      region->position().left, region->zindex(), region->looped());
+    layout.add_region(2, Size{150, 150}, Point{400, 285}, 0, false, Transition{});
+    layout.regions().back()->add_media<Video>(1, 1, false, "/home/stivius/video.webm", true, false);
 
-        for(auto&& media : region->medias())
-        {
-            logger->info("Media {}; render: {} duration: {} uri: {}", media->id(), (int)media->render(), media->duration(), media->uri());
-            if(auto image = dynamic_cast<Image*>(media.get()))
-            {
-                logger->info("Image; scale_type {}; align: {} valign: {}", (int)image->scale_type(), (int)image->align(), (int)image->valign());
-            }
-            else if(auto video = dynamic_cast<Video*>(media.get()))
-            {
-                logger->info("Video; muted {}; looped: {}", video->muted(), video->looped());
-            }
-        }
-    }
+    layout.show_regions();
 
-    layout->show_regions();
-
-    return app->run(*layout);
+    return app->run(layout);
 }

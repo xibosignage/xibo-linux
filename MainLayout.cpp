@@ -40,7 +40,8 @@ void MainLayout::add_region(int id,
 {
     m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
     auto&& point = m_regions.back()->position();
-    m_main_container.put(*m_regions.back(), point.left, point.top);
+    m_main_container.add_overlay(*m_regions.back(), Gdk::Rectangle(point.left, point.top, size.width, size.height));
+    m_main_container.reorder_overlay(*m_regions.back(), zindex);
 }
 
 Region& MainLayout::region(size_t index)
