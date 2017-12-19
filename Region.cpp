@@ -1,63 +1,58 @@
 #include "Region.hpp"
-#include "MainLayout.hpp"
 
-#include <iostream>
-#include <cassert>
-#include <glibmm.h>
-
-MyRegion::MyRegion(MainLayout* layout,
-               const Point& pos,
+Region::Region(uint id,
                const Size& size,
-               int duration,
-               int zindex) :
-    m_pos(pos),
+               const Point& pos,
+               int zindex,
+               bool looped,
+               const Transition& transition) :
+    m_id(id),
     m_size(size),
-    m_duration(duration),
-    m_zindex(zindex)
+    m_pos(pos),
+    m_zindex(zindex),
+    m_looped(looped),
+    m_transition(transition)
 {
-    layout->add_to_container(this, pos);
-
-//    Glib::signal_timeout().connect([=](){
-//        if(m_medias.size() > 1)
-//        {
-//            m_previousIndex = m_currentIndex;
-//            m_medias[m_previousIndex]->hide();
-
-//            m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
-//            m_medias[m_currentIndex]->show();
-//        }
-//        return true;
-//    }, m_duration * 1000);
 }
 
-void MyRegion::add_media(const std::shared_ptr<Media>& media)
+uint Region::id() const
 {
-    assert(media);
-
-    media->init(this, m_pos, m_size, m_zindex);
-    m_medias.push_back(media);
+    return m_id;
 }
 
-void MyRegion::add_media(std::initializer_list<std::shared_ptr<Media>> medias)
+const Size& Region::size() const
 {
-    assert(medias.size() > 0);
-
-    for(auto&& media : medias)
-    {
-        add_media(media);
-        media->hide();
-    }
-
-    m_medias[m_currentIndex]->show();
-
+    return m_size;
 }
 
-Point MyRegion::position() const
+const Point& Region::position() const
 {
     return m_pos;
 }
 
-Size MyRegion::size() const
+int Region::zindex() const
 {
-    return m_size;
+    return m_zindex;
+}
+
+bool Region::looped() const
+{
+    return m_looped;
+}
+
+const Transition& Region::transition() const
+{
+    return m_transition;
+}
+
+void Region::on_media_timeout()
+{
+    if(m_medias.size() > 1)
+    {
+        m_previousIndex = m_currentIndex;
+        m_medias[m_previousIndex]->hide();
+
+        m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
+        m_medias[m_currentIndex]->show();
+    }
 }

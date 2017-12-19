@@ -1,33 +1,40 @@
 #include "Image.hpp"
-#include "Region.hpp"
 
-Image::Image(const std::string& filename) :
-    m_filename(filename)
+Image::Image(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
+    Media(id, duration, use_duration, Render::Native, uri), m_scale_type(scale_type), m_align(align), m_valign(valign)
 {
+    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height);
+    m_handler.set(pixbuf);
 }
 
-void Image::init(MyRegion* region, const Point& pos, const Size& size, int zindex)
+Image::ScaleType Image::scale_type() const
 {
-    Media::init(region, pos, size, zindex);
+    return m_scale_type;
+}
 
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_filename, size.width, size.height);
-    m_handler.set(pixbuf);
-    m_handler.show();
+Image::Align Image::align() const
+{
+    return m_align;
+}
 
-    region->add(m_handler);
+Image::Valign Image::valign() const
+{
+    return m_valign;
+}
+
+Gtk::Widget& Image::handler()
+{
+    return m_handler;
 }
 
 void Image::hide()
 {
     m_handler.hide();
+    Media::hide();
 }
 
 void Image::show()
 {
     m_handler.show();
-}
-
-std::string Image::get_filename() const
-{
-    return m_filename;
+    Media::show();
 }

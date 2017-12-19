@@ -1,74 +1,56 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
-#include "Image.hpp"
-#include "WebView.hpp"
-#include "Video.hpp"
-#include "VideoHandler.hpp"
 
-#include <iostream>
-
-MainLayout::MainLayout()
+MainLayout::MainLayout(int schema_version,
+                       int width,
+                       int height,
+                       const std::string& background_image,
+                       const std::string& background_color) :
+    m_schema_version(schema_version),
+    m_width(width),
+    m_height(height),
+    m_background_image(background_image),
+    m_background_color(background_color)
 {
-    set_default_size(640, 480);
-    // set_decorated(false);
-    // fullscreen();
-    // set_keep_above();
-    // move(500, 500);
+    set_default_size(width, height);
+//    set_decorated(false);
+//    fullscreen();
+//    set_keep_above();
+//    move(500, 500);
 
-//    signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
-//    auto pixbuf = Gdk::Pixbuf::create_from_file("back.jpg", 640, 360);
-//    m_background.set(pixbuf);
-//    m_mainContainer.add(m_background);
-    add(m_mainContainer);
+    signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
-    auto region1 = new MyRegion{this, Point{420, 420}, Size{150, 150}, 2, 2};
-    region1->add_media({std::make_shared<Image>("1.jpg"),
-                       std::make_shared<Image>("2.jpg"),
-                       std::make_shared<Image>("3.jpg"),
-                       std::make_shared<Image>("4.png")});
+    if(!m_background_image.empty())
+    {
+        auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
+        m_background.set(pixbuf);
+        m_main_container.add(m_background);
+    }
 
-    auto region2 = new MyRegion{this, Point{285, 285}, Size{150, 150}, 2, 2};
-    region2->add_media({std::make_shared<Image>("2.jpg"),
-                       std::make_shared<Image>("3.jpg"),
-                       std::make_shared<Image>("4.png"),
-                       std::make_shared<Image>("1.jpg")});
-
-    auto region3 = new MyRegion{this, Point{150, 150}, Size{150, 150}, 2, 3};
-    region3->add_media({std::make_shared<Image>("3.jpg"),
-                       std::make_shared<Image>("4.png"),
-                       std::make_shared<Image>("1.jpg"),
-                       std::make_shared<Image>("2.jpg")});
-
-    auto region4 = new MyRegion{this, Point{15, 15}, Size{150, 150}, 2, 4};
-    region4->add_media({std::make_shared<Image>("4.png"),
-                       std::make_shared<Image>("1.jpg"),
-                       std::make_shared<Image>("2.jpg"),
-                       std::make_shared<Image>("3.jpg")});
-
-
-    auto region5 = new MyRegion{this, Point{500, 15},  Size{150, 150}, 2, 5};
-    region5->add_media(std::make_shared<Image>("4.png"));
-
-    auto region6 = new MyRegion{this, Point{500, 115},  Size{300, 300}, 2, 5};
-    region6->add_media(std::make_shared<WebView>("file:///home/stivius/build-XiboLinux-Desktop_Qt_5_9_2_GCC_64bit-Debug/test.htm"));
-
-    auto region7 = new MyRegion{this, Point{250, 0}, Size{300, 300}, 2, 5};
-    region7->add_media(std::make_shared<Video>("", false, false));
-
-    m_mainContainer.show();
-    //m_background.show();
-    show_regions();
-    //show_all();
+    add(m_main_container);
+    m_main_container.show();
 }
 
-MainLayout::~MainLayout()
+void MainLayout::add_region(int id,
+                            const Size& size,
+                            const Point& pos,
+                            int zindex,
+                            bool looped,
+                            const Transition& transition)
 {
+    m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
+    auto&& point = m_regions.back()->position();
+    m_main_container.put(*m_regions.back(), point.left, point.top);
 }
 
-void MainLayout::add_to_container(MyRegion* region, const Point& point)
+Region& MainLayout::region(size_t index)
 {
-    m_mainContainer.put(*region, point.x, point.y);
-    m_regions.push_back(region);
+    return *m_regions.at(index);
+}
+
+size_t MainLayout::regions_count() const
+{
+    return m_regions.size();
 }
 
 void MainLayout::show_regions()
@@ -86,4 +68,29 @@ void MainLayout::on_window_realize()
 //    auto window = get_window();
 //    auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
 //    window->set_cursor(cursor);
+}
+
+int MainLayout::schema_version() const
+{
+    return m_schema_version;
+}
+
+int MainLayout::width() const
+{
+    return m_width;
+}
+
+int MainLayout::height() const
+{
+    return m_height;
+}
+
+const std::string& MainLayout::background_image() const
+{
+    return m_background_image;
+}
+
+const std::string& MainLayout::background_color() const
+{
+    return m_background_color;
 }

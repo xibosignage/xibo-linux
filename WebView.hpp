@@ -4,22 +4,26 @@
 
 #include <gtkmm/scrolledwindow.h>
 #include <webkit/webkit.h>
+#include <spdlog/spdlog.h>
+
+#include "constants.hpp"
 
 class WebView : public Media
 {
 public:
-    WebView(const std::string& filename);
-    void init(MyRegion* region, const Point& pos, const Size& size, int zindex) override;
+    WebView(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, int modeId, bool transparent);
+
     void hide() override;
     void show() override;
-    std::string get_filename() const;
+    Gtk::Widget& handler() override;
 
 private:
     void screen_changed(const Glib::RefPtr<Gdk::Screen>& screen);
 
 private:
-    WebKitWebView* m_webView = nullptr;
+    bool m_transparent;
+
+    WebKitWebView* m_web_view = nullptr;
     Gtk::ScrolledWindow m_handler;
-    std::string m_filename;
 
 };

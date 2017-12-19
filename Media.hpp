@@ -1,41 +1,47 @@
 #pragma once
 
+#include <string>
 #include <gtkmm/widget.h>
 
-struct Point
-{
-    int x;
-    int y;
-};
+#include "constants.hpp"
 
-struct Size
-{
-    int width;
-    int height;
-};
-
-class MyRegion;
+class Region;
 
 class Media
 {
 public:
-   Media() = default;
-   virtual ~Media() { }
 
-   virtual void init(MyRegion* region, const Point& pos, const Size& size, int zindez) = 0;
-   virtual void hide() = 0;
-   virtual void show() = 0;
-   virtual int GetX() const;
-   virtual int GetY() const;
-   virtual int GetZ() const;
-   virtual int GetWidth() const;
-   virtual int GetHeight() const;
-   virtual bool IsVisible() const;
+    enum class Render
+    {
+        HTML,
+        Native
+    };
+
+    Media(uint id, uint duration, bool use_duration, Render render, const std::string& uri);
+    virtual ~Media() = default;
+
+    virtual void hide() = 0;
+    virtual void show() = 0;
+    virtual Gtk::Widget& handler() = 0;
+    virtual bool is_visible() const;
+
+    uint id() const;
+    uint duration() const;
+    bool use_duration() const;
+    Render render() const;
+    const std::string& uri() const;
+
+    sigc::signal<void>& media_timeout();
 
 protected:
-   Point m_pos;
-   Size m_size;
-   int m_zindex;
-   bool m_visible = false;
+    uint m_id;
+    uint m_duration;
+    bool m_use_duration;
+    Render m_render;
+    std::string m_uri;
+    bool m_visible = false;
+
+private:
+    sigc::signal<void> m_media_timeout;
 
 };
