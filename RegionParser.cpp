@@ -20,7 +20,7 @@ ParsedRegion RegionParser::parse()
     int height = static_cast<int>(attrs.get<float>("height"));
     int top = static_cast<int>(attrs.get<float>("top"));
     int left = static_cast<int>(attrs.get<float>("left"));
-    int zindex = attrs.get_optional<int>("zindex").value_or(-1);
+    int zindex = attrs.get<int>("zindex");
     bool loop = options.get_optional<bool>("loop").value_or(false);
     auto type = options.get_optional<std::string>("transitionType").value_or("");
     auto direction = options.get_optional<std::string>("transitionDirection").value_or("");

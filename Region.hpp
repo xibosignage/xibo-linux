@@ -27,6 +27,8 @@ public:
 
     template <typename MediaType, typename... Args>
     void add_media(Args... args);
+    void show();
+
     // temp
     const std::vector<std::unique_ptr<Media>>& medias() const { return m_medias; }
 
@@ -52,10 +54,6 @@ template <typename MediaType, typename... Args>
 void Region::add_media(Args... args)
 {
     m_medias.push_back(std::make_unique<MediaType>(m_size, std::forward<Args>(args)...));
-    if(m_medias.size() == 1)
-    {
-        m_medias.back()->show();
-    }
     m_medias.back()->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
     put(m_medias.back()->handler(), 0, 0);
 }

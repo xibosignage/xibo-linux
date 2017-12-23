@@ -47,7 +47,7 @@ std::string MediaParser<T>::get_path(const std::string& type)
     auto uri = m_options.get_optional<std::string>("uri");
     if(!uri || type == "ticker" || type == "forecastio")
     {
-        std::fstream file("TwitterMetro/requiredFiles.xml");
+        std::fstream file("GoPro/requiredFiles.xml");
 
         boost::property_tree::ptree tree;
         boost::property_tree::read_xml(file, tree);

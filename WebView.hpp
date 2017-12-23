@@ -17,6 +17,8 @@ public:
     void show() override;
     Gtk::Widget& handler() override;
 
+    bool transparent() const;
+
 private:
     void screen_changed(const Glib::RefPtr<Gdk::Screen>& screen);
 

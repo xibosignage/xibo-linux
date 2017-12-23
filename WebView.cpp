@@ -6,7 +6,7 @@ WebView::WebView(const Size& size, uint id, uint duration, bool use_duration, co
     Media(id, duration, use_duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
-    auto path = "file://" + boost::filesystem::current_path().string() + "/TwitterMetro/" + m_uri;
+    auto path = "file://" + boost::filesystem::current_path().string() + "/GoPro/" + m_uri;
 
     m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
     webkit_web_view_load_uri(m_web_view, path.c_str());
@@ -19,8 +19,8 @@ WebView::WebView(const Size& size, uint id, uint duration, bool use_duration, co
         webkit_web_view_set_transparent(m_web_view, true);
     }
 
-    // update webkit for set_background
-    // check drawing transparent windows over others
+//     update webkit for set_background
+//     check drawing transparent windows over others
 
     auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
     m_handler.add(*widget);
@@ -55,4 +55,9 @@ void WebView::show()
 Gtk::Widget& WebView::handler()
 {
     return m_handler;
+}
+
+bool WebView::transparent() const
+{
+    return m_transparent;
 }

@@ -45,6 +45,12 @@ const Transition& Region::transition() const
     return m_transition;
 }
 
+void Region::show()
+{
+    m_medias.front()->show();
+    Gtk::Fixed::show();
+}
+
 void Region::on_media_timeout()
 {
     if(m_medias.size() > 1)

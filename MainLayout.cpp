@@ -1,6 +1,8 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
 
+#include <spdlog/spdlog.h>
+
 MainLayout::MainLayout(int schema_version,
                        int width,
                        int height,
@@ -25,6 +27,7 @@ MainLayout::MainLayout(int schema_version,
         auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
         m_background.set(pixbuf);
         m_main_overlay.add(m_background);
+        m_background.show();
     }
 
     add(m_main_overlay);
@@ -55,6 +58,8 @@ size_t MainLayout::regions_count() const
 
 void MainLayout::reorder_regions()
 {
+    spdlog::get(LOGGER)->debug("reordering");
+
     for(auto&& region : m_regions)
     {
         m_main_overlay.reorder_overlay(*region, region->zindex());
