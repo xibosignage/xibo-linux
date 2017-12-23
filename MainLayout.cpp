@@ -24,11 +24,11 @@ MainLayout::MainLayout(int schema_version,
     {
         auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
         m_background.set(pixbuf);
-        m_main_container.add(m_background);
+        m_main_overlay.add(m_background);
     }
 
-    add(m_main_container);
-    m_main_container.show();
+    add(m_main_overlay);
+    m_main_overlay.show();
 }
 
 void MainLayout::add_region(int id,
@@ -40,8 +40,7 @@ void MainLayout::add_region(int id,
 {
     m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
     auto&& point = m_regions.back()->position();
-    m_main_container.add_overlay(*m_regions.back(), Gdk::Rectangle(point.left, point.top, size.width, size.height));
-    m_main_container.reorder_overlay(*m_regions.back(), zindex);
+    m_main_overlay.add_overlay(*m_regions.back(), Gdk::Rectangle(point.left, point.top, size.width, size.height));
 }
 
 Region& MainLayout::region(size_t index)
@@ -54,8 +53,18 @@ size_t MainLayout::regions_count() const
     return m_regions.size();
 }
 
+void MainLayout::reorder_regions()
+{
+    for(auto&& region : m_regions)
+    {
+        m_main_overlay.reorder_overlay(*region, region->zindex());
+    }
+}
+
 void MainLayout::show_regions()
 {
+    reorder_regions();
+
     for(auto&& region : m_regions)
     {
         region->show();

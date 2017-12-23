@@ -2,8 +2,7 @@
 
 #include <gtkmm/window.h>
 #include <gtkmm/image.h>
-#include <gtkmm/fixed.h>
-#include <gtkmm/overlay.h>
+#include "LayoutOverlay.hpp"
 
 #include <vector>
 #include <memory>
@@ -12,33 +11,6 @@ class Region;
 class Point;
 class Size;
 class Transition;
-
-#include "Region.hpp"
-#include "constants.hpp"
-class MyOverlay : public Gtk::Overlay
-{
-public:
-    void add_overlay(Gtk::Widget& widget, const Gdk::Rectangle& allocation)
-    {
-        m_saved_allocations.emplace(&widget, allocation);
-        Gtk::Overlay::add_overlay(widget);
-    }
-
-protected:
-    bool on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& allocation) override
-    {
-        auto alloc = m_saved_allocations[widget];
-        allocation.set_x(alloc.get_x());
-        allocation.set_y(alloc.get_y());
-        allocation.set_width(alloc.get_width());
-        allocation.set_height(alloc.get_height());
-        return true;
-    }
-
-private:
-    std::map<Gtk::Widget*, Gdk::Rectangle> m_saved_allocations;
-
-};
 
 class MainLayout : public Gtk::Window
 {
@@ -72,10 +44,11 @@ public:
 private:
     void on_window_realize();
     void create_ui();
+    void reorder_regions();
 
 private:
     Gtk::Image m_background;
-    MyOverlay m_main_container;
+    LayoutOverlay m_main_overlay;
 
     int m_schema_version;
     int m_width;

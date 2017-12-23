@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     ImageParser.cpp \
     VideoParser.cpp \
     Region.cpp \
-    WebViewParser.cpp
+    WebViewParser.cpp \
+    LayoutOverlay.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -47,4 +48,5 @@ HEADERS += \
     ImageParser.hpp \
     VideoParser.hpp \
     Region.hpp \
-    WebViewParser.hpp
+    WebViewParser.hpp \
+    LayoutOverlay.hpp
