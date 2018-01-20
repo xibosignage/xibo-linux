@@ -7,13 +7,13 @@ CONFIG -= qt
 #QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
 #QMAKE_LFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
 
-thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
-thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamer-1.0 gstreamer-video-1.0 gstreamer-base-1.0 webkitgtk-3.0)
+thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamermm-1.0 gstreamer-base-1.0 webkitgtk-3.0)
+thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamermm-1.0  gstreamer-base-1.0 webkitgtk-3.0)
 
-LIBS += $$thirdPartyLinkOptions -L../boost_1_65_1/stage/lib -lpthread -lboost_system -lboost_filesystem
+LIBS += $$thirdPartyLinkOptions -L../boost_1_66_0/stage/lib -lpthread -lboost_system -lboost_filesystem
 QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2
 
-INCLUDEPATH += ../boost_1_65_1
+INCLUDEPATH += ../boost_1_66_0
 
 SOURCES += main.cpp \
     MainLayout.cpp \
@@ -38,7 +38,6 @@ HEADERS += \
     Video.hpp \
     WebView.hpp \
     VideoHandler.hpp \
-    BindWrapper.hpp \
     constants.hpp \
     RegionParser.hpp \
     MediaParser.hpp \

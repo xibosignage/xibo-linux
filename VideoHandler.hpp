@@ -5,13 +5,9 @@
 #include <gtkmm/drawingarea.h>
 #include <spdlog/spdlog.h>
 
+#include <gstreamermm/pipeline.h>
+#include <gstreamermm/bus.h>
 #include "constants.hpp"
-
-struct Converter
-{
-    GstElement* video;
-    GstElement* audio;
-};
 
 class VideoHandler : public Gtk::Bin
 {
@@ -22,32 +18,32 @@ public:
     void set_volume(double volume);
     void set_size(int width, int height);
     void play();
-    sigc::signal<void> signal_video_ended();
+    sigc::signal<void>& signal_video_ended();
 
 private:
     void create_ui();
     void realize_cb();
     void update_video_size();
 
-    GstBusSyncReply bus_sync_handler(GstBus* bus, GstMessage* message, gpointer data);
-    gboolean cb_message_error(GstBus* bus, GstMessage* msg, gpointer data);
-    gboolean cb_message_eos(GstBus* bus, GstMessage* msg, gpointer data);
-    void no_more_pads(GstElement* element, gpointer data);
-    void on_pad_added(GstElement* element, GstPad* pad, gpointer data);
+    Gst::BusSyncReply bus_sync_handler(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message);
+    bool bus_message_watch(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message);
+    void no_more_pads();
+    void on_pad_added(const Glib::RefPtr<Gst::Pad>& pad);
 
 private:
     Gtk::DrawingArea m_video_window;
     guintptr m_window_handle;
+    guint m_watch_id;
     Size m_size, m_best_size;
-    GstElement* m_pipeline;
-    GstElement* m_source;
-    GstElement* m_decodebin;
-    GstElement* m_volume;
-    GstElement* m_video_converter;
-    GstElement* m_video_sink;
-    GstElement* m_audio_converter;
-    GstElement* m_audio_sink;
-    Converter m_converter;
+
+    Glib::RefPtr<Gst::Pipeline> m_pipeline;
+    Glib::RefPtr<Gst::Element> m_source;
+    Glib::RefPtr<Gst::Element> m_decodebin;
+    Glib::RefPtr<Gst::Element> m_volume;
+    Glib::RefPtr<Gst::Element> m_video_converter;
+    Glib::RefPtr<Gst::Element> m_video_sink;
+    Glib::RefPtr<Gst::Element> m_audio_converter;
+    Glib::RefPtr<Gst::Element> m_audio_sink;
 
     sigc::signal<void> m_signal_video_ended;
     bool m_video_ended = false;

@@ -47,8 +47,11 @@ const Transition& Region::transition() const
 
 void Region::show()
 {
-    m_medias.front()->show();
-    Gtk::Fixed::show();
+    if(!m_medias.empty())
+    {
+        m_medias.front()->show();
+        Gtk::Fixed::show();
+    }
 }
 
 void Region::on_media_timeout()

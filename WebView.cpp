@@ -11,13 +11,13 @@ WebView::WebView(const Size& size, uint id, uint duration, bool use_duration, co
     m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
     webkit_web_view_load_uri(m_web_view, path.c_str());
 
-    if(m_transparent)
-    {
+//    if(m_transparent)
+//    {
         m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
         screen_changed(m_handler.get_screen());
 
         webkit_web_view_set_transparent(m_web_view, true);
-    }
+//    }
 
 //     update webkit for set_background
 //     check drawing transparent windows over others

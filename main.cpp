@@ -19,38 +19,13 @@ int main(int argc, char *argv[])
     auto logger = spdlog::get(LOGGER);
     auto app = Gtk::Application::create(argc, argv, "org.gtkmm.xibo");
 
-    MainParser parser("LayerTest/20.xml");
-    auto layout = parser.parse();
+    MainParser parser("GoPro/85.xml");
+    MainLayout layout(0, 640, 480, "", "#000");
 
-    logger->info("Layout; schema_version: {} width: {} height: {}; back_color: {} back_img: {}",
-                  layout->schema_version(), layout->width(), layout->height(),
-                  layout->background_color(), layout->background_image());
+    layout.add_region(0, Size{300, 300}, Point{0, 0}, 0, false, Transition{});
+    layout.region(0).add_media<Video>(0, 0, false, "/home/stivius/video.webm", false, false);
 
-    for(auto&& region : layout->regions())
-    {
-        logger->info("Region {}; width: {} height: {}; top: {} left: {}; zindex: {} looped: {}",
-                      region->id(), region->size().width, region->size().height, region->position().top,
-                      region->position().left, region->zindex(), region->looped());
+    layout.show_regions();
 
-        for(auto&& media : region->medias())
-        {
-            logger->info("Media {}; render: {} duration: {} uri: {}", media->id(), (int)media->render(), media->duration(), media->uri());
-            if(auto image = dynamic_cast<Image*>(media.get()))
-            {
-                logger->info("Image; scale_type {}; align: {} valign: {}", (int)image->scale_type(), (int)image->align(), (int)image->valign());
-            }
-            else if(auto video = dynamic_cast<Video*>(media.get()))
-            {
-                logger->info("Video; muted {}; looped: {}", video->muted(), video->looped());
-            }
-            else if(auto webview = dynamic_cast<WebView*>(media.get()))
-            {
-                logger->info("WebView; transparent {}", webview->transparent());
-            }
-        }
-    }
-
-    layout->show_regions();
-
-    return app->run(*layout);
+    return app->run(layout);
 }

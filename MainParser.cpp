@@ -57,7 +57,7 @@ void MainParser::parse_xml_tree()
                     if(type == "image")
                     {
                         auto image = ImageParser(region.second).parse();
-                        add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
+                        //add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
                     }
                     else if(type == "video")
                     {
