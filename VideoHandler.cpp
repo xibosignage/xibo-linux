@@ -1,25 +1,19 @@
 #include "VideoHandler.hpp"
 
-#include <gdk/gdkx.h>
-
 #include <gstreamermm/elementfactory.h>
 #include <gstreamermm/videooverlay.h>
 #include <gstreamermm/init.h>
 
-#include <gst/video/video.h>
-
-#include <exception>
-
-#include "CustomVideoSink.hpp"
+#include "XiboVideoSink.hpp"
 
 VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
     m_size(size)
 {
     Gst::init();
 
-    Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "foo",
-          "foo is example of C++ element", sigc::ptr_fun(&CustomVideoSink::register_sink), "0.123",
-          "LGPL", "source?", "package?", "http://example.com");
+    Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink",
+                                 "Video Sink Plugin for gstreamermm", sigc::ptr_fun(&XiboVideoSink::register_sink), "0.1",
+                                 "GPL", "source", "package", "http://github.com/Stivius");
 
     m_logger = spdlog::get(LOGGER);
 
@@ -28,11 +22,8 @@ VideoHandler::VideoHandler(const std::string& filename, const Size& size) :
     m_decodebin = Gst::DecodeBin::create();
 
     m_video_converter = Gst::VideoConvert::create();
-    m_video_sink = Gst::ElementFactory::create_element("myvideosink");
-    m_video_sink->set_property("area", &m_video_window);
-
-    if(!m_video_sink)
-        throw std::out_of_range("ti pidor");
+    m_video_sink = Glib::RefPtr<XiboVideoSink>::cast_dynamic(Gst::ElementFactory::create_element("xibovideosink"));
+    m_video_sink->set_handler(&m_video_window);
 
     m_audio_converter = Gst::AudioConvert::create();
     m_volume = Gst::Volume::create();
@@ -179,8 +170,8 @@ sigc::signal<void>& VideoHandler::signal_video_ended()
 
 void VideoHandler::update_video_size()
 {
-    auto neededFactor = (m_best_size.width / static_cast<float>(m_best_size.height));
-    auto currentFactor = (m_size.width / static_cast<float>(m_size.height));
+    auto neededFactor = m_best_size.width / static_cast<float>(m_best_size.height);
+    auto currentFactor = m_size.width / static_cast<float>(m_size.height);
 
     if(currentFactor > neededFactor)
     {

@@ -30,7 +30,7 @@ SOURCES += main.cpp \
     Region.cpp \
     WebViewParser.cpp \
     LayoutOverlay.cpp \
-    CustomVideoSink.cpp
+    XiboVideoSink.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -50,4 +50,4 @@ HEADERS += \
     Region.hpp \
     WebViewParser.hpp \
     LayoutOverlay.hpp \
-    CustomVideoSink.hpp
+    XiboVideoSink.hpp

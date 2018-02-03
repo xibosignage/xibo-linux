@@ -17,6 +17,8 @@
 #include <gstreamermm/audioconvert.h>
 #include <gstreamermm/audiosink.h>
 
+class XiboVideoSink;
+
 class VideoHandler : public Gtk::Bin
 {
 public:
@@ -49,7 +51,7 @@ private:
     Glib::RefPtr<Gst::DecodeBin> m_decodebin;
     Glib::RefPtr<Gst::Volume> m_volume;
     Glib::RefPtr<Gst::VideoConvert> m_video_converter;
-    Glib::RefPtr<Gst::Element> m_video_sink;
+    Glib::RefPtr<XiboVideoSink> m_video_sink;
     Glib::RefPtr<Gst::AudioConvert> m_audio_converter;
     Glib::RefPtr<Gst::Element> m_audio_sink;
 
