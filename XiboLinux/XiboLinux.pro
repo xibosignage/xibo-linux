@@ -1,7 +1,7 @@
 TEMPLATE = app
-CONFIG += c++14 console
+CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG -= qt c++14
 
 #QMAKE_CXXFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
 #QMAKE_CFLAGS+= -fsanitize=address -fsanitize=undefined -fsanitize=leak
@@ -11,7 +11,7 @@ thirdPartyCXXFLAGS = $$system(pkg-config --cflags gtkmm-3.0 gstreamermm-1.0 gstr
 thirdPartyLinkOptions = $$system(pkg-config --libs gtkmm-3.0 gstreamermm-1.0  gstreamer-base-1.0 webkitgtk-3.0)
 
 LIBS += $$thirdPartyLinkOptions -L../boost_1_66_0/stage/lib -lpthread -lboost_system -lboost_filesystem -lboost_program_options
-QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2
+QMAKE_CXXFLAGS += $$thirdPartyCXXFLAGS -Wno-deprecated -pthread -O2 -std=c++17
 
 INCLUDEPATH += ../boost_1_66_0
 
@@ -48,4 +48,4 @@ HEADERS += \
     VideoParser.hpp \
     Region.hpp \
     WebViewParser.hpp \
-    src/LayoutOverlay.hpp
+    LayoutOverlay.hpp

@@ -32,7 +32,7 @@ std::unique_ptr<MainLayout> MainParser::parse()
     std::string backgroundImage = attrs.get_optional<std::string>("background").value_or("");
     std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or("");
 
-    m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, backgroundImage, backgroundColor);
+    m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, "MediaFiles/" + backgroundImage, backgroundColor);
 
     parse_xml_tree();
 
@@ -57,7 +57,7 @@ void MainParser::parse_xml_tree()
                     if(type == "image")
                     {
                         auto image = ImageParser(region.second).parse();
-                        //add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
+                        add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
                     }
                     else if(type == "video")
                     {

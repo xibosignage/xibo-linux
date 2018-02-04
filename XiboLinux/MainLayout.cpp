@@ -2,6 +2,7 @@
 #include "Region.hpp"
 
 #include <spdlog/spdlog.h>
+#include <boost/filesystem.hpp>
 
 MainLayout::MainLayout(int schema_version,
                        int width,
@@ -22,7 +23,7 @@ MainLayout::MainLayout(int schema_version,
 
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
-    if(!m_background_image.empty())
+    if(boost::filesystem::exists("MediaFiles/" + m_background_image))
     {
         auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
         m_background.set(pixbuf);

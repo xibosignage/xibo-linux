@@ -2,6 +2,7 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/filesystem.hpp>
 #include <vector>
 
 #include "MainLayout.hpp"

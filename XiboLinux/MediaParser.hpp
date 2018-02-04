@@ -38,7 +38,7 @@ MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tr
     m_id = attrs.template get<int>("id");
     m_duration = attrs.template get<int>("duration");
     m_use_duration = attrs.template get<bool>("useDuration");
-    m_uri = get_path(attrs.template get<std::string>("type"));
+    m_uri = "MediaFiles/" + get_path(attrs.template get<std::string>("type"));
 }
 
 template<typename T>
@@ -47,7 +47,7 @@ std::string MediaParser<T>::get_path(const std::string& type)
     auto uri = m_options.get_optional<std::string>("uri");
     if(!uri || type == "ticker" || type == "forecastio")
     {
-        std::fstream file("GoPro/requiredFiles.xml");
+        std::fstream file("MediaFiles/requiredFiles.xml");
 
         boost::property_tree::ptree tree;
         boost::property_tree::read_xml(file, tree);
