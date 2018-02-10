@@ -12,7 +12,7 @@
 class VideoHandler : public Gtk::Bin
 {
 public:
-    VideoHandler(const std::string& file_name, const Size& size);
+    VideoHandler(const std::string& uri, const Size& size);
     ~VideoHandler();
 
     void set_volume(double volume);

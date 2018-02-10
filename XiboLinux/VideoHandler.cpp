@@ -6,7 +6,7 @@
 #include <gstreamermm/videooverlay.h>
 #include <gstreamermm/init.h>
 
-VideoHandler::VideoHandler(const std::string& file_name, const Size& size) :
+VideoHandler::VideoHandler(const std::string& uri, const Size& size) :
     m_size(size)
 {
     Gst::init();
@@ -30,7 +30,7 @@ VideoHandler::VideoHandler(const std::string& file_name, const Size& size) :
         m_logger->critical("One element could not be created");
     }
 
-    m_source->set_property("location", file_name);
+    m_source->set_property("location", uri);
 
     auto bus = m_pipeline->get_bus();
     m_watch_id = bus->add_watch(sigc::mem_fun(this, &VideoHandler::bus_message_watch));

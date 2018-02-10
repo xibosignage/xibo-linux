@@ -11,7 +11,7 @@
 class MainParser
 {
 public:
-    MainParser(const std::string& file_name);
+    MainParser(const std::string& full_path);
     std::unique_ptr<MainLayout> parse();
 
 private:

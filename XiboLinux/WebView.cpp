@@ -6,8 +6,7 @@ WebView::WebView(const Size& size, uint id, uint duration, bool use_duration, co
     Media(id, duration, use_duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
-    auto path = "file://" + boost::filesystem::current_path().string() + "/" + m_uri;
-
+    auto&& path = "file://" + uri;
     spdlog::get(LOGGER)->debug(path);
 
     m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());

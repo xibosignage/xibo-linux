@@ -4,6 +4,9 @@
 #include <spdlog/spdlog.h>
 #include <boost/filesystem.hpp>
 
+#include <boost/program_options.hpp>
+extern boost::program_options::variables_map vm;
+
 MainLayout::MainLayout(int schema_version,
                        int width,
                        int height,
@@ -23,9 +26,11 @@ MainLayout::MainLayout(int schema_version,
 
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
-    if(boost::filesystem::exists("MediaFiles/" + m_background_image))
+    auto image_path = vm["example-dir"].as<std::string>() + "/" + m_background_image;
+    spdlog::get(LOGGER)->debug(image_path);
+    if(boost::filesystem::exists(image_path))
     {
-        auto pixbuf = Gdk::Pixbuf::create_from_file(m_background_image, width, height);
+        auto pixbuf = Gdk::Pixbuf::create_from_file(image_path, width, height);
         m_background.set(pixbuf);
         m_main_overlay.add(m_background);
         m_background.show();

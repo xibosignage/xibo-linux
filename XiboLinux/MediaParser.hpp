@@ -27,6 +27,9 @@ private:
 
 };
 
+#include <boost/program_options.hpp>
+extern boost::program_options::variables_map vm;
+
 template<typename T>
 MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tree)
 {
@@ -38,7 +41,8 @@ MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tr
     m_id = attrs.template get<int>("id");
     m_duration = attrs.template get<int>("duration");
     m_use_duration = attrs.template get<bool>("useDuration");
-    m_uri = "MediaFiles/" + get_path(attrs.template get<std::string>("type"));
+    m_uri = vm["example-dir"].as<std::string>() + "/" + get_path(attrs.template get<std::string>("type"));
+    spdlog::get(LOGGER)->debug(m_uri);
 }
 
 template<typename T>
@@ -47,10 +51,8 @@ std::string MediaParser<T>::get_path(const std::string& type)
     auto uri = m_options.get_optional<std::string>("uri");
     if(!uri || type == "ticker" || type == "forecastio")
     {
-        std::fstream file("MediaFiles/requiredFiles.xml");
-
         boost::property_tree::ptree tree;
-        boost::property_tree::read_xml(file, tree);
+        boost::property_tree::read_xml(vm["example-dir"].as<std::string>() + "/requiredFiles.xml", tree);
 
         auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
         for(auto&& required_file : required_files)

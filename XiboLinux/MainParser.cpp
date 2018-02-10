@@ -10,12 +10,12 @@
 
 #include <spdlog/spdlog.h>
 
-MainParser::MainParser(const std::string& file_name)
+MainParser::MainParser(const std::string& full_path)
 {
-    std::fstream file(file_name);
+    spdlog::get(LOGGER)->debug(full_path);
 
     boost::property_tree::ptree tree;
-    boost::property_tree::read_xml(file, tree);
+    boost::property_tree::read_xml(full_path, tree);
 
     m_tree = tree.get_child("layout");
 }
@@ -29,10 +29,10 @@ std::unique_ptr<MainLayout> MainParser::parse()
     int schemaVersion = attrs.get<int>("schemaVersion");
     int width = attrs.get<int>("width");
     int height = attrs.get<int>("height");
-    std::string backgroundImage = attrs.get_optional<std::string>("background").value_or("");
-    std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or("");
+    std::string backgroundImage = attrs.get_optional<std::string>("background").value_or("-");
+    std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or("-");
 
-    m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, "MediaFiles/" + backgroundImage, backgroundColor);
+    m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, backgroundImage, backgroundColor);
 
     parse_xml_tree();
 
