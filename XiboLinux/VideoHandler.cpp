@@ -1,27 +1,32 @@
 #include "VideoHandler.hpp"
 
-#include <gdk/gdkx.h>
-
 #include <gstreamermm/elementfactory.h>
 #include <gstreamermm/videooverlay.h>
 #include <gstreamermm/init.h>
 
-VideoHandler::VideoHandler(const std::string& uri, const Size& size) :
+#include "XiboVideoSink.hpp"
+
+VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
     m_size(size)
 {
     Gst::init();
 
+    Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink",
+                                 "Video Sink Plugin for gstreamermm", sigc::ptr_fun(&XiboVideoSink::register_sink), "0.1",
+                                 "GPL", "source", "package", "http://github.com/Stivius");
+
     m_logger = spdlog::get(LOGGER);
 
     m_pipeline = Gst::Pipeline::create("player");
-    m_source = Gst::ElementFactory::create_element("filesrc");
-    m_decodebin = Gst::ElementFactory::create_element("decodebin");
+    m_source = Gst::FileSrc::create();
+    m_decodebin = Gst::DecodeBin::create();
 
-    m_video_converter = Gst::ElementFactory::create_element("videoconvert");
-    m_video_sink = Gst::ElementFactory::create_element("autovideosink");
+    m_video_converter = Gst::VideoConvert::create();
+    m_video_sink = Glib::RefPtr<XiboVideoSink>::cast_dynamic(Gst::ElementFactory::create_element("xibovideosink"));
+    m_video_sink->set_handler(&m_video_window);
 
-    m_audio_converter = Gst::ElementFactory::create_element("audioconvert");
-    m_volume = Gst::ElementFactory::create_element("volume");
+    m_audio_converter = Gst::AudioConvert::create();
+    m_volume = Gst::Volume::create();
     m_audio_sink = Gst::ElementFactory::create_element("autoaudiosink");
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
@@ -30,13 +35,10 @@ VideoHandler::VideoHandler(const std::string& uri, const Size& size) :
         m_logger->critical("One element could not be created");
     }
 
-    m_source->set_property("location", uri);
+    m_source->set_property("location", file_path);
 
     auto bus = m_pipeline->get_bus();
     m_watch_id = bus->add_watch(sigc::mem_fun(this, &VideoHandler::bus_message_watch));
-
-    bus->set_sync_handler(sigc::mem_fun(this, &VideoHandler::bus_sync_handler));
-
     m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
 
     m_source->link(m_decodebin);
@@ -54,39 +56,6 @@ VideoHandler::~VideoHandler()
     m_logger->debug("Returned, stopping playback");
     m_pipeline->get_bus()->remove_watch(m_watch_id);
     m_pipeline->set_state(Gst::State::STATE_NULL);
-}
-
-void VideoHandler::realize_cb()
-{
-    auto window = m_video_window.get_window();
-
-    if(!window->ensure_native())
-    {
-        m_logger->critical("Couldn't create native window needed for GstVideoOverlay!");
-    }
-
-    m_window_handle = GDK_WINDOW_XID(window->gobj());
-}
-
-Gst::BusSyncReply VideoHandler::bus_sync_handler(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message)
-{
-    if(!gst_is_video_overlay_prepare_window_handle_message(message->gobj()))
-        return Gst::BusSyncReply::BUS_PASS;
-
-    if(m_window_handle != 0)
-    {
-        auto videooverlay = Glib::RefPtr<Gst::VideoOverlay>::cast_dynamic(message->get_source());
-        if(videooverlay)
-        {
-            videooverlay->set_window_handle(m_window_handle);
-        }
-    }
-    else
-    {
-        m_logger->error("Should have obtained video_window_handle by now!");
-    }
-
-    return Gst::BusSyncReply::BUS_DROP;
 }
 
 bool VideoHandler::bus_message_watch(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message)
@@ -158,8 +127,6 @@ void VideoHandler::on_pad_added(const Glib::RefPtr<Gst::Pad>& pad)
 void VideoHandler::create_ui()
 {
     m_video_window.set_size_request(m_size.width, m_size.height);
-    m_video_window.signal_realize().connect(sigc::mem_fun(this, &VideoHandler::realize_cb));
-
     add(m_video_window);
 }
 
@@ -170,6 +137,7 @@ void VideoHandler::set_volume(double _volume)
 
 void VideoHandler::set_size(int width, int height)
 {
+    m_logger->debug("{} {}", width, height);
     m_video_window.set_size_request(width, height);
 }
 
@@ -202,8 +170,8 @@ sigc::signal<void>& VideoHandler::signal_video_ended()
 
 void VideoHandler::update_video_size()
 {
-    auto neededFactor = (m_best_size.width / static_cast<float>(m_best_size.height));
-    auto currentFactor = (m_size.width / static_cast<float>(m_size.height));
+    auto neededFactor = m_best_size.width / static_cast<float>(m_best_size.height);
+    auto currentFactor = m_size.width / static_cast<float>(m_size.height);
 
     if(currentFactor > neededFactor)
     {

@@ -29,7 +29,8 @@ SOURCES += main.cpp \
     VideoParser.cpp \
     Region.cpp \
     WebViewParser.cpp \
-    LayoutOverlay.cpp
+    LayoutOverlay.cpp \
+    XiboVideoSink.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -48,4 +49,5 @@ HEADERS += \
     VideoParser.hpp \
     Region.hpp \
     WebViewParser.hpp \
-    LayoutOverlay.hpp
+    LayoutOverlay.hpp \
+    XiboVideoSink.hpp

@@ -9,10 +9,20 @@
 #include <gstreamermm/bus.h>
 #include "constants.hpp"
 
+#include <gstreamermm/filesrc.h>
+#include <gstreamermm/decodebin.h>
+#include <gstreamermm/volume.h>
+#include <gstreamermm/videoconvert.h>
+#include <gstreamermm/videosink.h>
+#include <gstreamermm/audioconvert.h>
+#include <gstreamermm/audiosink.h>
+
+class XiboVideoSink;
+
 class VideoHandler : public Gtk::Bin
 {
 public:
-    VideoHandler(const std::string& uri, const Size& size);
+    VideoHandler(const std::string& file_path, const Size& size);
     ~VideoHandler();
 
     void set_volume(double volume);
@@ -37,12 +47,12 @@ private:
     Size m_size, m_best_size;
 
     Glib::RefPtr<Gst::Pipeline> m_pipeline;
-    Glib::RefPtr<Gst::Element> m_source;
-    Glib::RefPtr<Gst::Element> m_decodebin;
-    Glib::RefPtr<Gst::Element> m_volume;
-    Glib::RefPtr<Gst::Element> m_video_converter;
-    Glib::RefPtr<Gst::Element> m_video_sink;
-    Glib::RefPtr<Gst::Element> m_audio_converter;
+    Glib::RefPtr<Gst::FileSrc> m_source;
+    Glib::RefPtr<Gst::DecodeBin> m_decodebin;
+    Glib::RefPtr<Gst::Volume> m_volume;
+    Glib::RefPtr<Gst::VideoConvert> m_video_converter;
+    Glib::RefPtr<XiboVideoSink> m_video_sink;
+    Glib::RefPtr<Gst::AudioConvert> m_audio_converter;
     Glib::RefPtr<Gst::Element> m_audio_sink;
 
     sigc::signal<void> m_signal_video_ended;
