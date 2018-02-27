@@ -1,37 +1,35 @@
 #include "VideoHandler.hpp"
+#include "XiboVideoSink.hpp"
 
 #include <gstreamermm/elementfactory.h>
-#include <gstreamermm/videooverlay.h>
-#include <gstreamermm/init.h>
-
-#include "XiboVideoSink.hpp"
 
 VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
     m_size(size)
 {
-    Gst::init();
-
-    Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink",
-                                 "Video Sink Plugin for gstreamermm", sigc::ptr_fun(&XiboVideoSink::register_sink), "0.1",
-                                 "GPL", "source", "package", "http://github.com/Stivius");
-
     m_logger = spdlog::get(LOGGER);
+
+    if(!Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink",
+                                 "Video Sink Plugin for gstreamermm", sigc::ptr_fun(&XiboVideoSink::register_sink), "0.1",
+                                 "GPL", "source", "package", "http://github.com/Stivius"))
+    {
+        throw std::runtime_error("XiboVideoSink was not registered");
+    }
 
     m_pipeline = Gst::Pipeline::create("player");
     m_source = Gst::FileSrc::create();
     m_decodebin = Gst::DecodeBin::create();
-
     m_video_converter = Gst::VideoConvert::create();
+    m_audio_converter = Gst::AudioConvert::create();
+    m_volume = Gst::Volume::create();    
     m_video_sink = Glib::RefPtr<XiboVideoSink>::cast_dynamic(Gst::ElementFactory::create_element("xibovideosink"));
     m_video_sink->set_handler(&m_video_window);
-
-    m_audio_converter = Gst::AudioConvert::create();
-    m_volume = Gst::Volume::create();
     m_audio_sink = Gst::ElementFactory::create_element("autoaudiosink");
+    m_queue = Gst::ElementFactory::create_element("queue");
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
-       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink)
+       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
     {
+        // exception
         m_logger->critical("One element could not be created");
     }
 
@@ -39,10 +37,10 @@ VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
 
     auto bus = m_pipeline->get_bus();
     m_watch_id = bus->add_watch(sigc::mem_fun(this, &VideoHandler::bus_message_watch));
-    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
+    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
 
     m_source->link(m_decodebin);
-    m_video_converter->link(m_video_sink);
+    m_video_converter->link(m_queue)->link(m_video_sink);
     m_audio_converter->link(m_volume)->link(m_audio_sink);
 
     m_decodebin->signal_pad_added().connect(sigc::mem_fun(this, &VideoHandler::on_pad_added));
@@ -84,6 +82,7 @@ void VideoHandler::no_more_pads()
 {
     auto pad = m_decodebin->get_static_pad("src_1");
     m_logger->debug("No more pads");
+
     if(!pad)
     {
         m_audio_converter->set_state(Gst::State::STATE_NULL);
@@ -105,6 +104,7 @@ void VideoHandler::on_pad_added(const Glib::RefPtr<Gst::Pad>& pad)
     if(video_pad && !audio_pad)
     {
         auto caps = video_pad->get_current_caps();
+        //m_logger->debug("{}", (std::string)caps->to_string());
         if(caps)
         {
             auto strct = caps->get_structure(0);
@@ -115,6 +115,8 @@ void VideoHandler::on_pad_added(const Glib::RefPtr<Gst::Pad>& pad)
             m_logger->info("height: {}, width: {}", m_best_size.height, m_best_size.width);
         }
         sinkpad = m_video_converter->get_static_pad("sink");
+        //m_logger->debug("{}", (std::string)sinkpad->get_pad_template()->get_caps()->to_string());
+        //m_logger->debug("{}", caps->can_intersect(sinkpad->get_pad_template()->get_caps()));
         pad->link(sinkpad);
     }
     else if(audio_pad)

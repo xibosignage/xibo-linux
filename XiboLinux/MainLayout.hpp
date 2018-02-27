@@ -38,9 +38,6 @@ public:
     size_t regions_count() const;
     void show_regions();
 
-    // temp
-    const std::vector<std::unique_ptr<Region>>& regions() const { return m_regions; }
-
 private:
     void on_window_realize();
     void create_ui();

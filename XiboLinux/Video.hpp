@@ -19,6 +19,7 @@ public:
 private:
     bool m_muted;
     bool m_looped;
-    VideoHandler* m_handler = nullptr;
+
+    std::unique_ptr<VideoHandler> m_handler;
 
 };

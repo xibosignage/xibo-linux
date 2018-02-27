@@ -4,7 +4,6 @@
 #include "Media.hpp"
 
 #include <gtkmm/fixed.h>
-#include <glibmm.h>
 #include <vector>
 #include <memory>
 
@@ -28,9 +27,6 @@ public:
     template <typename MediaType, typename... Args>
     void add_media(Args... args);
     void show();
-
-    // temp
-    const std::vector<std::unique_ptr<Media>>& medias() const { return m_medias; }
 
 private:
     void on_media_timeout();

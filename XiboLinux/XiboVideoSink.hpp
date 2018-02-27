@@ -3,8 +3,11 @@
 #include <gtkmm.h>
 #include <gstreamermm.h>
 #include <gstreamermm/private/videosink_p.h>
+#include <gst/video/video-info.h>
 
 #include <cassert>
+
+#include "constants.hpp"
 
 class XiboVideoSink : public Gst::VideoSink
 {

@@ -1,7 +1,6 @@
 #include "XiboVideoSink.hpp"
 
 #include <spdlog/spdlog.h>
-#include "constants.hpp"
 
 XiboVideoSink::XiboVideoSink(GstVideoSink* gobj) :
     Glib::ObjectBase(typeid(XiboVideoSink)),

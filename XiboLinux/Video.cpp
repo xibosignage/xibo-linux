@@ -7,7 +7,7 @@ const double MAX_VOLUME = 1.0;
 Video::Video(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, bool muted, bool looped) :
     Media(id, duration, use_duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
-    m_handler = new VideoHandler{m_uri, size};
+    m_handler = std::make_unique<VideoHandler>(m_uri, size);
     m_handler->signal_video_ended().connect([=](){
         if(m_looped)
         {

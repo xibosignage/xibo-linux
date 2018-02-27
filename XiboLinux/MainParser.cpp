@@ -7,6 +7,7 @@
 #include "Image.hpp"
 #include "Video.hpp"
 #include "WebView.hpp"
+#include "VideoHandler.hpp"
 
 #include <spdlog/spdlog.h>
 

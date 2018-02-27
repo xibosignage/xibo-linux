@@ -1,14 +1,13 @@
 #pragma once
 
-#include <gst/gst.h>
 #include <gtkmm/bin.h>
 #include <gtkmm/drawingarea.h>
 #include <spdlog/spdlog.h>
 
-#include <gstreamermm/pipeline.h>
-#include <gstreamermm/bus.h>
 #include "constants.hpp"
 
+#include <gstreamermm/pipeline.h>
+#include <gstreamermm/bus.h>
 #include <gstreamermm/filesrc.h>
 #include <gstreamermm/decodebin.h>
 #include <gstreamermm/volume.h>
@@ -54,6 +53,7 @@ private:
     Glib::RefPtr<XiboVideoSink> m_video_sink;
     Glib::RefPtr<Gst::AudioConvert> m_audio_converter;
     Glib::RefPtr<Gst::Element> m_audio_sink;
+    Glib::RefPtr<Gst::Element> m_queue;
 
     sigc::signal<void> m_signal_video_ended;
     bool m_video_ended = false;
