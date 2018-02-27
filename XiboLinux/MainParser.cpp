@@ -1,8 +1,6 @@
 #include "MainParser.hpp"
 #include "RegionParser.hpp"
-#include "ImageParser.hpp"
-#include "VideoParser.hpp"
-#include "WebViewParser.hpp"
+#include "MediaParser.hpp"
 
 #include "Image.hpp"
 #include "Video.hpp"
@@ -57,27 +55,18 @@ void MainParser::parse_xml_tree()
                     auto type = region.second.get_child("<xmlattr>").get<std::string>("type");
                     if(type == "image")
                     {
-                        auto a = MediaParser<ParsedImage>(region.second).parse_media<Image>();
-                        spdlog::get(LOGGER)->debug("{}", a);
-
-                        auto image = ImageParser(region.second).parse();
+                        auto image = MediaParser(region.second).parse_media<Image>();
                         add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
                     }
                     else if(type == "video")
                     {
-                        auto a = MediaParser<ParsedImage>(region.second).parse_media<Video>();
-                        spdlog::get(LOGGER)->debug("{}", a);
-
-                        auto video = VideoParser(region.second).parse();
+                        auto video = MediaParser(region.second).parse_media<Video>();
                         add_media<Video>(std::make_index_sequence<std::tuple_size<ParsedVideo>::value>{}, video);
                     }
                     else if(type == "twitter" || type == "forecastio" || type == "ticker")
                     {
-                        auto a = MediaParser<ParsedImage>(region.second).parse_media<WebView>();
-                        spdlog::get(LOGGER)->debug("{}", a);
-
-                        auto web = WebViewParser(region.second).parse();
-                        add_media<WebView>(std::make_index_sequence<std::tuple_size<ParsedWebView>::value>{}, web);
+                        auto webview = MediaParser(region.second).parse_media<WebView>();
+                        add_media<WebView>(std::make_index_sequence<std::tuple_size<ParsedWebView>::value>{}, webview);
                     }
                 }
             }

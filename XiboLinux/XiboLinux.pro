@@ -26,13 +26,11 @@ SOURCES += main.cpp \
     Transition.cpp \
     Image.cpp \
     MainParser.cpp \
-    ImageParser.cpp \
-    VideoParser.cpp \
     Region.cpp \
-    WebViewParser.cpp \
     LayoutOverlay.cpp \
     XiboVideoSink.cpp \
-    XiboApp.cpp
+    XiboApp.cpp \
+    MediaParser.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -47,10 +45,7 @@ HEADERS += \
     Transition.hpp \
     Image.hpp \
     MainParser.hpp \
-    ImageParser.hpp \
-    VideoParser.hpp \
     Region.hpp \
-    WebViewParser.hpp \
     LayoutOverlay.hpp \
     XiboVideoSink.hpp \
     XiboApp.hpp

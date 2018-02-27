@@ -4,8 +4,6 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
 
-#include "constants.hpp"
-#include "XiboApp.hpp"
 #include "Image.hpp"
 
 using ParsedImage = std::tuple<uint, uint, bool, std::string, Image::ScaleType, Image::Align, Image::Valign>;
@@ -16,7 +14,6 @@ class Image;
 class Video;
 class WebView;
 
-template<typename T>
 class MediaParser
 {
 public:
@@ -34,6 +31,10 @@ public:
 private:
     std::string get_path(const std::string& type);
 
+    Image::ScaleType from_scale_type(const std::string& option_name);
+    Image::Align from_align(const std::string& option_name);
+    Image::Valign from_valign(const std::string& option_name);
+
 protected:
     int m_id;
     int m_duration;
@@ -46,64 +47,30 @@ private:
 
 };
 
-template<typename T>
 template<typename MediaType>
-typename std::enable_if<std::is_same<MediaType,Image>::value, ParsedImage>::type MediaParser<T>::parse_media()
+typename std::enable_if<std::is_same<MediaType,Image>::value, ParsedImage>::type MediaParser::parse_media()
 {
+    auto scale_type = from_scale_type(m_options.get<std::string>("scaleType", "center"));
+    auto align = from_align(m_options.get<std::string>("align", "center"));
+    auto valign = from_valign(m_options.get<std::string>("valign", "middle"));
 
+    return std::make_tuple(m_id, m_duration, m_use_duration, m_uri, scale_type, align, valign);
 }
 
-template<typename T>
 template<typename MediaType>
-typename std::enable_if<std::is_same<MediaType,Video>::value, ParsedVideo>::type MediaParser<T>::parse_media()
+typename std::enable_if<std::is_same<MediaType,Video>::value, ParsedVideo>::type MediaParser::parse_media()
 {
+    bool muted = m_options.get<bool>("mute", false);
+    bool looped = m_options.get<bool>("loop", false);
 
+    return std::make_tuple(m_id, m_duration, m_use_duration, m_uri, muted, looped);
 }
 
-template<typename T>
 template<typename MediaType>
-typename std::enable_if<std::is_same<MediaType,WebView>::value, ParsedWebView>::type MediaParser<T>::parse_media()
+typename std::enable_if<std::is_same<MediaType,WebView>::value, ParsedWebView>::type MediaParser::parse_media()
 {
+    int mode_id = m_options.get_optional<int>("modeId").value_or(-1);
+    bool transparency = m_options.get_optional<bool>("transparency").value_or(true);
 
-}
-
-
-template<typename T>
-MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tree)
-{
-    spdlog::get(LOGGER)->debug("parse media");
-
-    auto attrs = m_tree.get_child("<xmlattr>");
-    m_options = m_tree.get_child("options");
-
-    m_id = attrs.template get<int>("id");
-    m_duration = attrs.template get<int>("duration");
-    m_use_duration = attrs.template get<bool>("useDuration");
-    m_uri = XiboApp::example_dir() + "/" + get_path(attrs.template get<std::string>("type"));
-    spdlog::get(LOGGER)->debug(m_uri);
-}
-
-
-// FIXME
-template<typename T>
-std::string MediaParser<T>::get_path(const std::string& type)
-{
-    auto uri = m_options.get_optional<std::string>("uri");
-    if(!uri || type == "ticker" || type == "forecastio")
-    {
-        boost::property_tree::ptree tree;
-        boost::property_tree::read_xml(XiboApp::example_dir() + "/requiredFiles.xml", tree);
-
-        auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
-        for(auto&& required_file : required_files)
-        {
-            auto file_info = required_file.second;
-            if(file_info.get<std::string>("FileType") == "resource" && file_info.get<int>("MediaId") == m_id)
-            {
-                return file_info.get<std::string>("Path");
-            }
-        }
-        return std::string{};
-    }
-    return uri.value();
+    return std::make_tuple(m_id, m_duration, m_use_duration, m_uri, mode_id, transparency);
 }
