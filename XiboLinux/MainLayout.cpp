@@ -73,6 +73,7 @@ void MainLayout::reorder_regions()
 
     for(auto&& region : m_regions)
     {
+        spdlog::get(LOGGER)->debug("{} {}", region->zindex(), region->id());
         m_main_overlay.reorder_overlay(*region, region->zindex());
     }
 }

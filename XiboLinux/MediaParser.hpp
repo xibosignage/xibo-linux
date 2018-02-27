@@ -6,12 +6,30 @@
 
 #include "constants.hpp"
 #include "XiboApp.hpp"
+#include "Image.hpp"
 
-template <typename T>
+using ParsedImage = std::tuple<uint, uint, bool, std::string, Image::ScaleType, Image::Align, Image::Valign>;
+using ParsedVideo = std::tuple<uint, uint, bool, std::string, bool, bool>;
+using ParsedWebView = std::tuple<uint, uint, bool, std::string, int, bool>;
+
+class Image;
+class Video;
+class WebView;
+
+template<typename T>
 class MediaParser
 {
 public:
     MediaParser(const boost::property_tree::ptree& tree);
+
+    template<typename MediaType>
+    typename std::enable_if<std::is_same<MediaType,Image>::value, ParsedImage>::type parse_media();
+
+    template<typename MediaType>
+    typename std::enable_if<std::is_same<MediaType,Video>::value, ParsedVideo>::type parse_media();
+
+    template<typename MediaType>
+    typename std::enable_if<std::is_same<MediaType,WebView>::value, ParsedWebView>::type parse_media();
 
 private:
     std::string get_path(const std::string& type);
@@ -29,6 +47,28 @@ private:
 };
 
 template<typename T>
+template<typename MediaType>
+typename std::enable_if<std::is_same<MediaType,Image>::value, ParsedImage>::type MediaParser<T>::parse_media()
+{
+
+}
+
+template<typename T>
+template<typename MediaType>
+typename std::enable_if<std::is_same<MediaType,Video>::value, ParsedVideo>::type MediaParser<T>::parse_media()
+{
+
+}
+
+template<typename T>
+template<typename MediaType>
+typename std::enable_if<std::is_same<MediaType,WebView>::value, ParsedWebView>::type MediaParser<T>::parse_media()
+{
+
+}
+
+
+template<typename T>
 MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tree)
 {
     spdlog::get(LOGGER)->debug("parse media");
@@ -43,6 +83,8 @@ MediaParser<T>::MediaParser(const boost::property_tree::ptree& tree) : m_tree(tr
     spdlog::get(LOGGER)->debug(m_uri);
 }
 
+
+// FIXME
 template<typename T>
 std::string MediaParser<T>::get_path(const std::string& type)
 {

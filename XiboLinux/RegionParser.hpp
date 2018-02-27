@@ -14,5 +14,6 @@ public:
 
 private:
     boost::property_tree::ptree m_tree;
+    int m_available_zindex = 0;
 
 };
