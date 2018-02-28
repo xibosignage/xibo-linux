@@ -6,7 +6,7 @@ const uint MSECS = 1000;
 #include <spdlog/spdlog.h>
 #include <iostream>
 
-Media::Media(uint id, uint duration, bool use_duration, Render render, const std::string& uri) :
+Media::Media(int id, int duration, bool use_duration, Render render, const std::string& uri) :
     m_id(id), m_duration(duration), m_use_duration(use_duration), m_render(render), m_uri(uri)
 {
 }
@@ -33,12 +33,12 @@ void Media::show()
     m_visible = true;
 }
 
-uint Media::id() const
+int Media::id() const
 {
     return m_id;
 }
 
-uint Media::duration() const
+int Media::duration() const
 {
     return m_duration;
 }

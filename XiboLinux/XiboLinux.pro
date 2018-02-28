@@ -20,7 +20,6 @@ SOURCES += main.cpp \
     MainLayout.cpp \
     WebView.cpp \
     VideoHandler.cpp \
-    RegionParser.cpp \
     Media.cpp \
     Video.cpp \
     Transition.cpp \
@@ -29,8 +28,7 @@ SOURCES += main.cpp \
     Region.cpp \
     LayoutOverlay.cpp \
     XiboVideoSink.cpp \
-    XiboApp.cpp \
-    MediaParser.cpp
+    XiboApp.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -40,8 +38,6 @@ HEADERS += \
     WebView.hpp \
     VideoHandler.hpp \
     constants.hpp \
-    RegionParser.hpp \
-    MediaParser.hpp \
     Transition.hpp \
     Image.hpp \
     MainParser.hpp \

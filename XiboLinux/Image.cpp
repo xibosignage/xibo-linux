@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-Image::Image(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
+Image::Image(const Size& size, int id, int duration, bool use_duration, const std::string& uri, ScaleType scale_type, Align align, Valign valign) :
     Media(id, duration, use_duration, Render::Native, uri), m_scale_type(scale_type), m_align(align), m_valign(valign)
 {
     auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height);

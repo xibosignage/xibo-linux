@@ -1,13 +1,9 @@
 #include "MainParser.hpp"
-#include "RegionParser.hpp"
-#include "MediaParser.hpp"
 
 #include "Image.hpp"
 #include "Video.hpp"
 #include "WebView.hpp"
 #include "VideoHandler.hpp"
-
-#include <spdlog/spdlog.h>
 
 MainParser::MainParser(const std::string& full_path)
 {
@@ -19,7 +15,7 @@ MainParser::MainParser(const std::string& full_path)
     m_tree = tree.get_child("layout");
 }
 
-std::unique_ptr<MainLayout> MainParser::parse()
+std::unique_ptr<MainLayout> MainParser::parse_layout()
 {
     spdlog::get(LOGGER)->debug("parse layout");
 
@@ -38,6 +34,27 @@ std::unique_ptr<MainLayout> MainParser::parse()
     return std::move(m_layout);
 }
 
+void MainParser::parse_region(const boost::property_tree::ptree& region_node)
+{
+    spdlog::get(LOGGER)->debug("parse region");
+
+    auto attrs = region_node.get_child("<xmlattr>");
+    auto options = region_node.get_child("options");
+
+    int id = attrs.get<int>("id");
+    int width = static_cast<int>(attrs.get<float>("width"));
+    int height = static_cast<int>(attrs.get<float>("height"));
+    int top = static_cast<int>(attrs.get<float>("top"));
+    int left = static_cast<int>(attrs.get<float>("left"));
+    int zindex = attrs.get_optional<int>("zindex").value_or(0);
+    bool loop = options.get_optional<bool>("loop").value_or(false);
+    auto type = options.get_optional<std::string>("transitionType").value_or("");
+    auto direction = options.get_optional<std::string>("transitionDirection").value_or("");
+    int duration = options.get_optional<int>("transitionDuration").value_or(0);
+
+    m_layout->add_region(id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration});
+}
+
 void MainParser::parse_xml_tree()
 {
     for(auto&& layout : m_tree)
@@ -45,8 +62,7 @@ void MainParser::parse_xml_tree()
         if(layout.first == "region")
         {
             auto region_node = layout.second;
-            auto region = RegionParser(region_node).parse();
-            add_region(std::make_index_sequence<std::tuple_size<ParsedRegion>::value>{}, region);
+            parse_region(region_node);
 
             for(auto&& region : region_node)
             {
@@ -55,21 +71,74 @@ void MainParser::parse_xml_tree()
                     auto type = region.second.get_child("<xmlattr>").get<std::string>("type");
                     if(type == "image")
                     {
-                        auto image = MediaParser(region.second).parse_media<Image>();
-                        add_media<Image>(std::make_index_sequence<std::tuple_size<ParsedImage>::value>{}, image);
+                        parse_media<Image>(region.second);
                     }
                     else if(type == "video")
                     {
-                        auto video = MediaParser(region.second).parse_media<Video>();
-                        add_media<Video>(std::make_index_sequence<std::tuple_size<ParsedVideo>::value>{}, video);
+                        parse_media<Video>(region.second);
                     }
                     else if(type == "twitter" || type == "forecastio" || type == "ticker")
                     {
-                        auto webview = MediaParser(region.second).parse_media<WebView>();
-                        add_media<WebView>(std::make_index_sequence<std::tuple_size<ParsedWebView>::value>{}, webview);
+                        parse_media<WebView>(region.second);
                     }
                 }
             }
         }
     }
+}
+
+// FIXME temporary workaround
+std::string MainParser::get_path(int id, const boost::optional<std::string>& uri, const std::string& type)
+{
+    if(!uri || type == "ticker" || type == "forecastio")
+    {
+        boost::property_tree::ptree tree;
+        boost::property_tree::read_xml(XiboApp::example_dir() + "/requiredFiles.xml", tree);
+
+        auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
+        for(auto&& required_file : required_files)
+        {
+            auto file_info = required_file.second;
+            if(file_info.get<std::string>("FileType") == "resource" && file_info.get<int>("MediaId") == id)
+            {
+                return file_info.get<std::string>("Path");
+            }
+        }
+        return std::string{};
+    }
+    return uri.value();
+}
+
+Image::ScaleType MainParser::from_scale_type(const std::string& option_name)
+{
+    if(option_name == "center")
+        return Image::ScaleType::Center;
+    else if(option_name == "stretch")
+        return Image::ScaleType::Stretch;
+    else
+        return Image::ScaleType::Invalid;
+}
+
+Image::Align MainParser::from_align(const std::string& option_name)
+{
+    if(option_name == "left")
+        return Image::Align::Left;
+    else if(option_name == "center")
+        return Image::Align::Center;
+    else if(option_name == "right")
+        return Image::Align::Right;
+    else
+        return Image::Align::Invalid;
+}
+
+Image::Valign MainParser::from_valign(const std::string& option_name)
+{
+    if(option_name == "top")
+        return Image::Valign::Top;
+    else if(option_name == "middle")
+        return Image::Valign::Middle;
+    else if(option_name == "bottom")
+        return Image::Valign::Bottom;
+    else
+        return Image::Valign::Invalid;
 }

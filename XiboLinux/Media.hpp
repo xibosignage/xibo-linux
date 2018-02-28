@@ -17,7 +17,7 @@ public:
         Native
     };
 
-    Media(uint id, uint duration, bool use_duration, Render render, const std::string& uri);
+    Media(int id, int duration, bool use_duration, Render render, const std::string& uri);
     virtual ~Media() = default;
 
     virtual void hide() = 0;
@@ -25,8 +25,8 @@ public:
     virtual Gtk::Widget& handler() = 0;
     virtual bool is_visible() const;
 
-    uint id() const;
-    uint duration() const;
+    int id() const;
+    int duration() const;
     bool use_duration() const;
     Render render() const;
     const std::string& uri() const;
@@ -34,8 +34,8 @@ public:
     sigc::signal<void>& media_timeout();
 
 protected:
-    uint m_id;
-    uint m_duration;
+    int m_id;
+    int m_duration;
     bool m_use_duration;
     Render m_render;
     std::string m_uri;

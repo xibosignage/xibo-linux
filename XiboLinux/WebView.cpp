@@ -2,7 +2,7 @@
 
 #include <boost/filesystem.hpp>
 
-WebView::WebView(const Size& size, uint id, uint duration, bool use_duration, const std::string& uri, int modeId, bool transparent) :
+WebView::WebView(const Size& size, int id, int duration, bool use_duration, const std::string& uri, int modeId, bool transparent) :
     Media(id, duration, use_duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {

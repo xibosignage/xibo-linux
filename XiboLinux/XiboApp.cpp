@@ -31,7 +31,7 @@ int XiboApp::run(int argc, char** argv)
     {
         MainParser parser(xlf_file_path);
 
-        auto layout = parser.parse();
+        auto layout = parser.parse_layout();
         layout->show_regions();
 
         return m_app->run(*layout);
