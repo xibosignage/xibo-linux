@@ -41,12 +41,16 @@ void XlfParser::parse_region(const boost::property_tree::ptree& region_node)
     auto attrs = region_node.get_child("<xmlattr>");
     auto options = region_node.get_child("options");
 
+    static int available_zindex = 0;
+
     int id = attrs.get<int>("id");
     int width = static_cast<int>(attrs.get<float>("width"));
     int height = static_cast<int>(attrs.get<float>("height"));
     int top = static_cast<int>(attrs.get<float>("top"));
     int left = static_cast<int>(attrs.get<float>("left"));
-    int zindex = attrs.get_optional<int>("zindex").value_or(0);
+    auto zindex_optional = attrs.get_optional<int>("zindex");
+    int zindex = zindex_optional ? zindex_optional.value() : available_zindex++;
+
     bool loop = options.get_optional<bool>("loop").value_or(false);
     auto type = options.get_optional<std::string>("transitionType").value_or("");
     auto direction = options.get_optional<std::string>("transitionDirection").value_or("");
