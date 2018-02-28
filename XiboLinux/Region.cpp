@@ -49,8 +49,8 @@ void Region::show()
 {
     if(!m_medias.empty())
     {
-        m_medias.front()->show();
         Gtk::Fixed::show();
+        m_medias.front()->show();
     }
 }
 
