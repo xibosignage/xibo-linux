@@ -2,8 +2,6 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/filesystem.hpp>
-#include <vector>
 #include <spdlog/spdlog.h>
 
 #include "MainLayout.hpp"
@@ -19,10 +17,10 @@ using ParsedImage = std::tuple<Image::ScaleType, Image::Align, Image::Valign>;
 using ParsedVideo = std::tuple<bool, bool>;
 using ParsedWebView = std::tuple<int, bool>;
 
-class MainParser
+class XlfParser
 {
 public:
-    MainParser(const std::string& full_path);
+    XlfParser(const std::string& full_path);
     std::unique_ptr<MainLayout> parse_layout();
 
 private:
@@ -61,7 +59,7 @@ private:
 };
 
 template <typename MediaType, typename... Args, typename T, T... N>
-void MainParser::add_media(int id, int duration, bool use_duration, const std::string& uri,
+void XlfParser::add_media(int id, int duration, bool use_duration, const std::string& uri,
                            const std::tuple<Args...>& args, std::integer_sequence<T, N...>)
 {
     auto&& current_region = m_layout->region(m_layout->regions_count() - 1);
@@ -69,7 +67,7 @@ void MainParser::add_media(int id, int duration, bool use_duration, const std::s
 }
 
 template<typename MediaType>
-void MainParser::parse_media(const boost::property_tree::ptree& media_node)
+void XlfParser::parse_media(const boost::property_tree::ptree& media_node)
 {
     spdlog::get(LOGGER)->debug("parse media");
 
@@ -91,7 +89,7 @@ void MainParser::parse_media(const boost::property_tree::ptree& media_node)
 
 template<typename MediaType>
 typename std::enable_if<std::is_same<MediaType,Image>::value, ParsedImage>::type
-MainParser::parse_media_options(const boost::property_tree::ptree& options)
+XlfParser::parse_media_options(const boost::property_tree::ptree& options)
 {
     auto scale_type = from_scale_type(options.get<std::string>("scaleType", "center"));
     auto align = from_align(options.get<std::string>("align", "center"));
@@ -102,7 +100,7 @@ MainParser::parse_media_options(const boost::property_tree::ptree& options)
 
 template<typename MediaType>
 typename std::enable_if<std::is_same<MediaType,Video>::value, ParsedVideo>::type
-MainParser::parse_media_options(const boost::property_tree::ptree& options)
+XlfParser::parse_media_options(const boost::property_tree::ptree& options)
 {
     bool muted = options.get<bool>("mute", false);
     bool looped = options.get<bool>("loop", false);
@@ -112,7 +110,7 @@ MainParser::parse_media_options(const boost::property_tree::ptree& options)
 
 template<typename MediaType>
 typename std::enable_if<std::is_same<MediaType,WebView>::value, ParsedWebView>::type
-MainParser::parse_media_options(const boost::property_tree::ptree& options)
+XlfParser::parse_media_options(const boost::property_tree::ptree& options)
 {
     int mode_id = options.get_optional<int>("modeId").value_or(-1);
     bool transparency = options.get_optional<bool>("transparency").value_or(true);

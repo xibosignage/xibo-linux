@@ -7,10 +7,11 @@
 #include "MainLayout.hpp"
 #include "WebView.hpp"
 
-#include "MainParser.hpp"
+#include "XlfParser.hpp"
 
 #include <iostream>
 #include <gstreamermm/init.h>
+#include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
 
@@ -29,7 +30,7 @@ int XiboApp::run(int argc, char** argv)
 
     if(result == ParsedResult::Success && !xlf_file_path.empty())
     {
-        MainParser parser(xlf_file_path);
+        XlfParser parser(xlf_file_path);
 
         auto layout = parser.parse_layout();
         layout->show_regions();

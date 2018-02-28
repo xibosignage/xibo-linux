@@ -24,11 +24,11 @@ SOURCES += main.cpp \
     Video.cpp \
     Transition.cpp \
     Image.cpp \
-    MainParser.cpp \
     Region.cpp \
     LayoutOverlay.cpp \
     XiboVideoSink.cpp \
-    XiboApp.cpp
+    XiboApp.cpp \
+    XlfParser.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -40,8 +40,8 @@ HEADERS += \
     constants.hpp \
     Transition.hpp \
     Image.hpp \
-    MainParser.hpp \
     Region.hpp \
     LayoutOverlay.hpp \
     XiboVideoSink.hpp \
-    XiboApp.hpp
+    XiboApp.hpp \
+    XlfParser.hpp

@@ -1,11 +1,11 @@
-#include "MainParser.hpp"
+#include "XlfParser.hpp"
 
 #include "Image.hpp"
 #include "Video.hpp"
 #include "WebView.hpp"
 #include "VideoHandler.hpp"
 
-MainParser::MainParser(const std::string& full_path)
+XlfParser::XlfParser(const std::string& full_path)
 {
     spdlog::get(LOGGER)->debug(full_path);
 
@@ -15,7 +15,7 @@ MainParser::MainParser(const std::string& full_path)
     m_tree = tree.get_child("layout");
 }
 
-std::unique_ptr<MainLayout> MainParser::parse_layout()
+std::unique_ptr<MainLayout> XlfParser::parse_layout()
 {
     spdlog::get(LOGGER)->debug("parse layout");
 
@@ -34,7 +34,7 @@ std::unique_ptr<MainLayout> MainParser::parse_layout()
     return std::move(m_layout);
 }
 
-void MainParser::parse_region(const boost::property_tree::ptree& region_node)
+void XlfParser::parse_region(const boost::property_tree::ptree& region_node)
 {
     spdlog::get(LOGGER)->debug("parse region");
 
@@ -55,7 +55,7 @@ void MainParser::parse_region(const boost::property_tree::ptree& region_node)
     m_layout->add_region(id, Size{width, height}, Point{left, top}, zindex, loop, Transition{type, direction, duration});
 }
 
-void MainParser::parse_xml_tree()
+void XlfParser::parse_xml_tree()
 {
     for(auto&& layout : m_tree)
     {
@@ -68,18 +68,19 @@ void MainParser::parse_xml_tree()
             {
                 if(region.first == "media")
                 {
-                    auto type = region.second.get_child("<xmlattr>").get<std::string>("type");
+                    auto media_node = region.second;
+                    auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
                     if(type == "image")
                     {
-                        parse_media<Image>(region.second);
+                        parse_media<Image>(media_node);
                     }
                     else if(type == "video")
                     {
-                        parse_media<Video>(region.second);
+                        parse_media<Video>(media_node);
                     }
                     else if(type == "twitter" || type == "forecastio" || type == "ticker")
                     {
-                        parse_media<WebView>(region.second);
+                        parse_media<WebView>(media_node);
                     }
                 }
             }
@@ -88,7 +89,7 @@ void MainParser::parse_xml_tree()
 }
 
 // FIXME temporary workaround
-std::string MainParser::get_path(int id, const boost::optional<std::string>& uri, const std::string& type)
+std::string XlfParser::get_path(int id, const boost::optional<std::string>& uri, const std::string& type)
 {
     if(!uri || type == "ticker" || type == "forecastio")
     {
@@ -109,7 +110,7 @@ std::string MainParser::get_path(int id, const boost::optional<std::string>& uri
     return uri.value();
 }
 
-Image::ScaleType MainParser::from_scale_type(const std::string& option_name)
+Image::ScaleType XlfParser::from_scale_type(const std::string& option_name)
 {
     if(option_name == "center")
         return Image::ScaleType::Center;
@@ -119,7 +120,7 @@ Image::ScaleType MainParser::from_scale_type(const std::string& option_name)
         return Image::ScaleType::Invalid;
 }
 
-Image::Align MainParser::from_align(const std::string& option_name)
+Image::Align XlfParser::from_align(const std::string& option_name)
 {
     if(option_name == "left")
         return Image::Align::Left;
@@ -131,7 +132,7 @@ Image::Align MainParser::from_align(const std::string& option_name)
         return Image::Align::Invalid;
 }
 
-Image::Valign MainParser::from_valign(const std::string& option_name)
+Image::Valign XlfParser::from_valign(const std::string& option_name)
 {
     if(option_name == "top")
         return Image::Valign::Top;
