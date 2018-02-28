@@ -70,6 +70,8 @@ void XlfParser::parse_xml_tree()
                 {
                     auto media_node = region.second;
                     auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
+                    auto render = media_node.get_child("<xmlattr>").get<std::string>("render");
+
                     if(type == "image")
                     {
                         parse_media<Image>(media_node);
@@ -78,7 +80,8 @@ void XlfParser::parse_xml_tree()
                     {
                         parse_media<Video>(media_node);
                     }
-                    else if(type == "twitter" || type == "forecastio" || type == "ticker")
+                    // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
+                    else if(render == "html" || type == "text" || type == "ticker" || type == "datasetview" || type == "embedded")
                     {
                         parse_media<WebView>(media_node);
                     }
