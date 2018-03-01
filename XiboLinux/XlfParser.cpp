@@ -116,37 +116,3 @@ std::string XlfParser::get_path(int id, const boost::optional<std::string>& uri,
     }
     return uri.value();
 }
-
-Image::ScaleType XlfParser::from_scale_type(const std::string& option_name)
-{
-    if(option_name == "center")
-        return Image::ScaleType::Center;
-    else if(option_name == "stretch")
-        return Image::ScaleType::Stretch;
-    else
-        return Image::ScaleType::Invalid;
-}
-
-Image::Align XlfParser::from_align(const std::string& option_name)
-{
-    if(option_name == "left")
-        return Image::Align::Left;
-    else if(option_name == "center")
-        return Image::Align::Center;
-    else if(option_name == "right")
-        return Image::Align::Right;
-    else
-        return Image::Align::Invalid;
-}
-
-Image::Valign XlfParser::from_valign(const std::string& option_name)
-{
-    if(option_name == "top")
-        return Image::Valign::Top;
-    else if(option_name == "middle")
-        return Image::Valign::Middle;
-    else if(option_name == "bottom")
-        return Image::Valign::Bottom;
-    else
-        return Image::Valign::Invalid;
-}
