@@ -53,6 +53,7 @@ void MainLayout::add_region(int id,
                             const Transition& transition)
 {
     m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
+
     auto&& point = m_regions.back()->position();
     m_main_overlay.add_overlay(*m_regions.back(), Gdk::Rectangle(point.left, point.top, size.width, size.height));
 }
@@ -69,12 +70,16 @@ size_t MainLayout::regions_count() const
 
 void MainLayout::reorder_regions()
 {
-    spdlog::get(LOGGER)->debug("reordering");
+    spdlog::get(LOGGER)->debug("Reordering");
 
-    for(auto&& region : m_regions)
+    std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
+        return first->zindex() < second->zindex();
+    });
+
+    for(size_t i = 0; i != regions_count(); ++i)
     {
-        spdlog::get(LOGGER)->debug("{} {}", region->zindex(), region->id());
-        m_main_overlay.reorder_overlay(*region, region->zindex());
+        spdlog::get(LOGGER)->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
+        m_main_overlay.reorder_overlay(*m_regions[i], static_cast<int>(i));
     }
 }
 
