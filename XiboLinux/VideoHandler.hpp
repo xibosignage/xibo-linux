@@ -32,7 +32,6 @@ public:
 private:
     void create_ui();
     void realize_cb();
-    void update_video_size();
 
     Gst::BusSyncReply bus_sync_handler(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message);
     bool bus_message_watch(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message);

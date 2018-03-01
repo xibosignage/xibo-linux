@@ -1,6 +1,7 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
 #include "XiboApp.hpp"
+#include "utilities.hpp"
 
 #include <spdlog/spdlog.h>
 #include <boost/filesystem.hpp>
@@ -25,9 +26,9 @@ MainLayout::MainLayout(int schema_version,
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
     auto image_path = XiboApp::example_dir() + "/" + m_background_image;
-    spdlog::get(LOGGER)->debug(image_path);
     if(boost::filesystem::exists(image_path))
     {
+        spdlog::get(LOGGER)->debug(image_path);
         try
         {
             auto pixbuf = Gdk::Pixbuf::create_from_file(image_path, width, height);
@@ -37,7 +38,23 @@ MainLayout::MainLayout(int schema_version,
         }
         catch(const Gdk::PixbufError& error)
         {
-            spdlog::get(LOGGER)->debug(std::string{error.what()});
+            spdlog::get(LOGGER)->error("Could set background image: {}", std::string{error.what()});
+        }
+    }
+
+    if(!m_background_color.empty())
+    {
+        try
+        {
+            auto pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, m_width, m_height);
+            pixbuf->fill(utilities::to_hex(m_background_color));
+            m_background.set(pixbuf);
+            m_main_overlay.add(m_background);
+            m_background.show();
+        }
+        catch(const Gdk::PixbufError& error)
+        {
+            spdlog::get(LOGGER)->error("Could set background color: {}", std::string{error.what()});
         }
     }
 

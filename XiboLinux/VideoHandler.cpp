@@ -110,8 +110,6 @@ void VideoHandler::on_pad_added(const Glib::RefPtr<Gst::Pad>& pad)
             auto strct = caps->get_structure(0);
             strct.get_field("height", m_best_size.height);
             strct.get_field("width", m_best_size.width);
-
-            update_video_size();
             m_logger->info("height: {}, width: {}", m_best_size.height, m_best_size.width);
         }
         sinkpad = m_video_converter->get_static_pad("sink");
@@ -135,12 +133,6 @@ void VideoHandler::create_ui()
 void VideoHandler::set_volume(double _volume)
 {
     m_volume->set_property("volume", _volume);
-}
-
-void VideoHandler::set_size(int width, int height)
-{
-    m_logger->debug("{} {}", width, height);
-    m_video_window.set_size_request(width, height);
 }
 
 void VideoHandler::play()
@@ -168,19 +160,4 @@ void VideoHandler::play()
 sigc::signal<void>& VideoHandler::signal_video_ended()
 {
     return m_signal_video_ended;
-}
-
-void VideoHandler::update_video_size()
-{
-    auto neededFactor = m_best_size.width / static_cast<float>(m_best_size.height);
-    auto currentFactor = m_size.width / static_cast<float>(m_size.height);
-
-    if(currentFactor > neededFactor)
-    {
-        set_size(std::round(m_size.height * neededFactor), m_size.height);
-    }
-    else
-    {
-        set_size(m_size.width, std::round(m_size.width / neededFactor));
-    }
 }

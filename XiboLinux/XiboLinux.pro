@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     LayoutOverlay.cpp \
     XiboVideoSink.cpp \
     XiboApp.cpp \
-    XlfParser.cpp
+    XlfParser.cpp \
+    utilities.cpp
 
 HEADERS += \
     MainLayout.hpp \
@@ -44,4 +45,5 @@ HEADERS += \
     LayoutOverlay.hpp \
     XiboVideoSink.hpp \
     XiboApp.hpp \
-    XlfParser.hpp
+    XlfParser.hpp \
+    utilities.hpp

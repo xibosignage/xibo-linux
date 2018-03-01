@@ -36,6 +36,7 @@ bool XiboVideoSink::on_frame_drawn(const Cairo::RefPtr<::Cairo::Context>& cairo)
         double dx = m_handler->get_width() / static_cast<double>(m_info.get_width());
         double dy = m_handler->get_height() / static_cast<double>(m_info.get_height());
         dx = dy = std::min(dx, dy);
+
         cairo->scale(dx, dy);
         cairo->set_source(m_surface, 0, 0);
         cairo->paint();
