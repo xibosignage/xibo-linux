@@ -24,8 +24,8 @@ std::unique_ptr<MainLayout> XlfParser::parse_layout()
     int schemaVersion = attrs.get<int>("schemaVersion");
     int width = attrs.get<int>("width");
     int height = attrs.get<int>("height");
-    std::string backgroundImage = attrs.get_optional<std::string>("background").value_or("-");
-    std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or("-");
+    std::string backgroundImage = attrs.get_optional<std::string>("background").value_or(std::string{});
+    std::string backgroundColor = attrs.get_optional<std::string>("bgcolor").value_or(std::string{});
 
     m_layout = std::make_unique<MainLayout>(schemaVersion, width, height, backgroundImage, backgroundColor);
 

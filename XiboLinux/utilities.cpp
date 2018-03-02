@@ -6,9 +6,6 @@
 
 uint32_t utilities::to_hex(const std::string& str_color)
 {
-    if(str_color.empty())
-        throw std::invalid_argument("String must not be empty");
-
     // remove '#' sign at the beginning
     std::string str_hex = str_color.substr(1);
 

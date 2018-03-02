@@ -2,6 +2,8 @@
 
 #include <gtkmm/window.h>
 #include <gtkmm/image.h>
+#include <spdlog/spdlog.h>
+
 #include "LayoutOverlay.hpp"
 
 #include <vector>
@@ -43,6 +45,9 @@ private:
     void create_ui();
     void reorder_regions();
 
+    void set_background_color(uint32_t background_color_hex);
+    void set_background_image(const std::string& background_image);
+
 private:
     Gtk::Image m_background;
     LayoutOverlay m_main_overlay;
@@ -52,7 +57,8 @@ private:
     int m_height;
     std::string m_background_image;
     std::string m_background_color;
+    bool is_background_set = false;
 
     std::vector<std::unique_ptr<Region>> m_regions;
-
+    std::shared_ptr<spdlog::logger> m_logger;
 };

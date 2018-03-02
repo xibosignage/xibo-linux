@@ -22,40 +22,21 @@ MainLayout::MainLayout(int schema_version,
 //    fullscreen();
 //    set_keep_above();
 //    move(500, 500);
+    m_logger = spdlog::get(LOGGER);
 
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
-    auto image_path = XiboApp::example_dir() + "/" + m_background_image;
-    if(boost::filesystem::exists(image_path))
-    {
-        spdlog::get(LOGGER)->debug(image_path);
-        try
-        {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(image_path, width, height);
-            m_background.set(pixbuf);
-            m_main_overlay.add(m_background);
-            m_background.show();
-        }
-        catch(const Gdk::PixbufError& error)
-        {
-            spdlog::get(LOGGER)->error("Could set background image: {}", std::string{error.what()});
-        }
-    }
-
+    // NOTE image has higher priority
     if(!m_background_color.empty())
+        set_background_color(utilities::to_hex(m_background_color));
+
+    if(!m_background_image.empty())
+        set_background_image(XiboApp::example_dir() + "/" + m_background_image);
+
+    if(is_background_set)
     {
-        try
-        {
-            auto pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, m_width, m_height);
-            pixbuf->fill(utilities::to_hex(m_background_color));
-            m_background.set(pixbuf);
-            m_main_overlay.add(m_background);
-            m_background.show();
-        }
-        catch(const Gdk::PixbufError& error)
-        {
-            spdlog::get(LOGGER)->error("Could set background color: {}", std::string{error.what()});
-        }
+        m_main_overlay.add(m_background);
+        m_background.show();
     }
 
     add(m_main_overlay);
@@ -87,7 +68,7 @@ size_t MainLayout::regions_count() const
 
 void MainLayout::reorder_regions()
 {
-    spdlog::get(LOGGER)->debug("Reordering");
+    m_logger->debug("Reordering");
 
     std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
         return first->zindex() < second->zindex();
@@ -95,8 +76,45 @@ void MainLayout::reorder_regions()
 
     for(size_t i = 0; i != regions_count(); ++i)
     {
-        spdlog::get(LOGGER)->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
+        m_logger->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
         m_main_overlay.reorder_overlay(*m_regions[i], static_cast<int>(i));
+    }
+}
+
+void MainLayout::set_background_color(uint32_t background_color_hex)
+{
+    try
+    {
+        auto pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, m_width, m_height);
+        pixbuf->fill(background_color_hex);
+        m_background.set(pixbuf);
+        is_background_set = true;
+    }
+    catch(const Gdk::PixbufError& error)
+    {
+        m_logger->error("Could set background color: {}", std::string{error.what()});
+    }
+}
+
+void MainLayout::set_background_image(const std::string& background_image_path)
+{
+    if(boost::filesystem::exists(background_image_path))
+    {
+        m_logger->debug(background_image_path);
+        try
+        {
+            auto pixbuf = Gdk::Pixbuf::create_from_file(background_image_path, m_width, m_height);
+            m_background.set(pixbuf);
+            is_background_set = true;
+        }
+        catch(const Gdk::PixbufError& error)
+        {
+            m_logger->error("Could set background image: {}", std::string{error.what()});
+        }
+    }
+    else
+    {
+        m_logger->warn("Background image doesn't exists");
     }
 }
 
