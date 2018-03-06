@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(XiboLinuxCMake)
-
-message("PKG_CONFIG_FOUND ${PKG_CONFIG_FOUND}")
-message("PKG_CONFIG_EXECUTABLE ${PKG_CONFIG_EXECUTABLE}")
-message("PKG_CONFIG_VERSION_STRING ${PKG_CONFIG_VERSION_STRING}")
+project(XiboLinux)
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED filesystem program_options)
