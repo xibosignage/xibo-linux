@@ -1,4 +1,5 @@
 *.autosave
 *.txt.user
 build-*
+vendor
 XiboExamples
