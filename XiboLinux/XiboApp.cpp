@@ -26,22 +26,24 @@ XiboApp::XiboApp(const std::string& app_name)
 int XiboApp::run(int argc, char** argv)
 {
     auto result = parse_command_line(argc, argv);
-    auto xlf_file_path = get_xlf_file();
 
-    if(result == ParsedResult::Success && !xlf_file_path.empty())
+    if(result == ParsedResult::Success)
     {
-        XlfParser parser(xlf_file_path);
+        auto xlf_file_path = get_xlf_file();
+        if(!xlf_file_path.empty())
+        {
+            XlfParser parser(xlf_file_path);
 
-        auto layout = parser.parse_layout();
-        layout->show_regions();
+            auto layout = parser.parse_layout();
+            layout->show_regions();
 
-        return m_app->run(*layout);
+            return m_app->run(*layout);
+        }
+        else
+        {
+            m_logger->error(".XLF file doesn't exist");
+        }
     }
-    else if(xlf_file_path.empty())
-    {
-        m_logger->error(".XLF file doesn't exist");
-    }
-
     return ParsedResult::Failure;
 }
 
