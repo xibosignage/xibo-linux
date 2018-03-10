@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(XiboLinuxWatchdog)
+project(Watchdog)
 
 pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0)
 
