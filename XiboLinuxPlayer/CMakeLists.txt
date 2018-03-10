@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 project(XiboLinuxPlayer)
 
-find_package(PkgConfig REQUIRED)
-find_package(Boost REQUIRED filesystem program_options)
-
 pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0)
 pkg_check_modules(GStreamermm REQUIRED gstreamermm-1.0)
 pkg_check_modules(WebKit REQUIRED webkitgtk-3.0)
