@@ -22,7 +22,7 @@ set_tests_properties(player PROPERTIES PASS_REGULAR_EXPRESSION "Player started")
 add_test(NAME player-fake-dir COMMAND ${PROJECT_NAME} --example-dir /home/stivius/FakeDir --testing)
 set_tests_properties(player-fake-dir PROPERTIES PASS_REGULAR_EXPRESSION "The directory doesn't exist")
 
-add_test(NAME player-empty-dir COMMAND ${PROJECT_NAME} --example-dir /home/stivius/XiboLinuxStack/XiboExamples/FakeEmptyDir --testing)
+add_test(NAME player-empty-dir COMMAND ${PROJECT_NAME} --example-dir /home --testing)
 set_tests_properties(player-empty-dir PROPERTIES PASS_REGULAR_EXPRESSION ".XLF file doesn't exist")
 
 add_test(NAME player-version COMMAND ${PROJECT_NAME} --version --testing)

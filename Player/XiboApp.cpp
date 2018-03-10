@@ -112,8 +112,8 @@ void XiboApp::parse_command_line(int argc, char **argv)
 
 std::string XiboApp::get_xlf_file()
 {
-    fs::recursive_directory_iterator it(s_example_dir);
-    fs::recursive_directory_iterator end;
+    fs::directory_iterator it(s_example_dir);
+    fs::directory_iterator end;
 
     while(it != end)
     {

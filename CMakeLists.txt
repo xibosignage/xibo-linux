@@ -3,6 +3,11 @@ cmake_minimum_required(VERSION 3.10)
 execute_process(COMMAND git rev-list --all --count OUTPUT_VARIABLE GIT_REVISION)
 string(REGEX REPLACE "\n$" "" GIT_REVISION "${GIT_REVISION}")
 
+# workaround to avoid rare errors when cmake is not able to recognize git repo
+if(NOT GIT_REVISION)
+    set(GIT_REVISION 0)
+endif()
+
 project(XiboLinux VERSION 0.2.0.${GIT_REVISION})
 
 set(CMAKE_CXX_STANDARD 14)
