@@ -1,8 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.5.1)
 
 project(Player)
 
-pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0)
 pkg_check_modules(GStreamermm REQUIRED gstreamermm-1.0)
 pkg_check_modules(WebKit REQUIRED webkitgtk-3.0)
 
@@ -10,24 +9,27 @@ include_directories(${Gtkmm_INCLUDE_DIRS} ${GStreamermm_INCLUDE_DIRS} ${WebKit_I
 
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -pthread)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
-set(SOURCE_FILES main.cpp XiboApp.cpp LayoutOverlay.cpp Media.cpp Image.cpp Video.cpp WebView.cpp MainLayout.cpp Region.cpp
-                          VideoHandler.cpp XiboVideoSink.cpp Transition.cpp utilities.cpp XlfParser.cpp)
+
+set(SOURCE_FILES main.cpp XiboApp.cpp LayoutOverlay.cpp Media.cpp Image.cpp Video.cpp WebView.cpp MainLayout.cpp Region.cpp VideoHandler.cpp XiboVideoSink.cpp Transition.cpp utilities.cpp XlfParser.cpp)
+
+find_libs_path("${GStreamermm_LIBRARIES}" GStreamermm_FULL_LIBRARIES)
+find_libs_path("${WebKit_LIBRARIES}" WebKit_FULL_LIBRARIES)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${Gtkmm_LIBRARIES} ${GStreamermm_LIBRARIES} ${WebKit_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${Gtkmm_FULL_LIBRARIES} ${GStreamermm_FULL_LIBRARIES} ${WebKit_FULL_LIBRARIES} ${Boost_LIBRARIES})
 
-function(CopyLibs LibList LibDir)
-    foreach(LibName ${LibList})
-        file(GLOB LibPath ${LibDir}/lib${LibName}.so.?)
-        install(CODE "execute_process(COMMAND cp ${LibPath} ${CMAKE_CURRENT_BINARY_DIR}/libs/)")
-    endforeach(LibName)
+function(CopyLibs LibList)
+    foreach(LibPath ${LibList})
+        file(GLOB LibFullPath ${LibPath}.?)
+        install(CODE "execute_process(COMMAND cp ${LibFullPath} ${CMAKE_CURRENT_BINARY_DIR}/libs/)")
+    endforeach(LibPath)
 endfunction(CopyLibs)
 
 # install
 install(DIRECTORY DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs/)
-CopyLibs("${Gtkmm_LIBRARIES}" "${Gtkmm_LIBDIR}")
-CopyLibs("${GStreamermm_LIBRARIES}" "${GStreamermm_LIBDIR}")
-CopyLibs("${WebKit_LIBRARIES}" "${WebKit_LIBDIR}")
+CopyLibs("${Gtkmm_FULL_LIBRARIES}")
+CopyLibs("${GStreamermm_FULL_LIBRARIES}")
+CopyLibs("${WebKit_FULL_LIBRARIES}")
 
 # Tests
 add_test(NAME player COMMAND ${PROJECT_NAME} --example-dir /home/stivius/XiboLinuxStack/XiboExamples/LayerTest --testing)
