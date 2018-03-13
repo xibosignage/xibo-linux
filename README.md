@@ -27,4 +27,4 @@ gstreamermm is 1.4.3 in xenial repos. You need to install 1.8.0 manually from so
 - Open _build directory and run `ctests`
 
 ## Binary distribution
-To run package that you've built on another machine you need to copy `Player` executable together with `libs` folder and `XiboExamples` folder from `source-dir/_build/Player`
+To run on another machine the package that you've built you need to copy `Player` executable together with `libs` folder and `XiboExamples` folder from `source-dir/_build/Player`
