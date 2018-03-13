@@ -21,7 +21,7 @@ pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.18.0)
 find_link_libs("${Gtkmm_LIBRARIES}" Gtkmm_LINK_LIBRARIES)
 
 configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/Generated/config.hpp)
-include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated/)
+include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/Generated/)
 
 add_subdirectory(Player)
 add_subdirectory(Watchdog)
