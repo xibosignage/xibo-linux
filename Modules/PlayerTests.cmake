@@ -1,7 +1,7 @@
-add_test(NAME player COMMAND ${PROJECT_NAME} --example-dir /home/stivius/XiboLinuxStack/XiboExamples/LayerTest --testing)
+add_test(NAME player COMMAND ${PROJECT_NAME} --example-dir ${CMAKE_CURRENT_BINARY_DIR}/XiboExamples/LayerTest --testing)
 set_tests_properties(player PROPERTIES PASS_REGULAR_EXPRESSION "Player started")
 
-add_test(NAME player-fake-dir COMMAND ${PROJECT_NAME} --example-dir /home/stivius/FakeDir --testing)
+add_test(NAME player-fake-dir COMMAND ${PROJECT_NAME} --example-dir ${CMAKE_CURRENT_BINARY_DIR}/FakeDir --testing)
 set_tests_properties(player-fake-dir PROPERTIES PASS_REGULAR_EXPRESSION "The directory doesn't exist")
 
 add_test(NAME player-empty-dir COMMAND ${PROJECT_NAME} --example-dir /home --testing)
