@@ -6,12 +6,16 @@
 #include "Region.hpp"
 #include "MainLayout.hpp"
 #include "WebView.hpp"
+#include "config.hpp"
 
 #include "XlfParser.hpp"
 
 #include <iostream>
 #include <gstreamermm/init.h>
 #include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
+#include <spdlog/fmt/ostr.h>
+#include <glibmm/main.h>
 
 namespace fs = boost::filesystem;
 
@@ -25,9 +29,8 @@ XiboApp::XiboApp(const std::string& app_name)
 
 int XiboApp::run(int argc, char** argv)
 {
-    auto result = parse_command_line(argc, argv);
-
-    if(result == ParsedResult::Success)
+    parse_command_line(argc, argv);
+    if(fs::exists(s_example_dir) && fs::is_directory(s_example_dir))
     {
         auto xlf_file_path = get_xlf_file();
         if(!xlf_file_path.empty())
@@ -37,6 +40,8 @@ int XiboApp::run(int argc, char** argv)
             auto layout = parser.parse_layout();
             layout->show_regions();
 
+            m_logger->debug("Player started");
+
             return m_app->run(*layout);
         }
         else
@@ -44,7 +49,11 @@ int XiboApp::run(int argc, char** argv)
             m_logger->error(".XLF file doesn't exist");
         }
     }
-    return ParsedResult::Failure;
+    else if(!s_example_dir.empty())
+    {
+        m_logger->error("The directory doesn't exist (or it isn't a directory)");
+    }
+    return 0;
 }
 
 // temporary solution until receiving files from CMS
@@ -64,41 +73,47 @@ void XiboApp::init()
     m_logger = spdlog::get(LOGGER);
 }
 
-int XiboApp::parse_command_line(int argc, char **argv)
+void XiboApp::parse_command_line(int argc, char **argv)
 {
     namespace po = boost::program_options;
 
     po::options_description desc("Allowed options");
-    desc.add_options()("example-dir", po::value<std::string>(), "specify full (absolute) path to example directory");
+    desc.add_options()("example-dir", po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
+    desc.add_options()("version", "get project version");
+    desc.add_options()("testing", "enable testing mode");
 
-    po::store(po::parse_command_line(argc, argv, desc), m_vm);
-    po::notify(m_vm);
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
 
-    if (m_vm.count("example-dir"))
+    if(!vm.empty())
     {
-        s_example_dir = m_vm["example-dir"].as<std::string>();
-
-        if(!fs::exists(s_example_dir) || !fs::is_directory(s_example_dir))
+        if(vm.count("example-dir"))
         {
-            m_logger->error("The directory doesn't exist (or it isn't a directory)");
-            return ParsedResult::Failure;
+            s_example_dir = vm["example-dir"].as<std::string>();
+            m_logger->info("Example directory is {}", vm["example-dir"].as<std::string>());
         }
-
-        m_logger->info("Example directory is {}", m_vm["example-dir"].as<std::string>());
+        if(vm.count("version"))
+        {
+            m_logger->info("Project version: {}", PROJECT_VERSION);
+        }
+        if(vm.count("testing"))
+        {
+            Glib::signal_timeout().connect_once([=](){
+                std::exit(0);
+            }, 3000);
+        }
     }
     else
     {
-        m_logger->info("Example was not chosen");
-        return ParsedResult::Failure;
+        m_logger->info("{}", desc);
     }
-
-    return ParsedResult::Success;
 }
 
 std::string XiboApp::get_xlf_file()
 {
-    fs::recursive_directory_iterator it(s_example_dir);
-    fs::recursive_directory_iterator end;
+    fs::directory_iterator it(s_example_dir);
+    fs::directory_iterator end;
 
     while(it != end)
     {

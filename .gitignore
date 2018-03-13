@@ -1,3 +1,5 @@
-*.pro.user
+*.autosave
+*.txt.user
 build-*
 XiboExamples
+Makefile
