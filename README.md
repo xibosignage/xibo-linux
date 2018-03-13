@@ -12,6 +12,9 @@
 - Open top level source directory and run `cmake -H. -B_build`)
 - `cd _build` and run `make && make install`
 
+#### Known issues on Ubuntu 16.04/Linux Mint 18
+gstreamermm is 1.4.3 in xenial repos. You need to install 1.8.0 manually from sources together with `mm-common>=0.9.10` and `glibmm-2.4>=2.47.6` because 1.8 version requires them to be built
+
 ## Running Player
 - `sudo apt install gstreamer1.0-libav` for running video examples (I hope to get rid of this installation)
 - Just run `./Player` to get info about available command options
