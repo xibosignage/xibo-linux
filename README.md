@@ -3,15 +3,15 @@
 ## Building from sources
 
 NOTE: these packages can require additional installations if you haven't such
-- cmake>=3.5.1
-- gtk>=3.18 and gtkmm>=3.18 GUI library and C++ bindings
-- gstreamer>=1.8, gstreamer-base-plugins>=1.8 and gstreamermm>=1.8 multimedia framerwork, base plugins and C++ bindings
-- webkitgtk>=2.4.11 web content rendering
-- boost_filesystem>=1.58 and boost_program_options>=1.58
+- `cmake>=3.5.1` cross-platform software for managing the build process
+- `gtk>=3.18` and `gtkmm>=3.18` GUI library and C++ bindings
+- `gstreamer>=1.8`, `gstreamer-base-plugins>=1.8` and g`streamermm>=1.8` multimedia framerwork, base plugins and C++ bindings
+- `webkitgtk>=2.4.11` web content rendering
+- `boost_filesystem>=1.58` and `boost_program_options>=1.58`
   
 ### General steps to build player
 - Download sources from GitHub or run `git clone https://github.com/Stivius/XiboLinuxStack`
-- Install CMake at least 5.3.1
+- Install CMake
 - Install platform specific dependencies
 - Install spdlog `git clone https://github.com/gabime/spdlog` and `cd spdlog && cmake . && make && sudo make install`
 - Open top level source directory and run `cmake -H. -B_build`)
@@ -19,7 +19,7 @@ NOTE: these packages can require additional installations if you haven't such
 
 ### Platofrm specific dependencies
   #### Ubuntu 16.04/Linux Mint 18
-  Dev packages `sudo apt install libgtkmm-3.0-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkitgtk-3.0-dev libboost-filesystem1.58-dev libbost-program-options1.58-dev`)
+  Dev packages `sudo apt install cmake libgtkmm-3.0-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkitgtk-3.0-dev libboost-filesystem1.58-dev libbost-program-options1.58-dev`)
   
   ##### Known issues on Ubuntu 16.04/Linux Mint 18
   gstreamermm is 1.4.3 in xenial repos. You need to install 1.8.0 manually from [sources](https://github.com/GNOME/gstreamermm/releases/tag/1.8.0) after installing [`mm-common>=0.9.10`](https://github.com/GNOME/mm-common/releases/tag/0.9.10) and [`glibmm-2.4>=2.47.6`](https://github.com/GNOME/glibmm/releases/tag/2.47.6) because 1.8 version requires them to be built
