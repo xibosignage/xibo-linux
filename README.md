@@ -2,6 +2,7 @@
 
 ## Building from sources
 ### Ubuntu 16.04/Linux Mint 18
+- Download sources from GitHub or run `git clone https://github.com/Stivius/XiboLinuxStack`
 - Install CMake at least 5.3.1 (`sudo apt install cmake`)
 - Install dependencies (dev packages)
   - gtkmm at least 3.18 (`sudo apt install libgtkmm-3.0-dev`)
