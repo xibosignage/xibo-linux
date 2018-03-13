@@ -6,7 +6,7 @@
 - Install CMake at least 5.3.1 (`sudo apt install cmake`)
 - Install dependencies (dev packages)
   - gtkmm at least 3.18 (`sudo apt install libgtkmm-3.0-dev`)
-  - gstreamer and gstreamer base plugins at least 1.8 (`sudo apt install libgstreamer-1.0-dev libgstreamer-plugins-base1.0-dev`)
+  - gstreamer and gstreamer base plugins at least 1.8 (`sudo apt install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev`)
   - gstreamermm at least 1.8 (`sudo apt install libgstreamermm-1.0-dev`)
   - webkitgtk at least 2.4.11 (`sudo apt install libwebkitgtk-3.0-dev`)
   - boost modules (filesystem and program_options) at least 1.58 (`sudo apt install libboost-filesystem1.58-dev libbost-program-options1.58-dev`)
@@ -14,7 +14,7 @@
 - `cd _build` and run `make && make install`
 
 #### Known issues on Ubuntu 16.04/Linux Mint 18
-gstreamermm is 1.4.3 in xenial repos. You need to install 1.8.0 manually from sources together with `mm-common>=0.9.10` and `glibmm-2.4>=2.47.6` because 1.8 version requires them to be built
+gstreamermm is 1.4.3 in xenial repos. You need to install 1.8.0 manually from [sources](https://github.com/GNOME/gstreamermm/releases/tag/1.8.0) together with [`mm-common>=0.9.10`](https://github.com/GNOME/mm-common/releases/tag/0.9.10) and [`glibmm-2.4>=2.47.6`](https://github.com/GNOME/glibmm/releases/tag/2.47.6) because 1.8 version requires them to be built
 
 ## Running Player
 - `sudo apt install gstreamer1.0-libav` for running video examples (I hope to get rid of this installation)
