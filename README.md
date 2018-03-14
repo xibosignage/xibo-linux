@@ -19,7 +19,14 @@ NOTE: these packages can require additional installations if you haven't such
 - Open top level source directory and run `cmake -H. -B_build`)
 - `cd _build` and run `make && make install`
 
-### Platofrm specific dependencies
+### Building with Docker for Ubuntu 16.04
+- Install Docker
+- Clone this repository
+- From the root of the repository: `docker build -t xibo-linux .`
+- `docker run -v /path/to/local/clone/output:/output xibo-linux`
+- The Player binaries will be build and output in to your `output` directory
+
+### Platform specific dependencies
   #### Ubuntu 16.04/Linux Mint 18
   Dev packages `sudo apt install cmake libgtkmm-3.0-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libwebkitgtk-3.0-dev libboost-filesystem1.58-dev libbost-program-options1.58-dev`)
   
