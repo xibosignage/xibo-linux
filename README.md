@@ -1,5 +1,7 @@
 # XiboLinux
 
+[![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack)
+
 ## Building from sources
 
 NOTE: these packages can require additional installations if you haven't such
