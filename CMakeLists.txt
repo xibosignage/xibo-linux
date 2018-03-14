@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.5.1)
+
+project(XiboLinux VERSION 0.2.0.0)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
+
+find_package(PkgConfig REQUIRED)
+find_package(Boost 1.58 REQUIRED filesystem program_options)
+
+# modules
+include(FindSonameLibs)
+include(FindLinkLibs)
+include(CopyLibs)
+include(CTest)
+
+pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.18.0)
+find_link_libs("${Gtkmm_LIBRARIES}" Gtkmm_LINK_LIBRARIES)
+
+configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/Generated/config.hpp)
+include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/Generated/)
+
+add_subdirectory(Player)
+add_subdirectory(Watchdog)

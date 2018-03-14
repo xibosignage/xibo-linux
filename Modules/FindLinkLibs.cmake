@@ -1,0 +1,7 @@
+function(find_link_libs libraries_list output_var)
+    foreach(lib ${libraries_list})
+        find_library(${lib}_path NAMES ${lib})
+        set(libs_path ${libs_path} ${${lib}_path})
+    endforeach(lib)
+    set(${output_var} ${libs_path} PARENT_SCOPE)
+endfunction()
