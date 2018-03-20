@@ -86,4 +86,5 @@ RUN cd /app && \
     ls -la /app/_build
 
 VOLUME /output
-CMD cp -rv /app/_build /output
+CMD ["./app/run.sh"]
+
