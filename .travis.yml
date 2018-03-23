@@ -1,15 +1,13 @@
 language: cpp
 sudo: required
 
-addons:
-    apt:
-        packages:
-            - lcov
-
 services:
   - docker
 
 before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
   - pip install --user cpp-coveralls
   - docker pull stivius/xibo-linux
 
@@ -18,9 +16,3 @@ script:
 
 after_success:
   - docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ${TRAVIS_BUILD_DIR}/output:/output stivius/xibo-linux
-  - cd ${TRAVIS_BUILD_DIR}
-  - lcov --directory . --capture --output-file coverage.info # capture coverage info
-  - lcov --remove coverage.info '/usr/*' --output-file coverage.info # filter out system
-  - lcov --list coverage.info #debug info
-  # Uploading report to CodeCov
-  - bash <(curl -s https://codecov.io/bash) || echo "Codecov did not collect coverage reports"
