@@ -1,8 +1,8 @@
 # XiboLinux
 
-| `develop` | `master` | `develop coverage` |
-|--------|--------|--------|
-| [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=master)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Coverage Status](https://codecov.io/gh/Stivius/XiboLinuxStack/branch/develop/graph/badge.svg)](https://codecov.io/gh/Stivius/XiboLinuxStack/branch/develop)|
+| `develop` | `master`|
+|--------|--------|
+| [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=master)](https://travis-ci.org/Stivius/XiboLinuxStack)
 
 ## Building from sources
 
