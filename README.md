@@ -1,8 +1,8 @@
 # XiboLinux
 
-| `develop` | `master` | `develop coverage` |
-|--------|--------|--------|
-| [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=master)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Coverage Status](https://codecov.io/gh/Stivius/XiboLinuxStack/branch/develop/graph/badge.svg)](https://codecov.io/gh/Stivius/XiboLinuxStack/branch/develop)|
+| `develop` | `master`|
+|--------|--------|
+| [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=master)](https://travis-ci.org/Stivius/XiboLinuxStack)
 
 ## Building from sources
 
@@ -25,7 +25,7 @@ NOTE: these packages can require additional installations if you haven't such
 - `sudo apt install gstreamer1.0-libav` for running video examples (I hope to get rid of this installation)
 - Just run `./Player` to get info about available command options
 - `./Player --example-dir=/path-to-XiboExamples-folder/Examples` to run specified example
-- `./Player --version` print current version (we need VERSIONING.md and CHANGELOG.md in future)
+- `./Player --version` print current version (check VERSIONING.md and CHANGELOG.md to know more about your player version)
 
 ## Running tests
 - Download `XiboExamples.tar.gz` from releases on Github and extract it to `source-dir/_build/Player`
