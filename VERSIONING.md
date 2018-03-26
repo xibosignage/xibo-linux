@@ -4,4 +4,6 @@ The version from `--version` command line option should look like this: MAJOR.MI
 
 Build number is the number of builds in current MINOR release. Alpha, beta and release candidates are marked with corresponding names (e.g. 0.2.0-alpha).
 
+Each release is marked with color name (e.g. Aqua, Navy) to differentiate releases without mentioning numbers.
+
 More about semantic versioning could be found here: https://semver.org
