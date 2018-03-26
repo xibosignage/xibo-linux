@@ -95,7 +95,7 @@ void XiboApp::parse_command_line(int argc, char **argv)
         }
         if(vm.count("version"))
         {
-            m_logger->info("Project version: {}", PROJECT_VERSION);
+            m_logger->info("Project version: {}", get_version());
         }
         if(vm.count("testing"))
         {
