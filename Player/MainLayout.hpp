@@ -24,18 +24,16 @@ public:
                const std::string& background_color);
     ~MainLayout() = default;
 
+    MainLayout(const MainLayout& other) = delete;
+    MainLayout& operator=(const MainLayout& other) = delete;
+
     int schema_version() const;
     int width() const;
     int height() const;
     const std::string& background_image() const;
     const std::string& background_color() const;
 
-    void add_region(int id,
-                    const Size& size,
-                    const Point& pos,
-                    int zindex,
-                    bool looped,
-                    const Transition& transition);
+    void add_region(std::unique_ptr<Region> region);
     Region& region(size_t index);
     size_t regions_count() const;
     void show_regions();
