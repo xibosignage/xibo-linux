@@ -17,8 +17,9 @@ NOTE: these packages can require additional installations if you haven't such
 ### Building with Docker for Ubuntu 16.04
 - Install Docker
 - Clone this repository
-- From the root of the repository: `docker build -t xibo-linux .`
-- `docker run -v /path/to/local/clone/output:/output xibo-linux`
+- Pull the docker image from hub: `docker pull stivius/xibo-linux`
+- From the root of the repository: `docker build --cache-from stivius/xibo-linux .`
+- `docker run -v /path/to/local/clone/output:/output stivius/xibo-linux`
 - The Player binaries will be build and output in to your `output` directory
 
 ## Running Player
