@@ -48,6 +48,7 @@ void WebView::show()
 {
     Media::show();
     m_handler.show_all();
+    webkit_web_view_reload(m_web_view);
 }
 
 Gtk::Widget& WebView::handler()
