@@ -1,7 +1,7 @@
 FROM ubuntu:16.04
 MAINTAINER Alex Harrington <alex@springsignage.com>
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:ubuntu-toolchain-r/test && apt-get update && apt-get install -y \
   software-properties-common \
   cmake \
   libgtkmm-3.0-dev \
@@ -22,9 +22,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   libtool \
   curl \
   libxml-parser-perl \
-  git
+  git \
+  g++-7
 
-ENV MMCOMMON=0.9.10 GLIBMM=2.47.6 GSTREAMERMM=1.8.0 SPDLOG=0.16.3
+ENV MMCOMMON=0.9.10 SIGC=2.9.1 GLIB=2.50.1 GLIBMM=2.50.1 GSTREAMER=1.10.0 GSTREAMERMM=1.10.0 SPDLOG=0.16.3 CMAKE=3.10.3
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libffi-dev libmount-dev
 
 RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archive/${MMCOMMON}.tar.gz && \
     cd /root && \
@@ -39,6 +42,30 @@ RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archiv
 
 RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     export ACLOCAL_PATH && \
+	curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/GNOME/libsigcplusplus/archive/${SIGC}.tar.gz && \
+    cd /root && \
+    tar -zxvf libsigcplusplus.tar.gz && \
+    cd libsigcplusplus-${SIGC} && \
+    ./autogen.sh && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r /root/libsigcplusplus-${SIGC} && \
+    rm /root/libsigcplusplus.tar.gz
+
+RUN curl -o /root/glib.tar.gz -SL https://github.com/GNOME/glib/archive/${GLIB}.tar.gz && \
+    cd /root && \
+    tar -zxvf glib.tar.gz && \
+    cd glib-${GLIB} && \
+    ./autogen.sh && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r /root/glib-${GLIB} && \
+    rm /root/glib.tar.gz
+
+RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
+    export ACLOCAL_PATH && \
     curl -o /root/glibmm.tar.gz -SL https://github.com/GNOME/glibmm/archive/${GLIBMM}.tar.gz && \
     cd /root && \
     tar -zxvf glibmm.tar.gz && \
@@ -49,6 +76,28 @@ RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     cd /root && \
     rm -r /root/glibmm-${GLIBMM} && \
     rm /root/glibmm.tar.gz
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y autopoint libbison-dev flex gtk-doc-tools
+
+RUN cd /root && \
+	git clone https://github.com/GStreamer/gstreamer/ && \
+    cd gstreamer && \
+	git checkout tags/1.10.0 && \
+    ./autogen.sh && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r /root/gstreamer
+
+RUN cd /root && \
+	git clone https://github.com/GStreamer/gst-plugins-base/ && \
+    cd gst-plugins-base && \
+	git checkout tags/1.10.0 && \
+    ./autogen.sh && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r /root/gst-plugins-base
 
 RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     export ACLOCAL_PATH && \
@@ -74,6 +123,19 @@ RUN curl -o /root/spdlog.tar.gz -SL https://github.com/gabime/spdlog/archive/v${
     rm -r spdlog-${SPDLOG} && \
     rm spdlog.tar.gz
 
+RUN curl -o /root/cmake.tar.gz https://cmake.org/files/v3.10/cmake-${CMAKE}.tar.gz && \
+	cd /root && \
+    tar -zxvf cmake.tar.gz && \
+    cd cmake-${CMAKE} && \
+    cmake . && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r cmake-${CMAKE} && \
+    rm cmake.tar.gz
+
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 RUN mkdir -p /app
 
 ADD . /app
