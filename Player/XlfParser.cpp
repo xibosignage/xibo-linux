@@ -1,4 +1,5 @@
 #include "XlfParser.hpp"
+#include <regex>
 
 XlfParser::XlfParser(const std::string& full_path)
 {
@@ -106,4 +107,22 @@ std::string XlfParser::get_path(int id, const boost::optional<std::string>& uri,
         return std::string{};
     }
     return uri.value();
+}
+
+boost::optional<int> XlfParser::parse_duration(const std::string& path)
+{
+    std::ifstream in(path);
+    std::string line;
+    std::regex re("<!-- DURATION=([0-9]+) -->");
+    while(std::getline(in, line))
+    {
+        std::smatch match;
+        if(std::regex_search(line, match, re) && match.size() > 1)
+        {
+            spdlog::get(LOGGER)->debug("DURATION parsed");
+            // NOTE: 0 for full match, 1 for the first group match1
+            return std::stoi(match[1].str());
+        }
+    }
+    return boost::optional<int>{};
 }

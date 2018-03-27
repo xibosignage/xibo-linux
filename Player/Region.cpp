@@ -55,17 +55,17 @@ void Region::show()
         Gtk::Fixed::show();
         m_medias[m_currentIndex]->show();
 
-        startTimer(m_currentIndex);
+        start_timer(m_currentIndex);
     }
 }
 
-void Region::startTimer(size_t mediaIndex)
+void Region::start_timer(size_t media_index)
 {
-    uint duration = static_cast<uint>(m_medias[mediaIndex]->duration()) * MSECS;
-    Glib::signal_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout), duration);
+    uint duration = static_cast<uint>(m_medias[media_index]->duration()) * MSECS;
+    Glib::signal_timeout().connect_once(sigc::mem_fun(*this, &Region::on_media_timeout), duration);
 }
 
-bool Region::on_media_timeout()
+void Region::on_media_timeout()
 {
     if(m_medias.size() > 1)
     {
@@ -75,8 +75,6 @@ bool Region::on_media_timeout()
         m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
         m_medias[m_currentIndex]->show();
 
-        //startTimer(m_currentIndex);
-        return false;
+        start_timer(m_currentIndex);
     }
-    return true;
 }
