@@ -8,10 +8,10 @@
 
 ### Required dependencies
 NOTE: these packages can require additional installations if you haven't such
-- `cmake>=3.5.1` cross-platform software for managing the build process
+- `cmake>=3.8` cross-platform software for managing the build process
 - `gtk>=3.18` and `gtkmm>=3.18` GUI library and C++ bindings
-- `gstreamer>=1.8`, `gstreamer-base-plugins>=1.8` and `gstreamermm>=1.8` multimedia framerwork, base plugins and C++ bindings
-- `webkitgtk>=2.4.11` web content rendering
+- `gstreamer>=1.10`, `gstreamer-base-plugins>=1.10` and `gstreamermm>=1.10` multimedia framerwork, base plugins and C++ bindings
+- `webkitgtk>=2.4.10` web content rendering
 - `boost_filesystem>=1.58` and `boost_program_options>=1.58`
 
 ### Building with Docker for Ubuntu 16.04
