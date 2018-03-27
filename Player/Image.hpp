@@ -6,7 +6,7 @@
 class Image : public Media
 {
 public:
-    Image(const Size& size, int id,int duration,bool use_duration, const std::string& uri,
+    Image(const Size& size, int id, int duration, const std::string& uri,
           const std::string& scale_type, const std::string& align, const std::string& valign);
 
     enum class ScaleType

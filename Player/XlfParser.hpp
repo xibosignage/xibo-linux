@@ -59,7 +59,6 @@ void XlfParser::parse_media_params(int region_id, const boost::property_tree::pt
     auto& media_params = medias.add_child(std::to_string(id), boost::property_tree::ptree{});
     media_params.put("id", id);
     media_params.put("duration", attrs.template get<int>("duration"));
-    media_params.put("useDuration", attrs.template get<bool>("useDuration"));
 
     auto optional_uri = options.get_optional<std::string>("uri");
     std::string uri = XiboApp::example_dir() + "/" + get_path(id, optional_uri, attrs.template get<std::string>("type")); // FIXME temporary workaround

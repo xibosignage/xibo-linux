@@ -62,7 +62,6 @@ std::unique_ptr<Media> XlfFactory::create_image(const Size& size, const Params& 
     return std::make_unique<Image>(size,
                                    params.get<int>("id"),
                                    params.get<int>("duration"),
-                                   params.get<bool>("useDuration"),
                                    params.get<std::string>("uri"),
                                    params.get<std::string>("scaleType"),
                                    params.get<std::string>("align"),
@@ -74,7 +73,6 @@ std::unique_ptr<Media> XlfFactory::create_video(const Size& size, const Params& 
     return std::make_unique<Video>(size,
                                    params.get<int>("id"),
                                    params.get<int>("duration"),
-                                   params.get<bool>("useDuration"),
                                    params.get<std::string>("uri"),
                                    params.get<bool>("mute"),
                                    params.get<bool>("loop"));
@@ -85,7 +83,6 @@ std::unique_ptr<Media> XlfFactory::create_webview(const Size& size, const Params
     return std::make_unique<WebView>(size,
                                      params.get<int>("id"),
                                      params.get<int>("duration"),
-                                     params.get<bool>("useDuration"),
                                      params.get<std::string>("uri"),
                                      params.get<int>("modeId"),
                                      params.get<bool>("transparency"));

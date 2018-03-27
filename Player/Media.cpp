@@ -1,13 +1,10 @@
 #include "Media.hpp"
-#include <glibmm.h>
-
-const uint MSECS = 1000;
 
 #include <spdlog/spdlog.h>
 #include <iostream>
 
-Media::Media(int id, int duration, bool use_duration, Render render, const std::string& uri) :
-    m_id(id), m_duration(duration), m_use_duration(use_duration), m_render(render), m_uri(uri)
+Media::Media(int id, int duration, Render render, const std::string& uri) :
+    m_id(id), m_duration(duration), m_render(render), m_uri(uri)
 {
 }
 
@@ -23,13 +20,6 @@ void Media::hide()
 
 void Media::show()
 {
-    if(m_use_duration)
-    {
-        Glib::signal_timeout().connect_once([=](){
-            m_media_timeout.emit();
-        }, m_duration * MSECS);
-    }
-
     m_visible = true;
 }
 
@@ -43,11 +33,6 @@ int Media::duration() const
     return m_duration;
 }
 
-bool Media::use_duration() const
-{
-    return m_use_duration;
-}
-
 Media::Render Media::render() const
 {
     return m_render;
@@ -57,9 +42,3 @@ const std::string& Media::uri() const
 {
     return m_uri;
 }
-
-sigc::signal<void>& Media::media_timeout()
-{
-    return m_media_timeout;
-}
-

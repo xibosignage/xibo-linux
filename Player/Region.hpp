@@ -28,7 +28,8 @@ public:
     void show();
 
 private:
-    void on_media_timeout();
+    void startTimer(size_t mediaIndex);
+    bool on_media_timeout();
 
 private:
     int m_id;
