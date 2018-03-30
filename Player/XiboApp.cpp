@@ -11,7 +11,6 @@
 #include "XlfParser.hpp"
 
 #include <iostream>
-#include <gstreamermm/init.h>
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 #include <spdlog/fmt/ostr.h>
@@ -64,8 +63,6 @@ const std::string& XiboApp::example_dir()
 
 void XiboApp::init()
 {
-    Gst::init();
-
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
