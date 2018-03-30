@@ -1,21 +1,19 @@
 #include "Region.hpp"
 
-Region::Region(uint id,
+Region::Region(int id,
                const Size& size,
                const Point& pos,
                int zindex,
-               bool looped,
-               const Transition& transition) :
+               bool looped) :
     m_id(id),
     m_size(size),
     m_pos(pos),
     m_zindex(zindex),
-    m_looped(looped),
-    m_transition(transition)
+    m_looped(looped)
 {
 }
 
-uint Region::id() const
+int Region::id() const
 {
     return m_id;
 }
@@ -40,9 +38,11 @@ bool Region::looped() const
     return m_looped;
 }
 
-const Transition& Region::transition() const
+void Region::add_media(std::unique_ptr<Media> media)
 {
-    return m_transition;
+    m_medias.push_back(std::move(media));
+    m_medias.back()->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
+    put(m_medias.back()->handler(), 0, 0);
 }
 
 void Region::show()

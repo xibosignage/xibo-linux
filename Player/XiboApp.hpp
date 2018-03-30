@@ -3,6 +3,8 @@
 #include <gtkmm/application.h>
 #include <spdlog/spdlog.h>
 
+class XlfParser;
+
 class XiboApp : public Gtk::Application
 {
 public:

@@ -1,14 +1,11 @@
 ﻿#include "XiboApp.hpp"
 #include "constants.hpp"
-
-#include "Image.hpp"
-#include "Video.hpp"
-#include "Region.hpp"
-#include "MainLayout.hpp"
-#include "WebView.hpp"
 #include "config.hpp"
 
 #include "XlfParser.hpp"
+#include "XiboFactory.hpp"
+#include "Region.hpp"
+#include "MainLayout.hpp"
 
 #include <iostream>
 #include <boost/filesystem.hpp>
@@ -35,8 +32,9 @@ int XiboApp::run(int argc, char** argv)
         if(!xlf_file_path.empty())
         {
             XlfParser parser(xlf_file_path);
+            parser.parse_xlf_tree();
 
-            auto layout = parser.parse_layout();
+            auto layout = XlfFactory::create_layout(parser.get_layout_params());
             layout->show_regions();
 
             m_logger->debug("Player started");

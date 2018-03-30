@@ -20,6 +20,9 @@ public:
     Media(int id, int duration, bool use_duration, Render render, const std::string& uri);
     virtual ~Media() = default;
 
+    Media(const Media& other) = delete;
+    Media& operator=(const Media& other) = delete;
+
     virtual void hide() = 0;
     virtual void show() = 0;
     virtual Gtk::Widget& handler() = 0;
