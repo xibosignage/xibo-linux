@@ -7,13 +7,13 @@
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
-CommandLineParser::CommandLineParser(int argc, char** argv) :
-    m_argc(argc), m_argv(argv), m_options("Allowed options")
+CommandLineParser::CommandLineParser() :
+    m_options("Allowed options")
 {
     m_logger = spdlog::get(LOGGER);
 }
 
-bool CommandLineParser::parse()
+bool CommandLineParser::parse(int argc, char** argv)
 {
     po::variables_map vm;
     m_options.add_options()("example-dir", po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
@@ -23,7 +23,7 @@ bool CommandLineParser::parse()
     m_options.add_options()("log-level", po::value<int>()->value_name("[0-6]"), "set logging level (0 for all logs, 6 turn off)");
 
     try {
-        po::store(po::parse_command_line(m_argc, m_argv, m_options), vm);
+        po::store(po::parse_command_line(argc, argv, m_options), vm);
         po::notify(vm);
     }
     catch(std::exception& ex) {

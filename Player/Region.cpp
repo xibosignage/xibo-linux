@@ -1,21 +1,23 @@
 #include "Region.hpp"
 
-Region::Region(uint id,
+#include <glibmm/main.h>
+
+const uint MSECS = 1000;
+
+Region::Region(int id,
                const Size& size,
                const Point& pos,
                int zindex,
-               bool looped,
-               const Transition& transition) :
+               bool looped) :
     m_id(id),
     m_size(size),
     m_pos(pos),
     m_zindex(zindex),
-    m_looped(looped),
-    m_transition(transition)
+    m_looped(looped)
 {
 }
 
-uint Region::id() const
+int Region::id() const
 {
     return m_id;
 }
@@ -40,9 +42,10 @@ bool Region::looped() const
     return m_looped;
 }
 
-const Transition& Region::transition() const
+void Region::add_media(std::unique_ptr<Media> media)
 {
-    return m_transition;
+    m_medias.push_back(std::move(media));
+    put(m_medias.back()->handler(), 0, 0);
 }
 
 void Region::show()
@@ -50,8 +53,16 @@ void Region::show()
     if(!m_medias.empty())
     {
         Gtk::Fixed::show();
-        m_medias.front()->show();
+        m_medias[m_currentIndex]->show();
+
+        start_timer(m_currentIndex);
     }
+}
+
+void Region::start_timer(size_t media_index)
+{
+    uint duration = static_cast<uint>(m_medias[media_index]->duration()) * MSECS;
+    Glib::signal_timeout().connect_once(sigc::mem_fun(*this, &Region::on_media_timeout), duration);
 }
 
 void Region::on_media_timeout()
@@ -63,5 +74,7 @@ void Region::on_media_timeout()
 
         m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
         m_medias[m_currentIndex]->show();
+
+        start_timer(m_currentIndex);
     }
 }

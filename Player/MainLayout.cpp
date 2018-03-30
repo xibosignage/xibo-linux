@@ -43,17 +43,15 @@ MainLayout::MainLayout(int schema_version,
     m_main_overlay.show();
 }
 
-void MainLayout::add_region(int id,
-                            const Size& size,
-                            const Point& pos,
-                            int zindex,
-                            bool looped,
-                            const Transition& transition)
+void MainLayout::add_region(std::unique_ptr<Region> region)
 {
-    m_regions.push_back(std::make_unique<Region>(id, size, pos, zindex, looped, transition));
+    m_regions.push_back(std::move(region));
 
-    auto&& point = m_regions.back()->position();
-    m_main_overlay.add_overlay(*m_regions.back(), Gdk::Rectangle(point.left, point.top, size.width, size.height));
+    auto&& cur_region = m_regions.back();
+    Gdk::Rectangle allocation(cur_region->position().left, cur_region->position().top,
+                              cur_region->size().width, cur_region->size().height);
+
+    m_main_overlay.add_overlay(*m_regions.back(), allocation);
 }
 
 Region& MainLayout::region(size_t index)

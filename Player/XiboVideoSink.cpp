@@ -2,66 +2,113 @@
 
 #include <spdlog/spdlog.h>
 
-XiboVideoSink::XiboVideoSink(GstVideoSink* gobj) :
-    Glib::ObjectBase(typeid(XiboVideoSink)),
-    Gst::VideoSink(gobj)
+static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps);
+static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* video_sink, GstBuffer* buf);
+//static bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<::Cairo::Context>& cairo);
+static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass);
+static void gst_xibovideosink_init(XiboVideoSink* sink);
+
+static GstStaticPadTemplate gst_xibovideosink_sink_template =
+    GST_STATIC_PAD_TEMPLATE( "sink",
+        GST_PAD_SINK,
+        GST_PAD_ALWAYS,
+        GST_STATIC_CAPS(
+            "video/x-raw, "
+            "format = (string) { BGRx }, "
+            "width = (int) [ 1, max ], "
+            "height = (int) [ 1, max ], "
+            "framerate = (fraction) [ 0, max ];"
+        )
+    );
+
+
+G_DEFINE_TYPE(XiboVideoSink, gst_xibovideosink, GST_TYPE_VIDEO_SINK);
+
+static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
 {
-    m_info.init();
-    add_pad(m_sinkpad = Gst::Pad::create(get_pad_template("sink"), "xibosink"));
+    GstBaseSinkClass* base_sink_class = GST_BASE_SINK_CLASS(klass);
+    GstVideoSinkClass* video_sink_class = GST_VIDEO_SINK_CLASS(klass);
+
+    gst_element_class_add_pad_template(GST_ELEMENT_CLASS(klass),
+            gst_static_pad_template_get(&gst_xibovideosink_sink_template) );
+
+    gst_element_class_set_static_metadata( GST_ELEMENT_CLASS(klass),
+        "Xibo Video Sink plugin",
+        "Some classification",
+        "Plugin to provide video playing on drawing area",
+        "Stivius"
+    );
+
+    base_sink_class->set_caps = GST_DEBUG_FUNCPTR(gst_xibovideosink_set_caps);
+    video_sink_class->show_frame = GST_DEBUG_FUNCPTR(gst_xibovideosink_show_frame);
 }
 
-void XiboVideoSink::class_init(Gst::ElementClass<XiboVideoSink>* klass)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler)
 {
-    klass->set_metadata("Xibo Video Sink plugin", "Some classification", "Plugin to provide video playing on drawing area", "Stivius");
-    std::string caps_str = "video/x-raw, format = (string) { BGRx }, width = (int) [ 1, max ], height = (int) [ 1, max ], framerate = (fraction) [ 0, max ]";
-    klass->add_pad_template(Gst::PadTemplate::create("sink", Gst::PAD_SINK, Gst::PAD_ALWAYS, Gst::Caps::create_from_string(caps_str)));
+    sink->handler = handler;
+    sink->handler->signal_draw().connect([=](const Cairo::RefPtr<::Cairo::Context>& cairo){
+        if(sink->surface)
+        {
+            double dx = sink->handler->get_width() / static_cast<double>(GST_VIDEO_INFO_WIDTH(&sink->info));
+            double dy = sink->handler->get_height() / static_cast<double>(GST_VIDEO_INFO_HEIGHT(&sink->info));
+            dx = dy = std::min(dx, dy);
+
+            cairo->scale(dx, dy);
+            cairo->set_source(sink->surface, 0, 0);
+            cairo->paint();
+        }
+        return true;
+    });
 }
 
-bool XiboVideoSink::register_sink(Glib::RefPtr<Gst::Plugin> plugin)
+static void gst_xibovideosink_init(XiboVideoSink* sink)
 {
-    Gst::ElementFactory::register_element(plugin, "xibovideosink", 10, Gst::register_mm_type<XiboVideoSink>("videosink"));
+    gst_video_info_init(&sink->info);
+    sink->sinkpad = gst_pad_new_from_static_template(&gst_xibovideosink_sink_template, "xibosink");
+    gst_element_add_pad (GST_ELEMENT(sink), sink->sinkpad);
+}
+
+static gboolean gst_xibovideosink_set_caps(GstBaseSink* sink, GstCaps* caps)
+{
+    XiboVideoSink* video_sink = GST_XIBOVIDEOSINK(sink);
+    gst_video_info_from_caps(&video_sink->info, caps);
     return true;
 }
 
-void XiboVideoSink::set_handler(Gtk::DrawingArea* handler)
+static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* sink, GstBuffer* buf)
 {
-    m_handler = handler;
-    m_handler->signal_draw().connect(sigc::mem_fun(*this, &XiboVideoSink::on_frame_drawn));
-}
-
-bool XiboVideoSink::on_frame_drawn(const Cairo::RefPtr<::Cairo::Context>& cairo)
-{
-    if(m_surface)
+    XiboVideoSink* video_sink = GST_XIBOVIDEOSINK(sink);
+    GstVideoFrame frame;
+    if(gst_video_frame_map(&frame, &video_sink->info, buf, GST_MAP_READ))
     {
-        double dx = m_handler->get_width() / static_cast<double>(m_info.get_width());
-        double dy = m_handler->get_height() / static_cast<double>(m_info.get_height());
-        dx = dy = std::min(dx, dy);
-
-        cairo->scale(dx, dy);
-        cairo->set_source(m_surface, 0, 0);
-        cairo->paint();
+        video_sink->surface = Cairo::ImageSurface::create(static_cast<u_char*>(frame.data[0]),
+                                                            Cairo::FORMAT_RGB24,
+                                                            GST_VIDEO_INFO_WIDTH(&video_sink->info),
+                                                            GST_VIDEO_INFO_HEIGHT(&video_sink->info),
+                                                            GST_VIDEO_INFO_PLANE_STRIDE(&video_sink->info, 0));
+        video_sink->handler->queue_draw();
+        gst_video_frame_unmap(&frame);
     }
-    return true;
+    return GST_FLOW_OK;
 }
 
-bool XiboVideoSink::set_caps_vfunc(const Glib::RefPtr<Gst::Caps>& caps)
+//bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<::Cairo::Context>& cairo)
+//{
+//    if(sink->m_surface)
+//    {
+//        double dx = sink->m_handler->get_width() / static_cast<double>(GST_VIDEO_INFO_WIDTH(&sink->m_info));
+//        double dy = sink->m_handler->get_height() / static_cast<double>(GST_VIDEO_INFO_HEIGHT(&sink->m_info));
+//        dx = dy = std::min(dx, dy);
+
+//        cairo->scale(dx, dy);
+//        cairo->set_source(sink->m_surface, 0, 0);
+//        cairo->paint();
+//    }
+//    return true;
+//}
+
+gboolean plugin_init(GstPlugin* plugin)
 {
-    m_info.from_caps(caps);
-    return true;
+    return gst_element_register(plugin, "xibovideosink", 10, GST_TYPE_XIBOVIDEOSINK);
 }
 
-Gst::FlowReturn XiboVideoSink::render_vfunc(const Glib::RefPtr<Gst::Buffer>& buffer)
-{
-    Gst::VideoFrame frame;
-    if(frame.map(m_info, buffer, Gst::MapFlags::MAP_READ))
-    {
-        m_surface = Cairo::ImageSurface::create(static_cast<u_char*>(frame.gobj()->data[0]),
-                                                Cairo::FORMAT_RGB24,
-                                                m_info.get_width(),
-                                                m_info.get_height(),
-                                                frame.get_info().gobj()->stride[0]);
-        m_handler->queue_draw();
-        frame.unmap();
-    }
-    return Gst::FLOW_OK;
-}

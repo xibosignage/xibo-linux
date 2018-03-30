@@ -1,18 +1,15 @@
 ﻿#include "XiboApp.hpp"
 #include "constants.hpp"
-
-#include "Image.hpp"
-#include "Video.hpp"
-#include "Region.hpp"
-#include "MainLayout.hpp"
-#include "WebView.hpp"
 #include "config.hpp"
 
 #include "XlfParser.hpp"
 #include "CommandLineParser.hpp"
 
-#include <iostream>
-#include <gstreamermm/init.h>
+#include "XiboFactory.hpp"
+#include "Region.hpp"
+#include "MainLayout.hpp"
+
+#include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
 
 std::string XiboApp::s_example_dir;
@@ -25,8 +22,6 @@ XiboApp::XiboApp(const std::string& app_name)
 
 void XiboApp::init()
 {
-    Gst::init();
-
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
@@ -36,8 +31,8 @@ void XiboApp::init()
 
 int XiboApp::run(int argc, char** argv)
 {
-    CommandLineParser options(argc, argv);
-    bool result = options.parse();
+    CommandLineParser options;
+    bool result = options.parse(argc, argv);
     if(result)
     {
         if(options.is_version())
@@ -54,8 +49,10 @@ int XiboApp::run(int argc, char** argv)
             }
             s_example_dir = options.example_dir();
 
-            XlfParser parser(options.xlf_file());
-            auto layout = parser.parse_layout();
+            XlfParser parser(s_example_dir);
+            parser.parse_xlf_tree();
+
+            auto layout = XlfFactory::create_layout(parser.get_layout_params());
             layout->show_regions();
 
             m_logger->info("Player started");

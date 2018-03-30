@@ -7,8 +7,8 @@
 class CommandLineParser
 {
 public:
-    CommandLineParser(int argc, char** argv);
-    bool parse();
+    CommandLineParser();
+    bool parse(int argc, char** argv);
 
     bool is_version() const;
     bool is_example_dir() const;
@@ -22,13 +22,12 @@ private:
     bool check_example_dir(const std::string& example_dir);
 
 private:
-    int m_argc;
-    char** m_argv;
     bool m_is_version = false;
     bool m_is_example_dir = false;
     bool m_is_testing = false;
     std::string m_xlf_file;
     std::string m_example_dir;
+
     boost::program_options::options_description m_options;
     std::shared_ptr<spdlog::logger> m_logger;
 };

@@ -1,30 +1,34 @@
 #include "VideoHandler.hpp"
 #include "XiboVideoSink.hpp"
+#include "BindWrapper.hpp"
 
-#include <gstreamermm/elementfactory.h>
+namespace ph = std::placeholders;
 
 VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
     m_size(size)
 {
+    gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
 
-    if(!Gst::Plugin::register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink",
-                                 "Video Sink Plugin for gstreamermm", sigc::ptr_fun(&XiboVideoSink::register_sink), "0.1",
-                                 "GPL", "source", "package", "http://github.com/Stivius"))
+    if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
+                                   plugin_init, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
     {
         throw std::runtime_error("XiboVideoSink was not registered");
     }
 
-    m_pipeline = Gst::Pipeline::create("player");
-    m_source = Gst::FileSrc::create();
-    m_decodebin = Gst::DecodeBin::create();
-    m_video_converter = Gst::VideoConvert::create();
-    m_audio_converter = Gst::AudioConvert::create();
-    m_volume = Gst::Volume::create();    
-    m_video_sink = Glib::RefPtr<XiboVideoSink>::cast_dynamic(Gst::ElementFactory::create_element("xibovideosink"));
-    m_video_sink->set_handler(&m_video_window);
-    m_audio_sink = Gst::ElementFactory::create_element("autoaudiosink");
-    m_queue = Gst::ElementFactory::create_element("queue");
+    m_pipeline = gst_pipeline_new("player");
+    m_source = gst_element_factory_make("filesrc", nullptr);
+    m_decodebin = gst_element_factory_make("decodebin", nullptr);
+    m_video_converter = gst_element_factory_make("videoconvert", nullptr);
+    m_audio_converter = gst_element_factory_make("audioconvert", nullptr);
+    m_volume = gst_element_factory_make("volume", nullptr);
+    m_video_sink = gst_element_factory_make("xibovideosink", nullptr);
+
+    auto sink = GST_XIBOVIDEOSINK(m_video_sink);
+    gst_xibovideosink_set_handler(sink, &m_video_window);
+
+    m_audio_sink = gst_element_factory_make("autoaudiosink", nullptr);
+    m_queue = gst_element_factory_make("queue", nullptr);
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
        !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
@@ -33,18 +37,23 @@ VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
         m_logger->critical("One element could not be created");
     }
 
-    m_source->set_property("location", file_path);
+    g_object_set(m_source, "location", file_path.c_str(), nullptr);
 
-    auto bus = m_pipeline->get_bus();
-    m_watch_id = bus->add_watch(sigc::mem_fun(this, &VideoHandler::bus_message_watch));
-    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
+    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+    auto bus_message_watch = get_wrapper<2, gboolean, GstBus*, GstMessage*, gpointer>(std::bind(&VideoHandler::bus_message_watch, this, ph::_1, ph::_2, ph::_3));
+    m_watch_id = gst_bus_add_watch(bus, bus_message_watch, nullptr);
+    g_object_unref(bus);
 
-    m_source->link(m_decodebin);
-    m_video_converter->link(m_queue)->link(m_video_sink);
-    m_audio_converter->link(m_volume)->link(m_audio_sink);
+    gst_bin_add_many(GST_BIN(m_pipeline), m_source, m_decodebin, m_video_converter, m_queue, m_video_sink, m_audio_converter, m_volume, m_audio_sink, nullptr);
+    gst_element_link(m_source, m_decodebin);
+    gst_element_link_many(m_video_converter, m_queue, m_video_sink, nullptr);
+    gst_element_link_many(m_audio_converter, m_volume, m_audio_sink, nullptr);
 
-    m_decodebin->signal_pad_added().connect(sigc::mem_fun(this, &VideoHandler::on_pad_added));
-    m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(this, &VideoHandler::no_more_pads));
+    auto on_pad_added = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&VideoHandler::on_pad_added, this, ph::_1, ph::_2, ph::_3));
+    g_signal_connect_data(m_decodebin, "pad-added", reinterpret_cast<GCallback>(on_pad_added), nullptr, nullptr, static_cast<GConnectFlags>(0));
+
+    auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&VideoHandler::no_more_pads, this, ph::_1, ph::_2));
+    g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
     create_ui();
 }
@@ -52,21 +61,32 @@ VideoHandler::VideoHandler(const std::string& file_path, const Size& size) :
 VideoHandler::~VideoHandler()
 {
     m_logger->debug("Returned, stopping playback");
-    m_pipeline->get_bus()->remove_watch(m_watch_id);
-    m_pipeline->set_state(Gst::State::STATE_NULL);
+    gst_element_set_state(m_pipeline, GST_STATE_NULL);
+    g_object_unref(m_pipeline);
+    g_source_remove(m_watch_id);
 }
 
-bool VideoHandler::bus_message_watch(const Glib::RefPtr<Gst::Bus>&, const Glib::RefPtr<Gst::Message>& message)
+gboolean VideoHandler::bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data)
 {
-    switch (message->get_message_type())
+    switch (GST_MESSAGE_TYPE(message))
     {
-    case Gst::MESSAGE_ERROR:
+    case GST_MESSAGE_ERROR:
     {
-        auto error_msg = Glib::RefPtr<Gst::MessageError>::cast_static(message);
-        m_logger->error("{}", static_cast<std::string>(error_msg->parse_error().what()));
+        gchar *debug = nullptr;
+        GError *err = nullptr;
+
+        gst_message_parse_error(message, &err, &debug);
+        m_logger->error("{}", err->message);
+
+        if (debug) {
+            m_logger->error("Debug details: {}", debug);
+            g_free (debug);
+        }
+
+        g_error_free (err);
         break;
     }
-    case Gst::MESSAGE_EOS:
+    case GST_MESSAGE_EOS:
         m_logger->debug("End of stream");
         m_video_ended = true;
         m_signal_video_ended.emit();
@@ -78,49 +98,67 @@ bool VideoHandler::bus_message_watch(const Glib::RefPtr<Gst::Bus>&, const Glib::
     return true;
 }
 
-void VideoHandler::no_more_pads()
+void VideoHandler::no_more_pads(GstElement* decodebin, gpointer user_data)
 {
-    auto pad = m_decodebin->get_static_pad("src_1");
+    auto pad = gst_element_get_static_pad(m_decodebin, "src_1");
     m_logger->debug("No more pads");
 
     if(!pad)
     {
-        m_audio_converter->set_state(Gst::State::STATE_NULL);
-        m_volume->set_state(Gst::State::STATE_NULL);
-        m_audio_sink->set_state(Gst::State::STATE_NULL);
-        m_pipeline->remove(m_audio_converter)->remove(m_volume)->remove(m_audio_sink);
+        gst_element_set_state(m_audio_converter, GST_STATE_NULL);
+        gst_element_set_state(m_volume, GST_STATE_NULL);
+        gst_element_set_state(m_audio_sink, GST_STATE_NULL);
+        gst_bin_remove_many(GST_BIN(m_pipeline), m_audio_converter, m_volume, m_audio_sink, nullptr);
+    }
+    else
+    {
+        gst_object_unref(pad);
     }
 }
 
-void VideoHandler::on_pad_added(const Glib::RefPtr<Gst::Pad>& pad)
+void VideoHandler::on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
 {
-    Glib::RefPtr<Gst::Pad> sinkpad;
+    GstPad* sinkpad;
+    m_logger->debug("Pad added");
 
     // src_0 for video stream
-    auto video_pad = m_decodebin->get_static_pad("src_0");
+    auto video_pad = gst_element_get_static_pad(decodebin, "src_0");
     // src1 for audio stream
-    auto audio_pad = m_decodebin->get_static_pad("src_1");
+    auto audio_pad = gst_element_get_static_pad(decodebin, "src_1");
 
     if(video_pad && !audio_pad)
     {
-        auto caps = video_pad->get_current_caps();
+        m_logger->debug("video");
+
+        auto caps = gst_pad_get_current_caps(video_pad);
         //m_logger->debug("{}", (std::string)caps->to_string());
         if(caps)
         {
-            auto strct = caps->get_structure(0);
-            strct.get_field("height", m_best_size.height);
-            strct.get_field("width", m_best_size.width);
+            auto strct = gst_caps_get_structure(caps, 0);
+            gst_structure_get_int(strct, "height", &m_best_size.height);
+            gst_structure_get_int(strct, "width", &m_best_size.width);
+
             m_logger->info("height: {}, width: {}", m_best_size.height, m_best_size.width);
+
+            gst_caps_unref(caps);
         }
-        sinkpad = m_video_converter->get_static_pad("sink");
+        sinkpad = gst_element_get_static_pad(m_video_converter, "sink");
         //m_logger->debug("{}", (std::string)sinkpad->get_pad_template()->get_caps()->to_string());
         //m_logger->debug("{}", caps->can_intersect(sinkpad->get_pad_template()->get_caps()));
-        pad->link(sinkpad);
+        gst_pad_link(pad, sinkpad);
+
+        gst_object_unref(sinkpad);
+        gst_object_unref(video_pad);
     }
     else if(audio_pad)
     {
-        sinkpad = m_audio_converter->get_static_pad("sink");
-        pad->link(sinkpad);
+        m_logger->debug("audio");
+
+        sinkpad = gst_element_get_static_pad(m_audio_converter, "sink");
+        gst_pad_link(pad, sinkpad);
+
+        gst_object_unref(sinkpad);
+        gst_object_unref(audio_pad);
     }
 }
 
@@ -132,16 +170,15 @@ void VideoHandler::create_ui()
 
 void VideoHandler::set_volume(double _volume)
 {
-    m_volume->set_property("volume", _volume);
+    g_object_set(m_volume, "volume", _volume, nullptr);
 }
 
 void VideoHandler::play()
 {
     if(m_video_ended)
     {
-        if(!m_pipeline->seek(1.0, Gst::FORMAT_TIME,
-                             Gst::SEEK_FLAG_FLUSH, Gst::SEEK_TYPE_SET, 0,
-                             Gst::SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
+        if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
+                             GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
             m_logger->error("Error while restarting video");
         }
@@ -152,7 +189,7 @@ void VideoHandler::play()
     }
     else
     {
-        m_pipeline->set_state(Gst::State::STATE_PLAYING);
+        gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
         m_logger->debug("Running");
     }
 }
