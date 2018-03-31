@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5.1)
+cmake_minimum_required(VERSION 3.8)
 
 execute_process(COMMAND git rev-list v0.1-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
 project(XiboLinux VERSION 0.1.1.${GIT_REVISION})

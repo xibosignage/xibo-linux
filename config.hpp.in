@@ -2,22 +2,10 @@
 
 #include <string>
 
-const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@";
-const int PROJECT_VERSION_MAINTENANCE = @PROJECT_VERSION_PATCH@;
+const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
 const int PROJECT_VERSION_BUILD = @PROJECT_VERSION_TWEAK@;
 
 std::string get_version()
 {
-    switch(PROJECT_VERSION_MAINTENANCE)
-    {
-    case 0:
-        return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
-    case 1:
-        return PROJECT_VERSION_PRIME + "-beta build: " + std::to_string(PROJECT_VERSION_BUILD);
-    case 2:
-        return PROJECT_VERSION_PRIME + "-rc build: " + std::to_string(PROJECT_VERSION_BUILD);
-    case 3:
-        return PROJECT_VERSION_PRIME + " build: " + std::to_string(PROJECT_VERSION_BUILD);
-    }
-    return "Unknown version";
+    return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
 }
