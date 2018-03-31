@@ -19,8 +19,8 @@ NOTE: these packages can require additional installations if you haven't such
 - Clone this repository
 - Pull the docker image from hub: `docker pull stivius/xibo-linux`
 - From the root of the repository: `docker build --cache-from stivius/xibo-linux .`
-- `docker run -v /path/to/local/clone/output:/output stivius/xibo-linux`
-- The Player binaries will be build and output in to your `output` directory
+- `docker run -v /path/to/local/clone/build:/build stivius/xibo-linux`
+- The Player binaries will be build and output in to your `build` directory
 
 ## Running Player
 - `sudo apt install gstreamer1.0-libav` for running video examples (I hope to get rid of this installation)
