@@ -113,6 +113,6 @@ RUN cd /app && \
     make install && \
     ls -la /app/_build
 
-VOLUME /output
+VOLUME /build
 CMD ["./app/run.sh"]
 
