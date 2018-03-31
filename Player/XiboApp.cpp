@@ -49,7 +49,7 @@ int XiboApp::run(int argc, char** argv)
             }
             s_example_dir = options.example_dir();
 
-            XlfParser parser(s_example_dir);
+            XlfParser parser(options.xlf_file());
             parser.parse_xlf_tree();
 
             auto layout = XlfFactory::create_layout(parser.get_layout_params());

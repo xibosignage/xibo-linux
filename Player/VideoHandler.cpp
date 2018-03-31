@@ -78,12 +78,13 @@ gboolean VideoHandler::bus_message_watch(GstBus* bus, GstMessage* message, gpoin
         gst_message_parse_error(message, &err, &debug);
         m_logger->error("{}", err->message);
 
-        if (debug) {
+        if(debug)
+        {
             m_logger->error("Debug details: {}", debug);
-            g_free (debug);
+            g_free(debug);
         }
 
-        g_error_free (err);
+        g_error_free(err);
         break;
     }
     case GST_MESSAGE_EOS:
@@ -128,7 +129,7 @@ void VideoHandler::on_pad_added(GstElement* decodebin, GstPad* pad, gpointer use
 
     if(video_pad && !audio_pad)
     {
-        m_logger->debug("video");
+        m_logger->debug("Video pad");
 
         auto caps = gst_pad_get_current_caps(video_pad);
         //m_logger->debug("{}", (std::string)caps->to_string());
@@ -152,7 +153,7 @@ void VideoHandler::on_pad_added(GstElement* decodebin, GstPad* pad, gpointer use
     }
     else if(audio_pad)
     {
-        m_logger->debug("audio");
+        m_logger->debug("Audio pad");
 
         sinkpad = gst_element_get_static_pad(m_audio_converter, "sink");
         gst_pad_link(pad, sinkpad);
