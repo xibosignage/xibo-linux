@@ -1,3 +1,22 @@
+### 0.1.1 Aqua
+
+**31.03.2018 - `(unstable)`**
+
+- **User Part**
+  - Duration fixed for `html` rendering media
+  - WebView page reloading fixed
+  - Added logging level in command line options
+  - Binaries can be uploaded from `releases` on Github
+  - Updated README, added CHANGELOG and VERSIONING
+- **Developer Part**
+  - CommandLineParser added
+  - XlfParser refactored
+  - Added factory for media, layout and region
+  - Build process moved to CMake with Docker
+  - Added C++17 support
+  - Added continuous integration (Travis CI)
+  - Removed `gstreamermm`, `gstreamer` is used now
+
 ### 0.1.0 Aqua
 
 **09.03.2018 - `(unstable)`**
