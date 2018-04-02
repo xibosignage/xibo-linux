@@ -10,7 +10,7 @@ include_directories(${WebKit_INCLUDE_DIRS} ${GStreamer_INCLUDE_DIRS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -static-libstdc++ -O0 -pthread -Wall -W -Wshadow -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 
-set(SOURCE_FILES main.cpp XiboApp.cpp XlfParser.cpp MainLayout.cpp CommandLineParser.cpp XiboFactory.cpp Media.cpp Image.cpp Video.cpp WebView.cpp Region.cpp LayoutOverlay.cpp VideoHandler.cpp XiboVideoSink.cpp utilities.cpp)
+set(SOURCE_FILES main.cpp XiboApp.cpp XlfParser.cpp MainLayout.cpp CommandLineParser.cpp XiboFactory.cpp Media.cpp Image.cpp Video.cpp Audio.cpp WebView.cpp Region.cpp LayoutOverlay.cpp XiboVideoSink.cpp utilities.cpp)
 
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)

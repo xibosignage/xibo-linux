@@ -1,6 +1,5 @@
 #include "XiboFactory.hpp"
 
-#include "VideoHandler.hpp"
 #include "MainLayout.hpp"
 #include "Region.hpp"
 #include "Image.hpp"
@@ -34,32 +33,32 @@ std::unique_ptr<Region> XlfFactory::create_region(const Params& params)
     auto media = params.get_child("medias");
     for(auto [media_id, media_params] : media)
     {
-        region->add_media(XlfFactory::create_media(region->size(), media_params));
+        region->add_media(XlfFactory::create_media(*region, media_params));
     }
     return region;
 }
 
-std::unique_ptr<Media> XlfFactory::create_media(const Size& size, const Params& params)
+std::unique_ptr<Media> XlfFactory::create_media(const Region& region, const Params& params)
 {
     auto type = params.get<std::string>("type");
     if(type == "image")
     {
-        return create_image(size, params);
+        return create_image(region, params);
     }
     else if(type == "video")
     {
-        return create_video(size, params);
+        return create_video(region, params);
     }
     else
     {
-        return create_webview(size, params);
+        return create_webview(region, params);
     }
 
 }
 
-std::unique_ptr<Media> XlfFactory::create_image(const Size& size, const Params& params)
+std::unique_ptr<Media> XlfFactory::create_image(const Region& region, const Params& params)
 {
-    return std::make_unique<Image>(size,
+    return std::make_unique<Image>(region,
                                    params.get<int>("id"),
                                    params.get<int>("duration"),
                                    params.get<std::string>("uri"),
@@ -68,9 +67,9 @@ std::unique_ptr<Media> XlfFactory::create_image(const Size& size, const Params& 
                                    params.get<std::string>("valign"));
 }
 
-std::unique_ptr<Media> XlfFactory::create_video(const Size& size, const Params& params)
+std::unique_ptr<Media> XlfFactory::create_video(const Region& region, const Params& params)
 {
-    return std::make_unique<Video>(size,
+    return std::make_unique<Video>(region,
                                    params.get<int>("id"),
                                    params.get<int>("duration"),
                                    params.get<std::string>("uri"),
@@ -78,9 +77,9 @@ std::unique_ptr<Media> XlfFactory::create_video(const Size& size, const Params& 
                                    params.get<bool>("loop"));
 }
 
-std::unique_ptr<Media> XlfFactory::create_webview(const Size& size, const Params& params)
+std::unique_ptr<Media> XlfFactory::create_webview(const Region& region, const Params& params)
 {
-    return std::make_unique<WebView>(size,
+    return std::make_unique<WebView>(region,
                                      params.get<int>("id"),
                                      params.get<int>("duration"),
                                      params.get<std::string>("uri"),

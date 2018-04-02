@@ -1,9 +1,10 @@
 #include "WebView.hpp"
+#include "Region.hpp"
 
-#include <boost/filesystem.hpp>
+#include <spdlog/spdlog.h>
 
-WebView::WebView(const Size& size, int id, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent) :
+    Media(region, id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
     auto path = "file://" + uri;
@@ -22,8 +23,11 @@ WebView::WebView(const Size& size, int id, int duration, const std::string& uri,
 
     auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
     m_handler.add(*widget);
+    m_handler.set_size_request(region.size().width, region.size().height);
 
-    m_handler.set_size_request(size.width, size.height);
+    region.request_handler().connect([=]{
+        handler_requested().emit(m_handler, DEFAULT_X_POS, DEFAULT_Y_POS);
+    });
 }
 
 void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
@@ -38,22 +42,17 @@ void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
     }
 }
 
-void WebView::hide()
+void WebView::stop()
 {
-    Media::hide();
+    Media::stop();
     m_handler.hide();
 }
 
-void WebView::show()
+void WebView::start()
 {
-    Media::show();
+    Media::start();
     m_handler.show_all();
     webkit_web_view_reload(m_web_view);
-}
-
-Gtk::Widget& WebView::handler()
-{
-    return m_handler;
 }
 
 bool WebView::transparent() const

@@ -17,27 +17,32 @@ public:
         Native
     };
 
-    Media(int id, int duration, Render render, const std::string& uri);
+    Media(const Region& region, int id, int duration, Render render, const std::string& uri);
     virtual ~Media() = default;
 
     Media(const Media& other) = delete;
     Media& operator=(const Media& other) = delete;
 
-    virtual void hide() = 0;
-    virtual void show() = 0;
-    virtual Gtk::Widget& handler() = 0;
-    virtual bool is_visible() const;
+    virtual void stop() = 0;
+    virtual void start() = 0;
+    virtual bool is_running() const;
+    sigc::signal<void, Gtk::Widget&, int, int>& handler_requested();
 
+    const Region& region() const;
     int id() const;
     int duration() const;
     Render render() const;
     const std::string& uri() const;
 
 protected:
+    const Region& m_region;
     int m_id;
     int m_duration;
     Render m_render;
     std::string m_uri;
-    bool m_visible = false;
+
+private:
+    sigc::signal<void, Gtk::Widget&, int, int> m_handler_requsted;
+    bool m_started = false;
 
 };

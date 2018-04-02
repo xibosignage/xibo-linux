@@ -25,6 +25,7 @@ public:
     bool looped() const;
 
     void add_media(std::unique_ptr<Media> media);
+    sigc::signal<void> request_handler() const;
     void show();
 
 private:
@@ -38,7 +39,8 @@ private:
     int m_zindex;
     bool m_looped;
 
-    std::vector<std::unique_ptr<Media>> m_medias;
+    std::vector<std::unique_ptr<Media>> m_media;
+    sigc::signal<void> m_request_handler;
 
     size_t m_currentIndex = 0;
     size_t m_previousIndex = 0;

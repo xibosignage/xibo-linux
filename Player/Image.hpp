@@ -6,7 +6,7 @@
 class Image : public Media
 {
 public:
-    Image(const Size& size, int id, int duration, const std::string& uri,
+    Image(const Region& region, int id, int duration, const std::string& uri,
           const std::string& scale_type, const std::string& align, const std::string& valign);
 
     enum class ScaleType
@@ -36,9 +36,8 @@ public:
     Align align() const;
     Valign valign() const;
 
-    Gtk::Widget& handler() override;
-    void hide() override;
-    void show() override;
+    void stop() override;
+    void start() override;
 
 private:
     ScaleType to_scale_type(const std::string& scale_type);

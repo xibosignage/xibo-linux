@@ -3,24 +3,34 @@
 #include <spdlog/spdlog.h>
 #include <iostream>
 
-Media::Media(int id, int duration, Render render, const std::string& uri) :
-    m_id(id), m_duration(duration), m_render(render), m_uri(uri)
+Media::Media(const Region& region, int id, int duration, Render render, const std::string& uri) :
+    m_region(region), m_id(id), m_duration(duration), m_render(render), m_uri(uri)
 {
 }
 
-bool Media::is_visible() const
+void Media::stop()
 {
-    return m_visible;
+    m_started = false;
 }
 
-void Media::hide()
+void Media::start()
 {
-    m_visible = false;
+    m_started = true;
 }
 
-void Media::show()
+bool Media::is_running() const
 {
-    m_visible = true;
+    return m_started;
+}
+
+sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()
+{
+    return m_handler_requsted;
+}
+
+const Region& Media::region() const
+{
+    return m_region;
 }
 
 int Media::id() const

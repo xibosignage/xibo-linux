@@ -1,12 +1,17 @@
 #include "Image.hpp"
+#include "Region.hpp"
 
-Image::Image(const Size& size, int id, int duration, const std::string& uri,
+Image::Image(const Region& region, int id, int duration, const std::string& uri,
              const std::string& scale_type, const std::string& align, const std::string& valign) :
-    Media(id, duration, Render::Native, uri),
-          m_scale_type(to_scale_type(scale_type)), m_align(to_align(align)), m_valign(to_valign(valign))
+    Media(region, id, duration, Render::Native, uri),
+    m_scale_type(to_scale_type(scale_type)), m_align(to_align(align)), m_valign(to_valign(valign))
 {
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height);
+    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, region.size().width, region.size().height);
     m_handler.set(pixbuf);
+
+    region.request_handler().connect([=]{
+        handler_requested().emit(m_handler, DEFAULT_X_POS, DEFAULT_Y_POS);
+    });
 }
 
 Image::ScaleType Image::scale_type() const
@@ -24,21 +29,16 @@ Image::Valign Image::valign() const
     return m_valign;
 }
 
-Gtk::Widget& Image::handler()
-{
-    return m_handler;
-}
-
-void Image::hide()
+void Image::stop()
 {
     m_handler.hide();
-    Media::hide();
+    Media::stop();
 }
 
-void Image::show()
+void Image::start()
 {
     m_handler.show();
-    Media::show();
+    Media::start();
 }
 
 Image::ScaleType Image::to_scale_type(const std::string& scale_type)

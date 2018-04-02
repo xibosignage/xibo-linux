@@ -1,4 +1,4 @@
-#include "Region.hpp"
+ #include "Region.hpp"
 
 #include <glibmm/main.h>
 
@@ -44,16 +44,25 @@ bool Region::looped() const
 
 void Region::add_media(std::unique_ptr<Media> media)
 {
-    m_medias.push_back(std::move(media));
-    put(m_medias.back()->handler(), 0, 0);
+    media->handler_requested().connect([=](Gtk::Widget& widget, int x, int y){
+        put(widget, x, y);
+    });
+    m_media.push_back(std::move(media));
+}
+
+sigc::signal<void> Region::request_handler() const
+{
+    return m_request_handler;
 }
 
 void Region::show()
 {
-    if(!m_medias.empty())
-    {
+    if(!m_media.empty())
+    {        
+        m_request_handler.emit();
+
         Gtk::Fixed::show();
-        m_medias[m_currentIndex]->show();
+        m_media[m_currentIndex]->start();
 
         start_timer(m_currentIndex);
     }
@@ -61,19 +70,19 @@ void Region::show()
 
 void Region::start_timer(size_t media_index)
 {
-    uint duration = static_cast<uint>(m_medias[media_index]->duration()) * MSECS;
+    uint duration = static_cast<uint>(m_media[media_index]->duration()) * MSECS;
     Glib::signal_timeout().connect_once(sigc::mem_fun(*this, &Region::on_media_timeout), duration);
 }
 
 void Region::on_media_timeout()
 {
-    if(m_medias.size() > 1)
+    if(m_media.size() > 1)
     {
         m_previousIndex = m_currentIndex;
-        m_medias[m_previousIndex]->hide();
+        m_media[m_previousIndex]->stop();
 
-        m_currentIndex = m_currentIndex + 1 >= m_medias.size() ? 0 : m_currentIndex + 1;
-        m_medias[m_currentIndex]->show();
+        m_currentIndex = m_currentIndex + 1 >= m_media.size() ? 0 : m_currentIndex + 1;
+        m_media[m_currentIndex]->start();
 
         start_timer(m_currentIndex);
     }
