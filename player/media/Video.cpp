@@ -1,11 +1,10 @@
 #include "Video.hpp"
-#include "Region.hpp"
+#include "XiboVideoSink.hpp"
+#include "control/Region.hpp"
+#include "utils/BindWrapper.hpp"
 
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
-
-#include "XiboVideoSink.hpp"
-#include "BindWrapper.hpp"
 
 namespace ph = std::placeholders;
 
@@ -60,7 +59,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Video::no_more_pads, this, ph::_1, ph::_2));
     g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
-    create_ui();
+    m_video_window.set_size_request(region.size().width, region.size().height);
     region.request_handler().connect([=]{
         handler_requested().emit(m_video_window, DEFAULT_X_POS, DEFAULT_Y_POS);
     });
@@ -76,7 +75,7 @@ Video::~Video()
     g_source_remove(m_watch_id);
 }
 
-gboolean Video::bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data)
+gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
 {
     switch (GST_MESSAGE_TYPE(message))
     {
@@ -112,7 +111,7 @@ gboolean Video::bus_message_watch(GstBus* bus, GstMessage* message, gpointer use
     return true;
 }
 
-void Video::no_more_pads(GstElement* decodebin, gpointer user_data)
+void Video::no_more_pads(GstElement*, gpointer)
 {
     auto pad = gst_element_get_static_pad(m_decodebin, "src_1");
     m_logger->debug("No more pads");
@@ -130,35 +129,33 @@ void Video::no_more_pads(GstElement* decodebin, gpointer user_data)
     }
 }
 
-void Video::on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
+void Video::on_pad_added(GstElement*, GstPad* pad, gpointer)
 {
     GstPad* sinkpad;
     m_logger->debug("Pad added");
 
     // src_0 for video stream
-    auto video_pad = gst_element_get_static_pad(decodebin, "src_0");
+    auto video_pad = gst_element_get_static_pad(m_decodebin, "src_0");
     // src1 for audio stream
-    auto audio_pad = gst_element_get_static_pad(decodebin, "src_1");
+    auto audio_pad = gst_element_get_static_pad(m_decodebin, "src_1");
 
     if(video_pad && !audio_pad)
     {
         m_logger->debug("Video pad");
 
         auto caps = gst_pad_get_current_caps(video_pad);
-        //m_logger->debug("{}", (std::string)caps->to_string());
         if(caps)
         {
             auto strct = gst_caps_get_structure(caps, 0);
-            gst_structure_get_int(strct, "height", &m_best_size.height);
-            gst_structure_get_int(strct, "width", &m_best_size.width);
+            int width, height;
+            gst_structure_get_int(strct, "width", &width);
+            gst_structure_get_int(strct, "height", &height);
 
-            m_logger->info("height: {}, width: {}", m_best_size.height, m_best_size.width);
+            m_logger->info("width: {} height: {}", width, height);
 
             gst_caps_unref(caps);
         }
         sinkpad = gst_element_get_static_pad(m_video_converter, "sink");
-        //m_logger->debug("{}", (std::string)sinkpad->get_pad_template()->get_caps()->to_string());
-        //m_logger->debug("{}", caps->can_intersect(sinkpad->get_pad_template()->get_caps()));
         gst_pad_link(pad, sinkpad);
 
         gst_object_unref(sinkpad);
@@ -176,11 +173,6 @@ void Video::on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
     }
 }
 
-void Video::create_ui()
-{
-    m_video_window.set_size_request(region().size().width, region().size().height);
-}
-
 void Video::set_volume(double _volume)
 {
     g_object_set(m_volume, "volume", _volume, nullptr);
@@ -193,7 +185,7 @@ void Video::play()
         if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                              GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
-            m_logger->error("Error while restarting video");
+            m_logger->error("Error while restarting audio");
         }
         else
         {

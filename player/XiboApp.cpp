@@ -1,13 +1,12 @@
 ﻿#include "XiboApp.hpp"
-#include "constants.hpp"
 #include "config.hpp"
 
-#include "XlfParser.hpp"
-#include "CommandLineParser.hpp"
-
-#include "XiboFactory.hpp"
-#include "Region.hpp"
-#include "MainLayout.hpp"
+#include "utils/XlfParser.hpp"
+#include "utils/constants.hpp"
+#include "utils/CommandLineParser.hpp"
+#include "control/Region.hpp"
+#include "control/MainLayout.hpp"
+#include "creators/LayoutBuilder.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
@@ -52,7 +51,7 @@ int XiboApp::run(int argc, char** argv)
             XlfParser parser(options.xlf_file());
             parser.parse_xlf_tree();
 
-            auto layout = XlfFactory::create_layout(parser.get_layout_params());
+            auto layout = LayoutBuilder::create(parser.get_layout_params());
             layout->show_regions();
 
             m_logger->info("Player started");

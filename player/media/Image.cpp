@@ -1,5 +1,5 @@
 #include "Image.hpp"
-#include "Region.hpp"
+#include "control/Region.hpp"
 
 Image::Image(const Region& region, int id, int duration, const std::string& uri,
              const std::string& scale_type, const std::string& align, const std::string& valign) :

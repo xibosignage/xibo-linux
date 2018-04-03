@@ -6,11 +6,17 @@ pkg_check_modules(GStreamer REQUIRED gstreamer-1.0>=1.8.0 gstreamer-video-1.0>=1
 pkg_check_modules(WebKit REQUIRED webkitgtk-3.0>=2.4.10)
 
 include_directories(${WebKit_INCLUDE_DIRS} ${GStreamer_INCLUDE_DIRS})
+include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -static-libstdc++ -O0 -pthread -Wall -W -Wshadow -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 
-set(SOURCE_FILES main.cpp XiboApp.cpp XlfParser.cpp MainLayout.cpp CommandLineParser.cpp XiboFactory.cpp Media.cpp Image.cpp Video.cpp Audio.cpp WebView.cpp Region.cpp LayoutOverlay.cpp XiboVideoSink.cpp utilities.cpp)
+set(CONTROL_SOURCES control/MainLayout.cpp control/Region.cpp control/LayoutOverlay.cpp)
+set(MEDIA_SOURCES media/Media.cpp media/Image.cpp media/Video.cpp media/Audio.cpp media/WebView.cpp media/XiboVideoSink.cpp)
+set(UTILS_SOURCES utils/CommandLineParser.cpp utils/utilities.cpp utils/XlfParser.cpp)
+set(CREATORS_SOURCES creators/LayoutBuilder.cpp creators/RegionBuilder.cpp creators/MediaFactory.cpp)
+
+set(SOURCE_FILES main.cpp XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${CREATORS_SOURCES})
 
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)

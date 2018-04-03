@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Media.hpp"
+#include "media/Media.hpp"
 
 #include <gtkmm/fixed.h>
 #include <vector>

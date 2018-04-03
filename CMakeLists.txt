@@ -6,7 +6,7 @@ project(XiboLinux VERSION 0.1.1.${GIT_REVISION})
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/Modules")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost 1.58 REQUIRED system filesystem program_options)
@@ -21,7 +21,7 @@ enable_testing()
 pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.18.0)
 find_link_libs("${Gtkmm_LIBRARIES}" Gtkmm_LINK_LIBRARIES)
 
-configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/Generated/config.hpp)
-include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/Generated/)
+configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/generated/config.hpp)
+include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_BINARY_DIR}/generated/)
 
-add_subdirectory(Player)
+add_subdirectory(player)

@@ -1,7 +1,7 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
-#include "XiboApp.hpp"
-#include "utilities.hpp"
+#include "../XiboApp.hpp"
+#include "utils/utilities.hpp"
 
 #include <spdlog/spdlog.h>
 #include <boost/filesystem.hpp>

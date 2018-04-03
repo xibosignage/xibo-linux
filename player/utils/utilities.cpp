@@ -1,8 +1,8 @@
 #include "utilities.hpp"
+#include "constants.hpp"
 
 #include <stdexcept>
 #include <spdlog/spdlog.h>
-#include "constants.hpp"
 
 uint32_t utilities::to_hex(const std::string& str_color)
 {

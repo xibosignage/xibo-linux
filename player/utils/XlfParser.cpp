@@ -78,6 +78,8 @@ void XlfParser::parse_xlf_tree()
                         parse_media_params<Image>(region_id, media_node);
                     else if(type == "video")
                         parse_media_params<Video>(region_id, media_node);
+                    else if(type == "audio")
+                        parse_media_params<Audio>(region_id, media_node);
                     // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
                     else if(render == "html" || type == "text" || type == "ticker" || type == "datasetview" || type == "embedded")
                         parse_media_params<WebView>(region_id, media_node);
@@ -120,7 +122,7 @@ boost::optional<int> XlfParser::parse_duration(const std::string& path)
         if(std::regex_search(line, match, re) && match.size() > 1)
         {
             spdlog::get(LOGGER)->debug("DURATION parsed");
-            // NOTE: 0 for full match, 1 for the first group match1
+            // NOTE: 0 for full match, 1 for the first group match
             return std::stoi(match[1].str());
         }
     }

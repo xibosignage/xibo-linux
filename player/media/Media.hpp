@@ -3,7 +3,7 @@
 #include <string>
 #include <gtkmm/widget.h>
 
-#include "constants.hpp"
+#include "utils/constants.hpp"
 
 class Region;
 
