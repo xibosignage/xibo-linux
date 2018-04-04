@@ -49,9 +49,9 @@ int XiboApp::run(int argc, char** argv)
             s_example_dir = options.example_dir();
 
             XlfParser parser(options.xlf_file());
-            parser.parse_xlf_tree();
+            auto params = parser.parse_layout();
 
-            auto layout = LayoutBuilder::create(parser.get_layout_params());
+            auto layout = LayoutBuilder::create(params);
             layout->show_regions();
 
             m_logger->info("Player started");

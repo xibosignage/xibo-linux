@@ -8,85 +8,95 @@ XlfParser::XlfParser(const std::string& full_path)
     boost::property_tree::read_xml(full_path, m_tree);
 }
 
-boost::property_tree::ptree XlfParser::get_layout_params() const
-{
-    return m_params;
-}
-
-void XlfParser::parse_layout_params(const boost::property_tree::ptree& layout_node)
+Params XlfParser::parse_layout_params(const xlf_node& layout_node)
 {
     spdlog::get(LOGGER)->debug("parse layout");
+    boost::property_tree::ptree layout_params;
 
     auto attrs = layout_node.get_child("<xmlattr>");
-    m_params.put("schemaVersion", attrs.get<int>("schemaVersion"));
-    m_params.put("width", attrs.get<int>("width"));
-    m_params.put("height", attrs.get<int>("height"));
-    m_params.put("background", attrs.get_optional<std::string>("background").value_or(std::string{}));
-    m_params.put("bgcolor", attrs.get_optional<std::string>("bgcolor").value_or(std::string{}));
+    layout_params.put("schemaVersion", attrs.get<int>("schemaVersion"));
+    layout_params.put("width", attrs.get<int>("width"));
+    layout_params.put("height", attrs.get<int>("height"));
+    layout_params.put("background", attrs.get_optional<std::string>("background").value_or(std::string{}));
+    layout_params.put("bgcolor", attrs.get_optional<std::string>("bgcolor").value_or(std::string{}));
+
+    return layout_params;
 }
 
-int XlfParser::parse_region_params(const boost::property_tree::ptree& region_node)
+Params XlfParser::parse_region_params(const xlf_node& region_node)
 {
     spdlog::get(LOGGER)->debug("parse region");
+    boost::property_tree::ptree region_params;
 
     static int available_zindex = 0;
     auto attrs = region_node.get_child("<xmlattr>");
     auto options = region_node.get_child("options");
     int id = attrs.get<int>("id");
 
-    auto& regions = m_params.get_child("regions");
-    auto& current_region = regions.add_child(std::to_string(id), boost::property_tree::ptree{});
-    current_region.add_child("medias", boost::property_tree::ptree{});
-
-    current_region.put("id", id);
-    current_region.put("width", static_cast<int>(attrs.get<float>("width")));
-    current_region.put("height", static_cast<int>(attrs.get<float>("height")));
-    current_region.put("top", static_cast<int>(attrs.get<float>("top")));
-    current_region.put("left", static_cast<int>(attrs.get<float>("left")));
+    region_params.put("id", id);
+    region_params.put("width", static_cast<int>(attrs.get<float>("width")));
+    region_params.put("height", static_cast<int>(attrs.get<float>("height")));
+    region_params.put("top", static_cast<int>(attrs.get<float>("top")));
+    region_params.put("left", static_cast<int>(attrs.get<float>("left")));
 
     auto zindex_optional = attrs.get_optional<int>("zindex");
     int zindex = zindex_optional ? zindex_optional.value() : available_zindex++;
-    current_region.put("zindex", zindex);
+    region_params.put("zindex", zindex);
+    region_params.put("loop", options.get_optional<bool>("loop").value_or(false));
 
-    current_region.put("loop", options.get_optional<bool>("loop").value_or(false));
-    current_region.put("transitionType", options.get_optional<std::string>("transitionType").value_or(""));
-    current_region.put("transitionDirection", options.get_optional<std::string>("transitionDirection").value_or(""));
-    current_region.put("transitionDuration", options.get_optional<int>("transitionDuration").value_or(0));
-
-    return id;
+    return region_params;
 }
 
-void XlfParser::parse_xlf_tree()
+Params XlfParser::parse_layout()
 {
     auto layout_node = m_tree.get_child("layout");
-    parse_layout_params(layout_node);
-    m_params.add_child("regions", boost::property_tree::ptree{});
+    auto layout_params = parse_layout_params(layout_node);
+    auto& regions = layout_params.add_child("regions", {});
 
     for(auto [layout_node_name, region_node] : layout_node)
     {
         if(layout_node_name == "region")
         {
-            int region_id = parse_region_params(region_node);
-            for(auto [region_node_name, media_node]: region_node)
-            {
-                if(region_node_name == "media")
-                {
-                    auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
-                    auto render = media_node.get_child("<xmlattr>").get<std::string>("render");
-
-                    if(type == "image")
-                        parse_media_params<Image>(region_id, media_node);
-                    else if(type == "video")
-                        parse_media_params<Video>(region_id, media_node);
-                    else if(type == "audio")
-                        parse_media_params<Audio>(region_id, media_node);
-                    // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
-                    else if(render == "html" || type == "text" || type == "ticker" || type == "datasetview" || type == "embedded")
-                        parse_media_params<WebView>(region_id, media_node);
-                }
-            }
+            auto current_region = parse_region(region_node);
+            regions.add_child(std::to_string(current_region.get<int>("id")), current_region);
         }
     }
+
+    return layout_params;
+}
+
+Params XlfParser::parse_region(const xlf_node& region_node)
+{
+    auto region_params = parse_region_params(region_node);
+    auto& media = region_params.add_child("media", {});
+
+    for(auto [region_node_name, media_node]: region_node)
+    {
+        if(region_node_name == "media")
+        {
+            auto current_media = parse_media(media_node);
+            media.add_child(std::to_string(current_media.get<int>("id")), current_media);
+        }
+    }
+    return region_params;
+}
+
+Params XlfParser::parse_media(const xlf_node& media_node)
+{
+    auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
+    auto render = media_node.get_child("<xmlattr>").get<std::string>("render");
+
+    if(type == "image")
+        return parse_media_params<MediaType::Image>(media_node);
+    else if(type == "video")
+        return parse_media_params<MediaType::Video>(media_node);
+    else if(type == "audio")
+        return parse_media_params<MediaType::Audio>(media_node);
+    // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
+    else if(render == "html" || type == "text" || type == "ticker" || type == "datasetview" || type == "embedded")
+        return parse_media_params<MediaType::WebView>(media_node);
+
+    return {};
 }
 
 // FIXME temporary workaround

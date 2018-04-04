@@ -23,4 +23,6 @@ std::unique_ptr<Media> MediaFactory::create(const Region& region, const Params& 
         return std::make_unique<Audio>(region, params.get<int>("id"), params.get<int>("duration"), params.get<std::string>("uri"),
                                        params.get<bool>("mute"), params.get<bool>("loop"));
     }
+
+    return nullptr;
 }

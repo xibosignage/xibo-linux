@@ -10,7 +10,7 @@ std::unique_ptr<Region> RegionBuilder::create(const Params& params)
                                            params.get<int>("zindex"),
                                            params.get<bool>("loop"));
 
-    auto media = params.get_child("medias");
+    auto media = params.get_child("media");
     for(auto [media_id, media_params] : media)
     {
         region->add_media(MediaFactory::create(*region, media_params));
