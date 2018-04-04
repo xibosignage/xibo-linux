@@ -1,9 +1,7 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
+#include "constants.hpp"
 
-#include "utils/XlfParser.hpp"
-#include "utils/constants.hpp"
-#include "utils/CommandLineParser.hpp"
 #include "control/Region.hpp"
 #include "control/MainLayout.hpp"
 #include "creators/LayoutBuilder.hpp"
@@ -11,59 +9,60 @@
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
 
-std::string XiboApp::s_example_dir;
+std::unique_ptr<XiboApp> XiboApp::m_app;
 
-XiboApp::XiboApp(const std::string& app_name)
-{
-    init();
-    m_app = Gtk::Application::create(app_name);
-}
-
-void XiboApp::init()
+XiboApp& XiboApp::create(const std::string& name)
 {
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
 
+    m_app = std::unique_ptr<XiboApp>(new XiboApp);
+    m_app->m_parent_app = Gtk::Application::create(name);
+
+    return *m_app;
+}
+
+XiboApp::XiboApp()
+{
     m_logger = spdlog::get(LOGGER);
+}
+
+const XiboApp& XiboApp::app()
+{
+    return *m_app;
+}
+
+const XlfParser& XiboApp::xlf_parser() const
+{
+    return m_parser;
+}
+
+const CommandLineParser& XiboApp::command_line_parser() const
+{
+    return m_options;
 }
 
 int XiboApp::run(int argc, char** argv)
 {
-    CommandLineParser options;
-    bool result = options.parse(argc, argv);
+    bool result = m_options.parse(argc, argv);
     if(result)
     {
-        if(options.is_version())
+        if(m_options.is_version())
         {
             m_logger->info("Project version: {}", get_version());
         }
-        if(options.is_example_dir())
+        if(m_options.is_example_dir())
         {
-            if(options.is_testing())
-            {
-                Glib::signal_timeout().connect_once([=](){
-                    std::exit(0);
-                }, 3000);
-            }
-            s_example_dir = options.example_dir();
+            m_parser.parse_xlf(m_options.xlf_file());
 
-            XlfParser parser(options.xlf_file());
-            auto params = parser.parse_layout();
-
-            auto layout = LayoutBuilder::create(params);
+            auto layout = LayoutBuilder::create();
             layout->show_regions();
 
             m_logger->info("Player started");
 
-            return m_app->run(*layout);
+            return m_parent_app->run(*layout);
         }
     }
     return 0;
-}
-
-// temporary solution until receiving files from CMS
-const std::string& XiboApp::example_dir()
-{
-    return s_example_dir;
 }

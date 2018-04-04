@@ -86,12 +86,12 @@ bool CommandLineParser::is_testing() const
     return m_is_testing;
 }
 
-std::string CommandLineParser::xlf_file() const
+const std::string& CommandLineParser::xlf_file() const
 {
     return m_xlf_file;
 }
 
-std::string CommandLineParser::example_dir() const
+const std::string& CommandLineParser::example_dir() const
 {
     return m_example_dir;
 }

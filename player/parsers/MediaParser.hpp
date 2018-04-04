@@ -1,49 +1,37 @@
 #pragma once
 
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include "constants.hpp"
+#include "utils/utilities.hpp"
+
 #include <spdlog/spdlog.h>
 
-#include "../XiboApp.hpp"
-#include "constants.hpp"
-
-using xlf_node = boost::property_tree::ptree;
-
-class XlfParser
+class MediaParser
 {
 public:
-    XlfParser(const std::string& full_path);
-
-    Params parse_layout();
-    Params parse_region(const xlf_node& region_node);
-    Params parse_media(const xlf_node& media_node);
+    MediaParser() = default;
+    Params parse_media(int region_id, int media_id);
 
 private:
-    Params parse_layout_params(const xlf_node& layout_node);
-    Params parse_region_params(const xlf_node& region_node);
     template<MediaType type> Params parse_media_params(const xlf_node& media_node);
     template<MediaType type> void parse_media_options(Params& media_params, const xlf_node& options);
+    void parse_audio_options(Params& media_params, const xlf_node& options);
 
     std::string get_path(int id, const boost::optional<std::string>& uri, const std::string& type);
     boost::optional<int> parse_duration(const std::string& path);
 
-private:
-    boost::property_tree::ptree m_tree;
-    Params m_params;
-
 };
 
-template<MediaType type> Params XlfParser::parse_media_params(const xlf_node& media_node)
+template<MediaType type> Params MediaParser::parse_media_params(const xlf_node& media_node)
 {
     spdlog::get(LOGGER)->debug("parse media");
-    xlf_node media_params;
+    Params media_params;
 
     auto attrs = media_node.get_child("<xmlattr>");
     auto options = media_node.get_child("options");
     int id = attrs.template get<int>("id");
 
     auto optional_uri = options.get_optional<std::string>("uri");
-    std::string uri = XiboApp::example_dir() + "/" + get_path(id, optional_uri, attrs.template get<std::string>("type")); // FIXME temporary workaround
+    std::string uri = utilities::example_dir() + "/" + get_path(id, optional_uri, attrs.template get<std::string>("type")); // FIXME temporary workaround
     media_params.put("uri", uri);
     media_params.put("id", id);
 
@@ -52,12 +40,16 @@ template<MediaType type> Params XlfParser::parse_media_params(const xlf_node& me
     else
         media_params.put("duration", attrs.get<int>("duration"));
 
+    auto audio_options = media_node.get_child_optional("audio");
+    if(audio_options)
+        parse_audio_options(media_params, audio_options.value());
+
     parse_media_options<type>(media_params, options);
 
     return media_params;
 }
 
-template<MediaType type> void XlfParser::parse_media_options(Params& media_params, const xlf_node& options)
+template<MediaType type> void MediaParser::parse_media_options(Params& media_params, const xlf_node& options)
 {
     media_params.put("type", type);
     if constexpr(type == MediaType::Image)

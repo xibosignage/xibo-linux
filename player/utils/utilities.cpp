@@ -1,5 +1,6 @@
 #include "utilities.hpp"
 #include "constants.hpp"
+#include "XiboApp.hpp"
 
 #include <stdexcept>
 #include <spdlog/spdlog.h>
@@ -17,4 +18,18 @@ uint32_t utilities::to_hex(const std::string& str_color)
         str_hex += "FF";
 
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
+}
+
+const std::string& utilities::example_dir()
+{
+    return XiboApp::app().command_line_parser().example_dir();
+}
+
+const std::string& utilities::xlf_file()
+{
+    return XiboApp::app().command_line_parser().xlf_file();
+}
+const XlfParser& utilities::xlf_parser()
+{
+    return XiboApp::app().xlf_parser();
 }

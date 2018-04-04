@@ -1,4 +1,5 @@
 #include "Media.hpp"
+#include "Audio.hpp"
 
 #include <spdlog/spdlog.h>
 #include <iostream>
@@ -16,11 +17,20 @@ void Media::stop()
 void Media::start()
 {
     m_started = true;
+    if(m_audio)
+    {
+        m_audio->start();
+    }
 }
 
 bool Media::is_running() const
 {
     return m_started;
+}
+
+void Media::attach_audio(std::unique_ptr<Media> audio)
+{
+    m_audio = std::move(audio);
 }
 
 sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()

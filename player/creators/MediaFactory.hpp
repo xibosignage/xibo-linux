@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/constants.hpp"
+#include "constants.hpp"
 #include <memory>
 
 class Media;
@@ -10,5 +10,5 @@ class MediaFactory
 {
 public:
     MediaFactory() = delete;
-    static std::unique_ptr<Media> create(const Region& region, const Params& params);
+    static std::unique_ptr<Media> create(const Region& region, int media_id);
 };

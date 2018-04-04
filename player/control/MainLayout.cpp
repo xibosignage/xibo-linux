@@ -1,6 +1,6 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
-#include "../XiboApp.hpp"
+#include "XiboApp.hpp"
 #include "utils/utilities.hpp"
 
 #include <spdlog/spdlog.h>
@@ -31,7 +31,7 @@ MainLayout::MainLayout(int schema_version,
         set_background_color(utilities::to_hex(m_background_color));
 
     if(!m_background_image.empty())
-        set_background_image(XiboApp::example_dir() + "/" + m_background_image);
+        set_background_image(utilities::example_dir() + "/" + m_background_image);
 
     if(is_background_set)
     {

@@ -13,8 +13,8 @@ public:
     bool is_version() const;
     bool is_example_dir() const;
     bool is_testing() const;
-    std::string xlf_file() const;
-    std::string example_dir() const;
+    const std::string& xlf_file() const;
+    const std::string& example_dir() const;
     const boost::program_options::options_description& available_options() const;
 
 private:

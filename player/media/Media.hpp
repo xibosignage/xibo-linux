@@ -3,7 +3,7 @@
 #include <string>
 #include <gtkmm/widget.h>
 
-#include "utils/constants.hpp"
+#include "constants.hpp"
 
 class Region;
 
@@ -26,6 +26,7 @@ public:
     virtual void stop() = 0;
     virtual void start() = 0;
     virtual bool is_running() const;
+    void attach_audio(std::unique_ptr<Media> audio);
     sigc::signal<void, Gtk::Widget&, int, int>& handler_requested();
 
     const Region& region() const;
@@ -43,6 +44,7 @@ protected:
 
 private:
     sigc::signal<void, Gtk::Widget&, int, int> m_handler_requsted;
+    std::unique_ptr<Media> m_audio;
     bool m_started = false;
 
 };

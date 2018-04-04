@@ -4,7 +4,7 @@
 #include <gst/gst.h>
 #include <gst/video/video-info.h>
 #include <cassert>
-#include "utils/constants.hpp"
+#include "constants.hpp"
 
 G_BEGIN_DECLS
 

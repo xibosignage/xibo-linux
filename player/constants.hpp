@@ -6,6 +6,7 @@
 #include "constants.hpp"
 
 using Params = boost::property_tree::ptree;
+using xlf_node = boost::property_tree::ptree;
 
 const std::string LOGGER = "logger";
 const int DEFAULT_X_POS = 0;

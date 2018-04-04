@@ -13,10 +13,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 
 set(CONTROL_SOURCES control/MainLayout.cpp control/Region.cpp control/LayoutOverlay.cpp)
 set(MEDIA_SOURCES media/Media.cpp media/Image.cpp media/Video.cpp media/Audio.cpp media/WebView.cpp media/XiboVideoSink.cpp)
-set(UTILS_SOURCES utils/CommandLineParser.cpp utils/utilities.cpp utils/XlfParser.cpp)
+set(UTILS_SOURCES utils/utilities.cpp)
+set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/MediaParser.cpp parsers/XlfParser)
 set(CREATORS_SOURCES creators/LayoutBuilder.cpp creators/RegionBuilder.cpp creators/MediaFactory.cpp)
 
-set(SOURCE_FILES main.cpp XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${CREATORS_SOURCES})
+set(SOURCE_FILES main.cpp XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${PARSER_SOURCES} ${CREATORS_SOURCES})
 
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)
