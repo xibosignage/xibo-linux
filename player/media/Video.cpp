@@ -37,7 +37,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter ||
        !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
     {
-        // exception
+        // FIXME exception
         m_logger->critical("One element could not be created");
     }
 
@@ -79,35 +79,34 @@ gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
 {
     switch (GST_MESSAGE_TYPE(message))
     {
-    case GST_MESSAGE_ERROR:
-    {
-        gchar *debug = nullptr;
-        GError *err = nullptr;
-
-        gst_message_parse_error(message, &err, &debug);
-        m_logger->error("{}", err->message);
-
-        if(debug)
+        case GST_MESSAGE_ERROR:
         {
-            m_logger->error("Debug details: {}", debug);
-            g_free(debug);
-        }
+            gchar *debug = nullptr;
+            GError *err = nullptr;
 
-        g_error_free(err);
-        break;
-    }
-    case GST_MESSAGE_EOS:
-        m_logger->debug("End of stream");
-        m_video_ended = true;
-        if(m_looped)
-        {
-            play();
-        }
-        break;
-    default:
-        break;
-    }
+            gst_message_parse_error(message, &err, &debug);
+            m_logger->error("{}", err->message);
 
+            if(debug)
+            {
+                m_logger->error("Debug details: {}", debug);
+                g_free(debug);
+            }
+
+            g_error_free(err);
+            break;
+        }
+        case GST_MESSAGE_EOS:
+            m_logger->debug("End of stream");
+            m_video_ended = true;
+            if(m_looped)
+                play();
+            else
+                media_timeout().emit();
+            break;
+        default:
+            break;
+    }
     return true;
 }
 
@@ -203,7 +202,7 @@ void Video::stop()
 {
     Media::stop();
     m_video_window.hide();
-    // stop video
+    gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
 }
 
 void Video::start()
@@ -211,4 +210,14 @@ void Video::start()
     Media::start();
     m_video_window.show();
     play();
+}
+
+void Video::start_timer()
+{
+    if(duration())
+    {
+        Glib::signal_timeout().connect_once([=](){
+            media_timeout().emit();
+        }, duration() * MSECS);
+    }
 }

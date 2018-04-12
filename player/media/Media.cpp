@@ -2,6 +2,7 @@
 #include "Audio.hpp"
 
 #include <spdlog/spdlog.h>
+#include <glibmm/main.h>
 #include <iostream>
 
 Media::Media(const Region& region, int id, int duration, Render render, const std::string& uri) :
@@ -21,6 +22,7 @@ void Media::stop()
 void Media::start()
 {
     m_started = true;
+    start_timer();
     if(m_audio)
     {
         m_audio->start();
@@ -32,6 +34,13 @@ bool Media::is_running() const
     return m_started;
 }
 
+void Media::start_timer()
+{
+    Glib::signal_timeout().connect_once([=](){
+        media_timeout().emit();
+    }, duration() * MSECS);
+}
+
 void Media::attach_audio(std::unique_ptr<Media> audio)
 {
     m_audio = std::move(audio);
@@ -40,6 +49,11 @@ void Media::attach_audio(std::unique_ptr<Media> audio)
 sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()
 {
     return m_handler_requsted;
+}
+
+sigc::signal<void>& Media::media_timeout()
+{
+    return m_media_timeout;
 }
 
 const Region& Media::region() const

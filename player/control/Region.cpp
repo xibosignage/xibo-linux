@@ -1,9 +1,5 @@
  #include "Region.hpp"
 
-#include <glibmm/main.h>
-
-const uint MSECS = 1000;
-
 Region::Region(int id,
                const Size& size,
                const Point& pos,
@@ -47,6 +43,7 @@ void Region::add_media(std::unique_ptr<Media> media)
     media->handler_requested().connect([=](Gtk::Widget& widget, int x, int y){
         put(widget, x, y);
     });
+    media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
     m_media.push_back(std::move(media));
 }
 
@@ -63,27 +60,17 @@ void Region::show()
 
         Gtk::Fixed::show();
         m_media[m_currentIndex]->start();
-
-        start_timer(m_currentIndex);
     }
-}
-
-void Region::start_timer(size_t media_index)
-{
-    uint duration = static_cast<uint>(m_media[media_index]->duration()) * MSECS;
-    Glib::signal_timeout().connect_once(sigc::mem_fun(*this, &Region::on_media_timeout), duration);
 }
 
 void Region::on_media_timeout()
 {
+    m_previousIndex = m_currentIndex;
+    m_media[m_previousIndex]->stop();
+
     if(m_media.size() > 1)
     {
-        m_previousIndex = m_currentIndex;
-        m_media[m_previousIndex]->stop();
-
         m_currentIndex = m_currentIndex + 1 >= m_media.size() ? 0 : m_currentIndex + 1;
         m_media[m_currentIndex]->start();
-
-        start_timer(m_currentIndex);
     }
 }

@@ -16,6 +16,7 @@ public:
 
     void stop() override;
     void start() override;
+    void start_timer() override;
 
     void set_volume(double volume);
     void play();

@@ -29,7 +29,6 @@ public:
     void show();
 
 private:
-    void start_timer(size_t media_index);
     void on_media_timeout();
 
 private:
