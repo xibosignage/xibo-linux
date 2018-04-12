@@ -1,15 +1,18 @@
 #pragma once
 
 #include "constants.hpp"
+#include "parsers/ParserHelpers.hpp"
 #include <spdlog/spdlog.h>
 
 class RegionParser
 {
-public:
-    RegionParser() = default;
-    std::vector<int> media_ids() const;
-    Params parse_region(int region_id);
+private:
+    RegionParser(const xlf_node& region_node);
+    ParsedRegion parse_region();
+    ParsedRegion parse_region_params();
+
+    friend class LayoutParser;
 
 private:
-    int m_region_id;
+    const xlf_node& m_region_node;
 };

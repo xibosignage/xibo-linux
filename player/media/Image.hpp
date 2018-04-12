@@ -6,9 +6,6 @@
 class Image : public Media
 {
 public:
-    Image(const Region& region, int id, int duration, const std::string& uri,
-          const std::string& scale_type, const std::string& align, const std::string& valign);
-
     enum class ScaleType
     {
         Center,
@@ -32,17 +29,15 @@ public:
         Invalid
     };
 
+    Image(const Region& region, int id, int duration, const std::string& uri,
+          ScaleType scale_type, Align align, Valign valign);
+
     ScaleType scale_type() const;
     Align align() const;
     Valign valign() const;
 
     void stop() override;
     void start() override;
-
-private:
-    ScaleType to_scale_type(const std::string& scale_type);
-    Align to_align(const std::string& align);
-    Valign to_valign(const std::string& valign);
 
 private:
     ScaleType m_scale_type;

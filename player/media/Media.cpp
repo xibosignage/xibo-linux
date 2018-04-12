@@ -12,6 +12,10 @@ Media::Media(const Region& region, int id, int duration, Render render, const st
 void Media::stop()
 {
     m_started = false;
+    if(m_audio)
+    {
+        m_audio->stop();
+    }
 }
 
 void Media::start()

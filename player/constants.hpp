@@ -34,14 +34,12 @@ inline std::istream& operator>>(std::istream& is, MediaType& type)
     return is;
 }
 
-// FIXME remove from constants.hpp
 struct Point
 {
     int left;
     int top;
 };
 
-// FIXME remove from constants.hpp
 struct Size
 {
     int width;

@@ -14,7 +14,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 set(CONTROL_SOURCES control/MainLayout.cpp control/Region.cpp control/LayoutOverlay.cpp)
 set(MEDIA_SOURCES media/Media.cpp media/Image.cpp media/Video.cpp media/Audio.cpp media/WebView.cpp media/XiboVideoSink.cpp)
 set(UTILS_SOURCES utils/utilities.cpp)
-set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/MediaParser.cpp parsers/XlfParser)
+set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/MediaParser.cpp)
 set(CREATORS_SOURCES creators/LayoutBuilder.cpp creators/RegionBuilder.cpp creators/MediaFactory.cpp)
 
 set(SOURCE_FILES main.cpp XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${PARSER_SOURCES} ${CREATORS_SOURCES})

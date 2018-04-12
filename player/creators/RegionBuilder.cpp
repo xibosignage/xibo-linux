@@ -2,22 +2,30 @@
 #include "MediaFactory.hpp"
 
 #include "parsers/RegionParser.hpp"
+#include "parsers/ParserHelpers.hpp"
 #include "control/Region.hpp"
 
-std::unique_ptr<Region> RegionBuilder::create(int region_id)
-{
-    RegionParser parser;
-    auto params = parser.parse_region(region_id);
-    auto region = std::make_unique<Region>(params.get<int>("id"),
-                                           Size{params.get<int>("width"), params.get<int>("height")},
-                                           Point{params.get<int>("left"), params.get<int>("top")},
-                                           params.get<int>("zindex"),
-                                           params.get<bool>("loop"));
+int RegionBuilder::available_index = 0;
 
-    auto media = parser.media_ids();
-    for(auto media_id : media)
+std::unique_ptr<Region> RegionBuilder::create(const ParsedRegion& object)
+{
+    auto region = create_from_params(object);
+
+    for(auto media : object.media)
     {
-        region->add_media(MediaFactory::create(*region, media_id));
+        region->add_media(MediaFactory::create(*region, media));
     }
     return region;
+}
+
+
+std::unique_ptr<Region> RegionBuilder::create_from_params(const ParsedRegion& object)
+{
+    int zindex = object.zindex.value_or(available_index++);
+    bool loop = object.loop.value_or(false);
+
+    Size sz{object.width, object.height};
+    Point pos{object.left, object.top};
+
+    return std::make_unique<Region>(object.id, sz, pos, zindex, loop);
 }

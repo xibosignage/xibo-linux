@@ -1,35 +1,40 @@
 #include "RegionParser.hpp"
-#include "utils/utilities.hpp"
-#include "parsers/XlfParser.hpp"
+#include "parsers/MediaParser.hpp"
 
-Params RegionParser::parse_region(int region_id)
+RegionParser::RegionParser(const xlf_node& region_node) :
+    m_region_node(region_node)
 {
-    m_region_id = region_id;
 
-    spdlog::get(LOGGER)->debug("parse region");
-    auto region_node = utilities::xlf_parser().region_node(region_id);
-    boost::property_tree::ptree region_params;
+}
 
-    static int available_zindex = 0;
-    auto attrs = region_node.get_child("<xmlattr>");
-    auto options = region_node.get_child("options");
-    int id = attrs.get<int>("id");
-
-    region_params.put("id", id);
-    region_params.put("width", static_cast<int>(attrs.get<float>("width")));
-    region_params.put("height", static_cast<int>(attrs.get<float>("height")));
-    region_params.put("top", static_cast<int>(attrs.get<float>("top")));
-    region_params.put("left", static_cast<int>(attrs.get<float>("left")));
-
-    auto zindex_optional = attrs.get_optional<int>("zindex");
-    int zindex = zindex_optional ? zindex_optional.value() : available_zindex++;
-    region_params.put("zindex", zindex);
-    region_params.put("loop", options.get_optional<bool>("loop").value_or(false));
-
+ParsedRegion RegionParser::parse_region()
+{
+    auto region_params = parse_region_params();
+    for(auto [region_node_name, media_node]: m_region_node)
+    {
+        if(region_node_name == "media")
+        {
+            region_params.media.push_back(MediaParser(media_node).parse_media());
+        }
+    }
     return region_params;
 }
 
-std::vector<int> RegionParser::media_ids() const
+ParsedRegion RegionParser::parse_region_params()
 {
-    return utilities::xlf_parser().media_ids(m_region_id);
+    spdlog::get(LOGGER)->debug("parse region");
+
+    auto attrs = m_region_node.get_child("<xmlattr>");
+    auto options = m_region_node.get_child("options");
+
+    ParsedRegion region_params;
+    region_params.id = attrs.get<int>("id");
+    region_params.width = static_cast<int>(attrs.get<float>("width"));
+    region_params.height = static_cast<int>(attrs.get<float>("height"));
+    region_params.top = static_cast<int>(attrs.get<float>("top"));
+    region_params.left = static_cast<int>(attrs.get<float>("left"));
+    region_params.zindex = attrs.get_optional<int>("zindex");
+    region_params.loop = options.get_optional<bool>("loop");
+
+    return region_params;
 }

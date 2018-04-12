@@ -7,7 +7,7 @@ const double MAX_VOLUME = 1.0;
 
 namespace ph = std::placeholders;
 
-Audio::Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped) :
+Audio::Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, int volume) :
     Media(region, id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
@@ -22,7 +22,7 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_audio_converter || !m_volume || !m_audio_sink)
     {
-        // exception
+        // FIXME exception
         m_logger->critical("One element could not be created");
     }
 
@@ -43,7 +43,7 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
     auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Audio::no_more_pads, this, ph::_1, ph::_2));
     g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
-    set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
+    set_volume(m_muted ? MIN_VOLUME : (volume/100.0));
 }
 
 Audio::~Audio()
@@ -134,7 +134,8 @@ void Audio::play()
 void Audio::stop()
 {
     Media::stop();
-    // stop video
+    gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+    m_logger->debug("Stop audio");
 }
 
 void Audio::start()

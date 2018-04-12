@@ -29,7 +29,3 @@ const std::string& utilities::xlf_file()
 {
     return XiboApp::app().command_line_parser().xlf_file();
 }
-const XlfParser& utilities::xlf_parser()
-{
-    return XiboApp::app().xlf_parser();
-}

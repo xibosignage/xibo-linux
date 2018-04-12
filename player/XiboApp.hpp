@@ -3,7 +3,6 @@
 #include <gtkmm/application.h>
 #include <spdlog/spdlog.h>
 
-#include "parsers/XlfParser.hpp"
 #include "parsers/CommandLineParser.hpp"
 
 class XiboApp : public Gtk::Application
@@ -15,7 +14,6 @@ public:
     static XiboApp& create(const std::string& name);
     static const XiboApp& app();
 
-    const XlfParser& xlf_parser() const;
     const CommandLineParser& command_line_parser() const;
 
     int run(int argc, char** argv);
@@ -30,7 +28,6 @@ private:
 private:
     Glib::RefPtr<Gtk::Application> m_parent_app;
     std::shared_ptr<spdlog::logger> m_logger;
-    XlfParser m_parser;
     CommandLineParser m_options;
 
     static std::unique_ptr<XiboApp> m_app;

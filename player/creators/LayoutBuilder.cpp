@@ -2,25 +2,26 @@
 #include "RegionBuilder.hpp"
 
 #include "parsers/LayoutParser.hpp"
+#include "parsers/ParserHelpers.hpp"
 
 #include "control/MainLayout.hpp"
 #include "control/Region.hpp"
 
-std::unique_ptr<MainLayout> LayoutBuilder::create()
+std::unique_ptr<MainLayout> LayoutBuilder::create(const ParsedLayout& object)
 {
-    LayoutParser parser;
-    auto params = parser.parse_layout();
-    auto layout = std::make_unique<MainLayout>(params.get<int>("schemaVersion"),
-                                               params.get<int>("width"),
-                                               params.get<int>("height"),
-                                               params.get<std::string>("background"),
-                                               params.get<std::string>("bgcolor"));
+    auto layout = create_from_params(object);
 
-    auto regions = parser.regions_ids();
-    for(auto region_id : regions)
+    for(auto region : object.regions)
     {
-        spdlog::get(LOGGER)->debug("here");
-        layout->add_region(RegionBuilder::create(region_id));
+        layout->add_region(RegionBuilder::create(region));
     }
     return layout;
+}
+
+std::unique_ptr<MainLayout> LayoutBuilder::create_from_params(const ParsedLayout& object)
+{
+    std::string bgimage = object.bgimage.value_or(std::string{});
+    std::string bgcolor = object.bgcolor.value_or(std::string{});
+
+    return std::make_unique<MainLayout>(object.schemaVersion, object.width, object.height, bgimage, bgcolor);
 }

@@ -5,6 +5,7 @@
 #include "control/Region.hpp"
 #include "control/MainLayout.hpp"
 #include "creators/LayoutBuilder.hpp"
+#include "parsers/LayoutParser.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
@@ -33,11 +34,6 @@ const XiboApp& XiboApp::app()
     return *m_app;
 }
 
-const XlfParser& XiboApp::xlf_parser() const
-{
-    return m_parser;
-}
-
 const CommandLineParser& XiboApp::command_line_parser() const
 {
     return m_options;
@@ -54,9 +50,9 @@ int XiboApp::run(int argc, char** argv)
         }
         if(m_options.is_example_dir())
         {
-            m_parser.parse_xlf(m_options.xlf_file());
+            LayoutParser parser(m_options.xlf_file());
 
-            auto layout = LayoutBuilder::create();
+            auto layout = LayoutBuilder::create(parser.parse_layout());
             layout->show_regions();
 
             m_logger->info("Player started");
