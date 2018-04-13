@@ -37,7 +37,8 @@ bool Media::is_running() const
 void Media::start_timer()
 {
     Glib::signal_timeout().connect_once([=](){
-        media_timeout().emit();
+        stop();
+        media_stopped().emit();
     }, duration() * MSECS);
 }
 
@@ -51,9 +52,9 @@ sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()
     return m_handler_requsted;
 }
 
-sigc::signal<void>& Media::media_timeout()
+sigc::signal<void>& Media::media_stopped()
 {
-    return m_media_timeout;
+    return m_media_stopped;
 }
 
 const Region& Media::region() const

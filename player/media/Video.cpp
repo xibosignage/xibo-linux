@@ -102,7 +102,7 @@ gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
             if(m_looped)
                 play();
             else
-                media_timeout().emit();
+                media_stopped().emit();
             break;
         default:
             break;
@@ -177,6 +177,7 @@ void Video::set_volume(double _volume)
     g_object_set(m_volume, "volume", _volume, nullptr);
 }
 
+// NOTE Test looping video now
 void Video::play()
 {
     if(m_video_ended)
@@ -185,24 +186,21 @@ void Video::play()
                              GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
             m_logger->error("Error while restarting audio");
+            return;
         }
-        else
-        {
-            m_video_ended = false;
-        }
+        m_video_ended = false;
     }
-    else
-    {
-        gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-        m_logger->debug("Running");
-    }
+    gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+    m_logger->debug("Running");
 }
 
 void Video::stop()
 {
     Media::stop();
     m_video_window.hide();
+    m_logger->debug("Stopped");
     gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+    m_video_ended = true;
 }
 
 void Video::start()
@@ -216,8 +214,6 @@ void Video::start_timer()
 {
     if(duration())
     {
-        Glib::signal_timeout().connect_once([=](){
-            media_timeout().emit();
-        }, duration() * MSECS);
+        Media::start_timer();
     }
 }

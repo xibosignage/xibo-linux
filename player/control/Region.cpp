@@ -43,7 +43,7 @@ void Region::add_media(std::unique_ptr<Media> media)
     media->handler_requested().connect([=](Gtk::Widget& widget, int x, int y){
         put(widget, x, y);
     });
-    media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
+    media->media_stopped().connect(sigc::mem_fun(*this, &Region::on_media_stopped));
     m_media.push_back(std::move(media));
 }
 
@@ -59,18 +59,20 @@ void Region::show()
         m_request_handler.emit();
 
         Gtk::Fixed::show();
-        m_media[m_currentIndex]->start();
+        m_media[m_currentMediaIndex]->start();
     }
 }
 
-void Region::on_media_timeout()
+void Region::on_media_stopped()
 {
-    m_previousIndex = m_currentIndex;
-    m_media[m_previousIndex]->stop();
-
     if(m_media.size() > 1)
     {
-        m_currentIndex = m_currentIndex + 1 >= m_media.size() ? 0 : m_currentIndex + 1;
-        m_media[m_currentIndex]->start();
+        m_currentMediaIndex = m_currentMediaIndex + 1 >= m_media.size() ? 0 : m_currentMediaIndex + 1;
+        m_media[m_currentMediaIndex]->start();
+    }
+    else
+    {
+        if(m_looped)
+            m_media[m_currentMediaIndex]->start();
     }
 }

@@ -41,7 +41,6 @@ std::unique_ptr<Media> MediaFactory::create(const Region& region, const AnyMedia
     return nullptr;
 }
 
-
 template<MediaType type>
 std::unique_ptr<Media> MediaFactory::create_media(const Region& region, const ParsedMedia<type>& object)
 {
