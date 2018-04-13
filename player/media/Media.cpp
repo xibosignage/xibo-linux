@@ -47,7 +47,7 @@ void Media::attach_audio(std::unique_ptr<Media> audio)
     m_audio = std::move(audio);
 }
 
-sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()
+sigc::signal<void, Gtk::Widget&, Point>& Media::handler_requested()
 {
     return m_handler_requsted;
 }

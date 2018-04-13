@@ -8,7 +8,7 @@ class Image : public Media
 public:
     enum class ScaleType
     {
-        Center,
+        Scaled,
         Stretch,
         Invalid
     };
@@ -32,17 +32,16 @@ public:
     Image(const Region& region, int id, int duration, const std::string& uri,
           ScaleType scale_type, Align align, Valign valign);
 
-    ScaleType scale_type() const;
-    Align align() const;
-    Valign valign() const;
-
     void stop() override;
     void start() override;
 
 private:
-    ScaleType m_scale_type;
-    Align m_align;
-    Valign m_valign;
+    bool is_scaled(ScaleType scale_type);
+    int get_left_pos(Align align);
+    int get_top_pos(Valign valign);
+
+private:
     Gtk::Image m_handler;
+    Size m_size;
 
 };

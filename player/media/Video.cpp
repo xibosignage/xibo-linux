@@ -61,7 +61,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
 
     m_video_window.set_size_request(region.size().width, region.size().height);
     region.request_handler().connect([=]{
-        handler_requested().emit(m_video_window, DEFAULT_X_POS, DEFAULT_Y_POS);
+        handler_requested().emit(m_video_window, DEFAULT_POINT);
     });
 
     set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);

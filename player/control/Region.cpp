@@ -40,8 +40,8 @@ bool Region::looped() const
 
 void Region::add_media(std::unique_ptr<Media> media)
 {
-    media->handler_requested().connect([=](Gtk::Widget& widget, int x, int y){
-        put(widget, x, y);
+    media->handler_requested().connect([=](Gtk::Widget& widget, Point point){
+        put(widget, point.left, point.top);
     });
     media->media_stopped().connect(sigc::mem_fun(*this, &Region::on_media_stopped));
     m_media.push_back(std::move(media));

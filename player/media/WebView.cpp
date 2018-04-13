@@ -26,7 +26,7 @@ WebView::WebView(const Region& region, int id, int duration, const std::string& 
     m_handler.set_size_request(region.size().width, region.size().height);
 
     region.request_handler().connect([=]{
-        handler_requested().emit(m_handler, DEFAULT_X_POS, DEFAULT_Y_POS);
+        handler_requested().emit(m_handler, DEFAULT_POINT);
     });
 }
 

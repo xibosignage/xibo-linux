@@ -94,7 +94,7 @@ std::unique_ptr<Media> MediaFactory::create_media(const Region& region, const Pa
 Image::ScaleType to_scale_type(const std::string& scale_type)
 {
     if(scale_type == "center")
-        return Image::ScaleType::Center;
+        return Image::ScaleType::Scaled;
     else if(scale_type == "stretch")
         return Image::ScaleType::Stretch;
     else

@@ -28,7 +28,7 @@ public:
     virtual bool is_running() const;
     virtual void start_timer();
     void attach_audio(std::unique_ptr<Media> audio);
-    sigc::signal<void, Gtk::Widget&, int, int>& handler_requested();
+    sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
     sigc::signal<void>& media_stopped();
 
     const Region& region() const;
@@ -45,7 +45,7 @@ protected:
     std::string m_uri;
 
 private:
-    sigc::signal<void, Gtk::Widget&, int, int> m_handler_requsted;
+    sigc::signal<void, Gtk::Widget&, Point> m_handler_requsted;
     sigc::signal<void> m_media_stopped;
     std::unique_ptr<Media> m_audio;
     bool m_started = false;
