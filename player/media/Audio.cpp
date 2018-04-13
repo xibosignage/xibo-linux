@@ -7,7 +7,7 @@ const double MAX_VOLUME = 1.0;
 
 namespace ph = std::placeholders;
 
-Audio::Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, int volume) :
+Audio::Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, double volume) :
     Media(region, id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
@@ -43,7 +43,7 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
     auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Audio::no_more_pads, this, ph::_1, ph::_2));
     g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
-    set_volume(m_muted ? MIN_VOLUME : (volume/100.0));
+    set_volume(m_muted ? MIN_VOLUME : volume);
 }
 
 Audio::~Audio()

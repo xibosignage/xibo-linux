@@ -76,7 +76,7 @@ std::unique_ptr<Media> MediaFactory::create_media(const Region& region, const Pa
     {
         auto mute = object.mute.value_or(false);
         auto loop = object.loop.value_or(false);
-        auto volume = object.volume.value_or(100);
+        auto volume = object.volume.value_or(100) / 100.0;
 
         media = std::make_unique<Audio>(region, id, duration, uri, mute, loop, volume);
     }

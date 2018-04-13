@@ -6,7 +6,7 @@
 class Audio : public Media
 {
 public:
-    Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, int volume);
+    Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
     ~Audio() override;
 
     void stop() override;
