@@ -69,7 +69,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
 
 Video::~Video()
 {
-    m_logger->debug("Returned, stopping playback");
+    m_logger->debug("Returned, stopping video playback");
     gst_element_set_state(m_pipeline, GST_STATE_NULL);
     g_object_unref(m_pipeline);
     g_source_remove(m_watch_id);
@@ -97,7 +97,7 @@ gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
             break;
         }
         case GST_MESSAGE_EOS:
-            m_logger->debug("End of stream");
+            m_logger->debug("End of video stream");
             m_video_ended = true;
             if(m_looped)
                 play();
@@ -185,20 +185,20 @@ void Video::play()
         if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                              GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
-            m_logger->error("Error while restarting audio");
+            m_logger->error("Error while restarting video");
             return;
         }
         m_video_ended = false;
     }
     gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-    m_logger->debug("Running");
+    m_logger->debug("Running video");
 }
 
 void Video::stop()
 {
     Media::stop();
     m_video_window.hide();
-    m_logger->debug("Stopped");
+    m_logger->debug("Stopped video");
     gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
     m_video_ended = true;
 }
