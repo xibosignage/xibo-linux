@@ -9,11 +9,13 @@ class ParsedLayout;
 class LayoutBuilder
 {
 public:
-    LayoutBuilder() = delete;
-    static std::unique_ptr<MainLayout> create(const ParsedLayout& object);
+    LayoutBuilder(const ParsedLayout& params);
+    std::unique_ptr<MainLayout> build();
 
 private:
-    static std::unique_ptr<MainLayout> create_from_params(const ParsedLayout& object);
+    std::unique_ptr<MainLayout> create_from_params();
 
+private:
+    const ParsedLayout& m_params;
 
 };

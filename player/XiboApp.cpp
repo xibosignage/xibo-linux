@@ -52,7 +52,7 @@ int XiboApp::run(int argc, char** argv)
         {
             LayoutParser parser(m_options.xlf_file());
 
-            auto layout = LayoutBuilder::create(parser.parse_layout());
+            auto layout = LayoutBuilder(parser.parse_layout()).build();
             layout->show_regions();
 
             m_logger->info("Player started");

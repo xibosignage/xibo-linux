@@ -5,6 +5,7 @@
 
 #include <spdlog/spdlog.h>
 #include <boost/filesystem.hpp>
+#include <gdkmm/monitor.h>
 
 MainLayout::MainLayout(int schema_version,
                        int width,
@@ -17,12 +18,18 @@ MainLayout::MainLayout(int schema_version,
     m_background_image(background_image),
     m_background_color(background_color)
 {
-    set_default_size(width, height);
+    m_logger = spdlog::get(LOGGER);
+
+    scale_to_monitor_size();
+    width = static_cast<int>(m_width * m_width_scale_factor);
+    height = static_cast<int>(m_height * m_height_scale_factor);
+
+    set_size(width, height);
+    set_resizable(false);
 //    set_decorated(false);
 //    fullscreen();
 //    set_keep_above();
 //    move(500, 500);
-    m_logger = spdlog::get(LOGGER);
 
     signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
 
@@ -77,6 +84,24 @@ void MainLayout::reorder_regions()
         m_logger->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
         m_main_overlay.reorder_overlay(*m_regions[i], static_cast<int>(i));
     }
+}
+
+void MainLayout::scale_to_monitor_size()
+{
+    Gdk::Rectangle area;
+    auto current_monitor = get_display()->get_monitor_at_window(get_screen()->get_active_window());
+    current_monitor->get_geometry(area);
+
+    m_width_scale_factor = area.get_width() / static_cast<double>(m_width);
+    m_height_scale_factor = area.get_height() / static_cast<double>(m_height);
+    m_logger->debug("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
+}
+
+void MainLayout::set_size(int width, int height)
+{
+    m_width = width;
+    m_height = height;
+    set_default_size(width, height);
 }
 
 void MainLayout::set_background_color(uint32_t background_color_hex)
@@ -135,27 +160,12 @@ void MainLayout::on_window_realize()
 //    window->set_cursor(cursor);
 }
 
-int MainLayout::schema_version() const
+double MainLayout::width_scale_factor() const
 {
-    return m_schema_version;
+    return m_width_scale_factor;
 }
 
-int MainLayout::width() const
+double MainLayout::height_scale_factor() const
 {
-    return m_width;
-}
-
-int MainLayout::height() const
-{
-    return m_height;
-}
-
-const std::string& MainLayout::background_image() const
-{
-    return m_background_image;
-}
-
-const std::string& MainLayout::background_color() const
-{
-    return m_background_color;
+    return m_height_scale_factor;
 }

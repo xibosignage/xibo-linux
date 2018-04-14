@@ -27,11 +27,8 @@ public:
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    int schema_version() const;
-    int width() const;
-    int height() const;
-    const std::string& background_image() const;
-    const std::string& background_color() const;
+    double width_scale_factor() const;
+    double height_scale_factor() const;
 
     void add_region(std::unique_ptr<Region> region);
     Region& region(size_t index);
@@ -43,6 +40,8 @@ private:
     void create_ui();
     void reorder_regions();
 
+    void set_size(int width, int height);
+    void scale_to_monitor_size();
     void set_background_color(uint32_t background_color_hex);
     void set_background_image(const std::string& background_image);
 
@@ -57,6 +56,8 @@ private:
     std::string m_background_color;
     bool is_background_set = false;
 
+    double m_width_scale_factor;
+    double m_height_scale_factor;
     std::vector<std::unique_ptr<Region>> m_regions;
     std::shared_ptr<spdlog::logger> m_logger;
 };
