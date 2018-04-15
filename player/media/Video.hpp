@@ -35,13 +35,14 @@ private:
     bool m_video_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 
-    GstElement* m_pipeline;
-    GstElement* m_source;
-    GstElement* m_decodebin;
-    GstElement* m_volume;
-    GstElement* m_video_converter;
-    GstElement* m_video_sink;
-    GstElement* m_audio_converter;
-    GstElement* m_audio_sink;
-    GstElement* m_queue;
+    GstElement* m_pipeline = nullptr;
+    GstElement* m_source = nullptr;
+    GstElement* m_decodebin = nullptr;
+    GstElement* m_volume = nullptr;
+    GstElement* m_video_converter = nullptr;
+    GstElement* m_video_scale = nullptr;
+    GstElement* m_video_sink = nullptr;
+    GstElement* m_audio_converter = nullptr;
+    GstElement* m_audio_sink = nullptr;
+    GstElement* m_queue = nullptr;
 };

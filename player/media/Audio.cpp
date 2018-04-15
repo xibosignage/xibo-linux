@@ -22,8 +22,7 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_audio_converter || !m_volume || !m_audio_sink)
     {
-        // FIXME exception
-        m_logger->critical("One element could not be created");
+        throw std::runtime_error("[Audio] One element could not be created");
     }
 
     g_object_set(m_source, "location", uri.c_str(), nullptr);
@@ -48,7 +47,7 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
 
 Audio::~Audio()
 {
-    m_logger->debug("Returned, stopping audio playback");
+    m_logger->debug("[Audio] Returned, stopping playback");
     gst_element_set_state(m_pipeline, GST_STATE_NULL);
     g_object_unref(m_pipeline);
     g_source_remove(m_watch_id);
@@ -68,7 +67,7 @@ gboolean Audio::bus_message_watch(GstBus*, GstMessage* message, gpointer)
 
         if(debug)
         {
-            m_logger->error("Debug details: {}", debug);
+            m_logger->error("[Audio] Debug details: {}", debug);
             g_free(debug);
         }
 
@@ -76,7 +75,7 @@ gboolean Audio::bus_message_watch(GstBus*, GstMessage* message, gpointer)
         break;
     }
     case GST_MESSAGE_EOS:
-        m_logger->debug("End of audio stream");
+        m_logger->debug("[Audio] End of stream");
         m_audio_ended = true;
         if(m_looped)
             play();
@@ -92,12 +91,12 @@ gboolean Audio::bus_message_watch(GstBus*, GstMessage* message, gpointer)
 
 void Audio::no_more_pads(GstElement*, gpointer)
 {
-    m_logger->debug("No more pads");
+    m_logger->debug("[Audio] No more pads");
 }
 
 void Audio::on_pad_added(GstElement*, GstPad* pad, gpointer)
 {
-    m_logger->debug("Audio pad added");
+    m_logger->debug("[Audio] Pad added");
 
     GstPad* sinkpad = gst_element_get_static_pad(m_audio_converter, "sink");
     gst_pad_link(pad, sinkpad);
@@ -117,19 +116,19 @@ void Audio::play()
         if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
                              GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
         {
-            m_logger->error("Error while restarting audio");
+            m_logger->error("[Audio] Error during restart");
             return;
         }
         m_audio_ended = false;
     }
     gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-    m_logger->debug("Running audio");
+    m_logger->debug("[Audio] Running");
 }
 
 void Audio::stop()
 {
     Media::stop();
-    m_logger->debug("Stopped audio");
+    m_logger->debug("[Audio] Stopped");
     gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
     m_audio_ended = true;
 }

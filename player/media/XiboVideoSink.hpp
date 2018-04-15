@@ -35,6 +35,7 @@ struct XiboVideoSinkClass
     GstVideoSinkClass base;
 };
 
+void gst_static_pads_init(int width, int height);
 gboolean plugin_init(GstPlugin* plugin);
 GType gst_xibovideosink_get_type(void);
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler);
