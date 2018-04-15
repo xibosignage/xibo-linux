@@ -110,8 +110,7 @@ RUN cd /app && \
     cmake -H. -B_build && \
     cd _build && \
     make && \
-    make install && \
-    ls -la /app/_build
+    make install
 
 VOLUME /build
 CMD ["./app/run.sh"]

@@ -5,7 +5,9 @@
 
 #include <spdlog/spdlog.h>
 #include <boost/filesystem.hpp>
+#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=22
 #include <gdkmm/monitor.h>
+#endif
 
 MainLayout::MainLayout(int schema_version,
                        int width,
@@ -89,8 +91,14 @@ void MainLayout::reorder_regions()
 void MainLayout::scale_to_monitor_size()
 {
     Gdk::Rectangle area;
+#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=22
     auto current_monitor = get_display()->get_monitor_at_window(get_screen()->get_active_window());
     current_monitor->get_geometry(area);
+#else
+    auto screen = get_screen();
+    int current_monitor = screen->get_monitor_at_window(screen->get_active_window());
+    screen->get_monitor_geometry(current_monitor, area);
+#endif
 
     m_width_scale_factor = area.get_width() / static_cast<double>(m_width);
     m_height_scale_factor = area.get_height() / static_cast<double>(m_height);
