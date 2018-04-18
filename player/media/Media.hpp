@@ -29,7 +29,7 @@ public:
     virtual void start_timer();
     void attach_audio(std::unique_ptr<Media> audio);
     sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
-    sigc::signal<void>& media_stopped();
+    sigc::signal<void>& media_timeout();
 
     const Region& region() const;
     int id() const;
@@ -46,7 +46,7 @@ protected:
 
 private:
     sigc::signal<void, Gtk::Widget&, Point> m_handler_requsted;
-    sigc::signal<void> m_media_stopped;
+    sigc::signal<void> m_media_timeout;
     std::unique_ptr<Media> m_audio;
     bool m_started = false;
 

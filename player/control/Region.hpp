@@ -29,7 +29,7 @@ public:
     void show();
 
 private:
-    void on_media_stopped();
+    void on_media_timeout();
 
 private:
     int m_id;

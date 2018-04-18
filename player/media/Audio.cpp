@@ -80,7 +80,7 @@ gboolean Audio::bus_message_watch(GstBus*, GstMessage* message, gpointer)
         if(m_looped)
             play();
         else
-            media_stopped().emit();
+            media_timeout().emit();
         break;
     default:
         break;
