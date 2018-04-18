@@ -32,7 +32,7 @@
   - Duration fixed for `html` rendering media
   - WebView page reloading fixed
   - Added logging level in command line options
-  - Binaries can be uploaded from `releases` on Github
+  - Binaries can be downloaded from `releases` on Github
   - Updated README, added CHANGELOG and VERSIONING
 - **Developer Part**
   - CommandLineParser added
