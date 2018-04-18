@@ -1,4 +1,30 @@
-### 0.1.1 Aqua
+### 0.2.1-alpha Navy (hotfix)
+
+**18.04.2018 - `(unstable)`**
+
+- **User Part**
+  - Fixed media duration handling
+  
+
+### 0.2.0-alpha Navy
+
+**15.04.2018 - `(unstable)`**
+
+- **User Part**
+  - Layout scaling (If the Player is 1920x1080 also, then a 1:1 rendering can occur, but if the player is 1280x720 or even 1080x1920, scaling must occur)
+  - Audio module
+     - Independent media
+     - Additional module for other media
+  - Duration handling was improved in media
+  - Image rendering options (hortizontal align, vertical align, stretching/preserving aspect ration)
+  - Fixed video blinking during scaling
+- **Developer Part**
+  - Media handling refactoring
+  - Parsers refactoring
+  - Added classes-creators (factory and builders)
+  
+
+### 0.1.1-alpha Aqua
 
 **31.03.2018 - `(unstable)`**
 
@@ -17,7 +43,7 @@
   - Added continuous integration (Travis CI)
   - Removed `gstreamermm`, `gstreamer` is used now
 
-### 0.1.0 Aqua
+### 0.1.0-alpha Aqua
 
 **09.03.2018 - `(unstable)`**
 
