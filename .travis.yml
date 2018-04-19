@@ -1,0 +1,29 @@
+language: cpp
+sudo: required
+
+services:
+- docker
+
+before_install:
+- export DISPLAY=:99.0
+- sh -e /etc/init.d/xvfb start
+- sleep 3
+- pip install --user cpp-coveralls
+- docker pull stivius/xibo-linux
+
+script:
+- docker build --cache-from stivius/xibo-linux .
+
+after_success:
+- docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ${TRAVIS_BUILD_DIR}/build:/build stivius/xibo-linux
+- tar czf build.tar.gz ${TRAVIS_BUILD_DIR}/build
+
+deploy:
+  provider: releases
+  api_key:
+    secure: sjJQdCOeNatRsJo4gxwPS2UptCvprRpi6JF2sFCTEX/9e72ZpS8ikNae4J8braZw1gE+Ia+dazgVV6Ry+GAOdz+bNwU2Jv5l0RiV+j69pdJmbk0/lIv5Wp/YEPaS8vSlWmQk0K88CJpBgneiaOD1YXYKiqkmbWnQ1kzNNrZr5nUsZUaXy9T4E+qPP9HVpHbZkc104upJN9AakF//X2vJzMqbMv9Lc/TNCTNqvYTK+wOU6MYbMnfv1GBLzrW9lva4URB9/MZ/GXbNzQlVfKNpggtMLksizzsAEp7wnXEx73jdkCBZPmD72sy4A0gGA0gkj0Jv0GZ4VNDqaNIRB03kEVPxl/3FSBQXJV24FEXJgVhBHseOBu6dHnWj4iyVJ4qpZuqYEl0OBJ/8Hp54EIErIwxiAoDXXCoxuxH4IrXX9XfGeGEsSf8QznEnVQb/cIzHbkLhxS5eB8qQ5JWuC0UUL5bkzsh2fgMC7LL73Eidho13sXz3lFK4i2DIhGJokGpRQandKaino6ebnW4HIhRLOmHJZ47Qg2ih9568VgkD0syvv0cm/shwSG3M3GQwJARUEyFDyoM4LtuhLYaZ8tOTSgtzuYHFbfIau3kkaQuVxVjwztAtgA53xMvb1W5bjJwddWgi/E8lBQlx2up8X3eGSiq7p20eOcHIWZ2pGo2/Yxw=
+  file: build.tar.gz
+  skip_cleanup: true
+  on:
+    repo: Stivius/XiboLinuxStack
+    tags: true
