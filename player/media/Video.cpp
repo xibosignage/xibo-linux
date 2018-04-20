@@ -3,6 +3,18 @@
 #include "control/Region.hpp"
 #include "utils/BindWrapper.hpp"
 
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/VideoConvert.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/VideoScale.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
 const int DEFAULT_VIDEO_BUFFER = 500;
@@ -21,6 +33,86 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     {
         throw std::runtime_error("XiboVideoSink was not registered");
     }
+
+//    auto pipeline = Gst::Pipeline::create();
+//    auto source = Gst::FileSrc::create();
+//    source->set_location(uri);
+//    auto decodebin = Gst::Decodebin::create();
+//    auto video_converter = Gst::VideoConvert::create();
+//    auto audio_converter = Gst::AudioConvert::create();
+//    auto volume = Gst::Volume::create();
+//    volume->set_volume(MAX_VOLUME);
+//    auto video_scale = Gst::VideoScale::create();
+//    auto audio_sink = Gst::AutoAudioSink::create();
+//    auto queue = Gst::Queue::create();
+//    auto video_sink = Gst::Element::create("xibovideosink");
+//    auto sink = GST_XIBOVIDEOSINK(video_sink->get_handler());
+//    gst_xibovideosink_set_handler(sink, &m_video_window);
+//    queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
+//    pipeline->add(source)->add(decodebin)->add(video_converter)->add(audio_converter)->add(volume)->add(video_scale)->add(audio_sink)->add(queue);
+//    video_converter->link(video_scale)->link(queue)->link(video_sink);
+//    audio_converter->link(volume)->link(audio_sink);
+
+//    pipeline->add_bus_watch([=](const Gst::Message& message){
+//        switch (message.type())
+//        {
+//            case Gst::MessageType::ERROR:
+//            {
+//                m_logger->error("{}", message.get_message());
+//                m_logger->error("[Video] Debug details: {}", message.get_debug_info());
+//                break;
+//            }
+//            case Gst::MessageType::EOS:
+//                m_logger->debug("[Video] End of stream");
+//                m_video_ended = true;
+//                if(m_looped)
+//                    play();
+//                else
+//                    media_timeout().emit();
+//                break;
+//            default:
+//                break;
+//        }
+//        return true;
+//    });
+
+//    decodebin->signal_pad_added().connect([=](Gst::Pad* pad){
+//        Gst::Pad* sinkpad;
+//        m_logger->debug("[Video] Pad added");
+
+//        // src_0 for video stream
+//        auto video_pad = decodebin->get_static_pad("src_0");
+//        // src1 for audio stream
+//        auto audio_pad = decodebin->get_static_pad("src_1");
+
+//        if(video_pad && !audio_pad)
+//        {
+//            m_logger->debug("[Video] Video pad");
+
+//            sinkpad = video_converter->get_static_pad("sink");
+//            pad->link(sinkpad);
+//        }
+//        else if(audio_pad)
+//        {
+//            m_logger->debug("[Video] Audio pad");
+//            sinkpad = audio_converter->get_static_pad("sink");
+//            pad->link(sinkpad);
+//        }
+//    });
+
+//    decodebin->signal_no_more_pads().connect([=](){
+//        auto pad = decodebin->get_static_pad("src_1");
+//        m_logger->debug("[Video] No more pads");
+
+//        if(!pad)
+//        {
+//            audio_converter->set_state(Gst::State::NULL_STATE);
+//            volume->set_state(Gst::State::NULL_STATE);
+//            audio_sink->set_state(Gst::State::NULL_STATE);
+//            pipeline->remove(audio_converter)->remove(volume)->remove(audio_sink);
+//        }
+//    });
+
 
     m_pipeline = gst_pipeline_new("player");
     m_source = gst_element_factory_make("filesrc", nullptr);
