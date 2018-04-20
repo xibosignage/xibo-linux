@@ -6,6 +6,19 @@
 #include <gst/gst.h>
 #include <spdlog/spdlog.h>
 
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/VideoConvert.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/VideoScale.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+
+
 class XiboVideoSink;
 
 class Video : public Media
@@ -22,9 +35,9 @@ public:
     void play();
 
 private:
-    gboolean bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data);
-    void no_more_pads(GstElement* decodebin, gpointer user_data);
-    void on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data);
+    bool bus_message_watch(const Gst::Message& message);
+    void no_more_pads();
+    void on_pad_added(Gst::Pad* pad);
 
 private:
     bool m_muted;
@@ -35,14 +48,14 @@ private:
     bool m_video_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 
-    GstElement* m_pipeline = nullptr;
-    GstElement* m_source = nullptr;
-    GstElement* m_decodebin = nullptr;
-    GstElement* m_volume = nullptr;
-    GstElement* m_video_converter = nullptr;
-    GstElement* m_video_scale = nullptr;
-    GstElement* m_video_sink = nullptr;
-    GstElement* m_audio_converter = nullptr;
-    GstElement* m_audio_sink = nullptr;
-    GstElement* m_queue = nullptr;
+    Gst::Pipeline* m_pipeline = nullptr;
+    Gst::FileSrc* m_source = nullptr;
+    Gst::Decodebin* m_decodebin = nullptr;
+    Gst::Volume* m_volume = nullptr;
+    Gst::VideoConvert* m_video_converter = nullptr;
+    Gst::VideoScale* m_video_scale = nullptr;
+    Gst::Element* m_video_sink = nullptr;
+    Gst::AudioConvert* m_audio_converter = nullptr;
+    Gst::AutoAudioSink* m_audio_sink = nullptr;
+    Gst::Queue* m_queue = nullptr;
 };

@@ -15,7 +15,6 @@ gboolean Gst::Pipeline::on_bus_watch(GstBus*, GstMessage* message, gpointer)
 
 Gst::Pipeline::~Pipeline()
 {
-    set_state(State::NULL_STATE);
     g_source_remove(m_watch_id);
 }
 

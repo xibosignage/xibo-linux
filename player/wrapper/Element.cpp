@@ -12,13 +12,14 @@ Gst::Element::Element(const std::string& name)
 
 Gst::Element::~Element()
 {
+    set_state(Gst::State::NULL_STATE);
     g_object_unref(m_element);
 }
 
 Gst::Element* Gst::Element::link(Element* other)
 {
     gst_element_link(m_element, other->get_handler());
-    return this;
+    return other;
 }
 
 void Gst::Element::set_state(Gst::State state)
@@ -28,7 +29,11 @@ void Gst::Element::set_state(Gst::State state)
 
 Gst::Pad* Gst::Element::get_static_pad(const std::string& name)
 {
-    return new Gst::Pad(gst_element_get_static_pad(m_element, name.c_str()));
+    auto pad = gst_element_get_static_pad(m_element, name.c_str());
+
+    if(!pad)
+        return nullptr;
+    return new Gst::Pad(pad);
 }
 
 Gst::Element* Gst::Element::create(const std::string& name)

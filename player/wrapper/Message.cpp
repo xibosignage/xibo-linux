@@ -5,13 +5,13 @@ Gst::Message::Message(GstMessage* handler) :
 {
     gchar* debug = nullptr;
     GError* error = nullptr;
-    gst_message_parse_error(m_handler, &error, &debug);
+//    gst_message_parse_error(m_handler, &error, &debug);
 
-    m_message = error->message;
-    m_debug_info = debug;
+//    m_message = error->message;
+//    m_debug_info = debug;
 
-    g_free(debug);
-    g_error_free(error);
+//    g_free(debug);
+//    g_error_free(error);
 }
 
 std::string Gst::Message::get_message() const
