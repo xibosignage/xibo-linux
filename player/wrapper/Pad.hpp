@@ -23,7 +23,7 @@ namespace Gst
     public:
         Pad(GstPad* handler);
         ~Pad();
-        PadLinkReturn link(Pad* other);
+        Gst::PadLinkReturn link(Gst::Pad* other);
         GstCaps* get_current_caps() const;
 
     private:

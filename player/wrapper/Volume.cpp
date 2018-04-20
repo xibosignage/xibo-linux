@@ -7,7 +7,7 @@ Gst::Volume::Volume()
 
 Gst::Volume* Gst::Volume::create()
 {
-    return new Volume;
+    return new Gst::Volume;
 }
 
 void Gst::Volume::set_volume(double volume)

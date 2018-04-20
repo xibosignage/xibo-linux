@@ -26,7 +26,7 @@ void Gst::Decodebin::no_more_pads(GstElement*, gpointer)
 
 Gst::Decodebin* Gst::Decodebin::create()
 {
-    return new Decodebin;
+    return new Gst::Decodebin;
 }
 
 sigc::signal<void(Gst::Pad*)>& Gst::Decodebin::signal_pad_added()

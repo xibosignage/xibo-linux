@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class Queue : public Element
+    class Queue : public Gst::Element
     {
     public:
         static Gst::Queue* create();

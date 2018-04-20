@@ -54,12 +54,12 @@ namespace Gst
     {
     public:
         virtual ~Element();
-        Element* link(Element* other);
-        void set_state(State state);
+        Gst::Element* link(Gst::Element* other);
+        void set_state(Gst::State state);
         Gst::Pad* get_static_pad(const std::string& name);
         static Gst::Element* create(const std::string& name);
-        bool seek(gdouble rate, Format format, SeekFlags flags,
-                  SeekType start_type, gint64 start, SeekType stop_type, gint64 stop);
+        bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
+                  Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop);
         GstElement* get_handler() const;
 
     protected:

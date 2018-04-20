@@ -7,7 +7,7 @@ Gst::FileSrc::FileSrc()
 
 Gst::FileSrc* Gst::FileSrc::create()
 {
-    return new FileSrc;
+    return new Gst::FileSrc;
 }
 
 void Gst::FileSrc::set_location(const std::string& uri)

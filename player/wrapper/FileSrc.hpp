@@ -6,7 +6,7 @@
 
 namespace Gst
 {
-    class FileSrc : public Element
+    class FileSrc : public Gst::Element
     {
     public:
         static Gst::FileSrc* create();

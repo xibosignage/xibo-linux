@@ -10,11 +10,16 @@ Gst::Pipeline::Pipeline(const std::string& name)
 
 gboolean Gst::Pipeline::on_bus_watch(GstBus*, GstMessage* message, gpointer)
 {
-    return m_watch_handler(Gst::Message(message));
+    return m_watch_handler(new Gst::Message(message));
 }
 
 Gst::Pipeline::~Pipeline()
 {
+    for(auto&& element : m_bin)
+    {
+        gst_object_ref(element->get_handler());
+        remove(element);
+    }
     g_source_remove(m_watch_id);
 }
 
@@ -28,19 +33,21 @@ Gst::Pipeline* Gst::Pipeline::create(const std::string& name)
     return new Pipeline(name);
 }
 
-Gst::Pipeline* Gst::Pipeline::add(Element* other)
+Gst::Pipeline* Gst::Pipeline::add(Gst::Element* other)
 {
     gst_bin_add(GST_BIN(m_element), other->get_handler());
+    m_bin.insert(other);
     return this;
 }
 
 Gst::Pipeline* Gst::Pipeline::remove(Gst::Element* other)
 {
     gst_bin_remove(GST_BIN(m_element), other->get_handler());
+    m_bin.erase(other);
     return this;
 }
 
-void Gst::Pipeline::add_bus_watch(std::function<bool(const Message&)> handler)
+void Gst::Pipeline::add_bus_watch(std::function<bool(Gst::Message*)> handler)
 {
     m_watch_handler = handler;
 

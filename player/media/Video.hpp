@@ -13,11 +13,9 @@
 #include "wrapper/VideoScale.hpp"
 #include "wrapper/Queue.hpp"
 #include "wrapper/Decodebin.hpp"
-#include "wrapper/Decodebin.hpp"
 #include "wrapper/FileSrc.hpp"
 #include "wrapper/AutoAudioSink.hpp"
 #include "wrapper/Element.hpp"
-
 
 class XiboVideoSink;
 
@@ -35,7 +33,7 @@ public:
     void play();
 
 private:
-    bool bus_message_watch(const Gst::Message& message);
+    bool bus_message_watch(Gst::Message* message);
     void no_more_pads();
     void on_pad_added(Gst::Pad* pad);
 

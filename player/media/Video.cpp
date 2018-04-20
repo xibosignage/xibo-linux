@@ -36,8 +36,6 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     auto sink = GST_XIBOVIDEOSINK(m_video_sink->get_handler());
     gst_xibovideosink_set_handler(sink, &m_video_window);
 
-    m_queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
-
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter || !m_video_scale ||
        !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
     {
@@ -45,7 +43,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     }
 
     m_source->set_location(uri);
-
+    m_queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
     m_pipeline->add_bus_watch(sigc::mem_fun(*this, &Video::bus_message_watch));
 
     m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_scale)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
@@ -66,28 +64,32 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
 
 Video::~Video()
 {
+    m_logger->debug("[Video] Returned, stopping playback");
     delete m_pipeline;
-//    delete m_decodebin;
-//    delete m_video_converter;
-//    delete m_audio_converter;
-//    delete m_volume;
-//    delete m_video_scale;
-//    delete m_audio_sink;
-//    delete m_queue;
-//    delete m_video_sink;
+    delete m_source;
+    delete m_decodebin;
+    delete m_video_converter;
+    delete m_audio_converter;
+    delete m_volume;
+    delete m_video_scale;
+    delete m_audio_sink;
+    delete m_queue;
+    delete m_video_sink;
 }
 
-bool Video::bus_message_watch(const Gst::Message& message)
+bool Video::bus_message_watch(Gst::Message* message)
 {
-    switch(message.type())
+    switch(message->type())
     {
         case Gst::MessageType::ERROR:
         {
-            m_logger->error("{}", "error" /*message.get_message()*/);
-            m_logger->error("[Video] Debug details: {}", "info" /*message.get_debug_info()*/);
+            auto err = message->parse_error();
+            m_logger->error("{}", err.get_text());
+            m_logger->error("[Video] Debug details: {}", err.get_debug_info());
             break;
         }
         case Gst::MessageType::EOS:
+        {
             m_logger->debug("[Video] End of stream");
             m_video_ended = true;
             if(m_looped)
@@ -95,6 +97,7 @@ bool Video::bus_message_watch(const Gst::Message& message)
             else
                 media_timeout().emit();
             break;
+        }
         default:
             break;
     }

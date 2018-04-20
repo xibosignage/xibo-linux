@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class Volume : public Element
+    class Volume : public Gst::Element
     {
     public:
         static Gst::Volume* create();

@@ -7,7 +7,7 @@ Gst::Queue::Queue()
 
 Gst::Queue* Gst::Queue::create()
 {
-    return new Queue;
+    return new Gst::Queue;
 }
 
 void Gst::Queue::set_max_size_buffers(int max_size_buffers)

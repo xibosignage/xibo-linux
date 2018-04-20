@@ -6,7 +6,7 @@
 
 namespace Gst
 {
-    class Decodebin : public Element
+    class Decodebin : public Gst::Element
     {
     public:
         static Gst::Decodebin* create();

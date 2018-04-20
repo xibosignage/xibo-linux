@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class VideoConvert : public Element
+    class VideoConvert : public Gst::Element
     {
     public:
         static Gst::VideoConvert* create();

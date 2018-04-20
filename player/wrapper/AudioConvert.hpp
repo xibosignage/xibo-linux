@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class AudioConvert : public Element
+    class AudioConvert : public Gst::Element
     {
     public:
         static Gst::AudioConvert* create();

@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class VideoScale : public Element
+    class VideoScale : public Gst::Element
     {
     public:
         static Gst::VideoScale* create();

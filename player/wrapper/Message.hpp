@@ -51,18 +51,27 @@ namespace Gst
       ANY = GST_MESSAGE_ANY
     };
 
+    class MessageError
+    {
+    public:
+        MessageError(const std::string& text, const std::string& debug_info);
+        const std::string& get_text() const;
+        const std::string& get_debug_info() const;
+
+    private:
+        std::string m_text;
+        std::string m_debug_info;
+    };
+
     class Message
     {
     public:
         Message(GstMessage* handler);
-        std::string get_message() const;
-        std::string get_debug_info() const;
-        MessageType type() const;
+        Gst::MessageError parse_error();
+        Gst::MessageType type() const;
 
     private:
         GstMessage* m_handler;
-        std::string m_message;
-        std::string m_debug_info;
 
     };
 }

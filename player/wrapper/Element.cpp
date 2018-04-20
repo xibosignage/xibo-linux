@@ -16,7 +16,7 @@ Gst::Element::~Element()
     g_object_unref(m_element);
 }
 
-Gst::Element* Gst::Element::link(Element* other)
+Gst::Element* Gst::Element::link(Gst::Element* other)
 {
     gst_element_link(m_element, other->get_handler());
     return other;

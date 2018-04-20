@@ -7,5 +7,5 @@ Gst::VideoScale::VideoScale()
 
 Gst::VideoScale* Gst::VideoScale::create()
 {
-    return new VideoScale;
+    return new Gst::VideoScale;
 }

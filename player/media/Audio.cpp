@@ -13,34 +13,27 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
 
-    m_pipeline = gst_pipeline_new("player");
-    m_source = gst_element_factory_make("filesrc", nullptr);
-    m_decodebin = gst_element_factory_make("decodebin", nullptr);
-    m_audio_converter = gst_element_factory_make("audioconvert", nullptr);
-    m_volume = gst_element_factory_make("volume", nullptr);
-    m_audio_sink = gst_element_factory_make("autoaudiosink", nullptr);
+    m_pipeline = Gst::Pipeline::create();
+    m_source = Gst::FileSrc::create();
+    m_decodebin = Gst::Decodebin::create();
+    m_audio_converter = Gst::AudioConvert::create();
+    m_volume = Gst::Volume::create();
+    m_audio_sink = Gst::AutoAudioSink::create();
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_audio_converter || !m_volume || !m_audio_sink)
     {
         throw std::runtime_error("[Audio] One element could not be created");
     }
 
-    g_object_set(m_source, "location", uri.c_str(), nullptr);
+    m_source->set_location(uri);
+    m_pipeline->add_bus_watch(sigc::mem_fun(*this, &Audio::bus_message_watch));
 
-    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
-    auto bus_message_watch = get_wrapper<2, gboolean, GstBus*, GstMessage*, gpointer>(std::bind(&Audio::bus_message_watch, this, ph::_1, ph::_2, ph::_3));
-    m_watch_id = gst_bus_add_watch(bus, bus_message_watch, nullptr);
-    g_object_unref(bus);
+    m_pipeline->add(m_source)->add(m_decodebin)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
+    m_source->link(m_decodebin);
+    m_audio_converter->link(m_audio_converter)->link(m_volume)->link(m_audio_sink);
 
-    gst_bin_add_many(GST_BIN(m_pipeline), m_source, m_decodebin, m_audio_converter, m_volume, m_audio_sink, nullptr);
-    gst_element_link(m_source, m_decodebin);
-    gst_element_link_many(m_audio_converter, m_volume, m_audio_sink, nullptr);
-
-    auto on_pad_added = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&Audio::on_pad_added, this, ph::_1, ph::_2, ph::_3));
-    g_signal_connect_data(m_decodebin, "pad-added", reinterpret_cast<GCallback>(on_pad_added), nullptr, nullptr, static_cast<GConnectFlags>(0));
-
-    auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Audio::no_more_pads, this, ph::_1, ph::_2));
-    g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Audio::on_pad_added));
+    m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(*this, &Audio::no_more_pads));
 
     set_volume(m_muted ? MIN_VOLUME : volume);
 }
@@ -48,80 +41,72 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
 Audio::~Audio()
 {
     m_logger->debug("[Audio] Returned, stopping playback");
-    gst_element_set_state(m_pipeline, GST_STATE_NULL);
-    g_object_unref(m_pipeline);
-    g_source_remove(m_watch_id);
+    delete m_pipeline;
+    delete m_source;
+    delete m_decodebin;
+    delete m_audio_converter;
+    delete m_volume;
+    delete m_audio_sink;
 }
 
-gboolean Audio::bus_message_watch(GstBus*, GstMessage* message, gpointer)
+bool Audio::bus_message_watch(Gst::Message* message)
 {
-    switch (GST_MESSAGE_TYPE(message))
+    switch(message->type())
     {
-    case GST_MESSAGE_ERROR:
-    {
-        char* debug = nullptr;
-        GError* err = nullptr;
-
-        gst_message_parse_error(message, &err, &debug);
-        m_logger->error("{}", err->message);
-
-        if(debug)
+        case Gst::MessageType::ERROR:
         {
-            m_logger->error("[Audio] Debug details: {}", debug);
-            g_free(debug);
+            auto err = message->parse_error();
+            m_logger->error("{}", err.get_text());
+            m_logger->error("[Audio] Debug details: {}", err.get_debug_info());
+            break;
         }
-
-        g_error_free(err);
-        break;
+        case Gst::MessageType::EOS:
+        {
+            m_logger->debug("[Audio] End of stream");
+            m_audio_ended = true;
+            if(m_looped)
+                play();
+            else
+                media_timeout().emit();
+            break;
+        }
+        default:
+            break;
     }
-    case GST_MESSAGE_EOS:
-        m_logger->debug("[Audio] End of stream");
-        m_audio_ended = true;
-        if(m_looped)
-            play();
-        else
-            media_timeout().emit();
-        break;
-    default:
-        break;
-    }
-
     return true;
 }
 
-void Audio::no_more_pads(GstElement*, gpointer)
+void Audio::no_more_pads()
 {
     m_logger->debug("[Audio] No more pads");
 }
 
-void Audio::on_pad_added(GstElement*, GstPad* pad, gpointer)
+void Audio::on_pad_added(Gst::Pad* pad)
 {
     m_logger->debug("[Audio] Pad added");
 
-    GstPad* sinkpad = gst_element_get_static_pad(m_audio_converter, "sink");
-    gst_pad_link(pad, sinkpad);
-
-    gst_object_unref(sinkpad);
+    auto sinkpad = m_audio_converter->get_static_pad("sink");
+    pad->link(sinkpad);
 }
 
-void Audio::set_volume(double _volume)
+void Audio::set_volume(double volume)
 {
-    g_object_set(m_volume, "volume", _volume, nullptr);
+    m_volume->set_volume(volume);
 }
 
 void Audio::play()
 {
     if(m_audio_ended)
     {
-        if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
-                             GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
+        if(!m_pipeline->seek(1.0, Gst::Format::TIME, Gst::SeekFlags::FLUSH,
+                             Gst::SeekType::SET, 0, Gst::SeekType::END, GST_CLOCK_TIME_NONE))
         {
             m_logger->error("[Audio] Error during restart");
             return;
         }
         m_audio_ended = false;
     }
-    gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
+    m_pipeline->set_state(Gst::State::PLAYING);
     m_logger->debug("[Audio] Running");
 }
 
@@ -129,7 +114,7 @@ void Audio::stop()
 {
     Media::stop();
     m_logger->debug("[Audio] Stopped");
-    gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+    m_pipeline->set_state(Gst::State::PAUSED);
     m_audio_ended = true;
 }
 

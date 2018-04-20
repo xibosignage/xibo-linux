@@ -3,6 +3,15 @@
 #include <gst/gst.h>
 #include <spdlog/spdlog.h>
 
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+
 class Audio : public Media
 {
 public:
@@ -17,9 +26,9 @@ public:
     void play();
 
 private:
-    gboolean bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data);
-    void no_more_pads(GstElement* decodebin, gpointer user_data);
-    void on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data);
+    bool bus_message_watch(Gst::Message* message);
+    void no_more_pads();
+    void on_pad_added(Gst::Pad* pad);
 
 private:
     bool m_muted;
@@ -29,10 +38,10 @@ private:
     bool m_audio_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 
-    GstElement* m_pipeline;
-    GstElement* m_source;
-    GstElement* m_decodebin;
-    GstElement* m_volume;
-    GstElement* m_audio_converter;
-    GstElement* m_audio_sink;
+    Gst::Pipeline* m_pipeline = nullptr;
+    Gst::FileSrc* m_source = nullptr;
+    Gst::Decodebin* m_decodebin = nullptr;
+    Gst::Volume* m_volume = nullptr;
+    Gst::AudioConvert* m_audio_converter = nullptr;
+    Gst::AutoAudioSink* m_audio_sink = nullptr;
 };

@@ -7,5 +7,5 @@ Gst::AudioConvert::AudioConvert()
 
 Gst::AudioConvert* Gst::AudioConvert::create()
 {
-    return new AudioConvert;
+    return new Gst::AudioConvert;
 }

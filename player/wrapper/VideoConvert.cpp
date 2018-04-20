@@ -7,5 +7,5 @@ Gst::VideoConvert::VideoConvert()
 
 Gst::VideoConvert* Gst::VideoConvert::create()
 {
-    return new VideoConvert;
+    return new Gst::VideoConvert;
 }

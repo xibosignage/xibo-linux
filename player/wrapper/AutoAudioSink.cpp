@@ -7,6 +7,6 @@ Gst::AutoAudioSink::AutoAudioSink()
 
 Gst::AutoAudioSink* Gst::AutoAudioSink::create()
 {
-    return new AutoAudioSink;
+    return new Gst::AutoAudioSink;
 }
 

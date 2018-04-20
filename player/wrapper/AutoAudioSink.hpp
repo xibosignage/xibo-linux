@@ -5,7 +5,7 @@
 
 namespace Gst
 {
-    class AutoAudioSink : public Element
+    class AutoAudioSink : public Gst::Element
     {
     public:
         static Gst::AutoAudioSink* create();
