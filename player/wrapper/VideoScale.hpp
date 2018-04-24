@@ -8,7 +8,8 @@ namespace Gst
     class VideoScale : public Gst::Element
     {
     public:
-        static Gst::VideoScale* create();
+        static Gst::RefPtr<Gst::VideoScale> create();
+
     private:
         VideoScale();
 

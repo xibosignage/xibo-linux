@@ -11,6 +11,7 @@
 #include "wrapper/FileSrc.hpp"
 #include "wrapper/AutoAudioSink.hpp"
 #include "wrapper/Element.hpp"
+#include "wrapper/Pad.hpp"
 
 class Audio : public Media
 {
@@ -26,9 +27,9 @@ public:
     void play();
 
 private:
-    bool bus_message_watch(Gst::Message* message);
+    bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
     void no_more_pads();
-    void on_pad_added(Gst::Pad* pad);
+    void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
 
 private:
     bool m_muted;
@@ -38,10 +39,10 @@ private:
     bool m_audio_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 
-    Gst::Pipeline* m_pipeline = nullptr;
-    Gst::FileSrc* m_source = nullptr;
-    Gst::Decodebin* m_decodebin = nullptr;
-    Gst::Volume* m_volume = nullptr;
-    Gst::AudioConvert* m_audio_converter = nullptr;
-    Gst::AutoAudioSink* m_audio_sink = nullptr;
+    Gst::RefPtr<Gst::Pipeline> m_pipeline;
+    Gst::RefPtr<Gst::FileSrc> m_source;
+    Gst::RefPtr<Gst::Decodebin> m_decodebin;
+    Gst::RefPtr<Gst::Volume> m_volume;
+    Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
+    Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
 };

@@ -3,12 +3,14 @@
 
 #include "Element.hpp"
 
+
 namespace Gst
 {
     class AutoAudioSink : public Gst::Element
     {
     public:
-        static Gst::AutoAudioSink* create();
+        static Gst::RefPtr<Gst::AutoAudioSink> create();
+
     private:
         AutoAudioSink();
 

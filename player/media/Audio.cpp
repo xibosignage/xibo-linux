@@ -1,6 +1,5 @@
 #include "Audio.hpp"
 #include "control/Region.hpp"
-#include "utils/BindWrapper.hpp"
 
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
@@ -41,15 +40,9 @@ Audio::Audio(const Region& region, int id, int duration, const std::string& uri,
 Audio::~Audio()
 {
     m_logger->debug("[Audio] Returned, stopping playback");
-    delete m_pipeline;
-    delete m_source;
-    delete m_decodebin;
-    delete m_audio_converter;
-    delete m_volume;
-    delete m_audio_sink;
 }
 
-bool Audio::bus_message_watch(Gst::Message* message)
+bool Audio::bus_message_watch(const Gst::RefPtr<Gst::Message>& message)
 {
     switch(message->type())
     {
@@ -81,7 +74,7 @@ void Audio::no_more_pads()
     m_logger->debug("[Audio] No more pads");
 }
 
-void Audio::on_pad_added(Gst::Pad* pad)
+void Audio::on_pad_added(const Gst::RefPtr<Gst::Pad>& pad)
 {
     m_logger->debug("[Audio] Pad added");
 

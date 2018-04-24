@@ -5,7 +5,7 @@ Gst::AudioConvert::AudioConvert()
     m_element = gst_element_factory_make("audioconvert", nullptr);
 }
 
-Gst::AudioConvert* Gst::AudioConvert::create()
+Gst::RefPtr<Gst::AudioConvert> Gst::AudioConvert::create()
 {
-    return new Gst::AudioConvert;
+    return std::shared_ptr<Gst::AudioConvert>(new Gst::AudioConvert);
 }

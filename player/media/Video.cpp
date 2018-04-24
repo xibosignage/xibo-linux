@@ -1,7 +1,6 @@
 #include "Video.hpp"
 #include "XiboVideoSink.hpp"
 #include "control/Region.hpp"
-#include "utils/BindWrapper.hpp"
 
 const double MIN_VOLUME = 0.0;
 const double MAX_VOLUME = 1.0;
@@ -65,19 +64,9 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
 Video::~Video()
 {
     m_logger->debug("[Video] Returned, stopping playback");
-    delete m_pipeline;
-    delete m_source;
-    delete m_decodebin;
-    delete m_video_converter;
-    delete m_audio_converter;
-    delete m_volume;
-    delete m_video_scale;
-    delete m_audio_sink;
-    delete m_queue;
-    delete m_video_sink;
 }
 
-bool Video::bus_message_watch(Gst::Message* message)
+bool Video::bus_message_watch(const Gst::RefPtr<Gst::Message>& message)
 {
     switch(message->type())
     {
@@ -118,9 +107,9 @@ void Video::no_more_pads()
     }
 }
 
-void Video::on_pad_added(Gst::Pad* pad)
+void Video::on_pad_added(const Gst::RefPtr<Gst::Pad>& pad)
 {
-    Gst::Pad* sinkpad;
+    Gst::RefPtr<Gst::Pad> sinkpad;
     m_logger->debug("[Video] Pad added");
 
     // src_0 for video stream
@@ -131,6 +120,13 @@ void Video::on_pad_added(Gst::Pad* pad)
     if(video_pad && !audio_pad)
     {
         m_logger->debug("[Video] Video pad");
+
+        auto caps = video_pad->get_current_caps();
+        if(caps)
+        {
+            auto strct = caps->get_structure(0);
+            m_logger->info("[Video] width: {} height: {}", strct->get_height(), strct->get_width());
+        }
 
         sinkpad = m_video_converter->get_static_pad("sink");
         pad->link(sinkpad);

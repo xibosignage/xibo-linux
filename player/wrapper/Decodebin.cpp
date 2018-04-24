@@ -1,4 +1,6 @@
 #include "Decodebin.hpp"
+#include "Pad.hpp"
+
 #include "utils/BindWrapper.hpp"
 
 namespace ph = std::placeholders;
@@ -16,7 +18,7 @@ Gst::Decodebin::Decodebin()
 
 void Gst::Decodebin::on_pad_added(GstElement*, GstPad* pad, gpointer)
 {
-    m_signal_pad_added.emit(new Gst::Pad(pad));
+    m_signal_pad_added.emit(std::make_shared<Gst::Pad>(pad, false));
 }
 
 void Gst::Decodebin::no_more_pads(GstElement*, gpointer)
@@ -24,12 +26,12 @@ void Gst::Decodebin::no_more_pads(GstElement*, gpointer)
     m_signal_no_more_pads.emit();
 }
 
-Gst::Decodebin* Gst::Decodebin::create()
+Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
 {
-    return new Gst::Decodebin;
+    return std::shared_ptr<Gst::Decodebin>(new Gst::Decodebin);
 }
 
-sigc::signal<void(Gst::Pad*)>& Gst::Decodebin::signal_pad_added()
+sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& Gst::Decodebin::signal_pad_added()
 {
     return m_signal_pad_added;
 }

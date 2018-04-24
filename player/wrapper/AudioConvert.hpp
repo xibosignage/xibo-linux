@@ -8,7 +8,8 @@ namespace Gst
     class AudioConvert : public Gst::Element
     {
     public:
-        static Gst::AudioConvert* create();
+        static Gst::RefPtr<Gst::AudioConvert> create();
+
     private:
         AudioConvert();
 

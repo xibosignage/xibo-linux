@@ -10,44 +10,37 @@ Gst::Pipeline::Pipeline(const std::string& name)
 
 gboolean Gst::Pipeline::on_bus_watch(GstBus*, GstMessage* message, gpointer)
 {
-    return m_watch_handler(new Gst::Message(message));
+    return m_watch_handler(std::make_shared<Gst::Message>(message, false));
 }
 
 Gst::Pipeline::~Pipeline()
 {
-    for(auto&& element : m_bin)
-    {
-        gst_object_ref(element->get_handler());
-        remove(element);
-    }
     g_source_remove(m_watch_id);
 }
 
-Gst::Pipeline* Gst::Pipeline::create()
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create()
 {
-    return new Pipeline(std::string{});
+    return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline(std::string{}));
 }
 
-Gst::Pipeline* Gst::Pipeline::create(const std::string& name)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create(const std::string& name)
 {
-    return new Pipeline(name);
+    return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline(name));
 }
 
-Gst::Pipeline* Gst::Pipeline::add(Gst::Element* other)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::add(const Gst::RefPtr<Gst::Element>& other)
 {
     gst_bin_add(GST_BIN(m_element), other->get_handler());
-    m_bin.insert(other);
-    return this;
+    return shared_from_this();
 }
 
-Gst::Pipeline* Gst::Pipeline::remove(Gst::Element* other)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::remove(const Gst::RefPtr<Gst::Element>& other)
 {
     gst_bin_remove(GST_BIN(m_element), other->get_handler());
-    m_bin.erase(other);
-    return this;
+    return shared_from_this();
 }
 
-void Gst::Pipeline::add_bus_watch(std::function<bool(Gst::Message*)> handler)
+void Gst::Pipeline::add_bus_watch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler)
 {
     m_watch_handler = handler;
 

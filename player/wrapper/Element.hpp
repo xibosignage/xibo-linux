@@ -3,8 +3,7 @@
 
 #include <gst/gstutils.h>
 #include <string>
-
-#include "Pad.hpp"
+#include <memory>
 
 namespace Gst
 {
@@ -50,20 +49,26 @@ namespace Gst
       PERCENT = GST_FORMAT_PERCENT
     };
 
+
+    template<typename T>
+    using RefPtr = std::shared_ptr<T>;
+
+    class Pad;
+
     class Element
     {
     public:
         virtual ~Element();
-        Gst::Element* link(Gst::Element* other);
+        Gst::RefPtr<Gst::Element> link(const Gst::RefPtr<Gst::Element>& other);
         void set_state(Gst::State state);
-        Gst::Pad* get_static_pad(const std::string& name);
-        static Gst::Element* create(const std::string& name);
+        Gst::RefPtr<Gst::Pad> get_static_pad(const std::string& name);
+        static Gst::RefPtr<Gst::Element> create(const std::string& name);
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
                   Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop);
         GstElement* get_handler() const;
 
     protected:
-        Element();
+        Element() = default;
         Element(const std::string& name);
 
     protected:

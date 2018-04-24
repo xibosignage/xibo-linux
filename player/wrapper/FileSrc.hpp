@@ -9,7 +9,7 @@ namespace Gst
     class FileSrc : public Gst::Element
     {
     public:
-        static Gst::FileSrc* create();
+        static Gst::RefPtr<Gst::FileSrc> create();
         void set_location(const std::string& uri);
 
     private:

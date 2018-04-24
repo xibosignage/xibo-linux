@@ -9,8 +9,8 @@ namespace Gst
     class Decodebin : public Gst::Element
     {
     public:
-        static Gst::Decodebin* create();
-        sigc::signal<void(Gst::Pad*)>& signal_pad_added();
+        static Gst::RefPtr<Gst::Decodebin> create();
+        sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& signal_pad_added();
         sigc::signal<void()>& signal_no_more_pads();
 
     private:
@@ -19,7 +19,7 @@ namespace Gst
         void no_more_pads(GstElement* el, gpointer data);
 
     private:
-        sigc::signal<void(Gst::Pad*)> m_signal_pad_added;
+        sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)> m_signal_pad_added;
         sigc::signal<void()> m_signal_no_more_pads;
 
     };

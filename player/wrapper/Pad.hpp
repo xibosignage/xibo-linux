@@ -3,10 +3,10 @@
 
 #include <gst/gstpad.h>
 #include <string>
+#include <memory>
 
 namespace Gst
 {
-
     enum class PadLinkReturn
     {
       OK = GST_PAD_LINK_OK,
@@ -18,16 +18,22 @@ namespace Gst
       REFUSED = GST_PAD_LINK_REFUSED
     };
 
+    template<typename T>
+    using RefPtr = std::shared_ptr<T>;
+
+    class Caps;
+
     class Pad
     {
     public:
-        Pad(GstPad* handler);
+        Pad(GstPad* handler, bool take_ownership = true);
         ~Pad();
-        Gst::PadLinkReturn link(Gst::Pad* other);
-        GstCaps* get_current_caps() const;
+        Gst::PadLinkReturn link(const Gst::RefPtr<Gst::Pad>& other);
+        Gst::RefPtr<Gst::Caps> get_current_caps() const;
 
     private:
         GstPad* m_handler;
+        bool m_take_ownership;
 
     };
 }

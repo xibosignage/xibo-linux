@@ -1,7 +1,7 @@
 #include "Message.hpp"
 
-Gst::Message::Message(GstMessage* handler) :
-    m_handler(handler)
+Gst::Message::Message(GstMessage* handler, bool take_ownership) :
+    m_handler(handler), m_take_ownership(take_ownership)
 {   
 }
 

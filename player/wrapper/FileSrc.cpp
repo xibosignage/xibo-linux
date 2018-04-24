@@ -5,9 +5,9 @@ Gst::FileSrc::FileSrc()
     m_element = gst_element_factory_make("filesrc", nullptr);
 }
 
-Gst::FileSrc* Gst::FileSrc::create()
+Gst::RefPtr<Gst::FileSrc> Gst::FileSrc::create()
 {
-    return new Gst::FileSrc;
+    return std::shared_ptr<Gst::FileSrc>(new Gst::FileSrc);
 }
 
 void Gst::FileSrc::set_location(const std::string& uri)

@@ -8,7 +8,8 @@ namespace Gst
     class VideoConvert : public Gst::Element
     {
     public:
-        static Gst::VideoConvert* create();
+        static Gst::RefPtr<Gst::VideoConvert> create();
+
     private:
         VideoConvert();
 

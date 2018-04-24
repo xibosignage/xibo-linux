@@ -8,7 +8,7 @@ namespace Gst
     class Volume : public Gst::Element
     {
     public:
-        static Gst::Volume* create();
+        static Gst::RefPtr<Gst::Volume> create();
         void set_volume(double volume);
 
     private:

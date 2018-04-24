@@ -66,12 +66,13 @@ namespace Gst
     class Message
     {
     public:
-        Message(GstMessage* handler);
+        Message(GstMessage* handler, bool take_ownership = true);
         Gst::MessageError parse_error();
         Gst::MessageType type() const;
 
     private:
         GstMessage* m_handler;
+        bool m_take_ownership;
 
     };
 }

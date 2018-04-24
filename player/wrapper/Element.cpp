@@ -1,9 +1,5 @@
 #include "Element.hpp"
-
-Gst::Element::Element()
-{
-
-}
+#include "Pad.hpp"
 
 Gst::Element::Element(const std::string& name)
 {
@@ -12,11 +8,14 @@ Gst::Element::Element(const std::string& name)
 
 Gst::Element::~Element()
 {
-    set_state(Gst::State::NULL_STATE);
-    g_object_unref(m_element);
+    if(!gst_element_get_parent(m_element))
+    {
+        set_state(Gst::State::NULL_STATE);
+        g_object_unref(m_element);
+    }
 }
 
-Gst::Element* Gst::Element::link(Gst::Element* other)
+Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& other)
 {
     gst_element_link(m_element, other->get_handler());
     return other;
@@ -27,18 +26,18 @@ void Gst::Element::set_state(Gst::State state)
     gst_element_set_state(m_element, static_cast<GstState>(state));
 }
 
-Gst::Pad* Gst::Element::get_static_pad(const std::string& name)
+Gst::RefPtr<Gst::Pad> Gst::Element::get_static_pad(const std::string& name)
 {
     auto pad = gst_element_get_static_pad(m_element, name.c_str());
 
     if(!pad)
         return nullptr;
-    return new Gst::Pad(pad);
+    return std::make_shared<Gst::Pad>(pad);
 }
 
-Gst::Element* Gst::Element::create(const std::string& name)
+Gst::RefPtr<Gst::Element> Gst::Element::create(const std::string& name)
 {
-    return new Gst::Element(name);
+    return std::shared_ptr<Gst::Element>(new Gst::Element(name));
 }
 
 bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop)
