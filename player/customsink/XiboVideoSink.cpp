@@ -35,7 +35,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler)
 {
     sink->handler = handler;    
-    sink->handler->signal_draw().connect(sigc::bind<0>(sigc::ptr_fun(&gst_xibovideosink_on_frame_drawn), sink));
+    sink->handler->signal_draw().connect(sigc::bind<0>(sigc::ptr_fun(gst_xibovideosink_on_frame_drawn), sink));
 }
 
 static void gst_xibovideosink_init(XiboVideoSink* sink)
