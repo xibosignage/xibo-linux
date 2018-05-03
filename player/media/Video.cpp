@@ -1,5 +1,5 @@
 #include "Video.hpp"
-#include "XiboVideoSink.hpp"
+#include "customsink/XiboVideoSink.hpp"
 #include "control/Region.hpp"
 
 const double MIN_VOLUME = 0.0;
@@ -21,7 +21,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
         throw std::runtime_error("XiboVideoSink was not registered");
     }
 
-    m_pipeline = Gst::Pipeline::create();
+    m_pipeline = Gst::Pipeline::create("pipeline");
     m_source = Gst::FileSrc::create();
     m_decodebin = Gst::Decodebin::create();
     m_video_converter = Gst::VideoConvert::create();

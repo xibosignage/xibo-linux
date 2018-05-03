@@ -10,10 +10,10 @@ class XiboApp : public Gtk::Application
 public:
     XiboApp(const XiboApp& other) = delete;
     XiboApp& operator=(const XiboApp& other) = delete;
+    ~XiboApp();
 
     static XiboApp& create(const std::string& name);
     static const XiboApp& app();
-
     const CommandLineParser& command_line_parser() const;
 
     int run(int argc, char** argv);

@@ -8,10 +8,15 @@ Gst::Element::Element(const std::string& name)
 
 Gst::Element::~Element()
 {
-    if(!gst_element_get_parent(m_element))
+    GstObject* parent = gst_element_get_parent(m_element);
+    if(!parent)
     {
         set_state(Gst::State::NULL_STATE);
         g_object_unref(m_element);
+    }
+    else
+    {
+        g_object_unref(parent);
     }
 }
 

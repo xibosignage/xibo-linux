@@ -9,6 +9,7 @@
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
+#include <gst/gst.h>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -27,6 +28,11 @@ XiboApp& XiboApp::create(const std::string& name)
 XiboApp::XiboApp()
 {
     m_logger = spdlog::get(LOGGER);
+}
+
+XiboApp::~XiboApp()
+{
+    gst_deinit();
 }
 
 const XiboApp& XiboApp::app()
