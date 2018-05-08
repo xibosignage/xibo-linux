@@ -8,36 +8,50 @@ Gst::Element::Element(const std::string& name)
 
 Gst::Element::~Element()
 {
-    GstObject* parent = gst_element_get_parent(m_element);
-    if(!parent)
+    if(m_element)
     {
-        set_state(Gst::State::NULL_STATE);
-        g_object_unref(m_element);
-    }
-    else
-    {
-        g_object_unref(parent);
+        GstObject* parent = gst_element_get_parent(m_element);
+        if(!parent)
+        {
+            set_state(Gst::State::NULL_STATE);
+            g_object_unref(m_element);
+        }
+        else
+        {
+            g_object_unref(parent);
+        }
     }
 }
 
 Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& other)
 {
-    gst_element_link(m_element, other->get_handler());
-    return other;
+    if(m_element)
+    {
+        gst_element_link(m_element, other->get_handler());
+        return other;
+    }
+    return nullptr;
 }
 
 void Gst::Element::set_state(Gst::State state)
 {
-    gst_element_set_state(m_element, static_cast<GstState>(state));
+    if(m_element)
+    {
+        gst_element_set_state(m_element, static_cast<GstState>(state));
+    }
 }
 
 Gst::RefPtr<Gst::Pad> Gst::Element::get_static_pad(const std::string& name)
 {
-    auto pad = gst_element_get_static_pad(m_element, name.c_str());
+    if(m_element)
+    {
+        auto pad = gst_element_get_static_pad(m_element, name.c_str());
 
-    if(!pad)
-        return nullptr;
-    return std::make_shared<Gst::Pad>(pad);
+        if(!pad)
+            return nullptr;
+        return std::make_shared<Gst::Pad>(pad);
+    }
+    return nullptr;
 }
 
 Gst::RefPtr<Gst::Element> Gst::Element::create(const std::string& name)
@@ -47,11 +61,20 @@ Gst::RefPtr<Gst::Element> Gst::Element::create(const std::string& name)
 
 bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop)
 {
-    return gst_element_seek(m_element, rate, static_cast<GstFormat>(format), static_cast<GstSeekFlags>(flags),
-                            static_cast<GstSeekType>(start_type), start, static_cast<GstSeekType>(stop_type), stop);
+    if(m_element)
+    {
+        return gst_element_seek(m_element, rate, static_cast<GstFormat>(format), static_cast<GstSeekFlags>(flags),
+                                static_cast<GstSeekType>(start_type), start, static_cast<GstSeekType>(stop_type), stop);
+    }
+    return false;
 }
 
 GstElement* Gst::Element::get_handler() const
 {
     return m_element;
+}
+
+void Gst::Element::reset_handler()
+{
+    m_element = nullptr;
 }

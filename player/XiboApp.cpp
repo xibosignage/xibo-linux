@@ -32,7 +32,10 @@ XiboApp::XiboApp()
 
 XiboApp::~XiboApp()
 {
-    gst_deinit();
+    if(gst_is_initialized())
+    {
+        gst_deinit();
+    }
 }
 
 const XiboApp& XiboApp::app()
@@ -56,14 +59,22 @@ int XiboApp::run(int argc, char** argv)
         }
         if(m_options.is_example_dir())
         {
-            LayoutParser parser(m_options.xlf_file());
+            try
+            {
+                LayoutParser parser(m_options.xlf_file());
 
-            auto layout = LayoutBuilder(parser.parse_layout()).build();
-            layout->show_regions();
+                auto layout = LayoutBuilder(parser.parse_layout()).build();
+                layout->show_regions();
 
-            m_logger->info("Player started");
+                m_logger->info("Player started");
 
-            return m_parent_app->run(*layout);
+                return m_parent_app->run(*layout);
+            }
+            catch(const boost::property_tree::ptree_bad_path& e)
+            {
+                m_logger->error("LayoutParser: {}", e.what());
+            }
+
         }
     }
     return 0;

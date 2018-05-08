@@ -16,8 +16,8 @@ namespace Gst
         ~Pipeline();
         static Gst::RefPtr<Gst::Pipeline> create();
         static Gst::RefPtr<Gst::Pipeline> create(const std::string& name);
-        Gst::RefPtr<Gst::Pipeline> add(const Gst::RefPtr<Gst::Element>& other);
-        Gst::RefPtr<Gst::Pipeline> remove(const Gst::RefPtr<Gst::Element>& other);
+        Gst::RefPtr<Gst::Pipeline> add(Gst::RefPtr<Gst::Element> other);
+        Gst::RefPtr<Gst::Pipeline> remove(Gst::RefPtr<Gst::Element> other);
         void add_bus_watch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler);
 
     private:

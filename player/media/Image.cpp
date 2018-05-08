@@ -8,10 +8,17 @@ Image::Image(const Region& region, int id, int duration, const std::string& uri,
     Media(region, id, duration, Render::Native, uri)
 {
     bool scaled = is_scaled(scale_type);
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, region.size().width, region.size().height, scaled);
-    m_size.width = pixbuf->get_width();
-    m_size.height = pixbuf->get_height();
-    m_handler.set(pixbuf);
+    try
+    {
+        auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, region.size().width, region.size().height, scaled);
+        m_size.width = pixbuf->get_width();
+        m_size.height = pixbuf->get_height();
+        m_handler.set(pixbuf);
+    }
+    catch(const Gdk::PixbufError& error)
+    {
+        spdlog::get(LOGGER)->error("Could create media image: {}", std::string{error.what()});
+    }
 
     Point pos{get_left_pos(align), get_top_pos(valign)};
     region.request_handler().connect([=]{

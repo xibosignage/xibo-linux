@@ -13,6 +13,8 @@ Image::ScaleType to_scale_type(const std::string& scale_type);
 Image::Align to_align(const std::string& align);
 Image::Valign to_valign(const std::string& valign);
 
+const int MAX_VOLUME = 100;
+
 std::unique_ptr<Media> MediaFactory::create(const Region& region, const AnyMedia& object)
 {    
     switch(object.media_type)
@@ -76,7 +78,7 @@ std::unique_ptr<Media> MediaFactory::create_media(const Region& region, const Pa
     {
         auto mute = object.mute.value_or(false);
         auto loop = object.loop.value_or(false);
-        auto volume = object.volume.value_or(100) / 100.0;
+        auto volume = object.volume.value_or(MAX_VOLUME) / static_cast<double>(MAX_VOLUME);
 
         media = std::make_unique<Audio>(region, id, duration, uri, mute, loop, volume);
     }

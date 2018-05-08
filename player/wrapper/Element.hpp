@@ -66,6 +66,7 @@ namespace Gst
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
                   Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop);
         GstElement* get_handler() const;
+        void reset_handler();
 
     protected:
         Element() = default;

@@ -13,16 +13,22 @@ LayoutParser::LayoutParser(const std::string& path)
 ParsedLayout LayoutParser::parse_layout()
 {    
     auto parsed_layout = parse_layout_params();
-
     for(auto [layout_node_name, region_node] : m_layout_node)
     {
         if(layout_node_name == "region")
         {
-            auto current_region = RegionParser(region_node).parse_region();
-            parsed_layout.regions.push_back(current_region);
+            try
+            {
+                auto current_region = RegionParser(region_node).parse_region();
+                parsed_layout.regions.push_back(current_region);
+            }
+            catch(const boost::property_tree::ptree_bad_path& e)
+            {
+                spdlog::get(LOGGER)->error("[RegionParser]: Some regions won't be rendered - {}", e.what());
+            }
+
         }
     }
-
     return parsed_layout;
 }
 

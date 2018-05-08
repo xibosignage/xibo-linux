@@ -14,7 +14,14 @@ ParsedRegion RegionParser::parse_region()
     {
         if(region_node_name == "media")
         {
-            region_params.media.push_back(MediaParser(media_node).parse_media());
+            try
+            {
+                region_params.media.push_back(MediaParser(media_node).parse_media());
+            }
+            catch(const boost::property_tree::ptree_bad_path& e)
+            {
+                spdlog::get(LOGGER)->error("[MediaParser]: Some media won't be rendered - {}", e.what());
+            }
         }
     }
     return region_params;

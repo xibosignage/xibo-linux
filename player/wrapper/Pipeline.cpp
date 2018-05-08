@@ -28,15 +28,16 @@ Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create(const std::string& name)
     return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline(name));
 }
 
-Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::add(const Gst::RefPtr<Gst::Element>& other)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::add(Gst::RefPtr<Gst::Element> other)
 {
     gst_bin_add(GST_BIN(m_element), other->get_handler());
     return shared_from_this();
 }
 
-Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::remove(const Gst::RefPtr<Gst::Element>& other)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::remove(Gst::RefPtr<Gst::Element> other)
 {
     gst_bin_remove(GST_BIN(m_element), other->get_handler());
+    other->reset_handler();
     return shared_from_this();
 }
 
