@@ -9,10 +9,10 @@ before_install:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 - pip install --user cpp-coveralls
-- docker pull stivius/xibo-linux
+- docker pull stivius/xibo-linux:latest
 
 script:
-- docker build --cache-from stivius/xibo-linux .
+- docker build --cache-from stivius/xibo-linux:latest .
 
 after_success:
 - docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ${TRAVIS_BUILD_DIR}/build:/build stivius/xibo-linux
