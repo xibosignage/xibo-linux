@@ -113,5 +113,5 @@ RUN cd /app && \
     make install
 
 VOLUME /build
-CMD ["./app/run.sh"]
-
+ENTRYPOINT ["./app/run.sh"]
+CMD []
