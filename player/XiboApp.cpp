@@ -6,6 +6,7 @@
 #include "control/MainLayout.hpp"
 #include "creators/LayoutBuilder.hpp"
 #include "parsers/LayoutParser.hpp"
+#include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
@@ -28,6 +29,7 @@ XiboApp& XiboApp::create(const std::string& name)
 XiboApp::XiboApp()
 {
     m_logger = spdlog::get(LOGGER);
+
 }
 
 XiboApp::~XiboApp()
@@ -49,13 +51,18 @@ const CommandLineParser& XiboApp::command_line_parser() const
 }
 
 int XiboApp::run(int argc, char** argv)
-{
+{    
     bool result = m_options.parse(argc, argv);
     if(result)
     {
         if(m_options.is_version())
         {
             m_logger->info("Project version: {}", get_version());
+        }
+        if(m_options.is_testing())
+        {
+            ::testing::InitGoogleTest(&argc, argv);
+            return RUN_ALL_TESTS();
         }
         if(m_options.is_example_dir())
         {

@@ -7,6 +7,12 @@
 namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
+const char* EXAMPLE_DIR = "example-dir";
+const char* VERSION = "version";
+const char* UNIT_TESTING = "unit-testing";
+const char* HELP = "help";
+const char* LOG_LEVEL = "log-level";
+
 CommandLineParser::CommandLineParser() :
     m_options("Allowed options")
 {
@@ -16,11 +22,12 @@ CommandLineParser::CommandLineParser() :
 bool CommandLineParser::parse(int argc, char** argv)
 {
     po::variables_map vm;
-    m_options.add_options()("example-dir", po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
-    m_options.add_options()("version", "get project version");
-    m_options.add_options()("testing", "enable testing mode");
-    m_options.add_options()("help", "get available options");
-    m_options.add_options()("log-level", po::value<int>()->value_name("[0-6]"), "set logging level (0 for all logs, 6 turn off)");
+    // FIXME: add to constants
+    m_options.add_options()(EXAMPLE_DIR, po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
+    m_options.add_options()(VERSION, "get project version");
+    m_options.add_options()(UNIT_TESTING, "enable unit testing mode");
+    m_options.add_options()(HELP, "get available options");
+    m_options.add_options()(LOG_LEVEL, po::value<int>()->value_name("[0-6]"), "set logging level (0 for all logs, 6 turn off)");
 
     try {
         po::store(po::parse_command_line(argc, argv, m_options), vm);
@@ -31,21 +38,20 @@ bool CommandLineParser::parse(int argc, char** argv)
         return false;
     }
 
-    if(vm.empty() || vm.count("help")){
+    if(vm.empty() || vm.count(HELP)){
         m_logger->info("{}", m_options);
         return false;
     }
-    if(vm.count("log-level")) {
-        spdlog::set_level(static_cast<spdlog::level::level_enum>(vm["log-level"].as<int>()));
+    if(vm.count(LOG_LEVEL)) {
+        spdlog::set_level(static_cast<spdlog::level::level_enum>(vm[LOG_LEVEL].as<int>()));
     }
-    if(vm.count("example-dir")) {
-        m_is_example_dir = check_example_dir(vm["example-dir"].as<std::string>());
-
-        if(vm.count("testing")) {
-            m_is_testing = true;
-        }
+    if(vm.count(EXAMPLE_DIR)) {
+        m_is_example_dir = check_example_dir(vm[EXAMPLE_DIR].as<std::string>());
     }
-    if(vm.count("version")) {
+    if(vm.count(UNIT_TESTING)) {
+        m_is_testing = true;
+    }
+    if(vm.count(VERSION)) {
         m_is_version = true;
     }
     return true;
