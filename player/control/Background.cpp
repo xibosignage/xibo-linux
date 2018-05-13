@@ -8,7 +8,6 @@ Background::Background(int width, int height) :
     m_width(width),
     m_height(height)
 {
-
 }
 
 void Background::set_color(uint32_t hex_color)
@@ -46,12 +45,21 @@ void Background::set_image(const std::string& image_path)
     }
 }
 
+void Background::set_size(int width, int height)
+{
+    if(width != m_width || height != m_height)
+    {
+        auto pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
+        m_handler.set(pixbuf);
+    }
+}
+
 void Background::show()
 {
     m_handler.show();
 }
 
-Background::operator Gtk::Widget&()
+Background::operator Gtk::Image&()
 {
     return m_handler;
 }

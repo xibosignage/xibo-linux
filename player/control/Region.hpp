@@ -1,12 +1,13 @@
 #pragma once
 
 #include "media/Media.hpp"
+#include "BaseRegion.hpp"
 
 #include <gtkmm/fixed.h>
 #include <vector>
 #include <memory>
 
-class Region : public Gtk::Fixed
+class Region : public BaseRegion
 {
 public:
     Region(int id,
@@ -15,18 +16,15 @@ public:
            int zindex,
            bool looped);
 
-    Region(const Region& other) = delete;
-    Region& operator=(const Region& other) = delete;
-
     int id() const;
     const Size& size() const;
     const Point& position() const;
     int zindex() const;
     bool looped() const;
+    void show();
 
     void add_media(std::unique_ptr<Media> media);
     sigc::signal<void> request_handler() const;
-    void show();
 
 private:
     void on_media_timeout();

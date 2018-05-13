@@ -22,7 +22,6 @@ CommandLineParser::CommandLineParser() :
 bool CommandLineParser::parse(int argc, char** argv)
 {
     po::variables_map vm;
-    // FIXME: add to constants
     m_options.add_options()(EXAMPLE_DIR, po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
     m_options.add_options()(VERSION, "get project version");
     m_options.add_options()(UNIT_TESTING, "enable unit testing mode");

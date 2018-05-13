@@ -10,6 +10,7 @@
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
+#include <gtkmm/window.h>
 #include <gst/gst.h>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
@@ -61,6 +62,8 @@ int XiboApp::run(int argc, char** argv)
         }
         if(m_options.is_testing())
         {
+            spdlog::set_level(spdlog::level::off);
+
             ::testing::InitGoogleTest(&argc, argv);
             return RUN_ALL_TESTS();
         }
@@ -69,13 +72,17 @@ int XiboApp::run(int argc, char** argv)
             try
             {
                 LayoutParser parser(m_options.xlf_file());
-
                 auto layout = LayoutBuilder(parser.parse_layout()).build();
-                layout->show_regions();
+
+                Gtk::Window window;
+                window.set_default_size(640, 480);
+                window.add(*layout);
+                window.show();
+                layout->show_all();
 
                 m_logger->info("Player started");
 
-                return m_parent_app->run(*layout);
+                return m_parent_app->run(window);
             }
             catch(const boost::property_tree::ptree_bad_path& e)
             {

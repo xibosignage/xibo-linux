@@ -38,8 +38,8 @@ std::unique_ptr<MainLayout> LayoutBuilder::create_from_params()
 
     auto layout = std::make_unique<MainLayout>(m_params.schemaVersion, m_params.width, m_params.height);
 
-    std::unique_ptr<IMonitor> monitor = std::make_unique<Monitor>(*layout);
-    layout->scale_to_monitor_size(std::move(monitor));
+//    std::shared_ptr<IMonitor> monitor = std::make_shared<Monitor>(*layout);
+//    layout->scale_to_monitor_size(std::move(monitor));
 
     // NOTE image has higher priority
     std::unique_ptr<IBackground> background = std::make_unique<Background>(layout->width(), layout->height());
