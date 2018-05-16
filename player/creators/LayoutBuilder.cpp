@@ -27,9 +27,8 @@ std::unique_ptr<MainLayout> LayoutBuilder::build()
     return layout;
 }
 
-#include "XiboApp.hpp"
-#include "control/Monitor.hpp"
-#include <gdkmm/monitor.h>
+//#include "XiboApp.hpp"
+//#include "control/Monitor.hpp"
 
 std::unique_ptr<MainLayout> LayoutBuilder::create_from_params()
 {

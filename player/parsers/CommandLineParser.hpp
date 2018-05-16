@@ -18,7 +18,7 @@ public:
     const boost::program_options::options_description& available_options() const;
 
 private:
-    std::string find_xlf_file(const std::string& example_dir_path);
+    std::pair<bool, std::string> find_xlf_file(const std::string& example_dir_path);
     bool check_example_dir(const std::string& example_dir);
 
 private:

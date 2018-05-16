@@ -45,7 +45,15 @@ bool CommandLineParser::parse(int argc, char** argv)
         spdlog::set_level(static_cast<spdlog::level::level_enum>(vm[LOG_LEVEL].as<int>()));
     }
     if(vm.count(EXAMPLE_DIR)) {
-        m_is_example_dir = check_example_dir(vm[EXAMPLE_DIR].as<std::string>());
+        auto example_dir = vm[EXAMPLE_DIR].as<std::string>();
+        bool dir_exists = check_example_dir(example_dir);
+        auto [xlf_exists, xlf_file] = find_xlf_file(example_dir);
+        if(dir_exists && xlf_exists)
+        {
+            m_example_dir = example_dir;
+            m_xlf_file = xlf_file;
+            m_is_example_dir = true;
+        }
     }
     if(vm.count(UNIT_TESTING)) {
         m_is_testing = true;
@@ -58,20 +66,12 @@ bool CommandLineParser::parse(int argc, char** argv)
 
 bool CommandLineParser::check_example_dir(const std::string& example_dir)
 {
-    m_example_dir = example_dir;
-    if(!fs::exists(m_example_dir) || !fs::is_directory(m_example_dir))
+    if(!fs::exists(example_dir) || !fs::is_directory(example_dir))
     {
         m_logger->error("The directory doesn't exist (or it isn't a directory)");
         return false;
     }
-    m_logger->info("Example directory is {}", m_example_dir);
-
-    m_xlf_file = find_xlf_file(m_example_dir);
-    if(m_xlf_file.empty())
-    {
-        m_logger->error(".XLF file doesn't exist");
-        return false;
-    }
+    m_logger->info("Example directory is {}", example_dir);
 
     return true;
 }
@@ -106,7 +106,7 @@ const po::options_description& CommandLineParser::available_options() const
     return m_options;
 }
 
-std::string CommandLineParser::find_xlf_file(const std::string& example_dir_path)
+std::pair<bool, std::string> CommandLineParser::find_xlf_file(const std::string& example_dir_path)
 {
     fs::directory_iterator it(example_dir_path);
     fs::directory_iterator end;
@@ -114,9 +114,9 @@ std::string CommandLineParser::find_xlf_file(const std::string& example_dir_path
     while(it != end)
     {
         if(fs::is_regular_file(*it) && it->path().extension() == ".xlf")
-            return it->path().generic_string();
+            return {true, it->path().string()};
         ++it;
     }
 
-    return std::string{};
+    return {false, std::string{}};
 }

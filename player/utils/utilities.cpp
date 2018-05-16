@@ -4,6 +4,7 @@
 
 #include <stdexcept>
 #include <spdlog/spdlog.h>
+#include <boost/filesystem/operations.hpp>
 
 uint32_t utilities::to_hex(const std::string& str_color)
 {
@@ -28,4 +29,9 @@ std::string utilities::example_dir()
 std::string utilities::xlf_file()
 {
     return XiboApp::app().command_line_parser().xlf_file();
+}
+
+std::string utilities::app_current_dir()
+{
+    return boost::filesystem::current_path().string();
 }
