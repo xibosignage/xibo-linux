@@ -24,12 +24,13 @@ class XiboVideoSink;
 class Video : public Media
 {
 public:
-    Video(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped);
+    Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped);
     ~Video() override;
 
     void stop() override;
     void start() override;
     void start_timer() override;
+    void set_region(Region* region) override;
 
     void set_volume(double volume);
     void play();

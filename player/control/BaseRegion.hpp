@@ -14,6 +14,7 @@ public:
     virtual int id() const = 0;
     virtual const Size& size() const = 0;
     virtual const Point& position() const = 0;
+    virtual void set_size(int width, int height) = 0;
     virtual int zindex() const = 0;
     virtual bool looped() const = 0;
     virtual void show() = 0;

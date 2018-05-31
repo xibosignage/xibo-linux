@@ -5,8 +5,8 @@
 #include <glibmm/main.h>
 #include <iostream>
 
-Media::Media(const Region& region, int id, int duration, Render render, const std::string& uri) :
-    m_region(region), m_id(id), m_duration(duration), m_render(render), m_uri(uri)
+Media::Media(int id, int duration, Render render, const std::string& uri) :
+    m_id(id), m_duration(duration), m_render(render), m_uri(uri)
 {
 }
 
@@ -56,9 +56,17 @@ sigc::signal<void>& Media::media_timeout()
     return m_media_timeout;
 }
 
+void Media::set_region(Region* region)
+{
+    m_region = region;
+}
+
 const Region& Media::region() const
 {
-    return m_region;
+    if(!m_region)
+        throw std::runtime_error("Media is not in the region");
+
+    return *m_region;
 }
 
 int Media::id() const

@@ -4,13 +4,12 @@
 
 #include "control/Region.hpp"
 #include "control/MainLayout.hpp"
-#include "creators/LayoutBuilder.hpp"
+#include "control/MainWindow.hpp"
 #include "parsers/LayoutParser.hpp"
 #include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <glibmm/main.h>
-#include <gtkmm/window.h>
 #include <gst/gst.h>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
@@ -71,16 +70,11 @@ int XiboApp::run(int argc, char** argv)
         {
             try
             {
-                LayoutParser parser(m_options.xlf_file());
-                auto layout = LayoutBuilder(parser.parse_layout()).build();
+                auto layout = LayoutParser(LayoutParser::get_layout_node(m_options.xlf_path())).parse();
 
-                Gtk::Window window;
-                window.set_default_size(640, 480);
+                MainWindow window(500, 500, false, false, true, true);
                 window.add(*layout);
-                window.show();
-                layout->show_all();
-
-                m_logger->info("Player started");
+                window.show_all();
 
                 return m_parent_app->run(window);
             }

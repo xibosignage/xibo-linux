@@ -1,18 +1,31 @@
 #pragma once
 
 #include "constants.hpp"
-#include "parsers/ParserHelpers.hpp"
 #include <spdlog/spdlog.h>
+
+class Region;
 
 class RegionParser
 {
-private:
+public:
     RegionParser(const xlf_node& region_node);
-    ParsedRegion parse_region();
-    ParsedRegion parse_region_params();
-
-    friend class LayoutParser;
+    std::unique_ptr<Region> parse();
 
 private:
-    const xlf_node& m_region_node;
+    struct ParsedRegion
+    {
+        int id;
+        int width;
+        int height;
+        int top;
+        int left;
+        int zindex;
+        bool loop;
+    };
+
+    ParsedRegion parse_params();
+
+private:
+    xlf_node m_region_node;
+
 };

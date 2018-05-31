@@ -1,20 +1,15 @@
 #pragma once
 
-#include <gtkmm/image.h>
 #include <gtkmm/overlay.h>
 #include <spdlog/spdlog.h>
-
 #include "IBackground.hpp"
-#include "IMonitor.hpp"
-#include "BaseRegion.hpp"
 
 #include <vector>
 #include <memory>
 
-class Region;
-class Point;
-class Size;
-class Transition;
+class BaseRegion;
+class IMonitor;
+//class IBackground;
 
 class MainLayout : public Gtk::Overlay
 {
@@ -27,25 +22,32 @@ public:
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    double width_scale_factor() const;
-    double height_scale_factor() const;
+    static std::unique_ptr<MainLayout> create(int schemaVersion,
+                                              int width,
+                                              int height,
+                                              const std::string& bgimage,
+                                              const std::string& bgcolor);
+
+    int schema_version() const;
+
+    void set_size(int width, int height);
     int width() const;
     int height() const;
-    int schema_version() const;
 
     void set_background(std::unique_ptr<IBackground> background);
     IBackground& background();
 
-    void scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor);
-    void set_size(int width, int height);
-
-    size_t regions_count() const;
-    BaseRegion& region(size_t index);
     void add_region(std::unique_ptr<BaseRegion> region);
-    void show_all();
+    BaseRegion& region(size_t index);
+    size_t regions_count() const;
+
+    void scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor);
+    double width_scale_factor() const;
+    double height_scale_factor() const;
 
 private:
     void reorder_regions();
+    void on_layout_shown();
     bool on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& alloc) override;
 
 private:

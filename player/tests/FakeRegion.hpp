@@ -11,6 +11,7 @@ public:
     int zindex() const { return fake_zindex; }
     bool looped() const { return false; }
     void show() { is_shown = true; }
+    void set_size(int, int) { }
 
     int fake_zindex = 0;
     bool is_shown = false;

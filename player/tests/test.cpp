@@ -1,10 +1,12 @@
 #include "control/MainLayout.hpp"
 #include "control/Region.hpp"
 #include "control/Background.hpp"
-#include "parsers/CommandLineParser.hpp"
 #include "tests/FakeBackground.hpp"
 #include "tests/FakeMonitor.hpp"
 #include "tests/FakeRegion.hpp"
+#include "parsers/CommandLineParser.hpp"
+#include "parsers/LayoutParser.hpp"
+#include "parsers/RegionParser.hpp"
 #include "utils/utilities.hpp"
 
 #include <fstream>
@@ -130,7 +132,7 @@ TEST(MainLayout, ShowAllReorder)
     layout.add_region(std::make_unique<FakeRegion>(1));
     layout.add_region(std::make_unique<FakeRegion>(6));
     layout.add_region(std::make_unique<FakeRegion>(2));
-    layout.show_all();
+    layout.show();
 
     EXPECT_TRUE(b.is_shown);
     for(size_t i = 0; i != layout.regions_count(); ++i)
@@ -187,8 +189,8 @@ TEST(CommandLineParser, Construction)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_FALSE(parser.is_testing());
     EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
 TEST(CommandLineParser, ParseNoParams)
@@ -201,8 +203,8 @@ TEST(CommandLineParser, ParseNoParams)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_FALSE(parser.is_testing());
     EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
 TEST(CommandLineParser, ParseNotExistingParam)
@@ -215,8 +217,8 @@ TEST(CommandLineParser, ParseNotExistingParam)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_FALSE(parser.is_testing());
     EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
 
@@ -230,8 +232,8 @@ TEST(CommandLineParser, ParseNotExistingParamWithExist)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_FALSE(parser.is_testing());
     EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
 TEST(CommandLineParser, Parse1Param)
@@ -244,8 +246,8 @@ TEST(CommandLineParser, Parse1Param)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_TRUE(parser.is_testing());
     EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
 TEST(CommandLineParser, ParseMultipleParams)
@@ -259,11 +261,11 @@ TEST(CommandLineParser, ParseMultipleParams)
     EXPECT_FALSE(parser.is_example_dir());
     EXPECT_TRUE(parser.is_testing());
     EXPECT_TRUE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
-TEST(CommandLineParser, ParsenNotExistingExampleDir)
+TEST(CommandLineParser, ParseNotExistingExampleDir)
 {
     CommandLineParser parser;
     std::string testDir = utilities::app_current_dir() + "/FakeDir";
@@ -274,11 +276,11 @@ TEST(CommandLineParser, ParsenNotExistingExampleDir)
 
     ASSERT_TRUE(parse);
     EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
-TEST(CommandLineParser, ParsenExampleDirWithoutXlf)
+TEST(CommandLineParser, ParseExampleDirWithoutXlf)
 {
     CommandLineParser parser;
     std::string testDir = utilities::app_current_dir() + "/TestDir";
@@ -293,11 +295,11 @@ TEST(CommandLineParser, ParsenExampleDirWithoutXlf)
 
     ASSERT_TRUE(parse);
     EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.example_dir().empty());
-    EXPECT_TRUE(parser.xlf_file().empty());
+    EXPECT_TRUE(parser.example_dir_path().empty());
+    EXPECT_TRUE(parser.xlf_path().empty());
 }
 
-TEST(CommandLineParser, ParsenExampleDirWithXlf)
+TEST(CommandLineParser, ParseExampleDirWithXlf)
 {
     CommandLineParser parser;
     std::string testDir = utilities::app_current_dir() + "/TestDir";
@@ -320,6 +322,52 @@ TEST(CommandLineParser, ParsenExampleDirWithXlf)
 
     ASSERT_TRUE(parse);
     EXPECT_TRUE(parser.is_example_dir());
-    EXPECT_EQ(parser.example_dir(), testDir);
-    EXPECT_EQ(parser.xlf_file(), xlfFile);
+    EXPECT_EQ(parser.example_dir_path(), testDir);
+    EXPECT_EQ(parser.xlf_path(), xlfFile);
 }
+
+//TEST(LayoutParser, Parse)
+//{
+//    boost::property_tree::ptree l;
+//    auto& attrs = l.add_child("<xmlattr>", boost::property_tree::ptree{});
+//    attrs.add("width", 1920);
+//    attrs.add("height", 1080);
+//    attrs.add("bgcolor", "#000000");
+//    attrs.add("background", "8621.jpg");
+//    attrs.add("schemaVersion", 3);
+
+//    LayoutParser layout(l);
+//    auto parsed = layout.parse_layout();
+//    EXPECT_EQ(parsed.width, 1920);
+//    EXPECT_EQ(parsed.height, 1080);
+//    EXPECT_EQ(parsed.bgcolor.value(), "#000000");
+//    EXPECT_EQ(parsed.bgimage.value(), "8621.jpg");
+//    EXPECT_EQ(parsed.schemaVersion, 3);
+//    EXPECT_EQ(parsed.regions.size(), 0);
+//}
+
+//TEST(RegionParser, Parse)
+//{
+//    boost::property_tree::ptree r;
+//    auto& attrs_r = r.add_child("<xmlattr>", boost::property_tree::ptree{});
+//    auto& options = r.add_child("options", boost::property_tree::ptree{});
+//    attrs_r.add("id", 0);
+//    attrs_r.add("width", 0.0);
+//    attrs_r.add("height", 0.0);
+//    attrs_r.add("top", 0.0);
+//    attrs_r.add("left", 0.0);
+//    attrs_r.add("zindex", 0);
+//    options.add("loop", false);
+
+//    RegionParser region(r);
+//    auto parsed = region.parse_region();
+//    EXPECT_EQ(parsed.id, 0);
+//    EXPECT_EQ(parsed.width, 0);
+//    EXPECT_EQ(parsed.height, 0);
+//    EXPECT_EQ(parsed.top, 0);
+//    EXPECT_EQ(parsed.height, 0);
+//    EXPECT_EQ(parsed.zindex.value(), 0);
+//    EXPECT_EQ(parsed.loop.value(), false);
+//    EXPECT_EQ(parsed.media.size(), 0);
+//}
+

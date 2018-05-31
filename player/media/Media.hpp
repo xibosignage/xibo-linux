@@ -17,7 +17,7 @@ public:
         Native
     };
 
-    Media(const Region& region, int id, int duration, Render render, const std::string& uri);
+    Media(int id, int duration, Render render, const std::string& uri);
     virtual ~Media() = default;
 
     Media(const Media& other) = delete;
@@ -26,6 +26,8 @@ public:
     virtual void stop() = 0;
     virtual void start() = 0;
     virtual bool is_running() const;
+    virtual void set_region(Region* region);
+    virtual void set_size(int, int) { }
     virtual void start_timer();
     void attach_audio(std::unique_ptr<Media> audio);
     sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
@@ -38,7 +40,7 @@ public:
     const std::string& uri() const;
 
 protected:
-    const Region& m_region;
+    Region* m_region = nullptr;
     int m_id;
     int m_duration;
     Render m_render;

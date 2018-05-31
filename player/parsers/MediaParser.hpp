@@ -1,28 +1,27 @@
 #pragma once
 
 #include "constants.hpp"
-#include "ParserHelpers.hpp"
-#include "utils/utilities.hpp"
-
 #include <spdlog/spdlog.h>
-#include <any>
+
+class Media;
 
 class MediaParser
 {
-private:
-    MediaParser(const xlf_node& media_node);
-    AnyMedia parse_media();
-    template<MediaType type> AnyMedia parse_media_params(const xlf_node& media_node);
-    template<MediaType type> void parse_media_options(ParsedMedia<type>& media_params, const xlf_node& options);
-    boost::optional<int> parse_duration(const std::string& path);
-    std::shared_ptr<ParsedMedia<MediaType::Audio>> parse_audio_node(const xlf_node& audio_node);
-
-    friend class RegionParser;
-
-    std::string get_path(int id, const boost::optional<std::string>& uri);
-    MediaType to_media_type(const std::string& type);
-
-private:
-    const xlf_node& m_media_node;
-
+public:
+    MediaParser() = default;
+    virtual std::unique_ptr<Media> parse() = 0;
 };
+
+//std::shared_ptr<ParsedMedia<MediaType::Audio>> MediaParser::parse_audio_node(const xlf_node& audio_node)
+//{
+//    auto uri_node = audio_node.get_child("uri");
+//    auto attrs = uri_node.get_child("<xmlattr>");
+
+//    auto audio = std::make_shared<ParsedMedia<MediaType::Audio>>();
+//    audio->id = attrs.get<int>("mediaId");
+//    audio->uri = utilities::example_dir() + "/" + uri_node.get_value<std::string>();
+//    audio->mute = attrs.get_optional<bool>("mute");
+//    audio->loop = attrs.get_optional<bool>("loop");
+//    audio->volume = attrs.get_optional<int>("volume");
+//    return audio;
+//}

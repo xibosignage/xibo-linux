@@ -47,12 +47,15 @@ bool CommandLineParser::parse(int argc, char** argv)
     if(vm.count(EXAMPLE_DIR)) {
         auto example_dir = vm[EXAMPLE_DIR].as<std::string>();
         bool dir_exists = check_example_dir(example_dir);
-        auto [xlf_exists, xlf_file] = find_xlf_file(example_dir);
-        if(dir_exists && xlf_exists)
+        if(dir_exists)
         {
-            m_example_dir = example_dir;
-            m_xlf_file = xlf_file;
-            m_is_example_dir = true;
+            auto [xlf_exists, xlf_path] = find_xlf_file(example_dir);
+            if(xlf_exists)
+            {
+                m_example_dir_path = example_dir;
+                m_xlf_path = xlf_path;
+                m_is_example_dir = true;
+            }
         }
     }
     if(vm.count(UNIT_TESTING)) {
@@ -91,14 +94,14 @@ bool CommandLineParser::is_testing() const
     return m_is_testing;
 }
 
-const std::string& CommandLineParser::xlf_file() const
+const std::string& CommandLineParser::xlf_path() const
 {
-    return m_xlf_file;
+    return m_xlf_path;
 }
 
-const std::string& CommandLineParser::example_dir() const
+const std::string& CommandLineParser::example_dir_path() const
 {
-    return m_example_dir;
+    return m_example_dir_path;
 }
 
 const po::options_description& CommandLineParser::available_options() const

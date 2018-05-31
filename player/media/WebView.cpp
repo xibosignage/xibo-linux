@@ -3,8 +3,8 @@
 
 #include <spdlog/spdlog.h>
 
-WebView::WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(region, id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent) :
+    Media(id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
     auto path = "file://" + uri;
@@ -23,11 +23,7 @@ WebView::WebView(const Region& region, int id, int duration, const std::string& 
 
     auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
     m_handler.add(*widget);
-    m_handler.set_size_request(region.size().width, region.size().height);
-
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_handler, DEFAULT_POINT);
-    });
+    m_handler.set_size_request(size.width, size.height);
 }
 
 void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
@@ -53,6 +49,15 @@ void WebView::start()
     Media::start();
     m_handler.show_all();
     webkit_web_view_reload(m_web_view);
+}
+
+void WebView::set_region(Region* region)
+{
+    Media::set_region(region);
+
+    region->request_handler().connect([=]{
+        handler_requested().emit(m_handler, DEFAULT_POINT);
+    });
 }
 
 bool WebView::transparent() const

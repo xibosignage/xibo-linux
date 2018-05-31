@@ -8,13 +8,13 @@ const int DEFAULT_VIDEO_BUFFER = 500;
 
 namespace ph = std::placeholders;
 
-Video::Video(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(region, id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
+Video::Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped) :
+    Media(id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
 
-    gst_static_pads_init(region.size().width, region.size().height);
+    gst_static_pads_init(size.width, size.height);
     if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
                                    plugin_init, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
     {
@@ -53,10 +53,7 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
     m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Video::on_pad_added));
     m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(*this, &Video::no_more_pads));
 
-    m_video_window.set_size_request(region.size().width, region.size().height);
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_video_window, DEFAULT_POINT);
-    });
+    m_video_window.set_size_request(size.width, size.height);
 
     set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
 }
@@ -64,6 +61,15 @@ Video::Video(const Region& region, int id, int duration, const std::string& uri,
 Video::~Video()
 {
     m_logger->debug("[Video] Returned, stopping playback");
+}
+
+void Video::set_region(Region* region)
+{
+    Media::set_region(region);
+
+    region->request_handler().connect([=]{
+        handler_requested().emit(m_video_window, DEFAULT_POINT);
+    });
 }
 
 bool Video::bus_message_watch(const Gst::RefPtr<Gst::Message>& message)

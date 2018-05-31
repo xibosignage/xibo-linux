@@ -1,7 +1,10 @@
 #include "MainLayout.hpp"
 #include "Region.hpp"
 #include "XiboApp.hpp"
-#include "IBackground.hpp"
+#include "BaseRegion.hpp"
+#include "Background.hpp"
+#include "IMonitor.hpp"
+#include "utils/utilities.hpp"
 
 #include <spdlog/spdlog.h>
 
@@ -12,6 +15,27 @@ MainLayout::MainLayout(int schema_version,
 {
     m_logger = spdlog::get(LOGGER);
     set_size(width, height);
+
+    signal_show().connect(sigc::mem_fun(*this, &MainLayout::on_layout_shown));
+}
+
+std::unique_ptr<MainLayout> MainLayout::create(int schemaVersion,
+                                               int width,
+                                               int height,
+                                               const std::string& bgimage,
+                                               const std::string& bgcolor)
+{
+    auto layout = std::make_unique<MainLayout>(schemaVersion, width, height);
+    std::unique_ptr<IBackground> background = std::make_unique<Background>(width, height);
+
+    if(!bgcolor.empty())
+        background->set_color(utilities::to_hex(bgcolor));
+
+    if(!bgimage.empty())
+        background->set_image(utilities::example_dir() + "/" + bgimage);
+
+    layout->set_background(std::move(background));
+    return layout;
 }
 
 void MainLayout::add_region(std::unique_ptr<BaseRegion> region)
@@ -33,6 +57,22 @@ size_t MainLayout::regions_count() const
     return m_regions.size();
 }
 
+void MainLayout::scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor)
+{
+    if(monitor)
+    {
+        auto area = monitor->get_area();
+
+        m_width_scale_factor = area.get_width() / static_cast<double>(m_width);
+        m_height_scale_factor = area.get_height() / static_cast<double>(m_height);
+
+        set_size(static_cast<int>(m_width * m_width_scale_factor),
+                 static_cast<int>(m_height * m_height_scale_factor));
+
+        m_logger->debug("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
+    }
+}
+
 // NOTE: add unit test
 bool MainLayout::on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& alloc)
 {
@@ -43,8 +83,8 @@ bool MainLayout::on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& allo
     auto region = dynamic_cast<BaseRegion*>(widget);
     if(region)
     {
-        Gdk::Rectangle region_alloc(region->position().left, region->position().top,
-                                    region->size().width, region->size().height);
+        Gdk::Rectangle region_alloc(region->position().left * m_width_scale_factor, region->position().top * m_height_scale_factor,
+                                    region->size().width * m_width_scale_factor, region->size().height * m_height_scale_factor);
         alloc = region_alloc;
         return true;
     }
@@ -64,18 +104,16 @@ void MainLayout::reorder_regions()
     }
 }
 
-void MainLayout::scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor)
+void MainLayout::on_layout_shown()
 {
-    if(monitor)
+    reorder_regions();
+    if(m_background)
     {
-        auto area = monitor->get_area();
-
-        m_width_scale_factor = area.get_width() / static_cast<double>(m_width);
-        m_height_scale_factor = area.get_height() / static_cast<double>(m_height);
-
-        set_size(static_cast<int>(m_width * m_width_scale_factor), static_cast<int>(m_height * m_height_scale_factor));
-
-        m_logger->debug("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
+        m_background->show();
+    }
+    for(auto&& region : m_regions)
+    {
+        region->show();
     }
 }
 
@@ -107,30 +145,12 @@ void MainLayout::set_size(int width, int height)
     {
         m_background->set_size(width, height);
     }
-}
-
-void MainLayout::show_all()
-{
-    reorder_regions();
-    if(m_background)
-    {
-        m_background->show();
-    }
     for(auto&& region : m_regions)
     {
-        region->show();
+        auto&& size = region->size();
+        region->set_size(size.width * m_width_scale_factor, size.height * m_height_scale_factor);
+        region->queue_allocate();
     }
-    Gtk::Overlay::show();
-}
-
-double MainLayout::width_scale_factor() const
-{
-    return m_width_scale_factor;
-}
-
-double MainLayout::height_scale_factor() const
-{
-    return m_height_scale_factor;
 }
 
 int MainLayout::width() const
@@ -146,4 +166,14 @@ int MainLayout::height() const
 int MainLayout::schema_version() const
 {
     return m_schema_version;
+}
+
+double MainLayout::width_scale_factor() const
+{
+    return m_width_scale_factor;
+}
+
+double MainLayout::height_scale_factor() const
+{
+    return m_height_scale_factor;
 }

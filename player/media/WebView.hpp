@@ -8,10 +8,11 @@
 class WebView : public Media
 {
 public:
-    WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent);
+    WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent);
 
     void stop() override;
     void start() override;
+    void set_region(Region *region) override;
     bool transparent() const;
 
 private:

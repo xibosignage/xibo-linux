@@ -13,6 +13,11 @@ Region::Region(int id,
 {
 }
 
+std::unique_ptr<Region> Region::create(int id, int width, int height, int top, int left, int zindex, bool loop)
+{
+    return std::make_unique<Region>(id, Size{width, height}, Point{left, top}, zindex, loop);
+}
+
 int Region::id() const
 {
     return m_id;
@@ -28,6 +33,17 @@ const Point& Region::position() const
     return m_pos;
 }
 
+void Region::set_size(int width, int height)
+{
+    m_size.width = width;
+    m_size.height = height;
+
+    for(auto&& media : m_media)
+    {
+        media->set_size(m_size.width, m_size.height);
+    }
+}
+
 int Region::zindex() const
 {
     return m_zindex;
@@ -40,8 +56,9 @@ bool Region::looped() const
 
 void Region::add_media(std::unique_ptr<Media> media)
 {
+    media->set_region(this);
     media->handler_requested().connect([=](Gtk::Widget& widget, Point point){
-        put(widget, point.left, point.top);
+         put(widget, point.left, point.top); // FIXME move after reallocation
     });
     media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
     m_media.push_back(std::move(media));

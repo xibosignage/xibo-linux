@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <string>
+#include "constants.hpp"
+
+class MediaParser;
 
 namespace utilities
 {
@@ -9,6 +12,7 @@ namespace utilities
     std::string example_dir();
     std::string xlf_file();
     std::string app_current_dir();
+    std::unique_ptr<MediaParser> get_media_parser(const xlf_node& attrs, const xlf_node& options);
 
     template <typename T>
     class Finalizer
