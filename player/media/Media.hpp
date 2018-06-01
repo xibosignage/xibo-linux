@@ -17,7 +17,7 @@ public:
         Native
     };
 
-    Media(int id, int duration, Render render, const std::string& uri);
+    Media(int id, const Size& size, int duration, Render render, const std::string& uri);
     virtual ~Media() = default;
 
     Media(const Media& other) = delete;
@@ -25,23 +25,23 @@ public:
 
     virtual void stop() = 0;
     virtual void start() = 0;
+    virtual void request_handler() { }
     virtual bool is_running() const;
-    virtual void set_region(Region* region);
-    virtual void set_size(int, int) { }
+    virtual void set_size(int, int) { } // FIXME after adding VisibleMedia
     virtual void start_timer();
     void attach_audio(std::unique_ptr<Media> audio);
     sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
     sigc::signal<void>& media_timeout();
 
-    const Region& region() const;
     int id() const;
+    const Size& size() const;
     int duration() const;
     Render render() const;
     const std::string& uri() const;
 
 protected:
-    Region* m_region = nullptr;
     int m_id;
+    Size m_size;
     int m_duration;
     Render m_render;
     std::string m_uri;

@@ -35,7 +35,7 @@ public:
     void stop() override;
     void start() override;
     void set_size(int width, int height) override;
-    void set_region(Region *region) override;
+    void request_handler() override;
 
 private:
     bool is_scaled() const;
@@ -44,7 +44,7 @@ private:
 
 private:
     Gtk::Image m_handler;
-    Size m_size;
+    Size m_actual_size;
     ScaleType m_scale_type;
     Align m_align;
     Valign m_valign;

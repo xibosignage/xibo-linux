@@ -7,7 +7,7 @@ const double MAX_VOLUME = 1.0;
 namespace ph = std::placeholders;
 
 Audio::Audio(int id, int duration, const std::string& uri, bool muted, bool looped, double volume) :
-    Media(id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
+    Media(id, {}, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);

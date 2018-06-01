@@ -30,7 +30,8 @@ public:
     void stop() override;
     void start() override;
     void start_timer() override;
-    void set_region(Region* region) override;
+    void set_size(int width, int height) override;
+    void request_handler() override;
 
     void set_volume(double volume);
     void play();

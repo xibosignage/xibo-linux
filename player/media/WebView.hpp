@@ -12,7 +12,8 @@ public:
 
     void stop() override;
     void start() override;
-    void set_region(Region *region) override;
+    void set_size(int width, int height) override;
+    void request_handler() override;
     bool transparent() const;
 
 private:

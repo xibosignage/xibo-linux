@@ -46,7 +46,5 @@ private:
     bool m_looped;
 
     std::vector<std::unique_ptr<Media>> m_media;
-    sigc::signal<void> m_request_handler;
-
     size_t m_currentMediaIndex = 0;
 };

@@ -83,8 +83,9 @@ bool MainLayout::on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& allo
     auto region = dynamic_cast<BaseRegion*>(widget);
     if(region)
     {
-        Gdk::Rectangle region_alloc(region->position().left * m_width_scale_factor, region->position().top * m_height_scale_factor,
-                                    region->size().width * m_width_scale_factor, region->size().height * m_height_scale_factor);
+        // FIXME: small strip in the images
+        Gdk::Rectangle region_alloc(region->position().left * m_width_scale_factor, region->position().top * m_width_scale_factor,
+                                    region->size().width, region->size().height);
         alloc = region_alloc;
         return true;
     }

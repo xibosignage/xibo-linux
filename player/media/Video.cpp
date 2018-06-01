@@ -9,12 +9,11 @@ const int DEFAULT_VIDEO_BUFFER = 500;
 namespace ph = std::placeholders;
 
 Video::Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
+    Media(id, size, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
 
-    gst_static_pads_init(size.width, size.height);
     if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
                                    plugin_init, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
     {
@@ -61,15 +60,6 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
 Video::~Video()
 {
     m_logger->debug("[Video] Returned, stopping playback");
-}
-
-void Video::set_region(Region* region)
-{
-    Media::set_region(region);
-
-    region->request_handler().connect([=]{
-        handler_requested().emit(m_video_window, DEFAULT_POINT);
-    });
 }
 
 bool Video::bus_message_watch(const Gst::RefPtr<Gst::Message>& message)
@@ -131,7 +121,7 @@ void Video::on_pad_added(const Gst::RefPtr<Gst::Pad>& pad)
         if(caps)
         {
             auto strct = caps->get_structure(0);
-            m_logger->info("[Video] width: {} height: {}", strct->get_height(), strct->get_width());
+            m_logger->info("[Video] width: {} height: {}", strct->get_width(), strct->get_height());
         }
 
         sinkpad = m_video_converter->get_static_pad("sink");
@@ -189,4 +179,24 @@ void Video::start_timer()
     {
         Media::start_timer();
     }
+}
+
+void Video::set_size(int width, int height)
+{
+//    m_video_sink->set_state(Gst::State::NULL_STATE);
+//    m_pipeline->remove(m_video_sink);
+
+//    gst_static_pads_init(width, height);
+//    m_video_sink.reset();
+//    m_video_sink = Gst::Element::create("xibovideosink");
+//    auto sink = GST_XIBOVIDEOSINK(m_video_sink->get_handler());
+//    gst_xibovideosink_set_handler(sink, &m_video_window);
+
+//    m_pipeline->add(m_video_sink);
+//    m_queue->link(m_video_sink);
+}
+
+void Video::request_handler()
+{
+    handler_requested().emit(m_video_window, DEFAULT_POINT);
 }

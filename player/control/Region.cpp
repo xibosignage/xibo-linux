@@ -38,6 +38,7 @@ void Region::set_size(int width, int height)
     m_size.width = width;
     m_size.height = height;
 
+    set_size_request(width, height);
     for(auto&& media : m_media)
     {
         media->set_size(m_size.width, m_size.height);
@@ -56,7 +57,6 @@ bool Region::looped() const
 
 void Region::add_media(std::unique_ptr<Media> media)
 {
-    media->set_region(this);
     media->handler_requested().connect([=](Gtk::Widget& widget, Point point){
          put(widget, point.left, point.top); // FIXME move after reallocation
     });
@@ -64,16 +64,11 @@ void Region::add_media(std::unique_ptr<Media> media)
     m_media.push_back(std::move(media));
 }
 
-sigc::signal<void> Region::request_handler() const
-{
-    return m_request_handler;
-}
-
 void Region::show()
 {
     if(!m_media.empty())
     {        
-        m_request_handler.emit();
+        m_media[m_currentMediaIndex]->request_handler();
 
         Gtk::Fixed::show();
         m_media[m_currentMediaIndex]->start();

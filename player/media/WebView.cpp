@@ -4,7 +4,7 @@
 #include <spdlog/spdlog.h>
 
 WebView::WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+    Media(id, size, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
     auto path = "file://" + uri;
@@ -51,13 +51,14 @@ void WebView::start()
     webkit_web_view_reload(m_web_view);
 }
 
-void WebView::set_region(Region* region)
+void WebView::set_size(int width, int height)
 {
-    Media::set_region(region);
+    m_handler.set_size_request(width, height);
+}
 
-    region->request_handler().connect([=]{
-        handler_requested().emit(m_handler, DEFAULT_POINT);
-    });
+void WebView::request_handler()
+{
+    handler_requested().emit(m_handler, DEFAULT_POINT);
 }
 
 bool WebView::transparent() const

@@ -26,6 +26,9 @@ struct XiboVideoSink
     GstPad* sinkpad;
     GstVideoInfo info;
 
+    GstCaps* m_caps;
+    GstPadTemplate* m_pad_template;
+
     Gtk::DrawingArea* handler;
     Cairo::RefPtr<Cairo::ImageSurface> surface;
 };
@@ -35,7 +38,6 @@ struct XiboVideoSinkClass
     GstVideoSinkClass base;
 };
 
-void gst_static_pads_init(int width, int height);
 gboolean plugin_init(GstPlugin* plugin);
 GType gst_xibovideosink_get_type(void);
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler);
