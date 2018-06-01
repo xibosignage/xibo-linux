@@ -200,3 +200,13 @@ void Video::request_handler()
 {
     handler_requested().emit(m_video_window, DEFAULT_POINT);
 }
+
+bool Video::looped() const
+{
+    return m_looped;
+}
+
+bool Video::muted() const
+{
+    return m_muted;
+}

@@ -1,19 +1,27 @@
 #include "control/MainLayout.hpp"
 #include "control/Region.hpp"
 #include "control/Background.hpp"
+#include "media/Audio.hpp"
+#include "media/Video.hpp"
+#include "media/WebView.hpp"
+#include "media/Image.hpp"
 #include "tests/FakeBackground.hpp"
 #include "tests/FakeMonitor.hpp"
 #include "tests/FakeRegion.hpp"
 #include "parsers/CommandLineParser.hpp"
 #include "parsers/LayoutParser.hpp"
 #include "parsers/RegionParser.hpp"
+#include "parsers/ImageParser.hpp"
+#include "parsers/VideoParser.hpp"
+#include "parsers/AudioParser.hpp"
+#include "parsers/WebViewParser.hpp"
 #include "utils/utilities.hpp"
 
 #include <fstream>
 #include <boost/filesystem/operations.hpp>
 #include "gtest/gtest.h"
 
-TEST(Utilities, ToHex)
+TEST(utilities, ToHex)
 {
     EXPECT_EQ(255, utilities::to_hex("#000"));
     EXPECT_EQ(255, utilities::to_hex("#000000"));
@@ -326,48 +334,187 @@ TEST(CommandLineParser, ParseExampleDirWithXlf)
     EXPECT_EQ(parser.xlf_path(), xlfFile);
 }
 
-//TEST(LayoutParser, Parse)
-//{
-//    boost::property_tree::ptree l;
-//    auto& attrs = l.add_child("<xmlattr>", boost::property_tree::ptree{});
-//    attrs.add("width", 1920);
-//    attrs.add("height", 1080);
-//    attrs.add("bgcolor", "#000000");
-//    attrs.add("background", "8621.jpg");
-//    attrs.add("schemaVersion", 3);
+TEST(LayoutParser, ParseParams)
+{
+    boost::property_tree::ptree l;
+    auto& attrs = l.add_child("<xmlattr>", boost::property_tree::ptree{});
+    attrs.add("width", 1920);
+    attrs.add("height", 1080);
+    attrs.add("bgcolor", "#000000");
+    attrs.add("background", "8621.jpg");
+    attrs.add("schemaVersion", 3);
 
-//    LayoutParser layout(l);
-//    auto parsed = layout.parse_layout();
-//    EXPECT_EQ(parsed.width, 1920);
-//    EXPECT_EQ(parsed.height, 1080);
-//    EXPECT_EQ(parsed.bgcolor.value(), "#000000");
-//    EXPECT_EQ(parsed.bgimage.value(), "8621.jpg");
-//    EXPECT_EQ(parsed.schemaVersion, 3);
-//    EXPECT_EQ(parsed.regions.size(), 0);
-//}
+    LayoutParser layout_parser(l);
+    auto params = layout_parser.parse_params();
+    EXPECT_EQ(params.width, 1920);
+    EXPECT_EQ(params.height, 1080);
+    EXPECT_EQ(params.bgcolor, "#000000");
+    EXPECT_EQ(params.bgimage, "8621.jpg");
+    EXPECT_EQ(params.schemaVersion, 3);
+}
 
-//TEST(RegionParser, Parse)
-//{
-//    boost::property_tree::ptree r;
-//    auto& attrs_r = r.add_child("<xmlattr>", boost::property_tree::ptree{});
-//    auto& options = r.add_child("options", boost::property_tree::ptree{});
-//    attrs_r.add("id", 0);
-//    attrs_r.add("width", 0.0);
-//    attrs_r.add("height", 0.0);
-//    attrs_r.add("top", 0.0);
-//    attrs_r.add("left", 0.0);
-//    attrs_r.add("zindex", 0);
-//    options.add("loop", false);
+TEST(RegionParser, ParseParams)
+{
+    boost::property_tree::ptree r;
+    auto& attrs = r.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = r.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("width", 100.0);
+    attrs.add("height", 100.0);
+    attrs.add("top", 50.0);
+    attrs.add("left", 50.0);
+    attrs.add("zindex", 2);
+    options.add("loop", false);
 
-//    RegionParser region(r);
-//    auto parsed = region.parse_region();
-//    EXPECT_EQ(parsed.id, 0);
-//    EXPECT_EQ(parsed.width, 0);
-//    EXPECT_EQ(parsed.height, 0);
-//    EXPECT_EQ(parsed.top, 0);
-//    EXPECT_EQ(parsed.height, 0);
-//    EXPECT_EQ(parsed.zindex.value(), 0);
-//    EXPECT_EQ(parsed.loop.value(), false);
-//    EXPECT_EQ(parsed.media.size(), 0);
-//}
+    RegionParser region_parser(r);
+    auto params = region_parser.parse_params();
+    EXPECT_EQ(params.id, 1);
+    EXPECT_EQ(params.width, 100);
+    EXPECT_EQ(params.height, 100);
+    EXPECT_EQ(params.top, 50);
+    EXPECT_EQ(params.left, 50);
+    EXPECT_EQ(params.zindex, 2);
+    EXPECT_EQ(params.loop, false);
+}
 
+TEST(LayoutParser, Parse)
+{
+    boost::property_tree::ptree l;
+    auto& attrs = l.add_child("<xmlattr>", boost::property_tree::ptree{});
+    attrs.add("width", 1920);
+    attrs.add("height", 1080);
+    attrs.add("bgcolor", "#000000");
+    attrs.add("background", "8621.jpg");
+    attrs.add("schemaVersion", 3);
+
+    LayoutParser layout_parser(l);
+    auto layout = layout_parser.parse();
+    EXPECT_EQ(layout->width(), 1920);
+    EXPECT_EQ(layout->height(), 1080);
+    EXPECT_EQ(layout->width_scale_factor(), 1.0);
+    EXPECT_EQ(layout->height_scale_factor(), 1.0);
+    EXPECT_EQ(layout->schema_version(), 3);
+    EXPECT_EQ(layout->regions_count(), 0);
+}
+
+TEST(RegionParser, Parse)
+{
+    boost::property_tree::ptree r;
+    auto& attrs = r.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = r.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("width", 100.0);
+    attrs.add("height", 100.0);
+    attrs.add("top", 50.0);
+    attrs.add("left", 50.0);
+    attrs.add("zindex", 2);
+    options.add("loop", false);
+
+    RegionParser region_parser(r);
+    auto region = region_parser.parse();
+    EXPECT_EQ(region->id(), 1);
+    EXPECT_EQ(region->size().width, 100);
+    EXPECT_EQ(region->size().height, 100);
+    EXPECT_EQ(region->position().left, 50);
+    EXPECT_EQ(region->position().top, 50);
+    EXPECT_EQ(region->zindex(), 2);
+    EXPECT_EQ(region->looped(), false);
+    EXPECT_EQ(region->looped(), false);
+}
+
+
+TEST(VideoParser, Parse)
+{
+    boost::property_tree::ptree attrs;
+    boost::property_tree::ptree options;
+    attrs.add("id", 1);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    attrs.add("duration", 50.0);
+    options.add("uri", "test");
+    options.add("loop", true);
+    options.add("mute", true);
+
+    VideoParser video_parser(attrs, options);
+    auto video = video_parser.parse();
+    auto pvideo = dynamic_cast<Video*>(video.get());
+    EXPECT_EQ(pvideo->id(), 1);
+    EXPECT_EQ(pvideo->size().width, 100);
+    EXPECT_EQ(pvideo->size().height, 100);
+    EXPECT_EQ(pvideo->uri(), "/test");
+    EXPECT_EQ(pvideo->duration(), 50);
+    EXPECT_EQ(pvideo->looped(), true);
+    EXPECT_EQ(pvideo->muted(), true);
+}
+
+TEST(AudioParser, Parse)
+{
+    boost::property_tree::ptree attrs;
+    boost::property_tree::ptree options;
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    options.add("uri", "test");
+    options.add("loop", true);
+    options.add("mute", false);
+    options.add("volume", 50);
+
+    AudioParser audio_parser(attrs, options);
+    auto audio = audio_parser.parse();
+    auto paudio = dynamic_cast<Audio*>(audio.get());
+    EXPECT_EQ(paudio->id(), 1);
+    EXPECT_EQ(paudio->uri(), "/test");
+    EXPECT_EQ(paudio->duration(), 50);
+    EXPECT_EQ(paudio->looped(), true);
+    EXPECT_EQ(paudio->muted(), false);
+    EXPECT_EQ(paudio->volume(), 0.5);
+}
+
+TEST(ImageParser, Parse)
+{
+    boost::property_tree::ptree attrs;
+    boost::property_tree::ptree options;
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    options.add("uri", "test");
+    options.add("scaleType", "center");
+    options.add("align", "left");
+    options.add("valign", "bottom");
+
+    ImageParser image_parser(attrs, options);
+    auto image = image_parser.parse();
+    auto pimage = dynamic_cast<Image*>(image.get());
+    EXPECT_EQ(pimage->id(), 1);
+    EXPECT_EQ(pimage->uri(), "/test");
+    EXPECT_EQ(pimage->size().width, 100);
+    EXPECT_EQ(pimage->size().height, 100);
+    EXPECT_EQ(pimage->duration(), 50);
+    EXPECT_EQ(pimage->scale_type(), Image::ScaleType::Scaled);
+    EXPECT_EQ(pimage->align(), Image::Align::Left);
+    EXPECT_EQ(pimage->valign(), Image::Valign::Bottom);
+}
+
+TEST(WebViewParser, Parse)
+{
+    boost::property_tree::ptree attrs;
+    boost::property_tree::ptree options;
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    options.add("uri", "test");
+    options.add("transparency", false);
+    options.add("modeId", 0);
+
+    WebViewParser webview_parser(attrs, options);
+    auto webview = webview_parser.parse();
+    auto pwebview = dynamic_cast<WebView*>(webview.get());
+    EXPECT_EQ(pwebview->id(), 1);
+    EXPECT_TRUE(pwebview->uri().empty());
+    EXPECT_EQ(pwebview->size().width, 100);
+    EXPECT_EQ(pwebview->size().height, 100);
+    EXPECT_EQ(pwebview->duration(), 50);
+    EXPECT_EQ(pwebview->transparent(), false);
+    EXPECT_EQ(pwebview->render(), Media::Render::HTML);
+}

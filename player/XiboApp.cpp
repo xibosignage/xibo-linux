@@ -29,7 +29,6 @@ XiboApp& XiboApp::create(const std::string& name)
 XiboApp::XiboApp()
 {
     m_logger = spdlog::get(LOGGER);
-
 }
 
 XiboApp::~XiboApp()

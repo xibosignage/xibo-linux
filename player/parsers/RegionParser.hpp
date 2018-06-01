@@ -2,6 +2,7 @@
 
 #include "constants.hpp"
 #include <spdlog/spdlog.h>
+#include <gtest/gtest_prod.h>
 
 class Region;
 
@@ -12,6 +13,7 @@ public:
     std::unique_ptr<Region> parse();
 
 private:
+    FRIEND_TEST(RegionParser, ParseParams);
     struct ParsedRegion
     {
         int id;

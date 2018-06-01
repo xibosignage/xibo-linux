@@ -33,22 +33,23 @@ public:
     void set_size(int width, int height) override;
     void request_handler() override;
 
-    void set_volume(double volume);
-    void play();
+    bool muted() const;
+    bool looped() const;
 
 private:
     bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
     void no_more_pads();
     void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
+    void set_volume(double volume);
+    void play();
 
 private:
     bool m_muted;
     bool m_looped;
 
-    Gtk::DrawingArea m_video_window;
-    guint m_watch_id;
-    bool m_video_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
+    Gtk::DrawingArea m_video_window;
+    bool m_video_ended = false;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
     Gst::RefPtr<Gst::FileSrc> m_source;

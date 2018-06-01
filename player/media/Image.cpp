@@ -2,6 +2,7 @@
 #include "control/Region.hpp"
 
 #include <spdlog/spdlog.h>
+#include <boost/filesystem/operations.hpp>
 
 Image::Image(int id, const Size& size, int duration, const std::string& uri,
              ScaleType scale_type, Align align, Valign valign) :
@@ -10,14 +11,21 @@ Image::Image(int id, const Size& size, int duration, const std::string& uri,
 {
     try
     {
-        auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height, is_scaled());
-        m_actual_size.width = pixbuf->get_width();
-        m_actual_size.height = pixbuf->get_height();
-        m_handler.set(pixbuf);
+        if(boost::filesystem::exists(uri))
+        {
+            auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height, is_scaled());
+            m_actual_size.width = pixbuf->get_width();
+            m_actual_size.height = pixbuf->get_height();
+            m_handler.set(pixbuf);
+        }
+        else
+        {
+            spdlog::get(LOGGER)->error("Could not find image: {}", uri);
+        }
     }
     catch(const Gdk::PixbufError& error)
     {
-        spdlog::get(LOGGER)->error("Could create media image: {}", std::string{error.what()});
+        spdlog::get(LOGGER)->error("Image creation error: {}", std::string{error.what()});
     }
 }
 
@@ -43,6 +51,21 @@ void Image::request_handler()
 {
     Point pos{get_left_pos(), get_top_pos()};
     handler_requested().emit(m_handler, pos);
+}
+
+Image::ScaleType Image::scale_type() const
+{
+    return m_scale_type;
+}
+
+Image::Align Image::align() const
+{
+    return m_align;
+}
+
+Image::Valign Image::valign() const
+{
+    return m_valign;
 }
 
 bool Image::is_scaled() const

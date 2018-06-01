@@ -23,13 +23,16 @@ public:
     void start() override;
     void start_timer() override;
 
-    void set_volume(double volume);
-    void play();
+    bool muted() const;
+    bool looped() const;
+    double volume() const;
 
 private:
     bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
     void no_more_pads();
     void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
+    void set_volume(double volume);
+    void play();
 
 private:
     bool m_muted;

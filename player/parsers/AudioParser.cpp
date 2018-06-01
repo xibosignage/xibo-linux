@@ -1,5 +1,6 @@
 #include "AudioParser.hpp"
 #include "media/Audio.hpp"
+#include "utils/utilities.hpp"
 
 const int MAX_VOLUME = 100;
 
@@ -11,7 +12,7 @@ AudioParser::AudioParser(const xlf_node& attrs, const xlf_node& options) :
 std::unique_ptr<Media> AudioParser::parse()
 {
     int id = m_attrs.template get<int>("id");
-    std::string uri = m_options.get<std::string>("uri");
+    std::string uri = utilities::example_dir() + "/" + m_options.get<std::string>("uri");
     int duration = m_attrs.get<int>("duration");
 
     bool mute = m_options.get<bool>("mute", false);

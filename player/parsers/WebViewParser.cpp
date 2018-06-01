@@ -51,16 +51,19 @@ std::string WebViewParser::get_path(int id, const boost::optional<std::string>& 
     auto folder = utilities::example_dir() + "/";
     if(!uri || !boost::filesystem::exists(folder + uri.value()))
     {
-        boost::property_tree::ptree tree;
-        boost::property_tree::read_xml(folder + "requiredFiles.xml", tree);
-
-        auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
-        for(auto&& required_file : required_files)
+        if(boost::filesystem::exists(folder + "requiredFiles.xml"))
         {
-            auto file_info = required_file.second;
-            if(file_info.get<std::string>("FileType") == "resource" && file_info.get<int>("MediaId") == id)
+            boost::property_tree::ptree tree;
+            boost::property_tree::read_xml(folder + "requiredFiles.xml", tree);
+
+            auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
+            for(auto&& required_file : required_files)
             {
-                return folder + file_info.get<std::string>("Path");
+                auto file_info = required_file.second;
+                if(file_info.get<std::string>("FileType") == "resource" && file_info.get<int>("MediaId") == id)
+                {
+                    return folder + file_info.get<std::string>("Path");
+                }
             }
         }
         return std::string{};

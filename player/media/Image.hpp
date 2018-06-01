@@ -37,6 +37,10 @@ public:
     void set_size(int width, int height) override;
     void request_handler() override;
 
+    ScaleType scale_type() const;
+    Align align() const;
+    Valign valign() const;
+
 private:
     bool is_scaled() const;
     int get_left_pos() const;

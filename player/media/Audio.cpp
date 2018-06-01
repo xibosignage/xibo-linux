@@ -125,3 +125,18 @@ void Audio::start_timer()
     }
 }
 
+bool Audio::muted() const
+{
+    return m_muted;
+}
+
+bool Audio::looped() const
+{
+    return m_looped;
+}
+
+double Audio::volume() const
+{
+    return m_volume->get_volume();
+}
+

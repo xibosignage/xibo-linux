@@ -14,3 +14,10 @@ void Gst::Volume::set_volume(double volume)
 {
     g_object_set(m_element, "volume", volume, nullptr);
 }
+
+double Gst::Volume::get_volume() const
+{
+    double volume;
+    g_object_get(m_element, "volume", &volume, nullptr);
+    return volume;
+}
