@@ -7,23 +7,25 @@
 #include <boost/filesystem.hpp>
 #include <regex>
 
-WebViewParser::WebViewParser(const xlf_node& attrs, const xlf_node& options) :
-    m_attrs(attrs), m_options(options)
+WebViewParser::WebViewParser(const xlf_node& parent_node, const xlf_node& media_node) :
+    MediaParser(parent_node, media_node)
 {
 }
 
 std::unique_ptr<Media> WebViewParser::parse()
 {
-    int id = m_attrs.template get<int>("id");
-    std::string uri = get_path(id, m_options.get_optional<std::string>("uri"));
-    int duration = parse_duration(uri).value_or(m_attrs.get<int>("duration"));
-    int width = m_attrs.get<int>("width");
-    int height = m_attrs.get<int>("height");
+    int id = attrs().template get<int>("id");
+    std::string uri = get_path(id, options().get_optional<std::string>("uri"));
+    int duration = parse_duration(uri).value_or(attrs().get<int>("duration"));
+    int width = parent_node().get_child("<xmlattr>").get<double>("width");
+    int height = parent_node().get_child("<xmlattr>").get<double>("height");
 
-    int mode_id = m_options.get<int>("modeId", -1);
-    bool transparency = m_options.get<bool>("transparency", true);
+    int mode_id = options().get<int>("modeId", -1);
+    bool transparency = options().get<bool>("transparency", true);
 
-    return std::make_unique<WebView>(id, Size{width, height}, duration, uri, mode_id, transparency);
+    auto webview = std::make_unique<WebView>(id, Size{width, height}, duration, uri, mode_id, transparency);
+    webview->attach_audio(parse_audio_node());
+    return webview;
 }
 
 boost::optional<int> WebViewParser::parse_duration(const std::string& path)

@@ -27,8 +27,9 @@ public:
     virtual void start() = 0;
     virtual void request_handler() { }
     virtual bool is_running() const;
-    virtual void set_size(int, int) { } // FIXME after adding VisibleMedia
+    virtual void set_size(int width, int height);
     virtual void start_timer();
+
     void attach_audio(std::unique_ptr<Media> audio);
     sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
     sigc::signal<void>& media_timeout();
@@ -39,14 +40,13 @@ public:
     Render render() const;
     const std::string& uri() const;
 
-protected:
+private:
     int m_id;
     Size m_size;
     int m_duration;
     Render m_render;
     std::string m_uri;
 
-private:
     sigc::signal<void, Gtk::Widget&, Point> m_handler_requsted;
     sigc::signal<void> m_media_timeout;
     std::unique_ptr<Media> m_audio;

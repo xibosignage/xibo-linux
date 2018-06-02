@@ -30,7 +30,7 @@ namespace Gst
       ACCURATE = GST_SEEK_FLAG_ACCURATE,
       KEY_UNIT = GST_SEEK_FLAG_KEY_UNIT,
       SEGMENT = GST_SEEK_FLAG_SEGMENT,
-      TRICMODE = GST_SEEK_FLAG_TRICKMODE,
+      TRICKMODE = GST_SEEK_FLAG_TRICKMODE,
       SKIP = GST_SEEK_FLAG_SKIP,
       SNAP_BEFORE = GST_SEEK_FLAG_SNAP_BEFORE,
       SNAP_AFTER = GST_SEEK_FLAG_SNAP_AFTER,
@@ -68,11 +68,11 @@ namespace Gst
         GstElement* get_handler() const;
         void reset_handler();
 
-    protected:
+//    protected:
         Element() = default;
         Element(const std::string& name);
 
-    protected:
+//    protected:
         GstElement* m_element;
 
     };

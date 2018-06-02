@@ -67,8 +67,9 @@ void Region::add_media(std::unique_ptr<Media> media)
 void Region::show()
 {
     if(!m_media.empty())
-    {        
-        m_media[m_currentMediaIndex]->request_handler();
+    {
+        for(auto&& media : m_media)
+            media->request_handler();
 
         Gtk::Fixed::show();
         m_media[m_currentMediaIndex]->start();

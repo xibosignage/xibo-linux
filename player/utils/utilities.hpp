@@ -12,7 +12,7 @@ namespace utilities
     std::string example_dir();
     std::string xlf_file();
     std::string app_current_dir();
-    std::unique_ptr<MediaParser> get_media_parser(const xlf_node& attrs, const xlf_node& options);
+    std::unique_ptr<MediaParser> get_media_parser(const xlf_node& parent_node, const xlf_node& media_node);
 
     template <typename T>
     class Finalizer

@@ -2,8 +2,8 @@
 #include "customsink/XiboVideoSink.hpp"
 #include "control/Region.hpp"
 
-const double MIN_VOLUME = 0.0;
-const double MAX_VOLUME = 1.0;
+const double MIN_GST_VOLUME = 0.0;
+const double MAX_GST_VOLUME = 1.0;
 const int DEFAULT_VIDEO_BUFFER = 500;
 
 namespace ph = std::placeholders;
@@ -54,7 +54,7 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
 
     m_video_window.set_size_request(size.width, size.height);
 
-    set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
+    set_volume(m_muted ? MIN_GST_VOLUME : MAX_GST_VOLUME);
 }
 
 Video::~Video()
@@ -140,18 +140,14 @@ void Video::set_volume(double volume)
     m_volume->set_volume(volume);
 }
 
-// NOTE Test looping video now
 void Video::play()
 {
     if(m_video_ended)
     {
-        if(!m_pipeline->seek(1.0, Gst::Format::TIME, Gst::SeekFlags::FLUSH,
-                             Gst::SeekType::SET, 0, Gst::SeekType::END, GST_CLOCK_TIME_NONE))
-        {
-            m_logger->error("[Video] Error during restart");
-            return;
-        }
+        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_video_ended = false;
+        m_pipeline->set_state(Gst::State::PLAYING);
+        m_logger->debug("[Video] Restarting");
     }
     m_pipeline->set_state(Gst::State::PLAYING);
     m_logger->debug("[Video] Running");
@@ -162,7 +158,7 @@ void Video::stop()
     Media::stop();
     m_video_window.hide();
     m_logger->debug("[Video] Stopped");
-    m_pipeline->set_state(Gst::State::PAUSED);
+    m_pipeline->set_state(Gst::State::NULL_STATE);
     m_video_ended = true;
 }
 
@@ -183,6 +179,7 @@ void Video::start_timer()
 
 void Video::set_size(int width, int height)
 {
+    Media::set_size(width, height);
 //    m_video_sink->set_state(Gst::State::NULL_STATE);
 //    m_pipeline->remove(m_video_sink);
 

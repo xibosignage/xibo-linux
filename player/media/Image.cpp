@@ -13,7 +13,7 @@ Image::Image(int id, const Size& size, int duration, const std::string& uri,
     {
         if(boost::filesystem::exists(uri))
         {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, size.width, size.height, is_scaled());
+            auto pixbuf = Gdk::Pixbuf::create_from_file(uri, size.width, size.height, is_scaled());
             m_actual_size.width = pixbuf->get_width();
             m_actual_size.height = pixbuf->get_height();
             m_handler.set(pixbuf);
@@ -43,7 +43,11 @@ void Image::start()
 
 void Image::set_size(int width, int height)
 {
+    Media::set_size(width, height);
+
     auto new_pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
+    m_actual_size.width = new_pixbuf->get_width();
+    m_actual_size.height = new_pixbuf->get_height();
     m_handler.set(new_pixbuf);
 }
 

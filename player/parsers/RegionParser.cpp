@@ -20,11 +20,7 @@ std::unique_ptr<Region> RegionParser::parse()
         {
             try
             {
-                auto attrs = media_node.get_child("<xmlattr>");
-                auto options = media_node.get_child("options");
-                attrs.put("width", p.width);
-                attrs.put("height", p.height);
-                region->add_media(utilities::get_media_parser(attrs, options)->parse());
+                region->add_media(utilities::get_media_parser(m_region_node, media_node)->parse());
             }
             catch(const boost::property_tree::ptree_bad_path& e)
             {

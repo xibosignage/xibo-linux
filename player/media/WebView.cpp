@@ -61,6 +61,7 @@ void WebView::start()
 
 void WebView::set_size(int width, int height)
 {
+    Media::set_size(width, height);
     m_handler.set_size_request(width, height);
 }
 

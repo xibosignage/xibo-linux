@@ -41,16 +41,16 @@ std::string utilities::app_current_dir()
     return boost::filesystem::current_path().string();
 }
 
-std::unique_ptr<MediaParser> utilities::get_media_parser(const xlf_node& attrs, const xlf_node& options)
+std::unique_ptr<MediaParser> utilities::get_media_parser(const xlf_node& parent_node, const xlf_node& media_node)
 {
-    auto type = attrs.get<std::string>("type");
+    auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
 
     if(type == "image")
-        return std::make_unique<ImageParser>(attrs, options);
+        return std::make_unique<ImageParser>(parent_node, media_node);
     else if(type == "video")
-        return std::make_unique<VideoParser>(attrs, options);
+        return std::make_unique<VideoParser>(parent_node, media_node);
     else if(type == "audio")
-        return std::make_unique<AudioParser>(attrs, options);
+        return std::make_unique<AudioParser>(parent_node, media_node);
     else // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
-        return std::make_unique<WebViewParser>(attrs, options);
+        return std::make_unique<WebViewParser>(parent_node, media_node);
 }

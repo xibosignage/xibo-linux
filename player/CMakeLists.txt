@@ -14,7 +14,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 set(CONTROL_SOURCES control/MainWindow.cpp control/MainLayout.cpp control/Region.cpp control/Background.cpp control/Monitor.cpp)
 set(MEDIA_SOURCES media/Media.cpp media/Image.cpp media/Video.cpp media/Audio.cpp media/WebView.cpp)
 set(UTILS_SOURCES utils/utilities.cpp)
-set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/ImageParser.cpp parsers/VideoParser.cpp parsers/AudioParser.cpp parsers/WebViewParser.cpp)
+set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/MediaParser.cpp parsers/ImageParser.cpp parsers/VideoParser.cpp parsers/AudioParser.cpp parsers/WebViewParser.cpp)
 set(WRAPPER_SOURCES wrapper/Element.cpp wrapper/Caps.cpp wrapper/Pad.cpp wrapper/Message.cpp wrapper/Queue.cpp wrapper/Pipeline.cpp wrapper/Decodebin.cpp wrapper/FileSrc.cpp wrapper/Volume.cpp wrapper/VideoConvert.cpp wrapper/AudioConvert.cpp wrapper/VideoScale.cpp wrapper/AutoAudioSink.cpp)
 set(TESTS_SOURCES tests/test.cpp)
 

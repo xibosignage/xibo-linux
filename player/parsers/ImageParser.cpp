@@ -1,24 +1,26 @@
 #include "ImageParser.hpp"
 #include "utils/utilities.hpp"
 
-ImageParser::ImageParser(const xlf_node& attrs, const xlf_node& options) :
-    m_attrs(attrs), m_options(options)
+ImageParser::ImageParser(const xlf_node& parent_node, const xlf_node& media_node) :
+    MediaParser(parent_node, media_node)
 {
 }
 
 std::unique_ptr<Media> ImageParser::parse()
 {
-    int id = m_attrs.template get<int>("id");
-    std::string uri = utilities::example_dir() + "/" + m_options.get<std::string>("uri");
-    int duration = m_attrs.get<int>("duration");
-    int width = m_attrs.get<int>("width");
-    int height = m_attrs.get<int>("height");
+    int id = attrs().template get<int>("id");
+    std::string uri = utilities::example_dir() + "/" + options().get<std::string>("uri");
+    int duration = attrs().get<int>("duration");
+    int width = parent_node().get_child("<xmlattr>").get<double>("width");
+    int height = parent_node().get_child("<xmlattr>").get<double>("height");
 
-    auto scale_type = to_scale_type(m_options.get<std::string>("scaleType", "center"));
-    auto align = to_align(m_options.get<std::string>("align", "center"));
-    auto valign = to_valign(m_options.get<std::string>("valign", "middle"));
+    auto scale_type = to_scale_type(options().get<std::string>("scaleType", "center"));
+    auto align = to_align(options().get<std::string>("align", "center"));
+    auto valign = to_valign(options().get<std::string>("valign", "middle"));
 
-    return std::make_unique<Image>(id, Size{width, height}, duration, uri, scale_type, align, valign);
+    auto image = std::make_unique<Image>(id, Size{width, height}, duration, uri, scale_type, align, valign);
+    image->attach_audio(parse_audio_node());
+    return image;
 }
 
 Image::ScaleType ImageParser::to_scale_type(const std::string& scale_type)

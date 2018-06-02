@@ -2,21 +2,23 @@
 #include "media/Video.hpp"
 #include "utils/utilities.hpp"
 
-VideoParser::VideoParser(const xlf_node& attrs, const xlf_node& options) :
-    m_attrs(attrs), m_options(options)
+VideoParser::VideoParser(const xlf_node& parent_node, const xlf_node& media_node) :
+    MediaParser(parent_node, media_node)
 {
 }
 
 std::unique_ptr<Media> VideoParser::parse()
 {
-    int id = m_attrs.template get<int>("id");
-    std::string uri = utilities::example_dir() + "/" + m_options.get<std::string>("uri");
-    int duration = m_attrs.get<int>("duration");
-    int width = m_attrs.get<int>("width");
-    int height = m_attrs.get<int>("height");
+    int id = attrs().template get<int>("id");
+    std::string uri = utilities::example_dir() + "/" + options().get<std::string>("uri");
+    int duration = attrs().get<int>("duration");
+    int width = parent_node().get_child("<xmlattr>").get<double>("width");
+    int height = parent_node().get_child("<xmlattr>").get<double>("height");
 
-    bool mute = m_options.get<bool>("mute", false);
-    bool loop = m_options.get<bool>("loop", false);
+    bool mute = options().get<bool>("mute", false);
+    bool loop = options().get<bool>("loop", false);
 
-    return std::make_unique<Video>(id, Size{width, height}, duration, uri, mute, loop);
+    auto video = std::make_unique<Video>(id, Size{width, height}, duration, uri, mute, loop);
+    video->attach_audio(parse_audio_node());
+    return video;
 }

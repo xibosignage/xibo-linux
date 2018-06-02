@@ -8,20 +8,20 @@ class Media;
 class MediaParser
 {
 public:
-    MediaParser() = default;
+    MediaParser(const xlf_node& parent_node, const xlf_node& media_node);
+    virtual ~MediaParser() = default;
     virtual std::unique_ptr<Media> parse() = 0;
+
+protected:
+    const xlf_node& attrs() const;
+    const xlf_node& options() const;
+    const xlf_node& parent_node() const;
+    std::unique_ptr<Media> parse_audio_node();
+
+private:
+    const xlf_node& m_parent_node;
+    xlf_node m_attrs;
+    xlf_node m_options;
+    boost::optional<xlf_node> m_audio_node;
+
 };
-
-//std::shared_ptr<ParsedMedia<MediaType::Audio>> MediaParser::parse_audio_node(const xlf_node& audio_node)
-//{
-//    auto uri_node = audio_node.get_child("uri");
-//    auto attrs = uri_node.get_child("<xmlattr>");
-
-//    auto audio = std::make_shared<ParsedMedia<MediaType::Audio>>();
-//    audio->id = attrs.get<int>("mediaId");
-//    audio->uri = utilities::example_dir() + "/" + uri_node.get_value<std::string>();
-//    audio->mute = attrs.get_optional<bool>("mute");
-//    audio->loop = attrs.get_optional<bool>("loop");
-//    audio->volume = attrs.get_optional<int>("volume");
-//    return audio;
-//}

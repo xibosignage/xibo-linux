@@ -7,11 +7,7 @@ class Media;
 class AudioParser : public MediaParser
 {
 public:
-    AudioParser(const xlf_node& attrs, const xlf_node& options);
+    AudioParser(const xlf_node& parent_node, const xlf_node& media_node);
     std::unique_ptr<Media> parse() override;
-
-private:
-    const xlf_node& m_attrs;
-    const xlf_node& m_options;
 
 };

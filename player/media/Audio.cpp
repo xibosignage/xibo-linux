@@ -1,8 +1,8 @@
 #include "Audio.hpp"
 #include "control/Region.hpp"
 
-const double MIN_VOLUME = 0.0;
-const double MAX_VOLUME = 1.0;
+const double MIN_GST_VOLUME = 0.0;
+const double MAX_GST_VOLUME = 1.0;
 
 namespace ph = std::placeholders;
 
@@ -34,7 +34,7 @@ Audio::Audio(int id, int duration, const std::string& uri, bool muted, bool loop
     m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Audio::on_pad_added));
     m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(*this, &Audio::no_more_pads));
 
-    set_volume(m_muted ? MIN_VOLUME : volume);
+    set_volume(m_muted ? MIN_GST_VOLUME : volume);
 }
 
 Audio::~Audio()
@@ -89,15 +89,12 @@ void Audio::set_volume(double volume)
 
 void Audio::play()
 {
-    if(m_audio_ended)
+    if(m_audio_ended) // NOTE add with looping
     {
-        if(!m_pipeline->seek(1.0, Gst::Format::TIME, Gst::SeekFlags::FLUSH,
-                             Gst::SeekType::SET, 0, Gst::SeekType::END, GST_CLOCK_TIME_NONE))
-        {
-            m_logger->error("[Audio] Error during restart");
-            return;
-        }
+        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_audio_ended = false;
+        m_pipeline->set_state(Gst::State::PLAYING);
+        m_logger->debug("[Audio] Restarting");
     }
     m_pipeline->set_state(Gst::State::PLAYING);
     m_logger->debug("[Audio] Running");
@@ -107,7 +104,7 @@ void Audio::stop()
 {
     Media::stop();
     m_logger->debug("[Audio] Stopped");
-    m_pipeline->set_state(Gst::State::PAUSED);
+    m_pipeline->set_state(Gst::State::NULL_STATE);
     m_audio_ended = true;
 }
 

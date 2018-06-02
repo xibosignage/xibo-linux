@@ -34,6 +34,12 @@ bool Media::is_running() const
     return m_started;
 }
 
+void Media::set_size(int width, int height)
+{
+    m_size.width = width;
+    m_size.height = height;
+}
+
 void Media::start_timer()
 {
     Glib::signal_timeout().connect_once([=](){
@@ -61,7 +67,7 @@ int Media::id() const
     return m_id;
 }
 
-const Size&Media::size() const
+const Size& Media::size() const
 {
     return m_size;
 }
