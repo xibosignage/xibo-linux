@@ -422,99 +422,118 @@ TEST(RegionParser, Parse)
     EXPECT_EQ(region->looped(), false);
 }
 
+TEST(VideoParser, Parse)
+{
+    boost::property_tree::ptree region;
+    auto& r_attrs = region.add_child("<xmlattr>", boost::property_tree::ptree{});
+    r_attrs.add("width", 100.0);
+    r_attrs.add("height", 100.0);
+    boost::property_tree::ptree media;
+    auto& attrs = media.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = media.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    attrs.add("duration", 50.0);
+    options.add("uri", "test");
+    options.add("loop", true);
+    options.add("mute", true);
 
-//TEST(VideoParser, Parse)
-//{
-//    boost::property_tree::ptree attrs;
-//    boost::property_tree::ptree options;
-//    attrs.add("id", 1);
-//    attrs.add("width", 100);
-//    attrs.add("height", 100);
-//    attrs.add("duration", 50.0);
-//    options.add("uri", "test");
-//    options.add("loop", true);
-//    options.add("mute", true);
+    VideoParser video_parser(region, media);
+    auto video = video_parser.parse();
+    auto pvideo = dynamic_cast<Video*>(video.get());
+    EXPECT_EQ(pvideo->id(), 1);
+    EXPECT_EQ(pvideo->size().width, 100);
+    EXPECT_EQ(pvideo->size().height, 100);
+    EXPECT_EQ(pvideo->uri(), "/test");
+    EXPECT_EQ(pvideo->duration(), 50);
+    EXPECT_EQ(pvideo->looped(), true);
+    EXPECT_EQ(pvideo->muted(), true);
+}
 
-//    VideoParser video_parser(attrs, options);
-//    auto video = video_parser.parse();
-//    auto pvideo = dynamic_cast<Video*>(video.get());
-//    EXPECT_EQ(pvideo->id(), 1);
-//    EXPECT_EQ(pvideo->size().width, 100);
-//    EXPECT_EQ(pvideo->size().height, 100);
-//    EXPECT_EQ(pvideo->uri(), "/test");
-//    EXPECT_EQ(pvideo->duration(), 50);
-//    EXPECT_EQ(pvideo->looped(), true);
-//    EXPECT_EQ(pvideo->muted(), true);
-//}
+TEST(AudioParser, Parse)
+{
+    boost::property_tree::ptree region;
+    auto& r_attrs = region.add_child("<xmlattr>", boost::property_tree::ptree{});
+    r_attrs.add("width", 100.0);
+    r_attrs.add("height", 100.0);
+    boost::property_tree::ptree media;
+    auto& attrs = media.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = media.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    options.add("uri", "test");
+    options.add("loop", true);
+    options.add("mute", false);
+    options.add("volume", 50);
 
-//TEST(AudioParser, Parse)
-//{
-//    boost::property_tree::ptree attrs;
-//    boost::property_tree::ptree options;
-//    attrs.add("id", 1);
-//    attrs.add("duration", 50.0);
-//    options.add("uri", "test");
-//    options.add("loop", true);
-//    options.add("mute", false);
-//    options.add("volume", 50);
+    AudioParser audio_parser(region, media);
+    auto audio = audio_parser.parse();
+    auto paudio = dynamic_cast<Audio*>(audio.get());
+    EXPECT_EQ(paudio->id(), 1);
+    EXPECT_EQ(paudio->uri(), "/test");
+    EXPECT_EQ(paudio->duration(), 50);
+    EXPECT_EQ(paudio->looped(), true);
+    EXPECT_EQ(paudio->muted(), false);
+    EXPECT_EQ(paudio->volume(), 0.5);
+}
 
-//    AudioParser audio_parser(attrs, options);
-//    auto audio = audio_parser.parse();
-//    auto paudio = dynamic_cast<Audio*>(audio.get());
-//    EXPECT_EQ(paudio->id(), 1);
-//    EXPECT_EQ(paudio->uri(), "/test");
-//    EXPECT_EQ(paudio->duration(), 50);
-//    EXPECT_EQ(paudio->looped(), true);
-//    EXPECT_EQ(paudio->muted(), false);
-//    EXPECT_EQ(paudio->volume(), 0.5);
-//}
+TEST(ImageParser, Parse)
+{
+    boost::property_tree::ptree region;
+    auto& r_attrs = region.add_child("<xmlattr>", boost::property_tree::ptree{});
+    r_attrs.add("width", 100.0);
+    r_attrs.add("height", 100.0);
+    boost::property_tree::ptree media;
+    auto& attrs = media.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = media.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    options.add("uri", "test");
+    options.add("scaleType", "center");
+    options.add("align", "left");
+    options.add("valign", "bottom");
 
-//TEST(ImageParser, Parse)
-//{
-//    boost::property_tree::ptree attrs;
-//    boost::property_tree::ptree options;
-//    attrs.add("id", 1);
-//    attrs.add("duration", 50.0);
-//    attrs.add("width", 100);
-//    attrs.add("height", 100);
-//    options.add("uri", "test");
-//    options.add("scaleType", "center");
-//    options.add("align", "left");
-//    options.add("valign", "bottom");
+    ImageParser image_parser(region, media);
+    auto image = image_parser.parse();
+    auto pimage = dynamic_cast<Image*>(image.get());
+    EXPECT_EQ(pimage->id(), 1);
+    EXPECT_EQ(pimage->uri(), "/test");
+    EXPECT_EQ(pimage->size().width, 100);
+    EXPECT_EQ(pimage->size().height, 100);
+    EXPECT_EQ(pimage->duration(), 50);
+    EXPECT_EQ(pimage->scale_type(), Image::ScaleType::Scaled);
+    EXPECT_EQ(pimage->align(), Image::Align::Left);
+    EXPECT_EQ(pimage->valign(), Image::Valign::Bottom);
+}
 
-//    ImageParser image_parser(attrs, options);
-//    auto image = image_parser.parse();
-//    auto pimage = dynamic_cast<Image*>(image.get());
-//    EXPECT_EQ(pimage->id(), 1);
-//    EXPECT_EQ(pimage->uri(), "/test");
-//    EXPECT_EQ(pimage->size().width, 100);
-//    EXPECT_EQ(pimage->size().height, 100);
-//    EXPECT_EQ(pimage->duration(), 50);
-//    EXPECT_EQ(pimage->scale_type(), Image::ScaleType::Scaled);
-//    EXPECT_EQ(pimage->align(), Image::Align::Left);
-//    EXPECT_EQ(pimage->valign(), Image::Valign::Bottom);
-//}
+TEST(WebViewParser, Parse)
+{
+    boost::property_tree::ptree region;
+    auto& r_attrs = region.add_child("<xmlattr>", boost::property_tree::ptree{});
+    r_attrs.add("width", 100.0);
+    r_attrs.add("height", 100.0);
+    boost::property_tree::ptree media;
+    auto& attrs = media.add_child("<xmlattr>", boost::property_tree::ptree{});
+    auto& options = media.add_child("options", boost::property_tree::ptree{});
+    attrs.add("id", 1);
+    attrs.add("duration", 50.0);
+    attrs.add("width", 100);
+    attrs.add("height", 100);
+    options.add("uri", "test");
+    options.add("transparency", false);
+    options.add("modeId", 0);
 
-//TEST(WebViewParser, Parse)
-//{
-//    boost::property_tree::ptree attrs;
-//    boost::property_tree::ptree options;
-//    attrs.add("id", 1);
-//    attrs.add("duration", 50.0);
-//    attrs.add("width", 100);
-//    attrs.add("height", 100);
-//    options.add("uri", "test");
-//    options.add("transparency", false);
-//    options.add("modeId", 0);
-
-//    WebViewParser webview_parser(attrs, options);
-//    auto webview = webview_parser.parse();
-//    auto pwebview = dynamic_cast<WebView*>(webview.get());
-//    EXPECT_EQ(pwebview->id(), 1);
-//    EXPECT_TRUE(pwebview->uri().empty());
-//    EXPECT_EQ(pwebview->size().width, 100);
-//    EXPECT_EQ(pwebview->size().height, 100);
-//    EXPECT_EQ(pwebview->duration(), 50);
-//    EXPECT_EQ(pwebview->transparent(), false);
-//    EXPECT_EQ(pwebview->render(), Media::Render::HTML);
-//}
+    WebViewParser webview_parser(region, media);
+    auto webview = webview_parser.parse();
+    auto pwebview = dynamic_cast<WebView*>(webview.get());
+    EXPECT_EQ(pwebview->id(), 1);
+    EXPECT_TRUE(pwebview->uri().empty());
+    EXPECT_EQ(pwebview->size().width, 100);
+    EXPECT_EQ(pwebview->size().height, 100);
+    EXPECT_EQ(pwebview->duration(), 50);
+    EXPECT_EQ(pwebview->transparent(), false);
+    EXPECT_EQ(pwebview->render(), Media::Render::HTML);
+}

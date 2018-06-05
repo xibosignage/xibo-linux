@@ -1,5 +1,4 @@
-#ifndef PIPELINE_HPP
-#define PIPELINE_HPP
+#pragma once
 
 #include "Element.hpp"
 #include "Message.hpp"
@@ -30,5 +29,3 @@ namespace Gst
 
     };
 }
-
-#endif // PIPELINE_HPP

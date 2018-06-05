@@ -1,5 +1,4 @@
-#ifndef MESSAGE_HPP
-#define MESSAGE_HPP
+#pragma once
 
 #include <string>
 #include <gst/gst.h>
@@ -78,5 +77,3 @@ namespace Gst
 
     };
 }
-
-#endif // MESSAGE_HPP

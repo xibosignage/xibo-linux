@@ -9,7 +9,8 @@ const int DEFAULT_VIDEO_BUFFER = 500;
 namespace ph = std::placeholders;
 
 Video::Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(id, size, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
+    Media(id, size, duration, Render::Native, uri), m_muted(muted), m_looped(looped),
+    m_video_fmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
@@ -30,12 +31,13 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
     m_audio_sink = Gst::AutoAudioSink::create();
     m_queue = Gst::Queue::create();
     m_video_sink = Gst::Element::create("xibovideosink");
+    m_capsfilter = Gst::Capsfilter::create();
 
     auto sink = GST_XIBOVIDEOSINK(m_video_sink->get_handler());
     gst_xibovideosink_set_handler(sink, &m_video_window);
 
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter || !m_video_scale ||
-       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
+       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue || !m_capsfilter)
     {
         throw std::runtime_error("[Video] One element could not be created");
     }
@@ -44,9 +46,11 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
     m_queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
     m_pipeline->add_bus_watch(sigc::mem_fun(*this, &Video::bus_message_watch));
 
-    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_scale)->add(m_video_sink)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
+    m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % size.width % size.height).str()));
+
+    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_scale)->add(m_video_sink)->add(m_capsfilter)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
     m_source->link(m_decodebin);
-    m_video_converter->link(m_video_scale)->link(m_queue)->link(m_video_sink);
+    m_video_converter->link(m_queue)->link(m_video_scale)->link(m_capsfilter)->link(m_video_sink);
     m_audio_converter->link(m_volume)->link(m_audio_sink);
 
     m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Video::on_pad_added));
@@ -140,17 +144,20 @@ void Video::set_volume(double volume)
     m_volume->set_volume(volume);
 }
 
+// FIXME refactoring needed
 void Video::play()
 {
     if(m_video_ended)
     {
-        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_video_ended = false;
-        m_pipeline->set_state(Gst::State::PLAYING);
+        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_logger->debug("[Video] Restarting");
     }
+    else
+    {
+        m_logger->debug("[Video] Starting");
+    }
     m_pipeline->set_state(Gst::State::PLAYING);
-    m_logger->debug("[Video] Running");
 }
 
 void Video::stop()
@@ -179,18 +186,15 @@ void Video::start_timer()
 
 void Video::set_size(int width, int height)
 {
-    Media::set_size(width, height);
-//    m_video_sink->set_state(Gst::State::NULL_STATE);
-//    m_pipeline->remove(m_video_sink);
+    if(width != size().width || height != size().height)
+    {
+        Media::set_size(width, height);
+        spdlog::get(LOGGER)->debug("set size {} {}", width, height);
 
-//    gst_static_pads_init(width, height);
-//    m_video_sink.reset();
-//    m_video_sink = Gst::Element::create("xibovideosink");
-//    auto sink = GST_XIBOVIDEOSINK(m_video_sink->get_handler());
-//    gst_xibovideosink_set_handler(sink, &m_video_window);
+        m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % width % height).str()));
 
-//    m_pipeline->add(m_video_sink);
-//    m_queue->link(m_video_sink);
+        m_video_window.set_size_request(width, height);
+    }
 }
 
 void Video::request_handler()

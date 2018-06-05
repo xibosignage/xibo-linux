@@ -1,5 +1,4 @@
-#ifndef QUEUE_HPP
-#define QUEUE_HPP
+#pragma once
 
 #include "Element.hpp"
 
@@ -16,5 +15,3 @@ namespace Gst
 
     };
 }
-
-#endif // QUEUE_HPP

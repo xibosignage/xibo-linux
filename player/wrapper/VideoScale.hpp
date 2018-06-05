@@ -1,5 +1,4 @@
-#ifndef VIDEOSCALE_HPP
-#define VIDEOSCALE_HPP
+#pragma once
 
 #include "Element.hpp"
 
@@ -15,5 +14,3 @@ namespace Gst
 
     };
 }
-
-#endif // VIDEOSCALE_HPP

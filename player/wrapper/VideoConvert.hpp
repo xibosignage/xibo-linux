@@ -1,5 +1,4 @@
-#ifndef VIDEOCONVERT_HPP
-#define VIDEOCONVERT_HPP
+#pragma once
 
 #include "Element.hpp"
 
@@ -15,5 +14,3 @@ namespace Gst
 
     };
 }
-
-#endif // VIDEOCONVERT_HPP

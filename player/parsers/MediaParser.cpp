@@ -21,11 +21,12 @@ const xlf_node& MediaParser::options() const
     return m_options;
 }
 
-const xlf_node&MediaParser::parent_node() const
+const xlf_node& MediaParser::parent_node() const
 {
     return m_parent_node;
 }
 
+// FIXME: шаблонный метод parse + virtual doParse (чтобы избежать attach_media)
 std::unique_ptr<Media> MediaParser::parse_audio_node()
 {
     if(m_audio_node)

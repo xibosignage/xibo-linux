@@ -1,5 +1,4 @@
-#ifndef ELEMENT_HPP
-#define ELEMENT_HPP
+#pragma once
 
 #include <gst/gstutils.h>
 #include <string>
@@ -60,7 +59,9 @@ namespace Gst
     public:
         virtual ~Element();
         Gst::RefPtr<Gst::Element> link(const Gst::RefPtr<Gst::Element>& other);
+        Gst::RefPtr<Gst::Element> link_filtered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter);
         void set_state(Gst::State state);
+        Gst::State get_state() const;
         Gst::RefPtr<Gst::Pad> get_static_pad(const std::string& name);
         static Gst::RefPtr<Gst::Element> create(const std::string& name);
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
@@ -68,14 +69,12 @@ namespace Gst
         GstElement* get_handler() const;
         void reset_handler();
 
-//    protected:
+    protected:
         Element() = default;
         Element(const std::string& name);
 
-//    protected:
-        GstElement* m_element;
+    protected:
+        GstElement* m_element = nullptr;
 
     };
 }
-
-#endif // ELEMENT_HPP

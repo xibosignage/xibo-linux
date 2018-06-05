@@ -1,5 +1,4 @@
-#ifndef DECODEBIN_HPP
-#define DECODEBIN_HPP
+#pragma once
 
 #include "Element.hpp"
 #include <sigc++/signal.h>
@@ -24,4 +23,3 @@ namespace Gst
 
     };
 }
-#endif // DECODEBIN_HPP

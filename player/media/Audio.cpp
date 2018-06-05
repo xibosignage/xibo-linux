@@ -89,15 +89,17 @@ void Audio::set_volume(double volume)
 
 void Audio::play()
 {
-    if(m_audio_ended) // NOTE add with looping
+    if(m_audio_ended)
     {
-        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_audio_ended = false;
-        m_pipeline->set_state(Gst::State::PLAYING);
+        m_pipeline->set_state(Gst::State::NULL_STATE);
         m_logger->debug("[Audio] Restarting");
     }
+    else
+    {
+        m_logger->debug("[Audio] Starting");
+    }
     m_pipeline->set_state(Gst::State::PLAYING);
-    m_logger->debug("[Audio] Running");
 }
 
 void Audio::stop()

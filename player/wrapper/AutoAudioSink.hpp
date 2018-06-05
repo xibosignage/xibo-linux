@@ -1,8 +1,6 @@
-#ifndef AUTOAUDIOSINK_HPP
-#define AUTOAUDIOSINK_HPP
+#pragma once
 
 #include "Element.hpp"
-
 
 namespace Gst
 {
@@ -16,5 +14,3 @@ namespace Gst
 
     };
 }
-
-#endif // AUTOAUDIOSINK_HPP

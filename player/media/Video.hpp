@@ -5,6 +5,7 @@
 #include <gtkmm/drawingarea.h>
 #include <gst/gst.h>
 #include <spdlog/spdlog.h>
+#include <boost/format.hpp>
 
 #include "wrapper/Pipeline.hpp"
 #include "wrapper/VideoConvert.hpp"
@@ -18,6 +19,7 @@
 #include "wrapper/Element.hpp"
 #include "wrapper/Pad.hpp"
 #include "wrapper/Caps.hpp"
+#include "wrapper/Capsfilter.hpp"
 
 class XiboVideoSink;
 
@@ -50,6 +52,7 @@ private:
     std::shared_ptr<spdlog::logger> m_logger;
     Gtk::DrawingArea m_video_window;
     bool m_video_ended = false;
+    boost::format m_video_fmt;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
     Gst::RefPtr<Gst::FileSrc> m_source;
@@ -61,4 +64,5 @@ private:
     Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
     Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
     Gst::RefPtr<Gst::Queue> m_queue;
+    Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
 };

@@ -1,5 +1,4 @@
-#ifndef FILESRC_HPP
-#define FILESRC_HPP
+#pragma once
 
 #include "Element.hpp"
 #include <string>
@@ -17,5 +16,3 @@ namespace Gst
 
     };
 }
-
-#endif // FILESRC_HPP

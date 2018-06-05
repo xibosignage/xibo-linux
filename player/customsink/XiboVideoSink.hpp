@@ -26,9 +26,6 @@ struct XiboVideoSink
     GstPad* sinkpad;
     GstVideoInfo info;
 
-    GstCaps* m_caps;
-    GstPadTemplate* m_pad_template;
-
     Gtk::DrawingArea* handler;
     Cairo::RefPtr<Cairo::ImageSurface> surface;
 };

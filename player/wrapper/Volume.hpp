@@ -1,5 +1,4 @@
-#ifndef VOLUME_HPP
-#define VOLUME_HPP
+#pragma once
 
 #include "Element.hpp"
 
@@ -17,5 +16,3 @@ namespace Gst
 
     };
 }
-
-#endif // VOLUME_HPP

@@ -1,5 +1,4 @@
-#ifndef PAD_HPP
-#define PAD_HPP
+#pragma once
 
 #include <gst/gstpad.h>
 #include <string>
@@ -37,6 +36,3 @@ namespace Gst
 
     };
 }
-
-
-#endif // PAD_HPP

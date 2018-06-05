@@ -33,12 +33,29 @@ Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& ot
     return nullptr;
 }
 
+Gst::RefPtr<Gst::Element> Gst::Element::link_filtered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter)
+{
+    if(m_element)
+    {
+        gst_element_link_filtered(m_element, other->get_handler(), filter);
+        return other;
+    }
+    return nullptr;
+}
+
 void Gst::Element::set_state(Gst::State state)
 {
     if(m_element)
     {
         gst_element_set_state(m_element, static_cast<GstState>(state));
     }
+}
+
+Gst::State Gst::Element::get_state() const
+{
+    GstState state;
+    gst_element_get_state(m_element, &state, nullptr, GST_MSECOND);
+    return static_cast<Gst::State>(state);
 }
 
 Gst::RefPtr<Gst::Pad> Gst::Element::get_static_pad(const std::string& name)

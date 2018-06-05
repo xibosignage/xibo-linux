@@ -1,5 +1,4 @@
-#ifndef AUDIOCONVERT_HPP
-#define AUDIOCONVERT_HPP
+#pragma once
 
 #include "Element.hpp"
 
@@ -15,5 +14,3 @@ namespace Gst
 
     };
 }
-
-#endif // AUDIOCONVERT_HPP
