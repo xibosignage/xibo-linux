@@ -19,6 +19,10 @@ MainLayout::MainLayout(int schema_version,
     signal_show().connect(sigc::mem_fun(*this, &MainLayout::on_layout_shown));
 }
 
+MainLayout::~MainLayout()
+{
+}
+
 std::unique_ptr<MainLayout> MainLayout::create(int schemaVersion,
                                                int width,
                                                int height,
@@ -29,10 +33,10 @@ std::unique_ptr<MainLayout> MainLayout::create(int schemaVersion,
     std::unique_ptr<IBackground> background = std::make_unique<Background>(width, height);
 
     if(!bgcolor.empty())
-        background->set_color(utilities::to_hex(bgcolor));
+        background->set_color(utils::to_hex(bgcolor));
 
     if(!bgimage.empty())
-        background->set_image(utilities::example_dir() + "/" + bgimage);
+        background->set_image(utils::example_dir() + "/" + bgimage);
 
     layout->set_background(std::move(background));
     return layout;

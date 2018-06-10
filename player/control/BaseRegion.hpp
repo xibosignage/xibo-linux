@@ -1,4 +1,5 @@
 #pragma once
+
 #include <gtkmm/fixed.h>
 
 struct Size;
@@ -8,6 +9,7 @@ class BaseRegion : public Gtk::Fixed
 {
 public:
     BaseRegion() = default;
+    virtual ~BaseRegion() = default;
     BaseRegion(const BaseRegion&) = delete;
     BaseRegion& operator=(const BaseRegion&) = delete;
 

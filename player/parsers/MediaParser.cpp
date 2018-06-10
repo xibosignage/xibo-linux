@@ -35,7 +35,7 @@ std::unique_ptr<Media> MediaParser::parse_audio_node()
         auto attrs = uri_node.get_child("<xmlattr>");
 
         int id = attrs.get<int>("mediaId");
-        std::string uri = utilities::example_dir() + "/" + uri_node.get_value<std::string>();
+        std::string uri = utils::example_dir() + "/" + uri_node.get_value<std::string>();
         bool mute = attrs.get<bool>("mute", false);
         bool loop = attrs.get<bool>("loop", false);
         double volume = attrs.get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);

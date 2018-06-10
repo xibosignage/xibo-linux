@@ -7,6 +7,7 @@ class IBackground
 {
 public:
     IBackground() = default;
+    virtual ~IBackground() = default;
     IBackground(const IBackground&) = delete;
     IBackground& operator=(const IBackground&) = delete;
 

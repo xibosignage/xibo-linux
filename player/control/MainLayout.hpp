@@ -2,14 +2,13 @@
 
 #include <gtkmm/overlay.h>
 #include <spdlog/spdlog.h>
-#include "IBackground.hpp"
 
 #include <vector>
 #include <memory>
 
 class BaseRegion;
 class IMonitor;
-//class IBackground;
+class IBackground;
 
 class MainLayout : public Gtk::Overlay
 {
@@ -17,7 +16,7 @@ public:
     MainLayout(int schema_version,
                int width,
                int height);
-    ~MainLayout() = default;
+    ~MainLayout();
 
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;

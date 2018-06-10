@@ -1,11 +1,9 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
-#include "constants.hpp"
+#include "utils/utilities.hpp"
 
-#include "control/Region.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "parsers/LayoutParser.hpp"
 #include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
@@ -67,21 +65,13 @@ int XiboApp::run(int argc, char** argv)
         }
         if(m_options.is_example_dir())
         {
-            try
-            {
-                auto layout = LayoutParser(LayoutParser::get_layout_node(m_options.xlf_path())).parse();
+            auto layout = utils::parse_xlf_layout(m_options.xlf_path());
 
-                MainWindow window(500, 500, false, false, true, true);
-                window.add(*layout);
-                window.show_all();
+            MainWindow window(500, 500, false, false, true, true);
+            window.add(*layout);
+            window.show_all();
 
-                return m_parent_app->run(window);
-            }
-            catch(const boost::property_tree::ptree_bad_path& e)
-            {
-                m_logger->error("LayoutParser: {}", e.what());
-            }
-
+            return m_parent_app->run(window);
         }
     }
     return 0;

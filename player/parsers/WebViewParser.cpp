@@ -50,7 +50,7 @@ boost::optional<int> WebViewParser::parse_duration(const std::string& path)
 // FIXME temporary workaround
 std::string WebViewParser::get_path(int id, const boost::optional<std::string>& uri)
 {
-    auto folder = utilities::example_dir() + "/";
+    auto folder = utils::example_dir() + "/";
     if(!uri || !boost::filesystem::exists(folder + uri.value()))
     {
         if(boost::filesystem::exists(folder + "requiredFiles.xml"))

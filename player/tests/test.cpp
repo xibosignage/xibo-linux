@@ -21,14 +21,14 @@
 #include <boost/filesystem/operations.hpp>
 #include "gtest/gtest.h"
 
-TEST(utilities, ToHex)
+TEST(utils, ToHex)
 {
-    EXPECT_EQ(255, utilities::to_hex("#000"));
-    EXPECT_EQ(255, utilities::to_hex("#000000"));
-    EXPECT_EQ(255, utilities::to_hex("#000000FF"));
-    EXPECT_EQ(301946367, utilities::to_hex("#1F5"));
-    EXPECT_EQ(301946367, utilities::to_hex("#11FF55"));
-    EXPECT_EQ(301946367, utilities::to_hex("#11FF55FF"));
+    EXPECT_EQ(255, utils::to_hex("#000"));
+    EXPECT_EQ(255, utils::to_hex("#000000"));
+    EXPECT_EQ(255, utils::to_hex("#000000FF"));
+    EXPECT_EQ(301946367, utils::to_hex("#1F5"));
+    EXPECT_EQ(301946367, utils::to_hex("#11FF55"));
+    EXPECT_EQ(301946367, utils::to_hex("#11FF55FF"));
 }
 
 TEST(MainLayout, Construction)
@@ -156,7 +156,7 @@ TEST(Background, SetColor)
     Background back(128, 128);
     Gtk::Image& image = back;
     ASSERT_FALSE(image.get_pixbuf());
-    back.set_color(utilities::to_hex("#1F5"));
+    back.set_color(utils::to_hex("#1F5"));
     auto pixbuf = image.get_pixbuf();
     ASSERT_TRUE(pixbuf);
     EXPECT_EQ(pixbuf->get_width(), 128);
@@ -184,7 +184,7 @@ TEST(Background, SetSize)
 {
     Background back(128, 128);
     Gtk::Image& image = back;
-    back.set_color(utilities::to_hex("#1F5"));
+    back.set_color(utils::to_hex("#1F5"));
     back.set_size(64, 64);
     auto pixbuf = image.get_pixbuf();
     EXPECT_EQ(pixbuf->get_width(), 64);
@@ -276,7 +276,7 @@ TEST(CommandLineParser, ParseMultipleParams)
 TEST(CommandLineParser, ParseNotExistingExampleDir)
 {
     CommandLineParser parser;
-    std::string testDir = utilities::app_current_dir() + "/FakeDir";
+    std::string testDir = utils::app_current_dir() + "/FakeDir";
 
     std::string dir = "--example-dir=" + testDir;
     const char* argv[] = {"./player", dir.c_str()};
@@ -291,9 +291,9 @@ TEST(CommandLineParser, ParseNotExistingExampleDir)
 TEST(CommandLineParser, ParseExampleDirWithoutXlf)
 {
     CommandLineParser parser;
-    std::string testDir = utilities::app_current_dir() + "/TestDir";
+    std::string testDir = utils::app_current_dir() + "/TestDir";
 
-    auto _ = utilities::finally([=](){ boost::filesystem::remove(testDir); });
+    auto _ = utils::finally([=](){ boost::filesystem::remove(testDir); });
     bool result = boost::filesystem::create_directory(testDir);
     ASSERT_TRUE(result);
 
@@ -310,13 +310,13 @@ TEST(CommandLineParser, ParseExampleDirWithoutXlf)
 TEST(CommandLineParser, ParseExampleDirWithXlf)
 {
     CommandLineParser parser;
-    std::string testDir = utilities::app_current_dir() + "/TestDir";
+    std::string testDir = utils::app_current_dir() + "/TestDir";
     std::string xlfFile = testDir + "/test.xlf";
 
     bool result = boost::filesystem::create_directory(testDir);
     std::ofstream o(xlfFile);
 
-    auto _ = utilities::finally([=, &o](){
+    auto _ = utils::finally([=, &o](){
         o.close();
         boost::filesystem::remove(xlfFile);
         boost::filesystem::remove(testDir);
@@ -332,49 +332,6 @@ TEST(CommandLineParser, ParseExampleDirWithXlf)
     EXPECT_TRUE(parser.is_example_dir());
     EXPECT_EQ(parser.example_dir_path(), testDir);
     EXPECT_EQ(parser.xlf_path(), xlfFile);
-}
-
-TEST(LayoutParser, ParseParams)
-{
-    boost::property_tree::ptree l;
-    auto& attrs = l.add_child("<xmlattr>", boost::property_tree::ptree{});
-    attrs.add("width", 1920);
-    attrs.add("height", 1080);
-    attrs.add("bgcolor", "#000000");
-    attrs.add("background", "8621.jpg");
-    attrs.add("schemaVersion", 3);
-
-    LayoutParser layout_parser(l);
-    auto params = layout_parser.parse_params();
-    EXPECT_EQ(params.width, 1920);
-    EXPECT_EQ(params.height, 1080);
-    EXPECT_EQ(params.bgcolor, "#000000");
-    EXPECT_EQ(params.bgimage, "8621.jpg");
-    EXPECT_EQ(params.schemaVersion, 3);
-}
-
-TEST(RegionParser, ParseParams)
-{
-    boost::property_tree::ptree r;
-    auto& attrs = r.add_child("<xmlattr>", boost::property_tree::ptree{});
-    auto& options = r.add_child("options", boost::property_tree::ptree{});
-    attrs.add("id", 1);
-    attrs.add("width", 100.0);
-    attrs.add("height", 100.0);
-    attrs.add("top", 50.0);
-    attrs.add("left", 50.0);
-    attrs.add("zindex", 2);
-    options.add("loop", false);
-
-    RegionParser region_parser(r);
-    auto params = region_parser.parse_params();
-    EXPECT_EQ(params.id, 1);
-    EXPECT_EQ(params.width, 100);
-    EXPECT_EQ(params.height, 100);
-    EXPECT_EQ(params.top, 50);
-    EXPECT_EQ(params.left, 50);
-    EXPECT_EQ(params.zindex, 2);
-    EXPECT_EQ(params.loop, false);
 }
 
 TEST(LayoutParser, Parse)

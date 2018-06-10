@@ -1,5 +1,4 @@
 #include "WebView.hpp"
-#include "control/Region.hpp"
 
 #include <spdlog/spdlog.h>
 #include <boost/filesystem/operations.hpp>

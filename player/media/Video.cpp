@@ -1,6 +1,5 @@
 #include "Video.hpp"
 #include "customsink/XiboVideoSink.hpp"
-#include "control/Region.hpp"
 
 const double MIN_GST_VOLUME = 0.0;
 const double MAX_GST_VOLUME = 1.0;

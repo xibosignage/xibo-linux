@@ -1,50 +1,44 @@
 #include "RegionParser.hpp"
 #include "control/Region.hpp"
-#include "utils/utilities.hpp"
 #include "parsers/MediaParser.hpp"
+#include "utils/utilities.hpp"
 
 RegionParser::RegionParser(const xlf_node& region_node) :
     m_region_node(region_node)
 {
-
-}
-
-std::unique_ptr<Region> RegionParser::parse()
-{
-    auto p = parse_params();
-    auto region = Region::create(p.id, p.width, p.height, p.top, p.left, p.zindex, p.loop);
-
     for(auto [region_node_name, media_node]: m_region_node)
     {
         if(region_node_name == "media")
         {
-            try
-            {
-                region->add_media(utilities::get_media_parser(m_region_node, media_node)->parse());
-            }
-            catch(const boost::property_tree::ptree_bad_path& e)
-            {
-                spdlog::get(LOGGER)->error("[MediaParser]: Some media won't be rendered - {}", e.what());
-            }
+            m_media_nodes.push_back(media_node);
         }
     }
-    return region;
 }
 
-RegionParser::ParsedRegion RegionParser::parse_params()
+std::unique_ptr<Region> RegionParser::parse()
 {
     spdlog::get(LOGGER)->debug("parse region");
 
     auto attrs = m_region_node.get_child("<xmlattr>");
     auto options = m_region_node.get_child("options");
 
-    ParsedRegion params;
-    params.id = attrs.get<int>("id");
-    params.width = static_cast<int>(attrs.get<float>("width"));
-    params.height = static_cast<int>(attrs.get<float>("height"));
-    params.top = static_cast<int>(attrs.get<float>("top"));
-    params.left = static_cast<int>(attrs.get<float>("left"));
-    params.zindex = attrs.get<int>("zindex", 0);
-    params.loop = options.get<bool>("loop", false);
-    return params;
+    int id = attrs.get<int>("id");
+    int width = static_cast<int>(attrs.get<float>("width"));
+    int height = static_cast<int>(attrs.get<float>("height"));
+    int top = static_cast<int>(attrs.get<float>("top"));
+    int left = static_cast<int>(attrs.get<float>("left"));
+    int zindex = attrs.get<int>("zindex", 0);
+    bool loop = options.get<bool>("loop", false);
+
+    return Region::create(id, width, height, top, left, zindex, loop);
+}
+
+std::vector<xlf_node>::const_iterator RegionParser::begin() const
+{
+    return std::cbegin(m_media_nodes);
+}
+
+std::vector<xlf_node>::const_iterator RegionParser::end() const
+{
+    return std::cend(m_media_nodes);
 }

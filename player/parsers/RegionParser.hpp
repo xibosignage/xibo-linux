@@ -11,23 +11,11 @@ class RegionParser
 public:
     RegionParser(const xlf_node& region_node);
     std::unique_ptr<Region> parse();
-
-private:
-    FRIEND_TEST(RegionParser, ParseParams);
-    struct ParsedRegion
-    {
-        int id;
-        int width;
-        int height;
-        int top;
-        int left;
-        int zindex;
-        bool loop;
-    };
-
-    ParsedRegion parse_params();
+    std::vector<xlf_node>::const_iterator begin() const;
+    std::vector<xlf_node>::const_iterator end() const;
 
 private:
     xlf_node m_region_node;
+    std::vector<xlf_node> m_media_nodes;
 
 };
