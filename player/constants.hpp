@@ -1,11 +1,9 @@
 #pragma once
 
 #include <string>
-#include <glib.h>
-#include <boost/property_tree/ptree.hpp>
-#include "constants.hpp"
+#include <iostream>
+#include <boost/property_tree/ptree_fwd.hpp>
 
-using Params = boost::property_tree::ptree;
 using xlf_node = boost::property_tree::ptree;
 
 struct Point

@@ -5,7 +5,6 @@
 
 namespace Gst
 {
-
     enum class MessageType
     {
       UNKNOWN = GST_MESSAGE_UNKNOWN,

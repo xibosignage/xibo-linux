@@ -2,6 +2,8 @@
 #include "constants.hpp"
 
 #include <boost/filesystem.hpp>
+#include <boost/program_options/variables_map.hpp>
+#include <boost/program_options/parsers.hpp>
 #include <spdlog/fmt/ostr.h>
 
 namespace fs = boost::filesystem;

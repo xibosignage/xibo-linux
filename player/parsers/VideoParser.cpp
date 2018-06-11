@@ -7,7 +7,7 @@ VideoParser::VideoParser(const xlf_node& parent_node, const xlf_node& media_node
 {
 }
 
-std::unique_ptr<Media> VideoParser::parse()
+std::unique_ptr<Media> VideoParser::doParse()
 {
     int id = attrs().template get<int>("id");
     std::string uri = utils::example_dir() + "/" + options().get<std::string>("uri");
@@ -18,7 +18,5 @@ std::unique_ptr<Media> VideoParser::parse()
     bool mute = options().get<bool>("mute", false);
     bool loop = options().get<bool>("loop", false);
 
-    auto video = std::make_unique<Video>(id, Size{width, height}, duration, uri, mute, loop);
-    video->attach_audio(parse_audio_node());
-    return video;
+    return std::make_unique<Video>(id, Size{width, height}, duration, uri, mute, loop);
 }

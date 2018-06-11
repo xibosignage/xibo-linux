@@ -9,7 +9,9 @@ class ImageParser : public MediaParser
 {
 public:
     ImageParser(const xlf_node& parent_node, const xlf_node& media_node);
-    std::unique_ptr<Media> parse() override;
+
+protected:
+    std::unique_ptr<Media> doParse() override;
 
 private:
     Image::ScaleType to_scale_type(const std::string& scale_type);

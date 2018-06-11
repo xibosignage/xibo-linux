@@ -1,12 +1,8 @@
 #include "MainLayout.hpp"
-#include "Region.hpp"
-#include "XiboApp.hpp"
 #include "BaseRegion.hpp"
-#include "Background.hpp"
 #include "IMonitor.hpp"
+#include "Background.hpp"
 #include "utils/utilities.hpp"
-
-#include <spdlog/spdlog.h>
 
 MainLayout::MainLayout(int schema_version,
                        int width,
@@ -87,9 +83,10 @@ bool MainLayout::on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& allo
     auto region = dynamic_cast<BaseRegion*>(widget);
     if(region)
     {
-        Gdk::Rectangle region_alloc(region->position().left * m_width_scale_factor, region->position().top * m_width_scale_factor,
-                                    region->size().width, region->size().height);
-        alloc = region_alloc;
+        alloc.set_x(region->position().left * m_width_scale_factor);
+        alloc.set_y(region->position().top * m_height_scale_factor);
+        alloc.set_width(region->size().width);
+        alloc.set_height(region->size().height);
         return true;
     }
     return false;
@@ -153,7 +150,6 @@ void MainLayout::set_size(int width, int height)
     {
         auto&& size = region->size();
         region->set_size(size.width * m_width_scale_factor, size.height * m_height_scale_factor);
-        region->queue_allocate();
     }
 }
 

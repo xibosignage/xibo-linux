@@ -1,25 +1,11 @@
 #pragma once
 
 #include "Media.hpp"
+#include "wrapper/GstFwd.hpp"
 
 #include <gtkmm/drawingarea.h>
-#include <gst/gst.h>
 #include <spdlog/spdlog.h>
 #include <boost/format.hpp>
-
-#include "wrapper/Pipeline.hpp"
-#include "wrapper/VideoConvert.hpp"
-#include "wrapper/AudioConvert.hpp"
-#include "wrapper/Volume.hpp"
-#include "wrapper/VideoScale.hpp"
-#include "wrapper/Queue.hpp"
-#include "wrapper/Decodebin.hpp"
-#include "wrapper/FileSrc.hpp"
-#include "wrapper/AutoAudioSink.hpp"
-#include "wrapper/Element.hpp"
-#include "wrapper/Pad.hpp"
-#include "wrapper/Caps.hpp"
-#include "wrapper/Capsfilter.hpp"
 
 class XiboVideoSink;
 

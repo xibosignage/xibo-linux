@@ -1,8 +1,8 @@
 #pragma once
 
+#include "GstFwd.hpp"
 #include <gst/gstutils.h>
 #include <string>
-#include <memory>
 
 namespace Gst
 {
@@ -47,12 +47,6 @@ namespace Gst
       BUFFERS = GST_FORMAT_BUFFERS,
       PERCENT = GST_FORMAT_PERCENT
     };
-
-
-    template<typename T>
-    using RefPtr = std::shared_ptr<T>;
-
-    class Pad;
 
     class Element
     {

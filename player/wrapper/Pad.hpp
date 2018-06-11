@@ -1,8 +1,8 @@
 #pragma once
 
+#include "GstFwd.hpp"
 #include <gst/gstpad.h>
 #include <string>
-#include <memory>
 
 namespace Gst
 {
@@ -16,11 +16,6 @@ namespace Gst
       NOSCHED = GST_PAD_LINK_NOSCHED,
       REFUSED = GST_PAD_LINK_REFUSED
     };
-
-    template<typename T>
-    using RefPtr = std::shared_ptr<T>;
-
-    class Caps;
 
     class Pad
     {

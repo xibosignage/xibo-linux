@@ -12,7 +12,7 @@ WebViewParser::WebViewParser(const xlf_node& parent_node, const xlf_node& media_
 {
 }
 
-std::unique_ptr<Media> WebViewParser::parse()
+std::unique_ptr<Media> WebViewParser::doParse()
 {
     int id = attrs().template get<int>("id");
     std::string uri = get_path(id, options().get_optional<std::string>("uri"));
@@ -23,9 +23,7 @@ std::unique_ptr<Media> WebViewParser::parse()
     int mode_id = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
 
-    auto webview = std::make_unique<WebView>(id, Size{width, height}, duration, uri, mode_id, transparency);
-    webview->attach_audio(parse_audio_node());
-    return webview;
+    return std::make_unique<WebView>(id, Size{width, height}, duration, uri, mode_id, transparency);
 }
 
 boost::optional<int> WebViewParser::parse_duration(const std::string& path)

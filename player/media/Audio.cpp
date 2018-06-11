@@ -1,4 +1,13 @@
 #include "Audio.hpp"
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+#include "wrapper/Pad.hpp"
 
 const double MIN_GST_VOLUME = 0.0;
 const double MAX_GST_VOLUME = 1.0;

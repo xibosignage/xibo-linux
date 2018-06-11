@@ -4,8 +4,6 @@
 
 namespace Gst
 {
-    class Caps;
-
     class Capsfilter : public Gst::Element
     {
     public:

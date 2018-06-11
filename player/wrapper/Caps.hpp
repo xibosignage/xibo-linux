@@ -1,14 +1,11 @@
 #pragma once
 
+#include "GstFwd.hpp"
 #include <gst/gstcaps.h>
 #include <string>
-#include <memory>
 
 namespace Gst
 {
-    template<typename T>
-    using RefPtr = std::shared_ptr<T>;
-
     class Structure
     {
     public:

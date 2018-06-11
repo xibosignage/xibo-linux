@@ -1,4 +1,17 @@
 #include "Video.hpp"
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/VideoConvert.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/VideoScale.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+#include "wrapper/Pad.hpp"
+#include "wrapper/Caps.hpp"
+#include "wrapper/Capsfilter.hpp"
 #include "customsink/XiboVideoSink.hpp"
 
 const double MIN_GST_VOLUME = 0.0;

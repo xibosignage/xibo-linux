@@ -1,17 +1,7 @@
 #include "Media.hpp"
 
-#include <gst/gst.h>
+#include "wrapper/GstFwd.hpp"
 #include <spdlog/spdlog.h>
-
-#include "wrapper/Pipeline.hpp"
-#include "wrapper/AudioConvert.hpp"
-#include "wrapper/Volume.hpp"
-#include "wrapper/Queue.hpp"
-#include "wrapper/Decodebin.hpp"
-#include "wrapper/FileSrc.hpp"
-#include "wrapper/AutoAudioSink.hpp"
-#include "wrapper/Element.hpp"
-#include "wrapper/Pad.hpp"
 
 class Audio : public Media
 {
@@ -38,7 +28,6 @@ private:
     bool m_muted;
     bool m_looped;
 
-    guint m_watch_id;
     bool m_audio_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 

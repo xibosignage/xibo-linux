@@ -1,7 +1,7 @@
 #include "Background.hpp"
 #include "constants.hpp"
 
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <spdlog/spdlog.h>
 
 Background::Background(int width, int height) :

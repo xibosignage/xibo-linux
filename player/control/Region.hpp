@@ -3,7 +3,6 @@
 #include "BaseRegion.hpp"
 #include "media/Media.hpp"
 
-#include <gtkmm/fixed.h>
 #include <vector>
 #include <memory>
 

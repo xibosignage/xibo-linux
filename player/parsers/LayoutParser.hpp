@@ -3,6 +3,7 @@
 #include "constants.hpp"
 #include <spdlog/spdlog.h>
 #include <gtest/gtest_prod.h>
+#include <boost/property_tree/ptree.hpp>
 
 class MainLayout;
 

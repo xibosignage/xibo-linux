@@ -1,7 +1,6 @@
 #include "MediaParser.hpp"
 #include "media/Audio.hpp"
 #include "utils/utilities.hpp"
-#include "constants.hpp"
 
 MediaParser::MediaParser(const xlf_node& parent_node, const xlf_node& media_node) :
     m_parent_node(parent_node)
@@ -9,6 +8,13 @@ MediaParser::MediaParser(const xlf_node& parent_node, const xlf_node& media_node
     m_attrs = media_node.get_child("<xmlattr>");
     m_options = media_node.get_child("options");
     m_audio_node = media_node.get_child_optional("audio");
+}
+
+std::unique_ptr<Media> MediaParser::parse()
+{
+    auto media = doParse();
+    media->attach_audio(parse_audio_node(media->duration()));
+    return media;
 }
 
 const xlf_node& MediaParser::attrs() const
@@ -26,8 +32,7 @@ const xlf_node& MediaParser::parent_node() const
     return m_parent_node;
 }
 
-// FIXME: шаблонный метод parse + virtual doParse (чтобы избежать attach_media)
-std::unique_ptr<Media> MediaParser::parse_audio_node()
+std::unique_ptr<Media> MediaParser::parse_audio_node(int parent_duration)
 {
     if(m_audio_node)
     {
@@ -40,7 +45,7 @@ std::unique_ptr<Media> MediaParser::parse_audio_node()
         bool loop = attrs.get<bool>("loop", false);
         double volume = attrs.get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);
 
-        return std::make_unique<Audio>(id, 0, uri, mute, loop, volume);
+        return std::make_unique<Audio>(id, parent_duration, uri, mute, loop, volume);
     }
     return nullptr;
 }
