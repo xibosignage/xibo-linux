@@ -6,27 +6,27 @@ services:
 
 env:
   global:
-    - CACHE_DIR=$HOME/.cache/docker
-    - CACHE_FILE=$CACHE_DIR/xibo.tar.gz
+    - CACHE_DIR_XIBO=$HOME/.cache/docker
+    - CACHE_FILE_XIBO=$CACHE_DIR_XIBO/xibo.tar.gz
 cache:
   directories:
-  - $CACHE_DIR
+  - $CACHE_DIR_XIBO
 
 before_install:
 - export DISPLAY=:99.0
 - sh -e /etc/init.d/xvfb start
 - sleep 3
-- if [ -f ${CACHE_FILE} ]; then gunzip -c ${CACHE_FILE} | docker load; fi
+- if [ -f ${CACHE_FILE_XIBO} ]; then gunzip -c ${CACHE_FILE_XIBO} | docker load; fi
+
+install:
+- docker build -t xibo-linux .
+- mkdir -p $CACHE_DIR_XIBO
+- if [ ! -f ${CACHE_FILE_XIBO} ]; then docker save xibo-linux | gzip > ${CACHE_FILE_XIBO}; fi
 
 script:
-- docker build -t xibo-linux .
-
-after_script:
-- mkdir -p $CACHE_DIR
-- if [ ! -f ${CACHE_FILE} ]; then docker save xibo-linux:latest | gzip > ${CACHE_FILE}; fi
+- docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ${TRAVIS_BUILD_DIR}/build:/build stivius/xibo-linux
 
 after_success:
-- docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ${TRAVIS_BUILD_DIR}/build:/build stivius/xibo-linux
 - tar czf build.tar.gz ${TRAVIS_BUILD_DIR}/build
 
 deploy:
