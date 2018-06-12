@@ -1,48 +1,54 @@
 #pragma once
 
 #include "Media.hpp"
+#include "wrapper/GstFwd.hpp"
 
 #include <gtkmm/drawingarea.h>
-#include <gst/gst.h>
 #include <spdlog/spdlog.h>
+#include <boost/format.hpp>
 
 class XiboVideoSink;
 
 class Video : public Media
 {
 public:
-    Video(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped);
+    Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped);
     ~Video() override;
 
     void stop() override;
     void start() override;
     void start_timer() override;
+    void set_size(int width, int height) override;
+    void request_handler() override;
 
-    void set_volume(double volume);
-    void play();
+    bool muted() const;
+    bool looped() const;
 
 private:
-    gboolean bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data);
-    void no_more_pads(GstElement* decodebin, gpointer user_data);
-    void on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data);
+    bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
+    void no_more_pads();
+    void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
+    void set_volume(double volume);
+    void play();
 
 private:
     bool m_muted;
     bool m_looped;
 
-    Gtk::DrawingArea m_video_window;
-    guint m_watch_id;
-    bool m_video_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
+    Gtk::DrawingArea m_video_window;
+    bool m_video_ended = false;
+    boost::format m_video_fmt;
 
-    GstElement* m_pipeline = nullptr;
-    GstElement* m_source = nullptr;
-    GstElement* m_decodebin = nullptr;
-    GstElement* m_volume = nullptr;
-    GstElement* m_video_converter = nullptr;
-    GstElement* m_video_scale = nullptr;
-    GstElement* m_video_sink = nullptr;
-    GstElement* m_audio_converter = nullptr;
-    GstElement* m_audio_sink = nullptr;
-    GstElement* m_queue = nullptr;
+    Gst::RefPtr<Gst::Pipeline> m_pipeline;
+    Gst::RefPtr<Gst::FileSrc> m_source;
+    Gst::RefPtr<Gst::Decodebin> m_decodebin;
+    Gst::RefPtr<Gst::Volume> m_volume;
+    Gst::RefPtr<Gst::VideoConvert> m_video_converter;
+    Gst::RefPtr<Gst::VideoScale> m_video_scale;
+    Gst::RefPtr<Gst::Element> m_video_sink;
+    Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
+    Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
+    Gst::RefPtr<Gst::Queue> m_queue;
+    Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
 };

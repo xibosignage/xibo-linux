@@ -1,28 +1,32 @@
 #pragma once
 
 #include "constants.hpp"
-#include "ParserHelpers.hpp"
-#include "utils/utilities.hpp"
-
 #include <spdlog/spdlog.h>
-#include <any>
+#include <boost/optional/optional.hpp>
+#include <boost/property_tree/ptree.hpp>
+
+class Media;
 
 class MediaParser
 {
-private:
-    MediaParser(const xlf_node& media_node);
-    AnyMedia parse_media();
-    template<MediaType type> AnyMedia parse_media_params(const xlf_node& media_node);
-    template<MediaType type> void parse_media_options(ParsedMedia<type>& media_params, const xlf_node& options);
-    boost::optional<int> parse_duration(const std::string& path);
-    std::shared_ptr<ParsedMedia<MediaType::Audio>> parse_audio_node(const xlf_node& audio_node);
+public:
+    MediaParser(const xlf_node& parent_node, const xlf_node& media_node);
+    virtual ~MediaParser() = default;
+    std::unique_ptr<Media> parse();
 
-    friend class RegionParser;
-
-    std::string get_path(int id, const boost::optional<std::string>& uri);
-    MediaType to_media_type(const std::string& type);
+protected:
+    const xlf_node& attrs() const;
+    const xlf_node& options() const;
+    const xlf_node& parent_node() const;
+    virtual std::unique_ptr<Media> doParse() = 0;
 
 private:
-    const xlf_node& m_media_node;
+    std::unique_ptr<Media> parse_audio_node(int parent_duration);
+
+private:
+    const xlf_node& m_parent_node;
+    xlf_node m_attrs;
+    xlf_node m_options;
+    boost::optional<const xlf_node&> m_audio_node;
 
 };

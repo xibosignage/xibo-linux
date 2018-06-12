@@ -1,15 +1,22 @@
 #include "XiboVideoSink.hpp"
 
 #include <spdlog/spdlog.h>
-#include <boost/format.hpp>
 
 static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps);
 static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* video_sink, GstBuffer* buf);
 static bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<::Cairo::Context>& cairo);
 static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass);
 static void gst_xibovideosink_init(XiboVideoSink* sink);
-static GstStaticPadTemplate sink_template;
-static std::string string_caps;
+
+static const char* string_caps = "video/x-raw, "
+                                 "format = (string) { BGRx }, "
+                                 "width = (int) [ 1, max ], "
+                                 "height = (int) [ 1, max ], "
+                                 "framerate = (fraction) [ 0, max ];";
+static GstStaticPadTemplate sink_template = GST_STATIC_PAD_TEMPLATE("sink",
+                                                                    GST_PAD_SINK,
+                                                                    GST_PAD_ALWAYS,
+                                                                    GST_STATIC_CAPS(string_caps));
 
 G_DEFINE_TYPE(XiboVideoSink, gst_xibovideosink, GST_TYPE_VIDEO_SINK);
 
@@ -35,14 +42,14 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler)
 {
     sink->handler = handler;    
-    sink->handler->signal_draw().connect(sigc::bind<0>(sigc::ptr_fun(&gst_xibovideosink_on_frame_drawn), sink));
+    sink->handler->signal_draw().connect(sigc::bind<0>(sigc::ptr_fun(gst_xibovideosink_on_frame_drawn), sink));
 }
 
 static void gst_xibovideosink_init(XiboVideoSink* sink)
 {
     gst_video_info_init(&sink->info);
-    sink->sinkpad = gst_pad_new_from_static_template(&sink_template, "xibosink");
-    gst_element_add_pad (GST_ELEMENT(sink), sink->sinkpad);
+    sink->sinkpad = gst_pad_new_from_static_template (&sink_template, "xibosink");
+    gst_element_add_pad(GST_ELEMENT(sink), sink->sinkpad);
 }
 
 static gboolean gst_xibovideosink_set_caps(GstBaseSink* sink, GstCaps* caps)
@@ -82,20 +89,4 @@ bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<:
 gboolean plugin_init(GstPlugin* plugin)
 {
     return gst_element_register(plugin, "xibovideosink", 10, GST_TYPE_XIBOVIDEOSINK);
-}
-
-void gst_static_pads_init(int width, int height)
-{
-    string_caps = (boost::format("video/x-raw, "
-                                 "format = (string) { BGRx }, "
-                                 "width = (int) %1%, "
-                                 "height = (int) %2%, "
-                                 "framerate = (fraction) [ 0, max ];") % width % height).str();
-
-    sink_template = GST_STATIC_PAD_TEMPLATE(
-        "sink",
-        GST_PAD_SINK,
-        GST_PAD_ALWAYS,
-        GST_STATIC_CAPS(string_caps.c_str())
-    );
 }

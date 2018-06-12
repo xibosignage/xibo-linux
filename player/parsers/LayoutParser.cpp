@@ -1,42 +1,40 @@
 #include "LayoutParser.hpp"
+#include "control/MainLayout.hpp"
+#include "control/Region.hpp"
 #include "parsers/RegionParser.hpp"
 
-#include <boost/property_tree/xml_parser.hpp>
-
-LayoutParser::LayoutParser(const std::string& path)
+LayoutParser::LayoutParser(const xlf_node& layout_node) :
+    m_layout_node(layout_node)
 {
-    boost::property_tree::ptree tree;
-    boost::property_tree::read_xml(path, tree);
-    m_layout_node = tree.get_child("layout");
-}
-
-ParsedLayout LayoutParser::parse_layout()
-{    
-    auto parsed_layout = parse_layout_params();
-
     for(auto [layout_node_name, region_node] : m_layout_node)
     {
         if(layout_node_name == "region")
         {
-            auto current_region = RegionParser(region_node).parse_region();
-            parsed_layout.regions.push_back(current_region);
+            m_region_nodes.push_back(region_node);
         }
     }
-
-    return parsed_layout;
 }
 
-ParsedLayout LayoutParser::parse_layout_params()
+std::unique_ptr<MainLayout> LayoutParser::parse()
 {
     spdlog::get(LOGGER)->debug("parse layout");
     auto attrs = m_layout_node.get_child("<xmlattr>");
 
-    ParsedLayout parsed_layout;
-    parsed_layout.schemaVersion = attrs.get<int>("schemaVersion");
-    parsed_layout.width = attrs.get<int>("width");
-    parsed_layout.height = attrs.get<int>("height");
-    parsed_layout.bgimage = attrs.get_optional<std::string>("background");
-    parsed_layout.bgcolor = attrs.get_optional<std::string>("bgcolor");
+    int schemaVersion = attrs.get<int>("schemaVersion");
+    int width = attrs.get<int>("width");
+    int height = attrs.get<int>("height");
+    std::string bgimage = attrs.get<std::string>("background", {});
+    std::string bgcolor = attrs.get<std::string>("bgcolor", {});
 
-    return parsed_layout;
+    return MainLayout::create(schemaVersion, width, height, bgimage, bgcolor);
+}
+
+std::vector<xlf_node>::const_iterator LayoutParser::begin() const
+{
+    return std::cbegin(m_region_nodes);
+}
+
+std::vector<xlf_node>::const_iterator LayoutParser::end() const
+{
+    return std::cend(m_region_nodes);
 }

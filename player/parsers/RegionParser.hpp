@@ -1,18 +1,22 @@
 #pragma once
 
 #include "constants.hpp"
-#include "parsers/ParserHelpers.hpp"
 #include <spdlog/spdlog.h>
+#include <gtest/gtest_prod.h>
+#include <boost/property_tree/ptree.hpp>
+
+class Region;
 
 class RegionParser
 {
-private:
+public:
     RegionParser(const xlf_node& region_node);
-    ParsedRegion parse_region();
-    ParsedRegion parse_region_params();
-
-    friend class LayoutParser;
+    std::unique_ptr<Region> parse();
+    std::vector<xlf_node>::const_iterator begin() const;
+    std::vector<xlf_node>::const_iterator end() const;
 
 private:
-    const xlf_node& m_region_node;
+    xlf_node m_region_node;
+    std::vector<xlf_node> m_media_nodes;
+
 };

@@ -26,7 +26,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   libffi-dev \
   libmount-dev
 
-ENV MMCOMMON=0.9.10 SIGC=2.9.1 GLIB=2.50.1 GLIBMM=2.50.1 SPDLOG=0.16.3 CMAKE=3.10.3
+ENV MMCOMMON=0.9.10 SIGC=2.9.1 GLIB=2.50.1 GLIBMM=2.50.1 SPDLOG=0.16.3 CMAKE=3.10.3 GTEST=1.8.0
 
 RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archive/${MMCOMMON}.tar.gz && \
     cd /root && \
@@ -99,6 +99,17 @@ RUN curl -o /root/cmake.tar.gz https://cmake.org/files/v3.10/cmake-${CMAKE}.tar.
     rm -r cmake-${CMAKE} && \
     rm cmake.tar.gz
 
+RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar.gz/release-${GTEST} && \
+	cd /root && \
+    tar -zxvf gtest.tar.gz && \
+    cd googletest-release-${GTEST} && \
+    cmake . && \
+    make && \
+    make install && \
+    cd /root && \
+    rm -r googletest-release-${GTEST} && \
+    rm gtest.tar.gz
+
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y gstreamer1.0-libav
@@ -113,5 +124,5 @@ RUN cd /app && \
     make install
 
 VOLUME /build
-CMD ["./app/run.sh"]
-
+ENTRYPOINT ["./app/run.sh"]
+CMD []

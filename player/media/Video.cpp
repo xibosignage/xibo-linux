@@ -1,105 +1,96 @@
 #include "Video.hpp"
-#include "XiboVideoSink.hpp"
-#include "control/Region.hpp"
-#include "utils/BindWrapper.hpp"
+#include "wrapper/Pipeline.hpp"
+#include "wrapper/VideoConvert.hpp"
+#include "wrapper/AudioConvert.hpp"
+#include "wrapper/Volume.hpp"
+#include "wrapper/VideoScale.hpp"
+#include "wrapper/Queue.hpp"
+#include "wrapper/Decodebin.hpp"
+#include "wrapper/FileSrc.hpp"
+#include "wrapper/AutoAudioSink.hpp"
+#include "wrapper/Element.hpp"
+#include "wrapper/Pad.hpp"
+#include "wrapper/Caps.hpp"
+#include "wrapper/Capsfilter.hpp"
+#include "customsink/XiboVideoSink.hpp"
 
-const double MIN_VOLUME = 0.0;
-const double MAX_VOLUME = 1.0;
+const double MIN_GST_VOLUME = 0.0;
+const double MAX_GST_VOLUME = 1.0;
 const int DEFAULT_VIDEO_BUFFER = 500;
 
 namespace ph = std::placeholders;
 
-Video::Video(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(region, id, duration, Render::Native, uri), m_muted(muted), m_looped(looped)
+Video::Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped) :
+    Media(id, size, duration, Render::Native, uri), m_muted(muted), m_looped(looped),
+    m_video_fmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
 
-    gst_static_pads_init(region.size().width, region.size().height);
     if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
                                    plugin_init, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
     {
         throw std::runtime_error("XiboVideoSink was not registered");
     }
 
-    m_pipeline = gst_pipeline_new("player");
-    m_source = gst_element_factory_make("filesrc", nullptr);
-    m_decodebin = gst_element_factory_make("decodebin", nullptr);
-    m_video_converter = gst_element_factory_make("videoconvert", nullptr);
-    m_audio_converter = gst_element_factory_make("audioconvert", nullptr);
-    m_volume = gst_element_factory_make("volume", nullptr);
-    m_video_scale = gst_element_factory_make("videoscale", nullptr);
-    m_video_sink = gst_element_factory_make("xibovideosink", nullptr);
+    m_pipeline = Gst::Pipeline::create("pipeline");
+    m_source = Gst::FileSrc::create();
+    m_decodebin = Gst::Decodebin::create();
+    m_video_converter = Gst::VideoConvert::create();
+    m_audio_converter = Gst::AudioConvert::create();
+    m_volume = Gst::Volume::create();
+    m_video_scale = Gst::VideoScale::create();
+    m_audio_sink = Gst::AutoAudioSink::create();
+    m_queue = Gst::Queue::create();
+    m_video_sink = Gst::Element::create("xibovideosink");
+    m_capsfilter = Gst::Capsfilter::create();
 
-    auto sink = GST_XIBOVIDEOSINK(m_video_sink);
+    auto sink = GST_XIBOVIDEOSINK(m_video_sink->get_handler());
     gst_xibovideosink_set_handler(sink, &m_video_window);
 
-    m_audio_sink = gst_element_factory_make("autoaudiosink", nullptr);
-    m_queue = gst_element_factory_make("queue", nullptr);
-    g_object_set(m_queue, "max-size-buffers", DEFAULT_VIDEO_BUFFER, nullptr);
-
     if(!m_pipeline || !m_source || !m_decodebin || !m_video_converter || !m_video_scale ||
-       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue)
+       !m_video_sink || !m_audio_converter || !m_volume || !m_audio_sink || !m_queue || !m_capsfilter)
     {
         throw std::runtime_error("[Video] One element could not be created");
     }
 
-    g_object_set(m_source, "location", uri.c_str(), nullptr);
+    m_source->set_location(uri);
+    m_queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
+    m_pipeline->add_bus_watch(sigc::mem_fun(*this, &Video::bus_message_watch));
 
-    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
-    auto bus_message_watch = get_wrapper<2, gboolean, GstBus*, GstMessage*, gpointer>(std::bind(&Video::bus_message_watch, this, ph::_1, ph::_2, ph::_3));
-    m_watch_id = gst_bus_add_watch(bus, bus_message_watch, nullptr);
-    g_object_unref(bus);
+    m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % size.width % size.height).str()));
 
-    gst_bin_add_many(GST_BIN(m_pipeline), m_source, m_decodebin, m_video_converter, m_queue, m_video_scale, m_video_sink, m_audio_converter, m_volume, m_audio_sink, nullptr);
-    gst_element_link(m_source, m_decodebin);
-    gst_element_link_many(m_video_converter, m_video_scale, m_queue, m_video_sink, nullptr);
-    gst_element_link_many(m_audio_converter, m_volume, m_audio_sink, nullptr);
+    m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_scale)->add(m_video_sink)->add(m_capsfilter)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
+    m_source->link(m_decodebin);
+    m_video_converter->link(m_queue)->link(m_video_scale)->link(m_capsfilter)->link(m_video_sink);
+    m_audio_converter->link(m_volume)->link(m_audio_sink);
 
-    auto on_pad_added = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&Video::on_pad_added, this, ph::_1, ph::_2, ph::_3));
-    g_signal_connect_data(m_decodebin, "pad-added", reinterpret_cast<GCallback>(on_pad_added), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Video::on_pad_added));
+    m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(*this, &Video::no_more_pads));
 
-    auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Video::no_more_pads, this, ph::_1, ph::_2));
-    g_signal_connect_data(m_decodebin, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    m_video_window.set_size_request(size.width, size.height);
 
-    m_video_window.set_size_request(region.size().width, region.size().height);
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_video_window, DEFAULT_POINT);
-    });
-
-    set_volume(m_muted ? MIN_VOLUME : MAX_VOLUME);
+    set_volume(m_muted ? MIN_GST_VOLUME : MAX_GST_VOLUME);
 }
 
 Video::~Video()
 {
     m_logger->debug("[Video] Returned, stopping playback");
-    gst_element_set_state(m_pipeline, GST_STATE_NULL);
-    g_object_unref(m_pipeline);
-    g_source_remove(m_watch_id);
 }
 
-gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
+bool Video::bus_message_watch(const Gst::RefPtr<Gst::Message>& message)
 {
-    switch (GST_MESSAGE_TYPE(message))
+    switch(message->type())
     {
-        case GST_MESSAGE_ERROR:
+        case Gst::MessageType::ERROR:
         {
-            gchar *debug = nullptr;
-            GError *err = nullptr;
-
-            gst_message_parse_error(message, &err, &debug);
-            m_logger->error("{}", err->message);
-
-            if(debug)
-            {
-                m_logger->error("[Video] Debug details: {}", debug);
-                g_free(debug);
-            }
-
-            g_error_free(err);
+            auto err = message->parse_error();
+            m_logger->error("{}", err.get_text());
+            m_logger->error("[Video] Debug details: {}", err.get_debug_info());
             break;
         }
-        case GST_MESSAGE_EOS:
+        case Gst::MessageType::EOS:
+        {
             m_logger->debug("[Video] End of stream");
             m_video_ended = true;
             if(m_looped)
@@ -107,94 +98,78 @@ gboolean Video::bus_message_watch(GstBus*, GstMessage* message, gpointer)
             else
                 media_timeout().emit();
             break;
+        }
         default:
             break;
     }
     return true;
 }
 
-void Video::no_more_pads(GstElement*, gpointer)
+void Video::no_more_pads()
 {
-    auto pad = gst_element_get_static_pad(m_decodebin, "src_1");
+    auto pad = m_decodebin->get_static_pad("src_1");
     m_logger->debug("[Video] No more pads");
 
     if(!pad)
     {
-        gst_element_set_state(m_audio_converter, GST_STATE_NULL);
-        gst_element_set_state(m_volume, GST_STATE_NULL);
-        gst_element_set_state(m_audio_sink, GST_STATE_NULL);
-        gst_bin_remove_many(GST_BIN(m_pipeline), m_audio_converter, m_volume, m_audio_sink, nullptr);
-    }
-    else
-    {
-        gst_object_unref(pad);
+        m_audio_converter->set_state(Gst::State::NULL_STATE);
+        m_volume->set_state(Gst::State::NULL_STATE);
+        m_audio_sink->set_state(Gst::State::NULL_STATE);
+        m_pipeline->remove(m_audio_converter)->remove(m_volume)->remove(m_audio_sink);
     }
 }
 
-void Video::on_pad_added(GstElement*, GstPad* pad, gpointer)
+void Video::on_pad_added(const Gst::RefPtr<Gst::Pad>& pad)
 {
-    GstPad* sinkpad;
+    Gst::RefPtr<Gst::Pad> sinkpad;
     m_logger->debug("[Video] Pad added");
 
     // src_0 for video stream
-    auto video_pad = gst_element_get_static_pad(m_decodebin, "src_0");
+    auto video_pad = m_decodebin->get_static_pad("src_0");
     // src1 for audio stream
-    auto audio_pad = gst_element_get_static_pad(m_decodebin, "src_1");
+    auto audio_pad = m_decodebin->get_static_pad("src_1");
 
     if(video_pad && !audio_pad)
     {
         m_logger->debug("[Video] Video pad");
 
-        auto caps = gst_pad_get_current_caps(video_pad);
+        auto caps = video_pad->get_current_caps();
         if(caps)
         {
-            auto strct = gst_caps_get_structure(caps, 0);
-            int width, height;
-            gst_structure_get_int(strct, "width", &width);
-            gst_structure_get_int(strct, "height", &height);
-
-            m_logger->info("[Video] width: {} height: {}", width, height);
-
-            gst_caps_unref(caps);
+            auto strct = caps->get_structure(0);
+            m_logger->info("[Video] width: {} height: {}", strct->get_width(), strct->get_height());
         }
-        sinkpad = gst_element_get_static_pad(m_video_converter, "sink");
-        gst_pad_link(pad, sinkpad);
 
-        gst_object_unref(sinkpad);
-        gst_object_unref(video_pad);
+        sinkpad = m_video_converter->get_static_pad("sink");
+        pad->link(sinkpad);
     }
     else if(audio_pad)
     {
         m_logger->debug("[Video] Audio pad");
-
-        sinkpad = gst_element_get_static_pad(m_audio_converter, "sink");
-        gst_pad_link(pad, sinkpad);
-
-        gst_object_unref(sinkpad);
-        gst_object_unref(audio_pad);
+        sinkpad = m_audio_converter->get_static_pad("sink");
+        pad->link(sinkpad);
     }
 }
 
-void Video::set_volume(double _volume)
+void Video::set_volume(double volume)
 {
-    g_object_set(m_volume, "volume", _volume, nullptr);
+    m_volume->set_volume(volume);
 }
 
-// NOTE Test looping video now
+// FIXME refactoring needed
 void Video::play()
 {
     if(m_video_ended)
     {
-        if(!gst_element_seek(m_pipeline, 1.0, GST_FORMAT_TIME, GST_SEEK_FLAG_FLUSH,
-                             GST_SEEK_TYPE_SET, 0, GST_SEEK_TYPE_END, GST_CLOCK_TIME_NONE))
-        {
-            m_logger->error("[Video] Error during restart");
-            return;
-        }
         m_video_ended = false;
+        m_pipeline->set_state(Gst::State::NULL_STATE);
+        m_logger->debug("[Video] Restarting");
     }
-    gst_element_set_state(m_pipeline, GST_STATE_PLAYING);
-    m_logger->debug("[Video] Running");
+    else
+    {
+        m_logger->debug("[Video] Starting");
+    }
+    m_pipeline->set_state(Gst::State::PLAYING);
 }
 
 void Video::stop()
@@ -202,7 +177,7 @@ void Video::stop()
     Media::stop();
     m_video_window.hide();
     m_logger->debug("[Video] Stopped");
-    gst_element_set_state(m_pipeline, GST_STATE_PAUSED);
+    m_pipeline->set_state(Gst::State::NULL_STATE);
     m_video_ended = true;
 }
 
@@ -219,4 +194,32 @@ void Video::start_timer()
     {
         Media::start_timer();
     }
+}
+
+void Video::set_size(int width, int height)
+{
+    if(width != size().width || height != size().height)
+    {
+        Media::set_size(width, height);
+        spdlog::get(LOGGER)->debug("set size {} {}", width, height);
+
+        m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % width % height).str()));
+
+        m_video_window.set_size_request(width, height);
+    }
+}
+
+void Video::request_handler()
+{
+    handler_requested().emit(m_video_window, DEFAULT_POINT);
+}
+
+bool Video::looped() const
+{
+    return m_looped;
+}
+
+bool Video::muted() const
+{
+    return m_muted;
 }

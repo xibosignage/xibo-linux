@@ -1,38 +1,40 @@
 #include "Media.hpp"
 
-#include <gst/gst.h>
+#include "wrapper/GstFwd.hpp"
 #include <spdlog/spdlog.h>
 
 class Audio : public Media
 {
 public:
-    Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
+    Audio(int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
     ~Audio() override;
 
     void stop() override;
     void start() override;
     void start_timer() override;
 
-    void set_volume(double volume);
-    void play();
+    bool muted() const;
+    bool looped() const;
+    double volume() const;
 
 private:
-    gboolean bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data);
-    void no_more_pads(GstElement* decodebin, gpointer user_data);
-    void on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data);
+    bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
+    void no_more_pads();
+    void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
+    void set_volume(double volume);
+    void play();
 
 private:
     bool m_muted;
     bool m_looped;
 
-    guint m_watch_id;
     bool m_audio_ended = false;
     std::shared_ptr<spdlog::logger> m_logger;
 
-    GstElement* m_pipeline;
-    GstElement* m_source;
-    GstElement* m_decodebin;
-    GstElement* m_volume;
-    GstElement* m_audio_converter;
-    GstElement* m_audio_sink;
+    Gst::RefPtr<Gst::Pipeline> m_pipeline;
+    Gst::RefPtr<Gst::FileSrc> m_source;
+    Gst::RefPtr<Gst::Decodebin> m_decodebin;
+    Gst::RefPtr<Gst::Volume> m_volume;
+    Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
+    Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
 };

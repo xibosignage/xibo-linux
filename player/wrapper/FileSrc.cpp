@@ -1,0 +1,16 @@
+#include "FileSrc.hpp"
+
+Gst::FileSrc::FileSrc()
+{
+    m_element = gst_element_factory_make("filesrc", nullptr);
+}
+
+Gst::RefPtr<Gst::FileSrc> Gst::FileSrc::create()
+{
+    return std::shared_ptr<Gst::FileSrc>(new Gst::FileSrc);
+}
+
+void Gst::FileSrc::set_location(const std::string& uri)
+{
+    g_object_set(m_element, "location", uri.c_str(), nullptr);
+}

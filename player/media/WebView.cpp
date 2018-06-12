@@ -1,33 +1,36 @@
 #include "WebView.hpp"
-#include "control/Region.hpp"
 
 #include <spdlog/spdlog.h>
+#include <boost/filesystem/operations.hpp>
 
-WebView::WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(region, id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent) :
+    Media(id, size, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
-    auto path = "file://" + uri;
-    spdlog::get(LOGGER)->debug(path);
-
-    m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
-    webkit_web_view_load_uri(m_web_view, path.c_str());
-
-    if(m_transparent)
+    if(boost::filesystem::exists(uri))
     {
-        m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
-        screen_changed(m_handler.get_screen());
+        auto path = "file://" + uri;
+        spdlog::get(LOGGER)->debug(path);
 
-        webkit_web_view_set_transparent(m_web_view, true);
+        m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
+        webkit_web_view_load_uri(m_web_view, path.c_str());
+
+        if(m_transparent)
+        {
+            m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
+            screen_changed(m_handler.get_screen());
+
+            webkit_web_view_set_transparent(m_web_view, true);
+        }
+
+        auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
+        m_handler.add(*widget);
+        m_handler.set_size_request(size.width, size.height);
     }
-
-    auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
-    m_handler.add(*widget);
-    m_handler.set_size_request(region.size().width, region.size().height);
-
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_handler, DEFAULT_POINT);
-    });
+    else
+    {
+        spdlog::get(LOGGER)->error("Could not find webview: {}", uri);
+    }
 }
 
 void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
@@ -53,6 +56,17 @@ void WebView::start()
     Media::start();
     m_handler.show_all();
     webkit_web_view_reload(m_web_view);
+}
+
+void WebView::set_size(int width, int height)
+{
+    Media::set_size(width, height);
+    m_handler.set_size_request(width, height);
+}
+
+void WebView::request_handler()
+{
+    handler_requested().emit(m_handler, DEFAULT_POINT);
 }
 
 bool WebView::transparent() const

@@ -1,40 +1,44 @@
 #include "RegionParser.hpp"
+#include "control/Region.hpp"
 #include "parsers/MediaParser.hpp"
+#include "utils/utilities.hpp"
 
 RegionParser::RegionParser(const xlf_node& region_node) :
     m_region_node(region_node)
 {
-
-}
-
-ParsedRegion RegionParser::parse_region()
-{
-    auto region_params = parse_region_params();
     for(auto [region_node_name, media_node]: m_region_node)
     {
         if(region_node_name == "media")
         {
-            region_params.media.push_back(MediaParser(media_node).parse_media());
+            m_media_nodes.push_back(media_node);
         }
     }
-    return region_params;
 }
 
-ParsedRegion RegionParser::parse_region_params()
+std::unique_ptr<Region> RegionParser::parse()
 {
     spdlog::get(LOGGER)->debug("parse region");
 
     auto attrs = m_region_node.get_child("<xmlattr>");
     auto options = m_region_node.get_child("options");
 
-    ParsedRegion region_params;
-    region_params.id = attrs.get<int>("id");
-    region_params.width = static_cast<int>(attrs.get<float>("width"));
-    region_params.height = static_cast<int>(attrs.get<float>("height"));
-    region_params.top = static_cast<int>(attrs.get<float>("top"));
-    region_params.left = static_cast<int>(attrs.get<float>("left"));
-    region_params.zindex = attrs.get_optional<int>("zindex");
-    region_params.loop = options.get_optional<bool>("loop");
+    int id = attrs.get<int>("id");
+    int width = static_cast<int>(attrs.get<float>("width"));
+    int height = static_cast<int>(attrs.get<float>("height"));
+    int top = static_cast<int>(attrs.get<float>("top"));
+    int left = static_cast<int>(attrs.get<float>("left"));
+    int zindex = attrs.get<int>("zindex", 0);
+    bool loop = options.get<bool>("loop", false);
 
-    return region_params;
+    return Region::create(id, width, height, top, left, zindex, loop);
+}
+
+std::vector<xlf_node>::const_iterator RegionParser::begin() const
+{
+    return std::cbegin(m_media_nodes);
+}
+
+std::vector<xlf_node>::const_iterator RegionParser::end() const
+{
+    return std::cend(m_media_nodes);
 }

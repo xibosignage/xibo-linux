@@ -5,8 +5,8 @@
 #include <glibmm/main.h>
 #include <iostream>
 
-Media::Media(const Region& region, int id, int duration, Render render, const std::string& uri) :
-    m_region(region), m_id(id), m_duration(duration), m_render(render), m_uri(uri)
+Media::Media(int id, const Size& size, int duration, Render render, const std::string& uri) :
+    m_id(id), m_size(size), m_duration(duration), m_render(render), m_uri(uri)
 {
 }
 
@@ -34,6 +34,12 @@ bool Media::is_running() const
     return m_started;
 }
 
+void Media::set_size(int width, int height)
+{
+    m_size.width = width;
+    m_size.height = height;
+}
+
 void Media::start_timer()
 {
     Glib::signal_timeout().connect_once([=](){
@@ -56,14 +62,14 @@ sigc::signal<void>& Media::media_timeout()
     return m_media_timeout;
 }
 
-const Region& Media::region() const
-{
-    return m_region;
-}
-
 int Media::id() const
 {
     return m_id;
+}
+
+const Size& Media::size() const
+{
+    return m_size;
 }
 
 int Media::duration() const
