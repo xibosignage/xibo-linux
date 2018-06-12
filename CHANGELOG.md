@@ -1,3 +1,20 @@
+### 0.2.2-alpha Navy
+
+**12.06.2018 - `(unstable)`**
+
+- **User Part**
+  - Audio restart was fixed
+  - Region and media resizes correctly now
+- **Developer Part**
+  - Docker build was fixed
+  - Running player from command-line using Docker
+  - Unit-tests for parsers and layout using GTest library
+  - Large scale parsers refactoring
+  - Background is a separate class now
+  - C++ wrapper for GStreamer
+  - Check for memory leaks
+  - Video sink and GStreamer wrapper are separate libs now
+
 ### 0.2.1-alpha Navy (hotfix)
 
 **18.04.2018 - `(unstable)`**
