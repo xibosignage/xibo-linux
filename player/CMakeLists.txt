@@ -23,10 +23,9 @@ set(SOURCE_FILES main.cpp XiboApp.cpp ${TESTS_SOURCES} ${CONTROL_SOURCES} ${MEDI
 add_library(gst_wrapper SHARED ${WRAPPER_SOURCES})
 add_library(xibovideosink SHARED customsink/XiboVideoSink.cpp)
 
+find_package(GTest REQUIRED)
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)
-find_link_libs("gtest" GTest_LINK_LIBRARY)
-
 
 find_soname_libs("${Gtkmm_LINK_LIBRARIES}" Gtkmm_SONAME_LIBRARIES)
 find_soname_libs("${GStreamer_LINK_LIBRARIES}" GStreamer_SONAME_LIBRARIES)
@@ -34,7 +33,7 @@ find_soname_libs("${WebKit_LINK_LIBRARIES}" WebKit_SONAME_LIBRARIES)
 find_soname_libs("${Boost_LIBRARIES}" Boost_SONAME_LIBRARIES)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${GTest_LINK_LIBRARY} gst_wrapper xibovideosink ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} gst_wrapper xibovideosink ${Gtkmm_LINK_LIBRARIES} ${GTEST_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
 
 # install
 install(DIRECTORY DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs/)
@@ -42,6 +41,7 @@ copy_libs("${Gtkmm_SONAME_LIBRARIES}")
 copy_libs("${GStreamer_SONAME_LIBRARIES}")
 copy_libs("${WebKit_SONAME_LIBRARIES}")
 copy_libs("${Boost_SONAME_LIBRARIES}")
+copy_libs("${CMAKE_CURRENT_BINARY_DIR}/libgst_wrapper.so ${CMAKE_CURRENT_BINARY_DIR}/libxibovideosink.so")
 
 # Tests
 include(PlayerTests)
