@@ -5,28 +5,16 @@
 #include <boost/beast.hpp>
 #include <boost/asio.hpp>
 
-#include "Requests/RegisterDisplayRequest.hpp"
-#include "Responses/RegisterDisplayResponse.hpp"
-#include "Requests/RequiredFilesRequest.hpp"
-#include "Responses/RequiredFilesResponse.hpp"
-#include "Requests/NotifyStatusRequest.hpp"
-#include "Requests/GetFileRequest.hpp"
-#include "Responses/GetFileResponse.hpp"
-#include "Requests/SubmitLogRequest.hpp"
-#include "Requests/SubmitStatsRequest.hpp"
-#include "Responses/SuccessResponse.hpp"
+#include "RegisterDisplay.hpp"
+#include "RequiredFiles.hpp"
+#include "GetFile.hpp"
+#include "NotifyStatus.hpp"
+#include "MediaInventory.hpp"
+#include "SubmitLog.hpp"
+#include "SubmitStats.hpp"
 
-const char REGISTER_DISPLAY[] = "RegisterDisplay";
-const char REQUIRED_FILES[] = "RequiredFiles";
-const char SCHEDULE[] = "Schedule";
-const char NOTIFY_STATUS[] = "NotifyStatus";
-const char GET_RESOURCE[] = "GetResource";
-const char GET_FILE[] = "GetFile";
-const char SUBMIT_LOG[] = "SubmitLog";
-const char SUBMIT_STATS[] = "SubmitStats";
-
-template<typename Request, typename Callback>
-void send_request(const Request& my_request, Callback callback)
+template<typename request, typename callback>
+void send_request(const request& soap_request, callback response_callback)
 {
     namespace http = boost::beast::http;
     namespace asio = boost::asio;
@@ -37,101 +25,115 @@ void send_request(const Request& my_request, Callback callback)
     auto results = resolver.resolve("linuxplayer.xibo.co.uk", "80", ip::resolver_base::numeric_service);
     asio::connect(socket, results.begin(), results.end());
 
-    http::request<http::string_body> request;
-    request.method(http::verb::post);
-    request.target("/xmds.php?v=5");
-    request.version(11);
-    request.set(http::field::host, "linuxplayer.xibo.co.uk");
-    request.body() = my_request.str();
-    request.prepare_payload();
+    http::request<http::string_body> http_request;
+    http_request.method(http::verb::post);
+    http_request.target("/xmds.php?v=5");
+    http_request.version(11);
+    http_request.set(http::field::host, "linuxplayer.xibo.co.uk");
+    http_request.body() = soap::request_string(soap_request);
+    http_request.prepare_payload();
 
-    std::cout << my_request.str() << std::endl;
+    std::cout << soap::request_string(soap_request) << std::endl;
 
-    http::write(socket, request);
+    http::write(socket, http_request);
 
-    http::response<http::string_body> response;
+    http::response<http::string_body> http_response;
     boost::beast::flat_buffer buffer;
-    http::read(socket, buffer, response);
+    http::read(socket, buffer, http_response);
 
-    callback(typename Request::ResponseType{response.body()});
+    using response = typename soap::request_traits<request>::response_t;
+    auto result = soap::create_response<response>(http_response.body());
+    response_callback(result);
 }
 
 int main()
 {
     {
-        RegisterDisplayRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("MyTest");
-        request.display_name("MyDisplay");
-        request.client_type("linux");
-        request.client_version("1.8");
-        request.client_code(121);
-        request.mac_address("MyAddress");
+        RegisterDisplay::request request;
+        request.display_name = "MyDisplay";
+        request.client_type = "linux";
+        request.client_version = "1.8";
+        request.client_code = 1;
+        request.mac_address = "MyAddress";
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
 
-        send_request(request, [=](const RegisterDisplayResponse& response){
-            std::cout << "Status: " << (int)response.status() << ", message: " << response.status_message() << std::endl;
+        send_request(request, [=](const RegisterDisplay::response& response){
+            std::cout << response.display_name << " " << response.collect_interval << std::endl;
         });
     }
 
     {
-        RequiredFilesRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("MyTest");
+        RequiredFiles::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
 
-        send_request(request, [=](const RequiredFilesResponse& response){
+        send_request(request, [=](const RequiredFiles::response& response){
             std::cout << response.required_files().size() << std::endl;
             for(auto&& file : response.required_files())
             {
-                std::cout << "type: " << file.type() << " id: " << file.id() << " size: " << file.size() << std::endl;
-                std::cout << "md5: " << file.md5() << " filename: " << file.filename() << " download: " << file.download() << std::endl;
-                std::cout << "path: " << file.path() << std::endl << std::endl;
+                std::cout << "file type: " << (int)file.file_type << " id: " << file.id << " size: " << file.size << std::endl;
+                std::cout << "md5: " << file.md5 << " filename: " << file.filename << " download type: " << (int)file.download_type << std::endl;
+                std::cout << "path: " << file.path << std::endl << std::endl;
             }
         });
     }
 
     {
-        GetFileRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("MyTest");
-        request.file_id(201);
-        request.file_type("media");
-        request.chunk_offset(0);
-        request.chunk_size(1000);
+        GetFile::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
+        request.file_id = std::to_string(201);
+        request.file_type = "media";
+        request.chunk_offset = 0;
+        request.chunk_size = 1000;
 
-        send_request(request, [=](const GetFileResponse& response){
+        send_request(request, [=](const GetFile::response& response){
+            std::cout << response.base64chunk << std::endl;
         });
     }
 
     {
-        NotifyStatusRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("MyTest");
-        request.status("test");
+        NotifyStatus::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
+        request.status = "test";
 
-        send_request(request, [=](const NotifyStatusResponse& response){
-            std::cout << response.success() << std::endl;
+        send_request(request, [=](const NotifyStatus::response& response){
+            std::cout << response.success << std::endl;
         });
     }
 
     {
-        SubmitLogRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("test");
-        request.log_xml("log");
+        MediaInventory::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
+        request.media_inventory = "test";
 
-        send_request(request, [=](const SubmitLogResponse& response){
-            std::cout << response.success() << std::endl;
+        send_request(request, [=](const MediaInventory::response& response){
+            std::cout << response.success << std::endl;
         });
     }
 
     {
-        SubmitStatsRequest request;
-        request.server_key("egDeedO6");
-        request.hardware_key("MyTest");
-        request.stat_xml("stat");
+        SubmitLog::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
+        request.log_xml = "log";
 
-        send_request(request, [=](const SubmitStatsResponse& response){
-            std::cout << response.success() << std::endl;
+        send_request(request, [=](const SubmitLog::response& response){
+            std::cout << response.success << std::endl;
+        });
+    }
+
+    {
+        SubmitStats::request request;
+        request.server_key = "egDeedO6";
+        request.hardware_key = "MyTest";
+        request.stat_xml = "stat";
+
+        send_request(request, [=](const SubmitStats::response& response){
+            std::cout << response.success << std::endl;
         });
     }
 

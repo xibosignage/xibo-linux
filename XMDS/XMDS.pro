@@ -18,34 +18,27 @@ QMAKE_CXXFLAGS += -std=c++17
 LIBS += -lssl -lcrypto -L/usr/local/lib -lboost_system -lboost_thread
 
 SOURCES += \
-    Requests/GetFileRequest.cpp \
-    Requests/NotifyStatusRequest.cpp \
-    Requests/RegisterDisplayRequest.cpp \
-    Requests/SubmitLogRequest.cpp \
-    Requests/SubmitStatsRequest.cpp \
-    Responses/GetFileResponse.cpp \
-    Responses/RegisterDisplayResponse.cpp \
-    Responses/RequiredFilesResponse.cpp \
-    Responses/ScheduleResponse.cpp \
     main.cpp \
-    utils.cpp
+    soap.cpp \
+    RequiredFiles.cpp \
+    GetFile.cpp \
+    MediaInventory.cpp \
+    NotifyStatus.cpp \
+    RegisterDisplay.cpp \
+    SubmitLog.cpp \
+    SubmitStats.cpp \
+    utils.cpp \
+    xmds.cpp
 
 HEADERS += \
-    Requests/BaseRequest.hpp \
-    Requests/GetFileRequest.hpp \
-    Requests/NotifyStatusRequest.hpp \
-    Requests/RegisterDisplayRequest.hpp \
-    Requests/RequiredFilesRequest.hpp \
-    Requests/ScheduleRequest.hpp \
-    Requests/SubmitLogRequest.hpp \
-    Requests/SubmitStatsRequest.hpp \
-    Responses/BaseResponse.hpp \
-    Responses/GetFileResponse.hpp \
-    Responses/RegisterDisplayResponse.hpp \
-    Responses/RequiredFilesResponse.hpp \
-    Responses/ResponsesFwd.hpp \
-    Responses/ScheduleResponse.hpp \
-    Responses/SuccessResponse.hpp \
-    Responses/XmlResponse.hpp \
-    constants.hpp \
-    utils.hpp
+    soap.hpp \
+    RegisterDisplay.hpp \
+    field.hpp \
+    RequiredFiles.hpp \
+    SubmitLog.hpp \
+    SubmitStats.hpp \
+    NotifyStatus.hpp \
+    MediaInventory.hpp \
+    GetFile.hpp \
+    utils.hpp \
+    xmds.hpp

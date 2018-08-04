@@ -10,7 +10,10 @@ public:
     SuccessResponse(const std::string& xml_response) :
         BaseResponse<ResponseName>(xml_response)
     {
-        m_success = this->response_tree()->get_child("success").template get_value<bool>();
+        if(this->response_tree())
+        {
+            m_success = this->response_tree()->get_child("success").template get_value<bool>();
+        }
     }
     bool success() const
     {
