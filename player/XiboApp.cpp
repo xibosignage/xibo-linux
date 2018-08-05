@@ -24,7 +24,8 @@ XiboApp& XiboApp::create(const std::string& name)
     return *m_app;
 }
 
-XiboApp::XiboApp()
+XiboApp::XiboApp() :
+    m_soap_manager{"linuxplayer.xibo.co.uk", 80}
 {
     m_logger = spdlog::get(LOGGER);
 }
@@ -45,6 +46,11 @@ const XiboApp& XiboApp::app()
 const CommandLineParser& XiboApp::command_line_parser() const
 {
     return m_options;
+}
+
+const SOAPManager& XiboApp::soap_manager() const
+{
+    return m_soap_manager;
 }
 
 int XiboApp::run(int argc, char** argv)
