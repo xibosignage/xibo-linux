@@ -1,10 +1,10 @@
-#ifndef GETRESOURSE_HPP
-#define GETRESOURSE_HPP
+#ifndef GETRESOURCE_HPP
+#define GETRESOURCE_HPP
 
 #include "field.hpp"
 #include "soap.hpp"
 
-namespace GetResourse
+namespace GetResource
 {
     struct response
     {
@@ -22,10 +22,10 @@ namespace GetResourse
 }
 
 template<>
-struct soap::request_traits<GetResourse::request>
+struct soap::request_traits<GetResource::request>
 {
-    static inline const std::string name = "GetResourse";
-    using response_t = GetResourse::response;
+    static inline const std::string name = "GetResource";
+    using response_t = GetResource::response;
 };
 
-#endif // GETRESOURSE_HPP
+#endif // GETRESOURCE_HPP

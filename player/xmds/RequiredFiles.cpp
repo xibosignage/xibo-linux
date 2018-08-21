@@ -5,14 +5,14 @@ namespace RequiredFileHelper
 {
     auto to_file_type(const std::string& type)
     {
-        using FileType = RequiredFiles::response::required_file::FileType;
+        using FileType = RequiredFiles::response::FileType;
 
         if(type == "media")
             return FileType::Media;
         else if(type == "layout")
             return FileType::Layout;
-        else if(type == "resourse")
-            return FileType::Resourse;
+        else if(type == "resource")
+            return FileType::Resource;
 
         return FileType::Invalid;
     }
@@ -36,10 +36,19 @@ RequiredFiles::response::required_files() const
     return m_required_files;
 }
 
+const std::vector<RequiredFiles::response::required_resource>&
+RequiredFiles::response::required_resources() const
+{
+    return m_required_resources;
+}
+
+#include <iostream>
 void RequiredFiles::response::add_file(const boost::property_tree::ptree& attrs)
 {
     auto file_type = RequiredFileHelper::to_file_type(attrs.get<std::string>("type"));
-    if(file_type != required_file::FileType::Invalid)
+    if(file_type == FileType::Invalid) return;
+
+    if(file_type != FileType::Resource)
     {
         int id = attrs.get<int>("id");
         size_t size = attrs.get<size_t>("size");
@@ -47,7 +56,14 @@ void RequiredFiles::response::add_file(const boost::property_tree::ptree& attrs)
         std::string path = attrs.get<std::string>("path");
         std::string save_as = attrs.get<std::string>("saveAs");
         auto download_type = RequiredFileHelper::to_download_type(attrs.get<std::string>("download"));
-        m_required_files.emplace_back(required_file{file_type, id, size, md5, path, save_as, download_type});
+        m_required_files.emplace_back(required_file{id, size, md5, path, save_as, download_type, file_type});
+    }
+    else
+    {
+        int layout_id = attrs.get<int>("layoutid");
+        int region_id = attrs.get<int>("regionid");
+        int media_id = attrs.get<int>("mediaid");
+        m_required_resources.emplace_back(required_resource{layout_id, region_id, media_id});
     }
 }
 

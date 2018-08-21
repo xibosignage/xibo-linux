@@ -31,6 +31,7 @@ std::unique_ptr<MainLayout> MainLayout::create(int schemaVersion,
     if(!bgcolor.empty())
         background->set_color(utils::to_hex(bgcolor));
 
+// FIXME
     if(!bgimage.empty())
         background->set_image(utils::example_dir() + "/" + bgimage);
 
