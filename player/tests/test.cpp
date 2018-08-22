@@ -191,148 +191,87 @@ TEST(Background, SetSize)
     EXPECT_EQ(pixbuf->get_height(), 64);
 }
 
-TEST(CommandLineParser, Construction)
-{
-    CommandLineParser parser;
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_FALSE(parser.is_testing());
-    EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
+//TEST(CommandLineParser, Construction)
+//{
+//    CommandLineParser parser;
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_FALSE(parser.is_testing());
+//    EXPECT_FALSE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
-TEST(CommandLineParser, ParseNoParams)
-{
-    CommandLineParser parser;
-    const char* argv[] = {"./player"};
-    bool parse = parser.parse(1, const_cast<char**>(argv));
+//TEST(CommandLineParser, ParseNoParams)
+//{
+//    CommandLineParser parser;
+//    const char* argv[] = {"./player"};
+//    bool parse = parser.parse(1, const_cast<char**>(argv));
 
-    ASSERT_FALSE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_FALSE(parser.is_testing());
-    EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
+//    ASSERT_FALSE(parse);
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_FALSE(parser.is_testing());
+//    EXPECT_FALSE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
-TEST(CommandLineParser, ParseNotExistingParam)
-{
-    CommandLineParser parser;
-    const char* argv[] = {"./player", "--asdfasdf"};
-    bool parse = parser.parse(2, const_cast<char**>(argv));
+//TEST(CommandLineParser, ParseNotExistingParam)
+//{
+//    CommandLineParser parser;
+//    const char* argv[] = {"./player", "--asdfasdf"};
+//    bool parse = parser.parse(2, const_cast<char**>(argv));
 
-    ASSERT_FALSE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_FALSE(parser.is_testing());
-    EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
+//    ASSERT_FALSE(parse);
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_FALSE(parser.is_testing());
+//    EXPECT_FALSE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
 
-TEST(CommandLineParser, ParseNotExistingParamWithExist)
-{
-    CommandLineParser parser;
-    const char* argv[] = {"./player", "--unit-testing", "--asdfasdf"};
-    bool parse = parser.parse(3, const_cast<char**>(argv));
+//TEST(CommandLineParser, ParseNotExistingParamWithExist)
+//{
+//    CommandLineParser parser;
+//    const char* argv[] = {"./player", "--unit-testing", "--asdfasdf"};
+//    bool parse = parser.parse(3, const_cast<char**>(argv));
 
-    ASSERT_FALSE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_FALSE(parser.is_testing());
-    EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
+//    ASSERT_FALSE(parse);
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_FALSE(parser.is_testing());
+//    EXPECT_FALSE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
-TEST(CommandLineParser, Parse1Param)
-{
-    CommandLineParser parser;
-    const char* argv[] = {"./player", "--unit-testing"};
-    bool parse = parser.parse(2, const_cast<char**>(argv));
+//TEST(CommandLineParser, Parse1Param)
+//{
+//    CommandLineParser parser;
+//    const char* argv[] = {"./player", "--unit-testing"};
+//    bool parse = parser.parse(2, const_cast<char**>(argv));
 
-    ASSERT_TRUE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.is_testing());
-    EXPECT_FALSE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
+//    ASSERT_TRUE(parse);
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_TRUE(parser.is_testing());
+//    EXPECT_FALSE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
-TEST(CommandLineParser, ParseMultipleParams)
-{
-    CommandLineParser parser;
-    const char* argv[] = {"./player", "--unit-testing", "--version", "--log-level=5"};
-    bool parse = parser.parse(4, const_cast<char**>(argv));
+//TEST(CommandLineParser, ParseMultipleParams)
+//{
+//    CommandLineParser parser;
+//    const char* argv[] = {"./player", "--unit-testing", "--version", "--log-level=5"};
+//    bool parse = parser.parse(4, const_cast<char**>(argv));
 
-    ASSERT_TRUE(parse);
-    EXPECT_EQ(spdlog::get(LOGGER)->level(), 5);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.is_testing());
-    EXPECT_TRUE(parser.is_version());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
-
-TEST(CommandLineParser, ParseNotExistingExampleDir)
-{
-    CommandLineParser parser;
-    std::string testDir = utils::app_current_dir() + "/FakeDir";
-
-    std::string dir = "--example-dir=" + testDir;
-    const char* argv[] = {"./player", dir.c_str()};
-    bool parse = parser.parse(2, const_cast<char**>(argv));
-
-    ASSERT_TRUE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
-
-TEST(CommandLineParser, ParseExampleDirWithoutXlf)
-{
-    CommandLineParser parser;
-    std::string testDir = utils::app_current_dir() + "/TestDir";
-
-    auto _ = utils::finally([=](){ boost::filesystem::remove(testDir); });
-    bool result = boost::filesystem::create_directory(testDir);
-    ASSERT_TRUE(result);
-
-    std::string dir = "--example-dir=" + testDir;
-    const char* argv[] = {"./player", dir.c_str()};
-    bool parse = parser.parse(2, const_cast<char**>(argv));
-
-    ASSERT_TRUE(parse);
-    EXPECT_FALSE(parser.is_example_dir());
-    EXPECT_TRUE(parser.example_dir_path().empty());
-    EXPECT_TRUE(parser.xlf_path().empty());
-}
-
-TEST(CommandLineParser, ParseExampleDirWithXlf)
-{
-    CommandLineParser parser;
-    std::string testDir = utils::app_current_dir() + "/TestDir";
-    std::string xlfFile = testDir + "/test.xlf";
-
-    bool result = boost::filesystem::create_directory(testDir);
-    std::ofstream o(xlfFile);
-
-    auto _ = utils::finally([=, &o](){
-        o.close();
-        boost::filesystem::remove(xlfFile);
-        boost::filesystem::remove(testDir);
-    });
-
-    ASSERT_TRUE(result);
-
-    std::string dir = "--example-dir=" + testDir;
-    const char* argv[] = {"./player", dir.c_str()};
-    bool parse = parser.parse(2, const_cast<char**>(argv));
-
-    ASSERT_TRUE(parse);
-    EXPECT_TRUE(parser.is_example_dir());
-    EXPECT_EQ(parser.example_dir_path(), testDir);
-    EXPECT_EQ(parser.xlf_path(), xlfFile);
-}
+//    ASSERT_TRUE(parse);
+//    EXPECT_EQ(spdlog::get(LOGGER)->level(), 5);
+//    EXPECT_FALSE(parser.is_example_dir());
+//    EXPECT_TRUE(parser.is_testing());
+//    EXPECT_TRUE(parser.is_version());
+//    EXPECT_TRUE(parser.example_dir_path().empty());
+//    EXPECT_TRUE(parser.xlf_path().empty());
+//}
 
 TEST(LayoutParser, Parse)
 {

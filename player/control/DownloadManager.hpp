@@ -44,7 +44,7 @@ private:
     asio::io_context::work m_work;
     std::unique_ptr<std::thread> m_work_thread;
     std::string m_host;
-    std::shared_ptr<spdlog::logger> m_spdlog;
+    std::shared_ptr<spdlog::logger> m_logger;
 };
 
 

@@ -6,24 +6,24 @@
 
 namespace NotifyStatus
 {
-    struct response
+    struct Response
     {
         bool success;
     };
 
-    struct request
+    struct Request
     {
-        field<std::string> server_key{"serverKey"};
-        field<std::string> hardware_key{"hardwareKey"};
-        field<std::string> status{"status"};
+        Field<std::string> server_key{"serverKey"};
+        Field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> status{"status"};
     };
 }
 
 template<>
-struct soap::request_traits<NotifyStatus::request>
+struct soap::request_traits<NotifyStatus::Request>
 {
     static inline const std::string name = "NotifyStatus";
-    using response_t = NotifyStatus::response;
+    using response_t = NotifyStatus::Response;
 };
 
 #endif // NOTIFYSTATUS_HPP

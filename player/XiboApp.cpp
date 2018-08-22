@@ -7,8 +7,10 @@
 #include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
+#include <chrono>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -24,10 +26,27 @@ XiboApp& XiboApp::create(const std::string& name)
     return *m_app;
 }
 
-XiboApp::XiboApp() :
-    m_soap_manager{"linuxplayer.xibo.co.uk", 80}
+XiboApp::XiboApp()
 {
     m_logger = spdlog::get(LOGGER);
+}
+
+int XiboApp::run_player()
+{
+    using namespace std::chrono_literals;
+
+    MainWindow window(500, 500, false, false, true, true);
+
+    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
+    m_collection_inverval.start();
+
+//    auto layout = utils::parse_xlf_layout("resources/" + required_layout.filename);
+//    window.add(*layout);
+//    window.show_all();
+
+    std::this_thread::sleep_for(10s);
+
+    return m_parent_app->run(window);
 }
 
 XiboApp::~XiboApp()
@@ -38,7 +57,7 @@ XiboApp::~XiboApp()
     }
 }
 
-const XiboApp& XiboApp::app()
+XiboApp& XiboApp::app()
 {
     return *m_app;
 }
@@ -48,37 +67,41 @@ const CommandLineParser& XiboApp::command_line_parser() const
     return m_options;
 }
 
-const SOAPManager& XiboApp::soap_manager() const
+XMDSManager& XiboApp::xmds_manager()
 {
-    return m_soap_manager;
+    return *m_xmds_manager;
 }
 
 int XiboApp::run(int argc, char** argv)
-{    
-    bool result = m_options.parse(argc, argv);
-    if(result)
+{
+    try
     {
-        if(m_options.is_version())
-        {
-            m_logger->info("Project version: {}", get_version());
-        }
-        if(m_options.is_testing())
-        {
-            spdlog::set_level(spdlog::level::off);
+        m_options.parse(argc, argv);
 
-            ::testing::InitGoogleTest(&argc, argv);
-            return RUN_ALL_TESTS();
-        }
-        if(m_options.is_example_dir())
+        if(m_options.help_option())
         {
-            auto layout = utils::parse_xlf_layout(m_options.xlf_path());
-
-            MainWindow window(500, 500, false, false, true, true);
-            window.add(*layout);
-            window.show_all();
-
-            return m_parent_app->run(window);
+            m_logger->info("{}", m_options.available_options());
         }
+        else
+        {
+            if(m_options.version_option())
+            {
+                m_logger->info("Project version: {}", get_version());
+            }
+            if(m_options.log_level_option())
+            {
+                spdlog::set_level(static_cast<spdlog::level::level_enum>(m_options.log_level()));
+            }
+            if(m_options.credentials())
+            {
+                return run_player();
+            }
+        }
+    }
+    catch(std::exception& ex)
+    {
+        m_logger->error(ex.what());
+        return -1;
     }
     return 0;
 }

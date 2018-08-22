@@ -5,7 +5,7 @@ namespace RequiredFileHelper
 {
     auto to_file_type(const std::string& type)
     {
-        using FileType = RequiredFiles::response::FileType;
+        using FileType = RequiredFiles::Response::FileType;
 
         if(type == "media")
             return FileType::Media;
@@ -19,7 +19,7 @@ namespace RequiredFileHelper
 
     auto to_download_type(const std::string& type)
     {
-        using DownloadType = RequiredFiles::response::required_file::DownloadType;
+        using DownloadType = RequiredFiles::Response::DownloadType;
 
         if(type == "http")
             return DownloadType::HTTP;
@@ -30,20 +30,19 @@ namespace RequiredFileHelper
     }
 }
 
-const std::vector<RequiredFiles::response::required_file>&
-RequiredFiles::response::required_files() const
+const std::vector<RequiredFiles::Response::required_file>&
+RequiredFiles::Response::required_files() const
 {
-    return m_required_files;
+    return m_required_media;
 }
 
-const std::vector<RequiredFiles::response::required_resource>&
-RequiredFiles::response::required_resources() const
+const std::vector<RequiredFiles::Response::required_resource>&
+RequiredFiles::Response::required_resources() const
 {
     return m_required_resources;
 }
 
-#include <iostream>
-void RequiredFiles::response::add_file(const boost::property_tree::ptree& attrs)
+void RequiredFiles::Response::add_file(const boost::property_tree::ptree& attrs)
 {
     auto file_type = RequiredFileHelper::to_file_type(attrs.get<std::string>("type"));
     if(file_type == FileType::Invalid) return;
@@ -56,7 +55,7 @@ void RequiredFiles::response::add_file(const boost::property_tree::ptree& attrs)
         std::string path = attrs.get<std::string>("path");
         std::string save_as = attrs.get<std::string>("saveAs");
         auto download_type = RequiredFileHelper::to_download_type(attrs.get<std::string>("download"));
-        m_required_files.emplace_back(required_file{id, size, md5, path, save_as, download_type, file_type});
+        m_required_media.emplace_back(required_file{id, size, md5, path, save_as, download_type, file_type});
     }
     else
     {
@@ -68,17 +67,17 @@ void RequiredFiles::response::add_file(const boost::property_tree::ptree& attrs)
 }
 
 template<>
-std::string soap::request_string(const RequiredFiles::request& request)
+std::string soap::request_string(const RequiredFiles::Request& request)
 {
-    return create_request<RequiredFiles::request>(request.server_key, request.hardware_key);
+    return create_request<RequiredFiles::Request>(request.server_key, request.hardware_key);
 }
 
 template<>
-RequiredFiles::response soap::create_response(const std::string& soap_response)
+RequiredFiles::Response soap::create_response(const std::string& soap_response)
 {
     auto files_node = xmds::parse_xml_response(soap_response).get_child("files");
 
-    RequiredFiles::response result;
+    RequiredFiles::Response result;
     std::for_each(files_node.begin(), files_node.end(), [&result](const auto& file){
         auto [name, file_node] = file;
         if(name == "file")

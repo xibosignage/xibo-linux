@@ -32,19 +32,19 @@ uint32_t utils::to_hex(const std::string& str_color)
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
 }
 
-const SOAPManager& utils::soap_manager()
+XMDSManager& utils::xmds_manager()
 {
-    return XiboApp::app().soap_manager();
+    return XiboApp::app().xmds_manager();
 }
 
 const std::string& utils::example_dir()
 {
-    return XiboApp::app().command_line_parser().example_dir_path();
+    //return XiboApp::app().command_line_parser().example_dir_path();
 }
 
 const std::string& utils::xlf_file()
 {
-    return XiboApp::app().command_line_parser().xlf_path();
+    //return XiboApp::app().command_line_parser().xlf_path();
 }
 
 std::string utils::app_current_dir()

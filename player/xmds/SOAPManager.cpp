@@ -1,9 +1,11 @@
 #include "SOAPManager.hpp"
 
-SOAPManager::SOAPManager(const std::string& host, int port) :
-    m_work{m_ioc}, m_host(host), m_port(port)
+const int DEFAULT_PORT = 80;
+
+SOAPManager::SOAPManager(const std::string& host) :
+    m_work{m_ioc}, m_host(host), m_port(DEFAULT_PORT)
 {
-    m_spdlog = spdlog::get(LOGGER);
+    m_logger = spdlog::get(LOGGER);
     m_work_thread.reset(new std::thread([=](){
         m_ioc.run();
     }));

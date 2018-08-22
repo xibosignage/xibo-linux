@@ -6,12 +6,12 @@
 
 class MediaParser;
 class MainLayout;
-class SOAPManager;
+class XMDSManager;
 
 namespace utils
 {
     uint32_t to_hex(const std::string& str_color);
-    const SOAPManager& soap_manager();
+    XMDSManager& xmds_manager();
     const std::string& example_dir();
     const std::string& xlf_file();
     std::string app_current_dir();

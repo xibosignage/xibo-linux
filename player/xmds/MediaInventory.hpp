@@ -6,24 +6,24 @@
 
 namespace MediaInventory
 {
-    struct response
+    struct Response
     {
         bool success;
     };
 
-    struct request
+    struct Request
     {
-        field<std::string> server_key{"serverKey"};
-        field<std::string> hardware_key{"hardwareKey"};
-        field<std::string> media_inventory{"mediaInventory"};
+        Field<std::string> server_key{"serverKey"};
+        Field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> media_inventory{"mediaInventory"};
     };
 }
 
 template<>
-struct soap::request_traits<MediaInventory::request>
+struct soap::request_traits<MediaInventory::Request>
 {
     static inline const std::string name = "MediaInventory";
-    using response_t = MediaInventory::response;
+    using response_t = MediaInventory::Response;
 };
 
 #endif // MEDIAINVENTORY_HPP

@@ -6,26 +6,26 @@
 
 namespace GetResource
 {
-    struct response
+    struct Response
     {
         std::string resource;
     };
 
-    struct request
+    struct Request
     {
-        field<std::string> server_key{"serverKey"};
-        field<std::string> hardware_key{"hardwareKey"};
-        field<int> layout_id{"layoutId"};
-        field<std::string> region_id{"regionId"};
-        field<std::string> media_id{"mediaId"};
+        Field<std::string> server_key{"serverKey"};
+        Field<std::string> hardware_key{"hardwareKey"};
+        Field<int> layout_id{"layoutId"};
+        Field<std::string> region_id{"regionId"};
+        Field<std::string> media_id{"mediaId"};
     };
 }
 
 template<>
-struct soap::request_traits<GetResource::request>
+struct soap::request_traits<GetResource::Request>
 {
     static inline const std::string name = "GetResource";
-    using response_t = GetResource::response;
+    using response_t = GetResource::Response;
 };
 
 #endif // GETRESOURCE_HPP

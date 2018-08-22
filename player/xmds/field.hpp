@@ -4,11 +4,11 @@
 #include <string>
 
 template<typename T>
-class field
+class Field
 {
 public:
-    field(std::string_view name) : m_field_name(name) { }
-    field& operator=(const T& value)
+    Field(std::string_view name) : m_field_name(name) { }
+    Field& operator=(const T& value)
     {
         m_value = value;
         return *this;

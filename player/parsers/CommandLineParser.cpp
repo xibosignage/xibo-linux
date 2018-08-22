@@ -1,127 +1,103 @@
 #include "CommandLineParser.hpp"
 #include "constants.hpp"
 
-#include <boost/filesystem.hpp>
-#include <boost/program_options/variables_map.hpp>
 #include <boost/program_options/parsers.hpp>
-#include <spdlog/fmt/ostr.h>
 
-namespace fs = boost::filesystem;
 namespace po = boost::program_options;
 
-const char* EXAMPLE_DIR = "example-dir";
-const char* VERSION = "version";
-const char* UNIT_TESTING = "unit-testing";
-const char* HELP = "help";
-const char* LOG_LEVEL = "log-level";
+static const char* VERSION = "version";
+static const char* HELP = "help";
+static const char* LOG_LEVEL = "log-level";
+static const char* HOST = "host";
+static const char* SERVER_KEY = "server-key";
+static const char* HARDWARE_KEY = "hardware-key";
 
 CommandLineParser::CommandLineParser() :
     m_options("Allowed options")
 {
-    m_logger = spdlog::get(LOGGER);
 }
 
-bool CommandLineParser::parse(int argc, char** argv)
+void CommandLineParser::parse(int argc, char** argv)
 {
-    po::variables_map vm;
-    m_options.add_options()(EXAMPLE_DIR, po::value<std::string>()->value_name("path-to-dir"), "specify full (absolute) path to example directory");
     m_options.add_options()(VERSION, "get project version");
-    m_options.add_options()(UNIT_TESTING, "enable unit testing mode");
     m_options.add_options()(HELP, "get available options");
     m_options.add_options()(LOG_LEVEL, po::value<int>()->value_name("[0-6]"), "set logging level (0 for all logs, 6 turn off)");
+    m_options.add_options()(HOST, po::value<std::string>(), "set CMS host");
+    m_options.add_options()(SERVER_KEY, po::value<std::string>(), "set server key that used in CMS");
+    m_options.add_options()(HARDWARE_KEY, po::value<std::string>(), "set hardware key that identifies your PC");
 
-    try {
-        po::store(po::parse_command_line(argc, argv, m_options), vm);
-        po::notify(vm);
-    }
-    catch(std::exception& ex) {
-        m_logger->error(ex.what());
-        return false;
-    }
-
-    if(vm.empty() || vm.count(HELP)){
-        m_logger->info("{}", m_options);
-        return false;
-    }
-    if(vm.count(LOG_LEVEL)) {
-        spdlog::set_level(static_cast<spdlog::level::level_enum>(vm[LOG_LEVEL].as<int>()));
-    }
-    if(vm.count(EXAMPLE_DIR)) {
-        auto example_dir = vm[EXAMPLE_DIR].as<std::string>();
-        bool dir_exists = check_example_dir(example_dir);
-        if(dir_exists)
-        {
-            auto [xlf_exists, xlf_path] = find_xlf_file(example_dir);
-            if(xlf_exists)
-            {
-                m_example_dir_path = example_dir;
-                m_xlf_path = xlf_path;
-                m_is_example_dir = true;
-            }
-        }
-    }
-    if(vm.count(UNIT_TESTING)) {
-        m_is_testing = true;
-    }
-    if(vm.count(VERSION)) {
-        m_is_version = true;
-    }
-    return true;
+    po::store(po::parse_command_line(argc, argv, m_options), m_vm);
+    po::notify(m_vm);
 }
 
-bool CommandLineParser::check_example_dir(const std::string& example_dir)
+bool CommandLineParser::version_option() const
 {
-    if(!fs::exists(example_dir) || !fs::is_directory(example_dir))
-    {
-        m_logger->error("The directory doesn't exist (or it isn't a directory)");
-        return false;
-    }
-    m_logger->info("Example directory is {}", example_dir);
-
-    return true;
+    return m_vm.count(VERSION);
 }
 
-bool CommandLineParser::is_version() const
+bool CommandLineParser::help_option() const
 {
-    return m_is_version;
+    return m_vm.empty() || m_vm.count(HELP);
 }
 
-bool CommandLineParser::is_example_dir() const
+bool CommandLineParser::log_level_option() const
 {
-    return m_is_example_dir;
+    return m_vm.count(LOG_LEVEL);
 }
 
-bool CommandLineParser::is_testing() const
+int CommandLineParser::log_level() const
 {
-    return m_is_testing;
+    if(!log_level_option())
+        throw std::runtime_error("Log Level option was not parsed");
+
+    return m_vm[LOG_LEVEL].as<int>();
 }
 
-const std::string& CommandLineParser::xlf_path() const
+bool CommandLineParser::host_option() const
 {
-    return m_xlf_path;
+    return m_vm.count(HOST);
 }
 
-const std::string& CommandLineParser::example_dir_path() const
+std::string CommandLineParser::host() const
 {
-    return m_example_dir_path;
+    if(!host_option())
+        throw std::runtime_error("Host option was not parsed");
+
+    return m_vm[HOST].as<std::string>();
+}
+
+bool CommandLineParser::server_key_option() const
+{
+    return m_vm.count(SERVER_KEY);
+}
+
+std::string CommandLineParser::server_key() const
+{
+    if(!server_key_option())
+        throw std::runtime_error("Server Key option was not parsed");
+
+    return m_vm[SERVER_KEY].as<std::string>();
+}
+
+bool CommandLineParser::hardware_key_option() const
+{
+    return m_vm.count(HARDWARE_KEY);
+}
+
+std::string CommandLineParser::hardware_key() const
+{
+    if(!hardware_key_option())
+        throw std::runtime_error("Hardware Key option was not parsed");
+
+    return m_vm[HARDWARE_KEY].as<std::string>();
+}
+
+bool CommandLineParser::credentials() const
+{
+    return host_option() && server_key_option() && hardware_key_option();
 }
 
 const po::options_description& CommandLineParser::available_options() const
 {
     return m_options;
-}
-
-std::pair<bool, std::string> CommandLineParser::find_xlf_file(const std::string& example_dir_path)
-{
-    fs::directory_iterator it(example_dir_path);
-    fs::directory_iterator end;
-
-    while(it != end)
-    {
-        if(fs::is_regular_file(*it) && it->path().extension() == ".xlf")
-            return {true, it->path().string()};
-        ++it;
-    }
-
-    return {false, std::string{}};
 }
