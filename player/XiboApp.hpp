@@ -14,9 +14,9 @@ public:
     ~XiboApp();
 
     static XiboApp& create(const std::string& name);
-    static const XiboApp& app();
+    static XiboApp& app();
     const CommandLineParser& command_line_parser() const;
-    const SOAPManager& soap_manager() const;
+    SOAPManager& soap_manager();
 
     int run(int argc, char** argv);
 

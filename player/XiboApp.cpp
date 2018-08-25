@@ -7,6 +7,7 @@
 #include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
 
@@ -38,7 +39,7 @@ XiboApp::~XiboApp()
     }
 }
 
-const XiboApp& XiboApp::app()
+XiboApp& XiboApp::app()
 {
     return *m_app;
 }
@@ -48,7 +49,7 @@ const CommandLineParser& XiboApp::command_line_parser() const
     return m_options;
 }
 
-const SOAPManager& XiboApp::soap_manager() const
+SOAPManager& XiboApp::soap_manager()
 {
     return m_soap_manager;
 }

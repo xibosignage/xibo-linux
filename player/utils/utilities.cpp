@@ -32,7 +32,7 @@ uint32_t utils::to_hex(const std::string& str_color)
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
 }
 
-const SOAPManager& utils::soap_manager()
+SOAPManager& utils::soap_manager()
 {
     return XiboApp::app().soap_manager();
 }
