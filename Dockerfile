@@ -8,9 +8,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   libgstreamer1.0-dev \
   libgstreamer-plugins-base1.0-dev \
   libgstreamer-plugins-bad1.0-dev \
+  gstreamer1.0-libav \
   libwebkitgtk-3.0-dev \
-  libboost-filesystem1.58-dev \
-  libboost-program-options1.58-dev \
   gstreamer1.0-tools \
   mesa-common-dev \
   libgl1-mesa-dev \
@@ -26,7 +25,19 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   libffi-dev \
   libmount-dev
 
-ENV MMCOMMON=0.9.10 SIGC=2.9.1 GLIB=2.50.1 GLIBMM=2.50.1 SPDLOG=0.16.3 CMAKE=3.10.3 GTEST=1.8.0
+ENV MMCOMMON=0.9.10 SIGC=2.9.1 GLIB=2.50.1 GLIBMM=2.50.1 SPDLOG=0.16.3 GTEST=1.8.0 \
+    CMAKE_MAJOR=3 CMAKE_MINOR=12 CMAKE_PATCH=1 BOOST_MAJOR=1 BOOST_MINOR=68
+ENV BOOST=${BOOST_MAJOR}_${BOOST_MINOR}_0 CMAKE=${CMAKE_MAJOR}.${CMAKE_MINOR}.${CMAKE_PATCH}
+
+RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOOST_MAJOR}.${BOOST_MINOR}.0/source/boost_${BOOST}.tar.gz && \
+    cd /root && \
+    tar -zxvf boost.tar.gz && \
+    cd boost_${BOOST} && \
+    ./bootstrap.sh --with-libraries=system,filesystem,program_options && \
+    ./b2 install && \
+    cd /root && \
+    rm -r /root/boost_${BOOST} && \
+    rm /root/boost.tar.gz
 
 RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archive/${MMCOMMON}.tar.gz && \
     cd /root && \
@@ -41,7 +52,7 @@ RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archiv
 
 RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     export ACLOCAL_PATH && \
-	curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/GNOME/libsigcplusplus/archive/${SIGC}.tar.gz && \
+    curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/GNOME/libsigcplusplus/archive/${SIGC}.tar.gz && \
     cd /root && \
     tar -zxvf libsigcplusplus.tar.gz && \
     cd libsigcplusplus-${SIGC} && \
@@ -88,8 +99,8 @@ RUN curl -o /root/spdlog.tar.gz -SL https://github.com/gabime/spdlog/archive/v${
     rm -r spdlog-${SPDLOG} && \
     rm spdlog.tar.gz
 
-RUN curl -o /root/cmake.tar.gz https://cmake.org/files/v3.10/cmake-${CMAKE}.tar.gz && \
-	cd /root && \
+RUN curl -o /root/cmake.tar.gz https://cmake.org/files/v${CMAKE_MAJOR}.${CMAKE_MINOR}/cmake-${CMAKE}.tar.gz && \
+    cd /root && \
     tar -zxvf cmake.tar.gz && \
     cd cmake-${CMAKE} && \
     cmake . && \
@@ -100,7 +111,7 @@ RUN curl -o /root/cmake.tar.gz https://cmake.org/files/v3.10/cmake-${CMAKE}.tar.
     rm cmake.tar.gz
 
 RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar.gz/release-${GTEST} && \
-	cd /root && \
+    cd /root && \
     tar -zxvf gtest.tar.gz && \
     cd googletest-release-${GTEST} && \
     cmake . && \
@@ -112,7 +123,6 @@ RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar
 
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y gstreamer1.0-libav
 RUN mkdir -p /app
 
 ADD . /app
