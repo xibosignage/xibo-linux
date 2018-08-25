@@ -1,0 +1,41 @@
+version: 2
+jobs:
+ build:
+   machine:
+      docker_layer_caching: true
+      
+   steps:
+     - checkout
+     
+     - run: docker build -t xibo-linux .
+     - run: docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/build:/build xibo-linux
+     - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - build
+ publish-github-release:
+    docker:
+      - image: circleci/golang:1.8
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - run: tar czf ~/build.tar.gz ~/build
+      - run: go get github.com/tcnksm/ghr
+      - run: ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ~/build.tar.gz
+            
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+         filters:
+            tags:
+              only: /.*/
+      - publish-github-release:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
