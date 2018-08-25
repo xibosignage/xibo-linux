@@ -2,7 +2,7 @@
 
 | `develop` | `master`|
 |--------|--------|
-| [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=develop)](https://travis-ci.org/Stivius/XiboLinuxStack) | [![Build Status](https://travis-ci.org/Stivius/XiboLinuxStack.svg?branch=master)](https://travis-ci.org/Stivius/XiboLinuxStack)
+| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/develop.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/develop) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
 
 ## Building from sources
 
