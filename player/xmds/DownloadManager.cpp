@@ -22,10 +22,11 @@ DownloadManager::~DownloadManager()
     m_work_thread->join();
 }
 
-void DownloadManager::download(const std::string& filename, const std::string& path)
+void DownloadManager::download(const std::string& filename, const std::string& path, DownloadCallback callback)
 {
     auto session = std::make_shared<DownloadSession>(m_ioc);
     session->filename = filename;
+    session->callback = callback;
 
     const int GROUPS_COUNT = 3;
     std::regex url_regex("([A-Za-z]*://)(.*)(/.*)");
@@ -41,7 +42,7 @@ void DownloadManager::download(const std::string& filename, const std::string& p
     session->resolver.async_resolve(m_host, std::to_string(80), ip::resolver_base::numeric_service, resolve);
 }
 
-void DownloadManager::download(int layout_id, int region_id, int media_id)
+void DownloadManager::download(int layout_id, int region_id, int media_id, DownloadCallback callback)
 {
     GetResource::request request;
     request.layout_id = layout_id;
@@ -50,9 +51,11 @@ void DownloadManager::download(int layout_id, int region_id, int media_id)
     request.server_key = "egDeedO6";
     request.hardware_key = "Postman";
 
-    utils::soap_manager().send_request(request, [media_id](const GetResource::response& response){
-        std::ofstream out("resources/" + std::to_string(media_id) + ".html");
+    utils::soap_manager().send_request(request, [media_id, callback](const GetResource::response& response){
+        auto filename = "resources/" + std::to_string(media_id) + ".html";
+        std::ofstream out(filename);
         out << response.resource;
+        callback(filename);
     });
 }
 
@@ -62,6 +65,8 @@ void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t b
 
     std::ofstream out("resources/" + session->filename);
     out << session->http_response.body();
+
+    session->callback("resources/" + session->filename);
 }
 
 void DownloadManager::on_write(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session)
