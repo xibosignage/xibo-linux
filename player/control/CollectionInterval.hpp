@@ -1,10 +1,10 @@
 #ifndef COLLECTIONINTERVAL_HPP
 #define COLLECTIONINTERVAL_HPP
 
-#include "DownloadManager.hpp"
 #include "xmds/XMDSManager.hpp"
 
 #include <sigc++/signal.h>
+#include <spdlog/spdlog.h>
 
 struct RequiredFilesSession
 {
@@ -33,7 +33,6 @@ private:
 private:
     std::shared_ptr<spdlog::logger> m_logger;
     sigc::signal<void> m_signal_finished;
-    DownloadManager m_download_manager;
 
 };
 

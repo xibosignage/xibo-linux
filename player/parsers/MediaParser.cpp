@@ -40,12 +40,12 @@ std::unique_ptr<Media> MediaParser::parse_audio_node(int parent_duration)
         auto attrs = uri_node.get_child("<xmlattr>");
 
         int id = attrs.get<int>("mediaId");
-        std::string uri = utils::example_dir() + "/" + uri_node.get_value<std::string>();
+        auto uri = utils::resources_dir() / uri_node.get_value<std::string>();
         bool mute = attrs.get<bool>("mute", false);
         bool loop = attrs.get<bool>("loop", false);
         double volume = attrs.get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);
 
-        return std::make_unique<Audio>(id, parent_duration, uri, mute, loop, volume);
+        return std::make_unique<Audio>(id, parent_duration, uri.string(), mute, loop, volume);
     }
     return nullptr;
 }

@@ -6,6 +6,9 @@
 
 #include <regex>
 #include <fstream>
+#include <boost/filesystem.hpp>
+
+const std::string DEFAULT_FOLDER = "resources";
 
 DownloadManager::DownloadManager() :
     m_work{m_ioc}
@@ -14,12 +17,31 @@ DownloadManager::DownloadManager() :
     m_work_thread.reset(new std::thread([=](){
         m_ioc.run();
     }));
+
+    init();
 }
 
 DownloadManager::~DownloadManager()
 {
     m_ioc.stop();
     m_work_thread->join();
+}
+
+void DownloadManager::init()
+{
+    m_resources_dir = utils::app_current_dir() / DEFAULT_FOLDER;
+    if(!boost::filesystem::exists(m_resources_dir))
+    {
+        bool result = boost::filesystem::create_directory(m_resources_dir);
+        if(!result)
+        {
+            throw std::runtime_error("Unable to create resources directory");
+        }
+        else
+        {
+            m_logger->info("Resource directory is {}", m_resources_dir.string());
+        }
+    }
 }
 
 // FIXME GetFile should be used in case of XMDS download type
@@ -51,6 +73,11 @@ void DownloadManager::download(int layout_id, int region_id, int media_id, Downl
         out << response.resource;
         callback(filename);
     });
+}
+
+boost::filesystem::path DownloadManager::resources_dir()
+{
+    return m_resources_dir;
 }
 
 void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)

@@ -1,6 +1,8 @@
 #include "CollectionInterval.hpp"
+
 #include "constants.hpp"
 #include "utils/utilities.hpp"
+#include "DownloadManager.hpp"
 
 #include <glibmm/main.h>
 
@@ -11,11 +13,6 @@ CollectionInterval::CollectionInterval()
 
 void CollectionInterval::start()
 {
-    Glib::signal_timeout().connect_seconds([=](){
-        collect_data();
-        return true;
-    }, 20);
-
     collect_data();
 }
 
@@ -42,7 +39,7 @@ void CollectionInterval::on_register_display(const RegisterDisplay::Response& re
         m_logger->info("Display has been added and waiting for approval in CMS");
         break;
     case RegisterDisplay::Response::Status::Waiting:
-        m_logger->info("Displat is still waiting for approval in CMS");
+        m_logger->info("Display is still waiting for approval in CMS");
         break;
     default:
         m_logger->critical("Invalid display status"); // FIXME exception(?)
@@ -63,17 +60,17 @@ void CollectionInterval::on_required_files(const RequiredFiles::Response& respon
 
     for(auto&& file : response.required_files())
     {
-        m_logger->trace("File type: {} Id: {} Size: {}", (int)file.file_type, file.id, file.size);
-        m_logger->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, (int)file.download_type);
+        m_logger->trace("File type: {} Id: {} Size: {}", static_cast<int>(file.file_type), file.id, file.size);
+        m_logger->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.download_type));
 
-        m_download_manager.download(file.filename, file.path, clbk); // FIXME add download type
+        utils::download_manager().download(file.filename, file.path, clbk); // FIXME add download type
     }
 
     for(auto&& resource : response.required_resources())
     {
         m_logger->trace("layout_id: {} region_id: {} media_id: {}", resource.layout_id, resource.region_id, resource.media_id);
 
-        m_download_manager.download(resource.layout_id, resource.region_id, resource.media_id, clbk);
+        utils::download_manager().download(resource.layout_id, resource.region_id, resource.media_id, clbk);
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <boost/optional/optional.hpp>
+#include <boost/filesystem/path.hpp>
 
 class Media;
 
@@ -15,7 +16,6 @@ protected:
     std::unique_ptr<Media> doParse() override;
 
 private:
-    boost::optional<int> parse_duration(const std::string& path);
-    std::string get_path(int id, const boost::optional<std::string>& uri);
+    boost::optional<int> parse_duration(const boost::filesystem::path& path);
 
 };

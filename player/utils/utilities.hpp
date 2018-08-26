@@ -2,20 +2,24 @@
 
 #include <cstdint>
 #include <string>
+#include <boost/filesystem/path.hpp>
+
 #include "constants.hpp"
 
 class MediaParser;
 class MainLayout;
 class XMDSManager;
+class DownloadManager;
 
 namespace utils
 {
     uint32_t to_hex(const std::string& str_color);
     XMDSManager& xmds_manager();
-    const std::string& example_dir();
-    std::string app_current_dir();
+    DownloadManager& download_manager();
+    boost::filesystem::path resources_dir();
+    boost::filesystem::path app_current_dir();
     std::unique_ptr<MediaParser> get_media_parser(const xlf_node& parent_node, const xlf_node& media_node);
-    std::unique_ptr<MainLayout> parse_xlf_layout(const std::string& xlf_path);
+    std::unique_ptr<MainLayout> parse_xlf_layout(const boost::filesystem::path& xlf_path);
 
     template <typename T>
     class Finalizer

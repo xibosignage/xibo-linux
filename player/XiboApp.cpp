@@ -2,6 +2,7 @@
 #include "config.hpp"
 #include "utils/utilities.hpp"
 
+#include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
 #include "tests/test.hpp"
@@ -32,18 +33,20 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 int XiboApp::run_player()
 {
     MainWindow window(500, 500, false, false, true, true);
+    std::unique_ptr<MainLayout> layout;
+
     signal_startup().connect([this, &window](){
         Gtk::Application::add_window(window);
     });
 
     m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
-    m_collection_inverval.signal_finished().connect([this, &window](){
+    m_collection_interval.signal_finished().connect([this, &layout, &window](){
         m_logger->info("Player started");
-//        auto layout = utils::parse_xlf_layout("resources/3.xlf");
-//        window.add(*layout);
+        layout = utils::parse_xlf_layout(utils::resources_dir() / "3.xlf");
+        window.add(*layout);
         window.show_all();
     });
-    m_collection_inverval.start();
+    m_collection_interval.start();
 
     return Gtk::Application::run();
 }
@@ -69,6 +72,11 @@ const CommandLineParser& XiboApp::command_line_parser() const
 XMDSManager& XiboApp::xmds_manager()
 {
     return *m_xmds_manager;
+}
+
+DownloadManager& XiboApp::download_manager()
+{
+    return m_download_manager;
 }
 
 int XiboApp::run(int argc, char** argv)

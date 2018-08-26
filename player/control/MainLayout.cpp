@@ -31,9 +31,8 @@ std::unique_ptr<MainLayout> MainLayout::create(int schemaVersion,
     if(!bgcolor.empty())
         background->set_color(utils::to_hex(bgcolor));
 
-// FIXME
     if(!bgimage.empty())
-        background->set_image(utils::example_dir() + "/" + bgimage);
+        background->set_image(utils::resources_dir() / bgimage);
 
     layout->set_background(std::move(background));
     return layout;
@@ -121,6 +120,7 @@ void MainLayout::on_layout_shown()
 
 void MainLayout::set_background(std::unique_ptr<IBackground> background)
 {
+    // FIXME always true + 100x100 layout and 1920x1080 background = crash
     if(background)
     {
         if(m_background)

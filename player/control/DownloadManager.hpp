@@ -3,6 +3,7 @@
 
 #include <boost/beast.hpp>
 #include <boost/asio.hpp>
+#include <boost/filesystem/path.hpp>
 #include <spdlog/spdlog.h>
 
 namespace beast = boost::beast;
@@ -35,8 +36,11 @@ public:
 
     void download(const std::string& filename, const std::string& path, DownloadCallback callback);
     void download(int layout_id, int region_id, int media_id, DownloadCallback callback);
+    boost::filesystem::path resources_dir();
 
 private:
+    void init();
+
     void on_read(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
     void on_write(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
     void on_connect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session);
@@ -48,6 +52,7 @@ private:
     std::unique_ptr<std::thread> m_work_thread;
     std::string m_host;
     std::shared_ptr<spdlog::logger> m_logger;
+    boost::filesystem::path m_resources_dir;
 };
 
 
