@@ -49,18 +49,26 @@ void CollectionInterval::on_required_files(const RequiredFiles::Response& respon
 {
     m_logger->info("{} files and {} resources to download", response.required_files().size(), response.required_resources().size());
 
+    auto clbk = std::bind(&CollectionInterval::download_callback, this, std::placeholders::_1);
+
     for(auto&& file : response.required_files())
     {
         m_logger->trace("File type: {} Id: {} Size: {}", (int)file.file_type, file.id, file.size);
         m_logger->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, (int)file.download_type);
 
-        m_download_manager.download(file.filename, file.path); // FIXME add download type
+        m_download_manager.download(file.filename, file.path, clbk); // FIXME add download type
     }
 
     for(auto&& resource : response.required_resources())
     {
         m_logger->trace("layout_id: {} region_id: {} media_id: {}", resource.layout_id, resource.region_id, resource.media_id);
 
-        m_download_manager.download(resource.layout_id, resource.region_id, resource.media_id);
+        m_download_manager.download(resource.layout_id, resource.region_id, resource.media_id, clbk);
     }
 }
+
+void CollectionInterval::download_callback(const std::string& filename)
+{
+    m_logger->trace("{} downloaded", filename);
+}
+

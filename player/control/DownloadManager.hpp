@@ -10,6 +10,8 @@ namespace http = boost::beast::http;
 namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 
+using DownloadCallback = std::function<void(const std::string&)>;
+
 struct DownloadSession
 {
     DownloadSession(asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
@@ -20,6 +22,7 @@ struct DownloadSession
     beast::flat_buffer buffer;
     std::string filename;
     std::string target;
+    std::function<void(const std::string&)> callback;
 };
 
 class DownloadManager
@@ -30,8 +33,8 @@ public:
     DownloadManager(const DownloadManager&) = delete;
     DownloadManager& operator=(const DownloadManager&) = delete;
 
-    void download(const std::string& filename, const std::string& path);
-    void download(int layout_id, int region_id, int media_id);
+    void download(const std::string& filename, const std::string& path, DownloadCallback callback);
+    void download(int layout_id, int region_id, int media_id, DownloadCallback callback);
 
 private:
     void on_read(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);

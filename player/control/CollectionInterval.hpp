@@ -17,6 +17,7 @@ private:
     void on_register_display(const RegisterDisplay::Response& response);
     void on_required_files(const RequiredFiles::Response& response);
 
+    void download_callback(const std::string& filename);
 
 private:
     std::shared_ptr<spdlog::logger> m_logger;

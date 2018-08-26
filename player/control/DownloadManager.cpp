@@ -23,10 +23,11 @@ DownloadManager::~DownloadManager()
 }
 
 // FIXME GetFile should be used in case of XMDS download type
-void DownloadManager::download(const std::string& filename, const std::string& path)
+void DownloadManager::download(const std::string& filename, const std::string& path, DownloadCallback callback)
 {
     auto session = std::make_shared<DownloadSession>(m_ioc);
     session->filename = filename;
+    session->callback = callback;
 
     const int GROUPS_COUNT = 3;
     std::regex url_regex("([A-Za-z]*://)(.*)(/.*)");
@@ -42,11 +43,13 @@ void DownloadManager::download(const std::string& filename, const std::string& p
     session->resolver.async_resolve(m_host, std::to_string(80), ip::resolver_base::numeric_service, resolve);
 }
 
-void DownloadManager::download(int layout_id, int region_id, int media_id)
+void DownloadManager::download(int layout_id, int region_id, int media_id, DownloadCallback callback)
 {
     utils::xmds_manager().get_resource(layout_id, region_id, media_id, [=](const GetResource::Response& response){
-        std::ofstream out("resources/" + std::to_string(media_id) + ".html");
+        auto filename = "resources/" + std::to_string(media_id) + ".html";
+        std::ofstream out(filename);
         out << response.resource;
+        callback(filename);
     });
 }
 
@@ -54,8 +57,10 @@ void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t, 
 {
     if(!ec)
     {
-        std::ofstream out("resources/" + session->filename);
+        auto filename = "resources/" + session->filename;
+        std::ofstream out(filename);
         out << session->http_response.body();
+        session->callback(filename);
     }
     else
     {
