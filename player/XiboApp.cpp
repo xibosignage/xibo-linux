@@ -7,6 +7,7 @@
 #include "tests/test.hpp"
 
 #include <spdlog/fmt/ostr.h>
+#include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
 
