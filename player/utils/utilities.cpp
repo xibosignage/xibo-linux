@@ -32,12 +32,17 @@ uint32_t utils::to_hex(const std::string& str_color)
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
 }
 
-std::string utils::example_dir()
+const SOAPManager& utils::soap_manager()
+{
+    return XiboApp::app().soap_manager();
+}
+
+const std::string& utils::example_dir()
 {
     return XiboApp::app().command_line_parser().example_dir_path();
 }
 
-std::string utils::xlf_file()
+const std::string& utils::xlf_file()
 {
     return XiboApp::app().command_line_parser().xlf_path();
 }
