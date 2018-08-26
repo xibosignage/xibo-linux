@@ -19,6 +19,11 @@ void CollectionInterval::start()
     collect_data();
 }
 
+sigc::signal<void>& CollectionInterval::signal_finished()
+{
+    return m_signal_finished;
+}
+
 void CollectionInterval::collect_data()
 {
     auto clbk = std::bind(&CollectionInterval::on_register_display, this, std::placeholders::_1);
@@ -47,9 +52,14 @@ void CollectionInterval::on_register_display(const RegisterDisplay::Response& re
 
 void CollectionInterval::on_required_files(const RequiredFiles::Response& response)
 {
-    m_logger->info("{} files and {} resources to download", response.required_files().size(), response.required_resources().size());
+    size_t files_count = response.required_files().size();
+    size_t resources_count = response.required_resources().size();
 
-    auto clbk = std::bind(&CollectionInterval::download_callback, this, std::placeholders::_1);
+    m_logger->debug("{} files and {} resources to download", files_count, resources_count);
+
+    auto session = std::make_shared<RequiredFilesSession>();
+    session->download_overall = files_count + resources_count;
+    auto clbk = std::bind(&CollectionInterval::download_callback, this, std::placeholders::_1, session);
 
     for(auto&& file : response.required_files())
     {
@@ -67,8 +77,15 @@ void CollectionInterval::on_required_files(const RequiredFiles::Response& respon
     }
 }
 
-void CollectionInterval::download_callback(const std::string& filename)
+void CollectionInterval::download_callback(const std::string& filename, RequiredFilesSessionPtr session)
 {
     m_logger->trace("{} downloaded", filename);
+    if(++session->download_count == session->download_overall)
+    {
+        Glib::MainContext::get_default()->invoke([=](){
+            m_logger->debug("All files downloaded");
+            m_signal_finished.emit();
+            return false;
+        });
+    }
 }
-

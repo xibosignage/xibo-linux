@@ -20,33 +20,32 @@ XiboApp& XiboApp::create(const std::string& name)
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
 
-    m_app = std::unique_ptr<XiboApp>(new XiboApp);
-    m_app->m_parent_app = Gtk::Application::create(name);
-
+    m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
 }
 
-XiboApp::XiboApp()
+XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 {
     m_logger = spdlog::get(LOGGER);
 }
 
 int XiboApp::run_player()
 {
-    using namespace std::chrono_literals;
-
     MainWindow window(500, 500, false, false, true, true);
+    signal_startup().connect([this, &window](){
+        Gtk::Application::add_window(window);
+    });
 
     m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
+    m_collection_inverval.signal_finished().connect([this, &window](){
+        m_logger->info("Player started");
+//        auto layout = utils::parse_xlf_layout("resources/3.xlf");
+//        window.add(*layout);
+        window.show_all();
+    });
     m_collection_inverval.start();
 
-//    auto layout = utils::parse_xlf_layout("resources/" + required_layout.filename);
-//    window.add(*layout);
-//    window.show_all();
-
-    std::this_thread::sleep_for(10s);
-
-    return m_parent_app->run(window);
+    return Gtk::Application::run();
 }
 
 XiboApp::~XiboApp()

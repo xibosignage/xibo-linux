@@ -42,11 +42,6 @@ const std::string& utils::example_dir()
     //return XiboApp::app().command_line_parser().example_dir_path();
 }
 
-const std::string& utils::xlf_file()
-{
-    //return XiboApp::app().command_line_parser().xlf_path();
-}
-
 std::string utils::app_current_dir()
 {
     return boost::filesystem::current_path().string();
