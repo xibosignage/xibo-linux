@@ -11,6 +11,7 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
+#include <boost/filesystem/operations.hpp>
 #include <chrono>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
@@ -30,25 +31,59 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
     m_logger = spdlog::get(LOGGER);
 }
 
-int XiboApp::run_player()
+int XiboApp::init_player()
 {
     MainWindow window(500, 500, false, false, true, true);
-    std::unique_ptr<MainLayout> layout;
+
+    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 
     signal_startup().connect([this, &window](){
         Gtk::Application::add_window(window);
     });
 
-    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
-    m_collection_interval.signal_finished().connect([this, &layout, &window](){
-        m_logger->info("Player started");
-        layout = utils::parse_xlf_layout(utils::resources_dir() / "3.xlf");
-        window.add(*layout);
-        window.show_all();
-    });
+    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
+    m_collection_interval.signal_finished().connect(run_player);
+
+    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
+    m_collection_interval.signal_settings_updated().connect(update_settings);
+
     m_collection_interval.start();
 
     return Gtk::Application::run();
+}
+
+void XiboApp::run_player(MainWindow& window)
+{
+    if(!window.is_visible())
+    {
+        m_logger->info("Player started");
+        m_layout = utils::parse_xlf_layout(find_xlf_file());
+        window.add(*m_layout);
+        window.show_all();
+    }
+}
+
+void XiboApp::update_settings(const PlayerSettings& )
+{
+    //    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
+}
+
+// FIXME temporary workaround
+std::string XiboApp::find_xlf_file()
+{
+    namespace fs = boost::filesystem;
+
+    fs::directory_iterator it(utils::resources_dir());
+    fs::directory_iterator end;
+
+    while(it != end)
+    {
+        if(fs::is_regular_file(*it) && it->path().extension() == ".xlf")
+            return it->path().string();
+        ++it;
+    }
+
+    throw std::runtime_error(".XLF file was not found");
 }
 
 XiboApp::~XiboApp()
@@ -62,11 +97,6 @@ XiboApp::~XiboApp()
 XiboApp& XiboApp::app()
 {
     return *m_app;
-}
-
-const CommandLineParser& XiboApp::command_line_parser() const
-{
-    return m_options;
 }
 
 XMDSManager& XiboApp::xmds_manager()
@@ -95,13 +125,9 @@ int XiboApp::run(int argc, char** argv)
             {
                 m_logger->info("Project version: {}", get_version());
             }
-            if(m_options.log_level_option())
-            {
-                spdlog::set_level(static_cast<spdlog::level::level_enum>(m_options.log_level()));
-            }
             if(m_options.credentials())
             {
-                return run_player();
+                return init_player();
             }
         }
     }

@@ -7,7 +7,6 @@ namespace po = boost::program_options;
 
 static const char* VERSION = "version";
 static const char* HELP = "help";
-static const char* LOG_LEVEL = "log-level";
 static const char* HOST = "host";
 static const char* SERVER_KEY = "server-key";
 static const char* HARDWARE_KEY = "hardware-key";
@@ -21,7 +20,6 @@ void CommandLineParser::parse(int argc, char** argv)
 {
     m_options.add_options()(VERSION, "get project version");
     m_options.add_options()(HELP, "get available options");
-    m_options.add_options()(LOG_LEVEL, po::value<int>()->value_name("[0-6]"), "set logging level (0 for all logs, 6 turn off)");
     m_options.add_options()(HOST, po::value<std::string>(), "set CMS host");
     m_options.add_options()(SERVER_KEY, po::value<std::string>(), "set server key that used in CMS");
     m_options.add_options()(HARDWARE_KEY, po::value<std::string>(), "set hardware key that identifies your PC");
@@ -38,19 +36,6 @@ bool CommandLineParser::version_option() const
 bool CommandLineParser::help_option() const
 {
     return m_vm.empty() || m_vm.count(HELP);
-}
-
-bool CommandLineParser::log_level_option() const
-{
-    return m_vm.count(LOG_LEVEL);
-}
-
-int CommandLineParser::log_level() const
-{
-    if(!log_level_option())
-        throw std::runtime_error("Log Level option was not parsed");
-
-    return m_vm[LOG_LEVEL].as<int>();
 }
 
 bool CommandLineParser::host_option() const

@@ -10,7 +10,7 @@ WebView::WebView(int id, const Size& size, int duration, const std::string& uri,
     if(boost::filesystem::exists(uri))
     {
         auto path = "file://" + uri;
-        spdlog::get(LOGGER)->debug(path);
+        spdlog::get(LOGGER)->trace("WebView file {}", path);
 
         m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
         webkit_web_view_load_uri(m_web_view, path.c_str());

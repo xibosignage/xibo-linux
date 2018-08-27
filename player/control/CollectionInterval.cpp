@@ -2,10 +2,15 @@
 
 #include "constants.hpp"
 #include "utils/utilities.hpp"
+#include "PlayerSettings.hpp"
 #include "DownloadManager.hpp"
 
 #include <glibmm/main.h>
 
+const uint DEFAULT_INTERVAL = 60;
+
+
+// FIXME interval may not be finished before starting the new one
 CollectionInterval::CollectionInterval()
 {
     m_logger = spdlog::get(LOGGER);
@@ -13,6 +18,13 @@ CollectionInterval::CollectionInterval()
 
 void CollectionInterval::start()
 {
+    // NOTE: doesn't actually run 20 seconds
+//    m_logger->debug("CollectionInterval timer started with DEFAULT {} interval", DEFAULT_INTERVAL);
+    m_interval_connection = Glib::signal_timeout().connect_seconds([=]{
+        collect_data();
+        return true;
+    }, DEFAULT_INTERVAL);
+
     collect_data();
 }
 
@@ -21,10 +33,30 @@ sigc::signal<void>& CollectionInterval::signal_finished()
     return m_signal_finished;
 }
 
+sigc::signal<void, PlayerSettings>&CollectionInterval::signal_settings_updated()
+{
+    return m_signal_settings_updated;
+}
+
 void CollectionInterval::collect_data()
 {
     auto clbk = std::bind(&CollectionInterval::on_register_display, this, std::placeholders::_1);
     utils::xmds_manager().register_display(121, "1.8", "Display", clbk);
+}
+
+void CollectionInterval::update_timer(uint collect_interval)
+{
+    if(m_collect_interval != collect_interval)
+    {
+        m_collect_interval = collect_interval;
+        m_interval_connection.disconnect();
+
+        m_interval_connection = Glib::signal_timeout().connect_seconds([=]{
+//            m_logger->debug("CollectionInterval timer started with {} interval", m_collect_interval.value());
+            collect_data();
+            return true;
+        }, m_collect_interval.value());
+    }
 }
 
 void CollectionInterval::on_register_display(const RegisterDisplay::Response& response)
@@ -32,14 +64,16 @@ void CollectionInterval::on_register_display(const RegisterDisplay::Response& re
     switch(response.status)
     {
     case RegisterDisplay::Response::Status::Ready:
-        m_logger->info("Display is ready. Getting required files...");
+        m_logger->debug("Display is ready. Getting required files...");
+        update_timer(response.player_settings.collect_interval);
+        m_signal_settings_updated.emit(response.player_settings);
         utils::xmds_manager().required_files(std::bind(&CollectionInterval::on_required_files, this, std::placeholders::_1));
         break;
     case RegisterDisplay::Response::Status::Added:
-        m_logger->info("Display has been added and waiting for approval in CMS");
+        m_logger->debug("Display has been added and waiting for approval in CMS");
         break;
     case RegisterDisplay::Response::Status::Waiting:
-        m_logger->info("Display is still waiting for approval in CMS");
+        m_logger->debug("Display is still waiting for approval in CMS");
         break;
     default:
         m_logger->critical("Invalid display status"); // FIXME exception(?)
@@ -76,7 +110,7 @@ void CollectionInterval::on_required_files(const RequiredFiles::Response& respon
 
 void CollectionInterval::download_callback(const std::string& filename, RequiredFilesSessionPtr session)
 {
-    m_logger->trace("{} downloaded", filename);
+    m_logger->debug("{} downloaded", filename);
     if(++session->download_count == session->download_overall)
     {
         Glib::MainContext::get_default()->invoke([=](){

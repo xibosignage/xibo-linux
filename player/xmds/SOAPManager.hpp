@@ -63,12 +63,12 @@ private:
             }
             else
             {
-                m_logger->debug("Receive SOAP request with HTTP error: {}", session->http_response.result_int());
+                m_logger->error("Receive SOAP request with HTTP error: {}", session->http_response.result_int());
             }
         }
         else
         {
-            m_logger->debug("Receive SOAP request with error: {}", ec.message());
+            m_logger->error("Receive SOAP request with error: {}", ec.message());
         }
     }
 
@@ -82,7 +82,7 @@ private:
         }
         else
         {
-            m_logger->debug("Send SOAP request with error: {}", ec.message());
+            m_logger->error("Send SOAP request with error: {}", ec.message());
         }
     }
 
@@ -105,7 +105,7 @@ private:
         }
         else
         {
-            m_logger->debug("SOAP Connected to host with error: {}", ec.message());
+            m_logger->error("SOAP Connected to host with error: {}", ec.message());
         }
     }
 
@@ -119,7 +119,7 @@ private:
         }
         else
         {
-            m_logger->debug("SOAP Resolved host with error: {}", ec.message());
+            m_logger->error("SOAP Resolved host with error: {}", ec.message());
         }
     }
 

@@ -17,7 +17,7 @@ LayoutParser::LayoutParser(const xlf_node& layout_node) :
 
 std::unique_ptr<MainLayout> LayoutParser::parse()
 {
-    spdlog::get(LOGGER)->debug("parse layout");
+    spdlog::get(LOGGER)->trace("Parsing layout...");
     auto attrs = m_layout_node.get_child("<xmlattr>");
 
     int schemaVersion = attrs.get<int>("schemaVersion");

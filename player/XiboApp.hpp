@@ -6,8 +6,11 @@
 #include "parsers/CommandLineParser.hpp"
 #include "control/DownloadManager.hpp"
 #include "control/CollectionInterval.hpp"
+#include "control/PlayerSettings.hpp"
 
 class XMDSManager;
+class MainLayout;
+class MainWindow;
 
 class XiboApp : public Gtk::Application
 {
@@ -18,7 +21,6 @@ public:
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
-    const CommandLineParser& command_line_parser() const;
     XMDSManager& xmds_manager();
     DownloadManager& download_manager();
 
@@ -26,10 +28,14 @@ public:
 
 private:
     XiboApp(const std::string& name);
-    int run_player();
+    int init_player();
+    void run_player(MainWindow& window);
+    void update_settings(const PlayerSettings& settings);
+    std::string find_xlf_file();
 
 private:
     std::shared_ptr<spdlog::logger> m_logger;
+    std::unique_ptr<MainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmds_manager;
     DownloadManager m_download_manager;
     CollectionInterval m_collection_interval;

@@ -69,7 +69,7 @@ void MainLayout::scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor)
         set_size(static_cast<int>(m_width * m_width_scale_factor),
                  static_cast<int>(m_height * m_height_scale_factor));
 
-        m_logger->debug("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
+        m_logger->trace("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
     }
 }
 
@@ -100,7 +100,7 @@ void MainLayout::reorder_regions()
 
     for(size_t i = 0; i != regions_count(); ++i)
     {
-        m_logger->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
+        m_logger->trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
         reorder_overlay(*m_regions[i], static_cast<int>(i));
     }
 }

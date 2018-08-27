@@ -17,7 +17,7 @@ RegionParser::RegionParser(const xlf_node& region_node) :
 
 std::unique_ptr<Region> RegionParser::parse()
 {
-    spdlog::get(LOGGER)->debug("parse region");
+    spdlog::get(LOGGER)->trace("Parsing region...");
 
     auto attrs = m_region_node.get_child("<xmlattr>");
     auto options = m_region_node.get_child("options");

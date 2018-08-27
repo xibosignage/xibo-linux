@@ -29,7 +29,7 @@ DownloadManager::~DownloadManager()
 
 void DownloadManager::init()
 {
-    m_resources_dir = utils::app_current_dir() / DEFAULT_FOLDER;
+    m_resources_dir = boost::filesystem::current_path() / DEFAULT_FOLDER;
     if(!boost::filesystem::exists(m_resources_dir))
     {
         bool result = boost::filesystem::create_directory(m_resources_dir);
@@ -68,10 +68,10 @@ void DownloadManager::download(const std::string& filename, const std::string& p
 void DownloadManager::download(int layout_id, int region_id, int media_id, DownloadCallback callback)
 {
     utils::xmds_manager().get_resource(layout_id, region_id, media_id, [=](const GetResource::Response& response){
-        auto filename = "resources/" + std::to_string(media_id) + ".html";
-        std::ofstream out(filename);
+        auto filename = resources_dir() / (std::to_string(media_id) + ".html");
+        std::ofstream out(filename.string());
         out << response.resource;
-        callback(filename);
+        callback(filename.string());
     });
 }
 
@@ -84,27 +84,29 @@ void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t, 
 {
     if(!ec)
     {
-        auto filename = "resources/" + session->filename;
-        std::ofstream out(filename);
+        auto filename = resources_dir() / session->filename;
+        std::ofstream out(filename.string());
         out << session->http_response.body();
-        session->callback(filename);
+        session->callback(filename.string());
     }
     else
     {
-        m_logger->debug("[{}] Download error: {}", session->filename, ec.message());
+        m_logger->error("[{}] Download error: {}", session->filename, ec.message());
+        m_logger->warn("Current the player doesn't support VERY big files like video/audio (will be fixed in the next release)");
     }
 }
 
+#include <limits>
 void DownloadManager::on_write(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
-    {
+    {  
         auto read = std::bind(&DownloadManager::on_read, this, std::placeholders::_1, std::placeholders::_2, session);
         http::async_read(session->socket, session->buffer, session->http_response, read);
     }
     else
     {
-        m_logger->debug("[{}] Send download request error: {}", session->filename, ec.message());
+        m_logger->error("[{}] Send download request error: {}", session->filename, ec.message());
     }
 }
 
@@ -123,7 +125,7 @@ void DownloadManager::on_connect(const boost::system::error_code& ec, ip::tcp::r
     }
     else
     {
-        m_logger->debug("[{}] Connected to host with error: {}", session->filename, ec.message());
+        m_logger->error("[{}] Connected to host with error: {}", session->filename, ec.message());
     }
 }
 
@@ -136,6 +138,6 @@ void DownloadManager::on_resolve(const boost::system::error_code& ec, ip::tcp::r
     }
     else
     {
-        m_logger->debug("[{}] Resolved host with error: {}", session->filename, ec.message());
+        m_logger->error("[{}] Resolved host with error: {}", session->filename, ec.message());
     }
 }

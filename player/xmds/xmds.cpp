@@ -1,6 +1,6 @@
 #include "xmds.hpp"
-#include "utils.hpp"
 #include "soap.hpp"
+#include "utils/utilities.hpp"
 
 boost::property_tree::ptree xmds::parse_xml_response(const std::string& soap_response)
 {

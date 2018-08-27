@@ -32,6 +32,11 @@ uint32_t utils::to_hex(const std::string& str_color)
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
 }
 
+DownloadManager& utils::download_manager()
+{
+    return XiboApp::app().download_manager();
+}
+
 XMDSManager& utils::xmds_manager()
 {
     return XiboApp::app().xmds_manager();
@@ -40,11 +45,6 @@ XMDSManager& utils::xmds_manager()
 boost::filesystem::path utils::resources_dir()
 {
     return download_manager().resources_dir();
-}
-
-boost::filesystem::path utils::app_current_dir()
-{
-    return boost::filesystem::current_path();
 }
 
 std::unique_ptr<MediaParser> utils::get_media_parser(const xlf_node& parent_node, const xlf_node& media_node)
@@ -82,7 +82,11 @@ std::unique_ptr<MainLayout> utils::parse_xlf_layout(const boost::filesystem::pat
     return layout;
 }
 
-DownloadManager& utils::download_manager()
+boost::property_tree::ptree utils::parse_xml(const std::string& xml)
 {
-    return XiboApp::app().download_manager();
+    std::stringstream stream;
+    stream << xml;
+    boost::property_tree::ptree tree;
+    boost::property_tree::read_xml(stream, tree);
+    return tree;
 }

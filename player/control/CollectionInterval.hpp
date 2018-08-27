@@ -4,6 +4,7 @@
 #include "xmds/XMDSManager.hpp"
 
 #include <sigc++/signal.h>
+#include <sigc++/connection.h>
 #include <spdlog/spdlog.h>
 
 struct RequiredFilesSession
@@ -20,9 +21,11 @@ public:
     CollectionInterval();
     void start();
     sigc::signal<void>& signal_finished();
+    sigc::signal<void, PlayerSettings>& signal_settings_updated();
 
 private:
     void collect_data();
+    void update_timer(uint collect_interval);
 
 private:
     void on_register_display(const RegisterDisplay::Response& response);
@@ -33,6 +36,9 @@ private:
 private:
     std::shared_ptr<spdlog::logger> m_logger;
     sigc::signal<void> m_signal_finished;
+    sigc::signal<void, PlayerSettings> m_signal_settings_updated;
+    sigc::connection m_interval_connection;
+    boost::optional<uint> m_collect_interval;
 
 };
 

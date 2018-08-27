@@ -11,8 +11,6 @@ public:
 
     bool version_option() const;
     bool help_option() const;
-    bool log_level_option() const;
-    int log_level() const;
     bool host_option() const;
     std::string host() const;
     bool server_key_option() const;
