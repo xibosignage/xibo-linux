@@ -31,7 +31,7 @@ std::unique_ptr<Media> WebViewParser::doParse()
 
 boost::optional<int> WebViewParser::parse_duration(const boost::filesystem::path& path)
 {
-    std::ifstream in(path);
+    std::ifstream in(path.string());
     std::string line;
     std::regex re("<!-- DURATION=([0-9]+) -->");
     while(std::getline(in, line))

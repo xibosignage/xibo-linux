@@ -13,8 +13,8 @@ namespace Schedule
 
     struct request
     {
-        field<std::string> server_key{"serverKey"};
-        field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> server_key{"serverKey"};
+        Field<std::string> hardware_key{"hardwareKey"};
     };
 }
 
