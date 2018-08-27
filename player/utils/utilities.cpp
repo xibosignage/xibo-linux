@@ -32,24 +32,19 @@ uint32_t utils::to_hex(const std::string& str_color)
     return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
 }
 
-const SOAPManager& utils::soap_manager()
+DownloadManager& utils::download_manager()
 {
-    return XiboApp::app().soap_manager();
+    return XiboApp::app().download_manager();
 }
 
-const std::string& utils::example_dir()
+XMDSManager& utils::xmds_manager()
 {
-    return XiboApp::app().command_line_parser().example_dir_path();
+    return XiboApp::app().xmds_manager();
 }
 
-const std::string& utils::xlf_file()
+boost::filesystem::path utils::resources_dir()
 {
-    return XiboApp::app().command_line_parser().xlf_path();
-}
-
-std::string utils::app_current_dir()
-{
-    return boost::filesystem::current_path().string();
+    return download_manager().resources_dir();
 }
 
 std::unique_ptr<MediaParser> utils::get_media_parser(const xlf_node& parent_node, const xlf_node& media_node)
@@ -66,10 +61,10 @@ std::unique_ptr<MediaParser> utils::get_media_parser(const xlf_node& parent_node
         return std::make_unique<WebViewParser>(parent_node, media_node);
 }
 
-std::unique_ptr<MainLayout> utils::parse_xlf_layout(const std::string& xlf_path)
+std::unique_ptr<MainLayout> utils::parse_xlf_layout(const boost::filesystem::path& xlf_path)
 {
     boost::property_tree::ptree tree;
-    boost::property_tree::read_xml(xlf_path, tree);
+    boost::property_tree::read_xml(xlf_path.string(), tree);
 
     LayoutParser layout_parser(tree.get_child("layout"));
     auto layout = layout_parser.parse();
@@ -85,4 +80,13 @@ std::unique_ptr<MainLayout> utils::parse_xlf_layout(const std::string& xlf_path)
         layout->add_region(std::move(region));
     }
     return layout;
+}
+
+boost::property_tree::ptree utils::parse_xml(const std::string& xml)
+{
+    std::stringstream stream;
+    stream << xml;
+    boost::property_tree::ptree tree;
+    boost::property_tree::read_xml(stream, tree);
+    return tree;
 }

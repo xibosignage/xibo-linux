@@ -7,6 +7,8 @@
 #include <boost/filesystem.hpp>
 #include <regex>
 
+const std::string DEFAULT_EXTENSION = ".html";
+
 WebViewParser::WebViewParser(const xlf_node& parent_node, const xlf_node& media_node) :
     MediaParser(parent_node, media_node)
 {
@@ -15,7 +17,8 @@ WebViewParser::WebViewParser(const xlf_node& parent_node, const xlf_node& media_
 std::unique_ptr<Media> WebViewParser::doParse()
 {
     int id = attrs().template get<int>("id");
-    std::string uri = get_path(id, options().get_optional<std::string>("uri"));
+    auto filename = std::to_string(id) + DEFAULT_EXTENSION;
+    auto uri = utils::resources_dir() / filename;
     int duration = parse_duration(uri).value_or(attrs().get<int>("duration"));
     int width = parent_node().get_child("<xmlattr>").get<double>("width");
     int height = parent_node().get_child("<xmlattr>").get<double>("height");
@@ -23,12 +26,11 @@ std::unique_ptr<Media> WebViewParser::doParse()
     int mode_id = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
 
-    return std::make_unique<WebView>(id, Size{width, height}, duration, uri, mode_id, transparency);
+    return std::make_unique<WebView>(id, Size{width, height}, duration, uri.string(), mode_id, transparency);
 }
 
-boost::optional<int> WebViewParser::parse_duration(const std::string& path)
+boost::optional<int> WebViewParser::parse_duration(const boost::filesystem::path& path)
 {
-    auto extension = boost::filesystem::extension(path);
     std::ifstream in(path);
     std::string line;
     std::regex re("<!-- DURATION=([0-9]+) -->");
@@ -43,30 +45,4 @@ boost::optional<int> WebViewParser::parse_duration(const std::string& path)
         }
     }
     return boost::optional<int>{};
-}
-
-// FIXME temporary workaround
-std::string WebViewParser::get_path(int id, const boost::optional<std::string>& uri)
-{
-    auto folder = utils::example_dir() + "/";
-    if(!uri || !boost::filesystem::exists(folder + uri.value()))
-    {
-        if(boost::filesystem::exists(folder + "requiredFiles.xml"))
-        {
-            boost::property_tree::ptree tree;
-            boost::property_tree::read_xml(folder + "requiredFiles.xml", tree);
-
-            auto required_files = tree.get_child("RequiredFiles").get_child("RequiredFileList");
-            for(auto&& required_file : required_files)
-            {
-                auto file_info = required_file.second;
-                if(file_info.get<std::string>("FileType") == "resource" && file_info.get<int>("MediaId") == id)
-                {
-                    return folder + file_info.get<std::string>("Path");
-                }
-            }
-        }
-        return std::string{};
-    }
-    return folder + uri.value();
 }

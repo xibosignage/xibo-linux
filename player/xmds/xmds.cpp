@@ -1,6 +1,6 @@
 #include "xmds.hpp"
-#include "utils.hpp"
 #include "soap.hpp"
+#include "utils/utilities.hpp"
 
 boost::property_tree::ptree xmds::parse_xml_response(const std::string& soap_response)
 {
@@ -18,6 +18,6 @@ bool xmds::parse_success_response(const std::string& soap_response)
 std::string xmds::parse_file_response(const std::string& soap_response)
 {
     auto response_tree = soap::parse_soap_response(soap_response);
-    return response_tree.get_child("file").get_value<std::string>();
+    return response_tree.begin()->second.get_value<std::string>();
 }
 

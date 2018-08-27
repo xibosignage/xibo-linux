@@ -6,24 +6,24 @@
 
 namespace SubmitStats
 {
-    struct response
+    struct Response
     {
         bool success;
     };
 
-    struct request
+    struct Request
     {
-        field<std::string> server_key{"serverKey"};
-        field<std::string> hardware_key{"hardwareKey"};
-        field<std::string> stat_xml{"statXml"};
+        Field<std::string> server_key{"serverKey"};
+        Field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> stat_xml{"statXml"};
     };
 }
 
 template<>
-struct soap::request_traits<SubmitStats::request>
+struct soap::request_traits<SubmitStats::Request>
 {
     static inline const std::string name = "SubmitStats";
-    using response_t = SubmitStats::response;
+    using response_t = SubmitStats::Response;
 };
 
 #endif // SUBMITSTATS_HPP

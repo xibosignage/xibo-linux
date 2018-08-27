@@ -7,7 +7,7 @@ struct FakeBackground : IBackground
 {
     FakeBackground() = default;
     void set_color(uint32_t) override { }
-    void set_image(const std::string&) override { }
+    void set_image(const boost::filesystem::path&) override { }
     void set_size(int, int) override { set_size_called = true; }
     void show() override { is_shown = true; }
     operator Gtk::Image&() override { return m_handler; }

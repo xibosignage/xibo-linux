@@ -4,34 +4,42 @@
 #include <spdlog/spdlog.h>
 
 #include "parsers/CommandLineParser.hpp"
-#include "xmds/SOAPManager.hpp"
+#include "control/DownloadManager.hpp"
+#include "control/CollectionInterval.hpp"
+#include "control/PlayerSettings.hpp"
+
+class XMDSManager;
+class MainLayout;
+class MainWindow;
 
 class XiboApp : public Gtk::Application
 {
 public:
     XiboApp(const XiboApp& other) = delete;
     XiboApp& operator=(const XiboApp& other) = delete;
-    ~XiboApp();
+    ~XiboApp() override;
 
     static XiboApp& create(const std::string& name);
-    static const XiboApp& app();
-    const CommandLineParser& command_line_parser() const;
-    const SOAPManager& soap_manager() const;
+    static XiboApp& app();
+    XMDSManager& xmds_manager();
+    DownloadManager& download_manager();
 
     int run(int argc, char** argv);
 
 private:
-    XiboApp();
-
-    void init();
-    void parse_command_line(int argc, char** argv);
-    std::string get_xlf_file();
+    XiboApp(const std::string& name);
+    int init_player();
+    void run_player(MainWindow& window);
+    void update_settings(const PlayerSettings& settings);
+    std::string find_xlf_file();
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parent_app;
     std::shared_ptr<spdlog::logger> m_logger;
+    std::unique_ptr<MainLayout> m_layout;
+    std::unique_ptr<XMDSManager> m_xmds_manager;
+    DownloadManager m_download_manager;
+    CollectionInterval m_collection_interval;
     CommandLineParser m_options;
-    SOAPManager m_soap_manager;
 
     static std::unique_ptr<XiboApp> m_app;
 };

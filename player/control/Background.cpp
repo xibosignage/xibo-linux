@@ -24,14 +24,14 @@ void Background::set_color(uint32_t hex_color)
     }
 }
 
-void Background::set_image(const std::string& image_path)
+void Background::set_image(const boost::filesystem::path& image_path)
 {
     if(boost::filesystem::exists(image_path))
     {
-        spdlog::get(LOGGER)->debug(image_path);
+        spdlog::get(LOGGER)->debug(image_path.string());
         try
         {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(image_path, m_width, m_height);
+            auto pixbuf = Gdk::Pixbuf::create_from_file(image_path.string(), m_width, m_height);
             m_handler.set(pixbuf);
         }
         catch(const Gdk::PixbufError& error)

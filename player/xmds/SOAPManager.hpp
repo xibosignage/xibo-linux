@@ -31,7 +31,7 @@ struct Session
 class SOAPManager
 {
 public:
-    SOAPManager(const std::string& host, int port);
+    SOAPManager(const std::string& host);
     ~SOAPManager();
     SOAPManager(const SOAPManager&) = delete;
     SOAPManager& operator=(const SOAPManager&) = delete;
@@ -51,49 +51,76 @@ public:
 
 private:
     template<typename request>
-    void on_read_soap(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<Session<request>> session)
+    void on_read_soap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
     {
-        m_spdlog->debug("Read: {} error: {}", bytes_transferred, ec.value());
-
-        using response = typename soap::request_traits<request>::response_t;
-        auto result = soap::create_response<response>(session->http_response.body());
-        session->response_callback(result);
+        if(!ec)
+        {
+            if(session->http_response.result() == http::status::ok)
+            {
+                using response = typename soap::request_traits<request>::response_t;
+                auto result = soap::create_response<response>(session->http_response.body());
+                session->response_callback(result);
+            }
+            else
+            {
+                m_logger->error("Receive SOAP request with HTTP error: {}", session->http_response.result_int());
+            }
+        }
+        else
+        {
+            m_logger->error("Receive SOAP request with error: {}", ec.message());
+        }
     }
 
     template<typename request>
-    void on_write_soap(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<Session<request>> session)
+    void on_write_soap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
     {
-        m_spdlog->debug("Write: {} error: {}", bytes_transferred, ec.value());
-
-        auto read = std::bind(&SOAPManager::on_read_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-        http::async_read(session->socket, session->buffer, session->http_response, read);
+        if(!ec)
+        {
+            auto read = std::bind(&SOAPManager::on_read_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            http::async_read(session->socket, session->buffer, session->http_response, read);
+        }
+        else
+        {
+            m_logger->error("Send SOAP request with error: {}", ec.message());
+        }
     }
 
     template<typename request>
     void on_connect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<Session<request>> session)
     {
-        m_spdlog->debug("Connected, error: {}", ec.value());
+        if(!ec)
+        {
+            session->http_request.method(http::verb::post);
+            session->http_request.target("/xmds.php?v=5");
+            session->http_request.version(11);
+            session->http_request.set(http::field::host, m_host);
+            session->http_request.body() = soap::request_string(session->soap_request);
+            session->http_request.prepare_payload();
 
-        session->http_request.method(http::verb::post);
-        session->http_request.target("/xmds.php?v=5");
-        session->http_request.version(11);
-        session->http_request.set(http::field::host, m_host);
-        session->http_request.body() = soap::request_string(session->soap_request);
-        session->http_request.prepare_payload();
+            m_logger->trace("SOAP Request string: {}", soap::request_string(session->soap_request));
 
-        m_spdlog->debug("Request string: {}", soap::request_string(session->soap_request));
-
-        auto write = std::bind(&SOAPManager::on_write_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-        http::async_write(session->socket, session->http_request, write);
+            auto write = std::bind(&SOAPManager::on_write_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            http::async_write(session->socket, session->http_request, write);
+        }
+        else
+        {
+            m_logger->error("SOAP Connected to host with error: {}", ec.message());
+        }
     }
 
     template<typename request>
     void on_resolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<Session<request>> session)
     {
-        m_spdlog->debug("Resolved, error: {}", ec.value());
-
-        auto connect = std::bind(&SOAPManager::on_connect<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-        asio::async_connect(session->socket, results.begin(), results.end(), connect);
+        if(!ec)
+        {
+            auto connect = std::bind(&SOAPManager::on_connect<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            asio::async_connect(session->socket, results.begin(), results.end(), connect);
+        }
+        else
+        {
+            m_logger->error("SOAP Resolved host with error: {}", ec.message());
+        }
     }
 
 private:
@@ -101,7 +128,7 @@ private:
     asio::io_context::work m_work;
     std::unique_ptr<std::thread> m_work_thread;
     std::string m_host;
-    std::shared_ptr<spdlog::logger> m_spdlog;
+    std::shared_ptr<spdlog::logger> m_logger;
     int m_port;
 };
 

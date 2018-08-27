@@ -9,7 +9,7 @@ ImageParser::ImageParser(const xlf_node& parent_node, const xlf_node& media_node
 std::unique_ptr<Media> ImageParser::doParse()
 {
     int id = attrs().template get<int>("id");
-    std::string uri = utils::example_dir() + "/" + options().get<std::string>("uri");
+    auto uri = utils::resources_dir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
     int width = parent_node().get_child("<xmlattr>").get<double>("width");
     int height = parent_node().get_child("<xmlattr>").get<double>("height");
@@ -18,7 +18,7 @@ std::unique_ptr<Media> ImageParser::doParse()
     auto align = to_align(options().get<std::string>("align", "center"));
     auto valign = to_valign(options().get<std::string>("valign", "middle"));
 
-    return std::make_unique<Image>(id, Size{width, height}, duration, uri, scale_type, align, valign);
+    return std::make_unique<Image>(id, Size{width, height}, duration, uri.string(), scale_type, align, valign);
 }
 
 Image::ScaleType ImageParser::to_scale_type(const std::string& scale_type)

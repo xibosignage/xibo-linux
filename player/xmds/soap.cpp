@@ -1,7 +1,8 @@
 #include "soap.hpp"
-#include "utils.hpp"
+#include "utils/utilities.hpp"
 #include <iostream>
 
+// FIXME
 // return error code
 // or 2 versions (exceptions and error code passing)
 boost::property_tree::ptree soap::parse_soap_response(const std::string& xml_response)
