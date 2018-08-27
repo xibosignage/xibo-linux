@@ -1,3 +1,25 @@
+### 0.3-alpha Maroon
+
+**27.08.2018 - `(unstable)`**
+
+- **User Part**
+  - `--example-dir`, `--log-level` options removed
+  - Now player can be launched using only CMS
+  - `--host`, `--server-key`, `--hardware-key` options are used to establish connection with CMS
+  - Default resources folder (cannot be changed for now) is `resources`. Downloaded files are placed there.
+  - Implemented basic collection interval (2 requests for now: RegisterDisplay and RequiredFiles)
+  - Only HTTP download type is supported for now in RequiredFiles
+  - Video/audio content cannot be downloaded for now due to size limitations (will be fixed in the next release)
+- **Developer Part**
+  - Implemented all XMDS requests/responses (except for Schedule response)
+  - CommandLineParser was refactored
+  - spdlog updated to 1.1.0
+  - boost updated to 1.68.0
+  - Build is cached now
+  - Moved to new CI
+  - Added DownloadManager, SOAPManager, XMDSManager
+  - Small refactorings in other parts of the project
+
 ### 0.2.2-alpha Navy
 
 **12.06.2018 - `(unstable)`**
