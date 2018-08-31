@@ -1,21 +1,22 @@
 #pragma once
 
-#include <gtkmm/window.h>
+#include "IMainWindow.hpp"
+#include "IMainLayout.hpp"
 
-class MainLayout;
-
-class MainWindow : public Gtk::Window
+class MainWindow : public IMainWindow
 {
 public:
     MainWindow(int x, int y, bool resizable, bool decorated, bool fullscreen, bool keep_above);
-    ~MainWindow() = default;
 
     MainWindow(const MainWindow& other) = delete;
     MainWindow& operator=(const MainWindow& other) = delete;
 
-    void add(MainLayout& layout);
+    void add(std::unique_ptr<IMainLayout> layout) override;
+    void show() override;
+    IWindowWrapper& handler() override;
 
 private:
-    void on_window_realize();
+    std::unique_ptr<IWindowWrapper> m_handler;
+    std::unique_ptr<IMainLayout> m_layout;
 
 };

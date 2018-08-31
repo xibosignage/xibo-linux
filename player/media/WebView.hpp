@@ -8,7 +8,7 @@
 class WebView : public Media
 {
 public:
-    WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent);
+    WebView(int id, int width, int height, int duration, const std::string& uri, int modeId, bool transparent);
 
     void stop() override;
     void start() override;

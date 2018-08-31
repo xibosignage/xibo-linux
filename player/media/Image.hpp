@@ -29,7 +29,7 @@ public:
         Invalid
     };
 
-    Image(int id, const Size& size, int duration, const std::string& uri,
+    Image(int id, int width, int height, int duration, const std::string& uri,
           ScaleType scale_type, Align align, Valign valign);
 
     void stop() override;
@@ -48,7 +48,8 @@ private:
 
 private:
     Gtk::Image m_handler;
-    Size m_actual_size;
+    int m_actual_width;
+    int m_actual_height;
     ScaleType m_scale_type;
     Align m_align;
     Valign m_valign;

@@ -1,55 +1,44 @@
 #pragma once
 
-#include <string>
-#include <gtkmm/widget.h>
+#include "IMedia.hpp"
 
-#include "constants.hpp"
-
-class Region;
-
-class Media
+class Media : public IMedia
 {
 public:
-
-    enum class Render
-    {
-        HTML,
-        Native
-    };
-
-    Media(int id, const Size& size, int duration, Render render, const std::string& uri);
-    virtual ~Media() = default;
+    Media(int id, int width, int height, int duration, Render render, const std::string& uri);
 
     Media(const Media& other) = delete;
     Media& operator=(const Media& other) = delete;
 
-    virtual void stop() = 0;
-    virtual void start() = 0;
-    virtual void request_handler() { }
-    virtual bool is_running() const;
-    virtual void set_size(int width, int height);
-    virtual void start_timer();
+    void stop() override = 0;
+    void start() override = 0;
+    void request_handler() override { }
+    bool is_running() const override;
+    void set_size(int width, int height) override;
+    void start_timer() override;
 
-    void attach_audio(std::unique_ptr<Media> audio);
-    sigc::signal<void, Gtk::Widget&, Point>& handler_requested();
-    sigc::signal<void>& media_timeout();
+    void attach_audio(std::unique_ptr<IMedia> audio) override;
+    sigc::signal<void, Gtk::Widget&, int, int>& handler_requested() override;
+    sigc::signal<void>& media_timeout() override;
 
-    int id() const;
-    const Size& size() const;
-    int duration() const;
-    Render render() const;
-    const std::string& uri() const;
+    int id() const override;
+    int width() const override;
+    int height() const override;
+    int duration() const override;
+    Render render() const override;
+    const std::string& uri() const override;
 
 private:
     int m_id;
-    Size m_size;
+    int m_width;
+    int m_height;
     int m_duration;
     Render m_render;
     std::string m_uri;
 
-    sigc::signal<void, Gtk::Widget&, Point> m_handler_requsted;
+    sigc::signal<void, Gtk::Widget&, int, int> m_handler_requsted;
     sigc::signal<void> m_media_timeout;
-    std::unique_ptr<Media> m_audio;
+    std::unique_ptr<IMedia> m_audio;
     bool m_started = false;
 
 };

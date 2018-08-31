@@ -21,7 +21,6 @@ struct Size
 const std::string LOGGER = "logger";
 const int DEFAULT_LEFT_POS = 0;
 const int DEFAULT_TOP_POS = 0;
-const Point DEFAULT_POINT{DEFAULT_LEFT_POS, DEFAULT_TOP_POS};
 const int INVALID_POS = -1;
 const uint MSECS = 1000;
 const int MAX_VOLUME = 100;

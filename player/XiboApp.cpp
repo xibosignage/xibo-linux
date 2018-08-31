@@ -5,7 +5,7 @@
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "tests/test.hpp"
+#include "control/GtkWindowWrapper.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -33,39 +33,42 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 
 int XiboApp::init_player()
 {
-    MainWindow window(500, 500, false, false, true, true);
+    auto window = std::make_unique<MainWindow>(500, 500, false, false, true, true);
 
-    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
+//    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 
-    signal_startup().connect([this, &window](){
-        Gtk::Application::add_window(window);
-    });
+//    signal_startup().connect([this, &window](){
+//        Gtk::Application::add_window(window);
+//    });
 
-    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
-    m_collection_interval.signal_finished().connect(run_player);
+//    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
+//    m_collection_interval.signal_finished().connect(run_player);
 
-    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
-    m_collection_interval.signal_settings_updated().connect(update_settings);
+//    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
+//    m_collection_interval.signal_settings_updated().connect(update_settings);
 
-    m_collection_interval.start();
+//    m_collection_interval.start();
 
-    return Gtk::Application::run();
+    window->add(utils::parse_xlf_layout(find_xlf_file()));
+    window->show();
+
+    return Gtk::Application::run(static_cast<GtkWindowWrapper&>(window->handler()).get());
 }
 
 void XiboApp::run_player(MainWindow& window)
 {
-    if(!window.is_visible())
-    {
-        m_logger->info("Player started");
-        m_layout = utils::parse_xlf_layout(find_xlf_file());
-        window.add(*m_layout);
-        window.show_all();
-    }
+//    if(!window.is_visible())
+//    {
+//        m_logger->info("Player started");
+//        m_layout = utils::parse_xlf_layout(find_xlf_file());
+//        window.add(*m_layout);
+//        window.show_all();
+//    }
 }
 
 void XiboApp::update_settings(const PlayerSettings& )
 {
-    //    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
+//    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
 }
 
 // FIXME temporary workaround

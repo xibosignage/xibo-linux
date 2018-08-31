@@ -26,7 +26,7 @@ std::unique_ptr<Media> WebViewParser::doParse()
     int mode_id = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
 
-    return std::make_unique<WebView>(id, Size{width, height}, duration, uri.string(), mode_id, transparency);
+    return std::make_unique<WebView>(id, width, height, duration, uri.string(), mode_id, transparency);
 }
 
 boost::optional<int> WebViewParser::parse_duration(const boost::filesystem::path& path)

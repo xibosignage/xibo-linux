@@ -9,7 +9,7 @@
 #include "control/PlayerSettings.hpp"
 
 class XMDSManager;
-class MainLayout;
+class IMainLayout;
 class MainWindow;
 
 class XiboApp : public Gtk::Application
@@ -35,7 +35,7 @@ private:
 
 private:
     std::shared_ptr<spdlog::logger> m_logger;
-    std::unique_ptr<MainLayout> m_layout;
+    std::unique_ptr<IMainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmds_manager;
     DownloadManager m_download_manager;
     CollectionInterval m_collection_interval;

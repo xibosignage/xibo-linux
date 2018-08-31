@@ -12,7 +12,7 @@ class XiboVideoSink;
 class Video : public Media
 {
 public:
-    Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped);
+    Video(int id, int width, int height, int duration, const std::string& uri, bool muted, bool looped);
     ~Video() override;
 
     void stop() override;

@@ -1,48 +1,56 @@
 #include "Region.hpp"
+#include "media/IMedia.hpp"
 
-Region::Region(int id,
-               const Size& size,
-               const Point& pos,
-               int zindex,
-               bool looped) :
-    m_id(id),
-    m_size(size),
-    m_pos(pos),
-    m_zindex(zindex),
-    m_looped(looped)
+Region::Region(int id, int width, int height, int left, int top, int zindex, bool looped) :
+    m_id(id), m_width(width), m_height(height), m_left(left), m_top(top), m_zindex(zindex), m_looped(looped)
 {
 }
 
-std::unique_ptr<Region> Region::create(int id, int width, int height, int top, int left, int zindex, bool loop)
+Region::~Region()
 {
-    return std::make_unique<Region>(id, Size{width, height}, Point{left, top}, zindex, loop);
+}
+
+int Region::width() const
+{
+    return m_width;
+}
+
+int Region::height() const
+{
+    return m_height;
+}
+
+void Region::set_size(int width, int height)
+{
+    m_width = width;
+    m_height = height;
+
+    m_handler.set_size_request(width, height); // NOTE TEST WITHOUT IT
+    for(auto&& media : m_media)
+    {
+        media->set_size(width, height);
+    }
+}
+
+int Region::left() const
+{
+    return m_left;
+}
+
+int Region::top() const
+{
+    return m_top;
+}
+
+void Region::set_pos(int left, int top)
+{
+    m_left = left;
+    m_top = top;
 }
 
 int Region::id() const
 {
     return m_id;
-}
-
-const Size& Region::size() const
-{
-    return m_size;
-}
-
-const Point& Region::position() const
-{
-    return m_pos;
-}
-
-void Region::set_size(int width, int height)
-{
-    m_size.width = width;
-    m_size.height = height;
-
-    set_size_request(width, height);
-    for(auto&& media : m_media)
-    {
-        media->set_size(m_size.width, m_size.height);
-    }
 }
 
 int Region::zindex() const
@@ -55,15 +63,6 @@ bool Region::looped() const
     return m_looped;
 }
 
-void Region::add_media(std::unique_ptr<Media> media)
-{
-    media->handler_requested().connect([=](Gtk::Widget& widget, Point point){
-         put(widget, point.left, point.top); // FIXME move after reallocation
-    });
-    media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
-    m_media.push_back(std::move(media));
-}
-
 void Region::show()
 {
     if(!m_media.empty())
@@ -71,9 +70,23 @@ void Region::show()
         for(auto&& media : m_media)
             media->request_handler();
 
-        Gtk::Fixed::show();
+        m_handler.show();
         m_media[m_currentMediaIndex]->start();
     }
+}
+
+void Region::add_media(std::unique_ptr<IMedia> media)
+{
+    media->handler_requested().connect([=](Gtk::Widget& widget, int left, int top){
+         m_handler.put(widget, left, top); // FIXME move after reallocation
+    });
+    media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
+    m_media.push_back(std::move(media));
+}
+
+Gtk::Fixed& Region::handler()
+{
+    return m_handler;
 }
 
 void Region::on_media_timeout()

@@ -1,10 +1,12 @@
 #include "WebView.hpp"
 
+#include "constants.hpp"
+
 #include <spdlog/spdlog.h>
 #include <boost/filesystem/operations.hpp>
 
-WebView::WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, size, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(int id, int width, int height, int duration, const std::string& uri, int modeId, bool transparent) :
+    Media(id, width, height, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
     if(boost::filesystem::exists(uri))
@@ -25,7 +27,7 @@ WebView::WebView(int id, const Size& size, int duration, const std::string& uri,
 
         auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
         m_handler.add(*widget);
-        m_handler.set_size_request(size.width, size.height);
+        m_handler.set_size_request(width, height);
     }
     else
     {
@@ -66,7 +68,7 @@ void WebView::set_size(int width, int height)
 
 void WebView::request_handler()
 {
-    handler_requested().emit(m_handler, DEFAULT_POINT);
+    handler_requested().emit(m_handler, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
 }
 
 bool WebView::transparent() const

@@ -1,39 +1,34 @@
 #include "MainWindow.hpp"
-#include "MainLayout.hpp"
-#include "Monitor.hpp"
-
 #include "constants.hpp"
 
-MainWindow::MainWindow(int x, int y, bool resizable, bool decorated, bool fullscreen, bool keep_above)
+#include "GtkWindowWrapper.hpp"
+
+MainWindow::MainWindow(int, int, bool, bool, bool, bool)
 {
-    set_default_size(640, 480);
-//    move(x, y);
-//    set_resizable(resizable);
-//    set_decorated(decorated);
+    m_handler = std::make_unique<GtkWindowWrapper>();
+    m_handler->set_default_size(640, 480);
+//    m_handler->move(x, y);
+//    m_handler->set_resizable(resizable);
+//    m_handler->set_decorated(decorated);
+//    m_handler->set_keep_above(keep_above);
 //    if(fullscreen)
 //    {
-//        fullscreen();
+//        m_handler->fullscreen();
 //    }
-//    if(keep_above)
-//    {
-//        set_keep_above();
-//    }
-    signal_realize().connect(sigc::mem_fun(*this, &MainWindow::on_window_realize));
 }
 
-void MainWindow::add(MainLayout& layout)
+void MainWindow::add(std::unique_ptr<IMainLayout> layout)
 {
-    std::shared_ptr<IMonitor> monitor = std::make_shared<Monitor>(*this);
-    layout.scale_to_monitor_size(monitor);
-    Gtk::Window::add(layout);
+    m_layout = std::move(layout);
+    m_handler->add(m_layout->handler());
 }
 
-// FIXME: add unit test
-void MainWindow::on_window_realize()
+void MainWindow::show()
 {
-    Gtk::Window::on_realize();
+    m_layout->show();
+}
 
-//    auto window = get_window();
-//    auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
-//    window->set_cursor(cursor);
+IWindowWrapper& MainWindow::handler()
+{
+    return *m_handler;
 }

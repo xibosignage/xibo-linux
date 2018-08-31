@@ -15,18 +15,28 @@ LayoutParser::LayoutParser(const xlf_node& layout_node) :
     }
 }
 
+#include "control/Background.hpp"
+#include "utils/utilities.hpp"
+
 std::unique_ptr<MainLayout> LayoutParser::parse()
 {
-    spdlog::get(LOGGER)->trace("Parsing layout...");
+    //spdlog::get(LOGGER)->trace("Parsing layout...");
     auto attrs = m_layout_node.get_child("<xmlattr>");
 
-    int schemaVersion = attrs.get<int>("schemaVersion");
     int width = attrs.get<int>("width");
     int height = attrs.get<int>("height");
     std::string bgimage = attrs.get<std::string>("background", {});
     std::string bgcolor = attrs.get<std::string>("bgcolor", {});
 
-    return MainLayout::create(schemaVersion, width, height, bgimage, bgcolor);
+    auto layout =  std::make_unique<MainLayout>(width, height);
+    auto background = std::make_unique<Background>(width, height);
+    if(!bgcolor.empty())
+        background->set_color(utils::to_hex(bgcolor));
+    if(!bgimage.empty())
+        background->set_image((utils::resources_dir() / bgimage).string());
+    layout->set_background(std::move(background));
+
+    return layout;
 }
 
 std::vector<xlf_node>::const_iterator LayoutParser::begin() const

@@ -17,7 +17,7 @@ RegionParser::RegionParser(const xlf_node& region_node) :
 
 std::unique_ptr<Region> RegionParser::parse()
 {
-    spdlog::get(LOGGER)->trace("Parsing region...");
+    //spdlog::get(LOGGER)->trace("Parsing region...");
 
     auto attrs = m_region_node.get_child("<xmlattr>");
     auto options = m_region_node.get_child("options");
@@ -30,7 +30,7 @@ std::unique_ptr<Region> RegionParser::parse()
     int zindex = attrs.get<int>("zindex", 0);
     bool loop = options.get<bool>("loop", false);
 
-    return Region::create(id, width, height, top, left, zindex, loop);
+    return std::make_unique<Region>(id, width, height, top, left, zindex, loop);
 }
 
 std::vector<xlf_node>::const_iterator RegionParser::begin() const

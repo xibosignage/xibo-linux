@@ -20,8 +20,8 @@ const int DEFAULT_VIDEO_BUFFER = 500;
 
 namespace ph = std::placeholders;
 
-Video::Video(int id, const Size& size, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(id, size, duration, Render::Native, uri), m_muted(muted), m_looped(looped),
+Video::Video(int id, int width, int height, int duration, const std::string& uri, bool muted, bool looped) :
+    Media(id, width, height, duration, Render::Native, uri), m_muted(muted), m_looped(looped),
     m_video_fmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
 {
     gst_init(nullptr, nullptr);
@@ -58,7 +58,7 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
     m_queue->set_max_size_buffers(DEFAULT_VIDEO_BUFFER);
     m_pipeline->add_bus_watch(sigc::mem_fun(*this, &Video::bus_message_watch));
 
-    m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % size.width % size.height).str()));
+    m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % width % height).str()));
 
     m_pipeline->add(m_source)->add(m_decodebin)->add(m_video_converter)->add(m_queue)->add(m_video_scale)->add(m_video_sink)->add(m_capsfilter)->add(m_audio_converter)->add(m_volume)->add(m_audio_sink);
     m_source->link(m_decodebin);
@@ -68,7 +68,7 @@ Video::Video(int id, const Size& size, int duration, const std::string& uri, boo
     m_decodebin->signal_pad_added().connect(sigc::mem_fun(*this, &Video::on_pad_added));
     m_decodebin->signal_no_more_pads().connect(sigc::mem_fun(*this, &Video::no_more_pads));
 
-    m_video_window.set_size_request(size.width, size.height);
+    m_video_window.set_size_request(width, height);
 
     set_volume(m_muted ? MIN_GST_VOLUME : MAX_GST_VOLUME);
 }
@@ -196,22 +196,22 @@ void Video::start_timer()
     }
 }
 
-void Video::set_size(int width, int height)
+void Video::set_size(int width_, int height_)
 {
-    if(width != size().width || height != size().height)
+    if(width_ != width() || height_ != height())
     {
-        Media::set_size(width, height);
-        spdlog::get(LOGGER)->debug("set size {} {}", width, height);
+        Media::set_size(width_, height_);
+        spdlog::get(LOGGER)->debug("set size {} {}", width_, height_);
 
-        m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % width % height).str()));
+        m_capsfilter->set_caps(Gst::Caps::create((m_video_fmt % width_ % height_).str()));
 
-        m_video_window.set_size_request(width, height);
+        m_video_window.set_size_request(width_, height_);
     }
 }
 
 void Video::request_handler()
 {
-    handler_requested().emit(m_video_window, DEFAULT_POINT);
+    handler_requested().emit(m_video_window, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
 }
 
 bool Video::looped() const

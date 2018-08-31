@@ -18,7 +18,7 @@ std::unique_ptr<Media> ImageParser::doParse()
     auto align = to_align(options().get<std::string>("align", "center"));
     auto valign = to_valign(options().get<std::string>("valign", "middle"));
 
-    return std::make_unique<Image>(id, Size{width, height}, duration, uri.string(), scale_type, align, valign);
+    return std::make_unique<Image>(id, width, height, duration, uri.string(), scale_type, align, valign);
 }
 
 Image::ScaleType ImageParser::to_scale_type(const std::string& scale_type)

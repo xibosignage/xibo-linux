@@ -18,5 +18,5 @@ std::unique_ptr<Media> VideoParser::doParse()
     bool mute = options().get<bool>("mute", false);
     bool loop = options().get<bool>("loop", false);
 
-    return std::make_unique<Video>(id, Size{width, height}, duration, uri.string(), mute, loop);
+    return std::make_unique<Video>(id, width, height, duration, uri.string(), mute, loop);
 }

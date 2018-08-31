@@ -1,20 +1,22 @@
 #include "Image.hpp"
 
+#include "constants.hpp"
+
 #include <spdlog/spdlog.h>
 #include <boost/filesystem/operations.hpp>
 
-Image::Image(int id, const Size& size, int duration, const std::string& uri,
+Image::Image(int id, int width, int height, int duration, const std::string& uri,
              ScaleType scale_type, Align align, Valign valign) :
-    Media(id, size, duration, Render::Native, uri),
+    Media(id, width, height, duration, Render::Native, uri),
     m_scale_type(scale_type), m_align(align), m_valign(valign)
 {
     try
     {
         if(boost::filesystem::exists(uri))
         {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(uri, size.width, size.height, is_scaled());
-            m_actual_size.width = pixbuf->get_width();
-            m_actual_size.height = pixbuf->get_height();
+            auto pixbuf = Gdk::Pixbuf::create_from_file(uri, width, height, is_scaled());
+            m_actual_width = pixbuf->get_width();
+            m_actual_height = pixbuf->get_height();
             m_handler.set(pixbuf);
         }
         else
@@ -45,15 +47,14 @@ void Image::set_size(int width, int height)
     Media::set_size(width, height);
 
     auto new_pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-    m_actual_size.width = new_pixbuf->get_width();
-    m_actual_size.height = new_pixbuf->get_height();
+    m_actual_width = new_pixbuf->get_width();
+    m_actual_height = new_pixbuf->get_height();
     m_handler.set(new_pixbuf);
 }
 
 void Image::request_handler()
 {
-    Point pos{get_left_pos(), get_top_pos()};
-    handler_requested().emit(m_handler, pos);
+    handler_requested().emit(m_handler, get_left_pos(), get_top_pos());
 }
 
 Image::ScaleType Image::scale_type() const
@@ -83,11 +84,11 @@ int Image::get_left_pos() const
     switch(m_align)
     {
         case Align::Center:
-            return (size().width - m_actual_size.width) / 2;
+            return (width() - m_actual_width) / 2;
         case Align::Left:
             return DEFAULT_LEFT_POS;
         case Align::Right:
-            return size().width - m_actual_size.width;
+            return width() - m_actual_width;
         default:
             break;
     }
@@ -99,11 +100,11 @@ int Image::get_top_pos() const
     switch(m_valign)
     {
         case Valign::Middle:
-            return (size().height - m_actual_size.height) / 2;
+            return (height() - m_actual_height) / 2;
         case Valign::Top:
             return DEFAULT_TOP_POS;
         case Valign::Bottom:
-            return size().height - m_actual_size.height;
+            return height() - m_actual_height;
         default:
             break;
     }
