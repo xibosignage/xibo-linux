@@ -6,18 +6,6 @@
 
 using xlf_node = boost::property_tree::ptree;
 
-struct Point
-{
-    int left;
-    int top;
-};
-
-struct Size
-{
-    int width;
-    int height;
-};
-
 const std::string LOGGER = "logger";
 const int DEFAULT_LEFT_POS = 0;
 const int DEFAULT_TOP_POS = 0;

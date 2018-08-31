@@ -68,7 +68,7 @@ void MainLayout::reorder_regions()
 
     for(size_t i = 0; i != regions_count(); ++i)
     {
-//        m_logger->trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
+        utils::get_logger().trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
         m_handler->reorder_overlay(m_regions[i]->handler(), static_cast<int>(i));
     }
 }
@@ -97,7 +97,7 @@ IBackground& MainLayout::background()
 
 void MainLayout::set_size(int width, int height)
 {
-    m_handler->set_size(width, height); // NOTE TEST WITHOUT IT
+    m_handler->set_size(width, height);
     if(m_background)
     {
         m_background->set_size(width, height);

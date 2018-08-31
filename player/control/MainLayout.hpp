@@ -1,9 +1,8 @@
 #pragma once
 
-#include <spdlog/spdlog.h>
-#include <vector>
-
 #include "IMainLayout.hpp"
+
+#include <vector>
 
 class MainLayout : public IMainLayout
 {
