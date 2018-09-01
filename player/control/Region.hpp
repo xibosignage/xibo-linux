@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <sigc++/signal.h>
-#include <gtkmm/fixed.h>
 
 class Region : public IRegion
 {
@@ -29,17 +28,15 @@ public:
     void show() override;
 
     void add_media(std::unique_ptr<IMedia> media) override;
-    Gtk::Fixed& handler() override;
+    IFixedLayoutWrapper& handler() override;
 
 private:
     void on_media_timeout();
 
 private:
-    Gtk::Fixed m_handler;
+    std::shared_ptr<IFixedLayoutWrapper> m_handler;
 
     int m_id;
-    int m_width;
-    int m_height;
     int m_left;
     int m_top;
     int m_zindex;

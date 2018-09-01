@@ -19,10 +19,10 @@ public:
     int width() const override;
     int height() const override;
 
-    void set_background(std::unique_ptr<IBackground> background) override;
+    void set_background(std::shared_ptr<IBackground> background) override;
     IBackground& background() override;
 
-    void add_region(std::unique_ptr<IRegion> region) override;
+    void add_region(std::shared_ptr<IRegion> region) override;
     IRegion& region(size_t index) override;
     size_t regions_count() const override;
 
@@ -34,6 +34,6 @@ private:
 
 private:
     std::shared_ptr<IOverlayWrapper> m_handler;
-    std::unique_ptr<IBackground> m_background;
-    std::vector<std::unique_ptr<IRegion>> m_regions;
+    std::shared_ptr<IBackground> m_background;
+    std::vector<std::shared_ptr<IRegion>> m_regions;
 };

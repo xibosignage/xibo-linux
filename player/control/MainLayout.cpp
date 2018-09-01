@@ -6,6 +6,11 @@
 
 #include "GtkOverlayWrapper.hpp"
 
+const int MIN_WIDTH = 160;
+const int MAX_WIDTH = 9999;
+const int MIN_HEIGHT = 120;
+const int MAX_HEIGHT = 9999;
+
 MainLayout::MainLayout(int width, int height)
 {
     m_handler = std::make_unique<GtkOverlayWrapper>();
@@ -22,7 +27,7 @@ MainLayout::~MainLayout()
 {
 }
 
-void MainLayout::add_region(std::unique_ptr<IRegion> region)
+void MainLayout::add_region(std::shared_ptr<IRegion> region)
 {
     if(region)
     {
@@ -68,12 +73,12 @@ void MainLayout::reorder_regions()
 
     for(size_t i = 0; i != regions_count(); ++i)
     {
-        utils::get_logger().trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
-        m_handler->reorder_overlay(m_regions[i]->handler(), static_cast<int>(i));
+        //utils::get_logger().trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
+        m_handler->reorder_child(m_regions[i]->handler(), static_cast<int>(i));
     }
 }
 
-void MainLayout::set_background(std::unique_ptr<IBackground> background)
+void MainLayout::set_background(std::shared_ptr<IBackground> background)
 {
     // FIXME 100x100 layout and 1920x1080 background = crash
     if(background)
@@ -92,11 +97,18 @@ IBackground& MainLayout::background()
 {
     if(!m_background)
         throw std::runtime_error("No bacgkround set");
+
     return *m_background;
 }
 
+// NOTE
+// add test with different layout and region width
+// region should be less than layout
 void MainLayout::set_size(int width, int height)
 {
+    if(width < MIN_WIDTH || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT)
+        throw std::runtime_error("Width or height is too small/large");
+
     m_handler->set_size(width, height);
     if(m_background)
     {
@@ -104,7 +116,7 @@ void MainLayout::set_size(int width, int height)
     }
     for(auto&& region : m_regions)
     {
-        region->set_size(region->width(), region->height()); // scaling
+        region->set_size(region->width(), region->height());
     }
 }
 

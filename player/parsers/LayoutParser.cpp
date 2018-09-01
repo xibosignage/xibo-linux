@@ -29,12 +29,11 @@ std::unique_ptr<MainLayout> LayoutParser::parse()
     std::string bgcolor = attrs.get<std::string>("bgcolor", {});
 
     auto layout =  std::make_unique<MainLayout>(width, height);
-    auto background = std::make_unique<Background>(width, height);
+
     if(!bgcolor.empty())
-        background->set_color(utils::to_hex(bgcolor));
+        layout->set_background(Background::create_one_color(bgcolor, width, height));
     if(!bgimage.empty())
-        background->set_image((utils::resources_dir() / bgimage).string());
-    layout->set_background(std::move(background));
+        layout->set_background(Background::create_with_image(bgimage, width, height));
 
     return layout;
 }

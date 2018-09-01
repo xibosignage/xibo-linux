@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <gtkmm/fixed.h>
 
 class IMedia;
+class IFixedLayoutWrapper;
 
 class IRegion
 {
@@ -24,6 +24,6 @@ public:
     virtual void show() = 0;
 
     virtual void add_media(std::unique_ptr<IMedia> media) = 0;
-    virtual Gtk::Fixed& handler() = 0;
+    virtual IFixedLayoutWrapper& handler() = 0;
 
 };

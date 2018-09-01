@@ -13,7 +13,6 @@ class DownloadManager;
 
 namespace utils
 {
-    uint32_t to_hex(const std::string& str_color);
     XMDSManager& xmds_manager();
     DownloadManager& download_manager();
     boost::filesystem::path resources_dir();

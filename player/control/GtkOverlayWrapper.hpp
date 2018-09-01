@@ -20,10 +20,10 @@ public:
     void set_size(int width, int height) override;
     int width() const override;
     int height() const override;
-    void add_child(Gtk::Fixed& child, int top, int left, int width, int height) override;
-    void add(Gtk::Image& child) override;
+    void add_child(IFixedLayoutWrapper& child, int top, int left, int width, int height) override;
+    void add(IImageWrapper& background) override;
     void remove() override;
-    void reorder_overlay(Gtk::Fixed& child, int position) override;
+    void reorder_child(IFixedLayoutWrapper& child, int position) override;
     Gtk::Overlay& get();
 
 private:

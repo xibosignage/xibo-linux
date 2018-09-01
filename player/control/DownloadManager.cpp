@@ -8,7 +8,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 
-const std::string DEFAULT_FOLDER = "resources";
+const std::string DEFAULT_FOLDER = "LayerTest";
 
 DownloadManager::DownloadManager() :
     m_work{m_ioc}

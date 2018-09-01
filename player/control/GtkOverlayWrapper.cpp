@@ -1,4 +1,6 @@
 #include "GtkOverlayWrapper.hpp"
+#include "GtkImageWrapper.hpp"
+#include "GtkFixedLayoutWrapper.hpp"
 
 GtkOverlayWrapper::GtkOverlayWrapper()
 {
@@ -11,15 +13,18 @@ void GtkOverlayWrapper::show()
     m_handler.show();
 }
 
-void GtkOverlayWrapper::add_child(Gtk::Fixed& child, int top, int left, int width, int height)
+void GtkOverlayWrapper::add_child(IFixedLayoutWrapper& child, int top, int left, int width, int height)
 {
-    m_children.insert(std::make_pair(&child, ChildInfo{top, left, width, height}));
-    m_handler.add_overlay(child);
+    auto&& h = static_cast<GtkFixedLayoutWrapper&>(child);
+
+    m_children.insert(std::make_pair(&h.get(), ChildInfo{top, left, width, height}));
+    m_handler.add_overlay(h.get());
 }
 
-void GtkOverlayWrapper::add(Gtk::Image& child)
+void GtkOverlayWrapper::add(IImageWrapper& background)
 {
-    m_handler.add(child);
+    auto&& h = static_cast<GtkImageWrapper&>(background);
+    m_handler.add(h.get());
 }
 
 void GtkOverlayWrapper::remove()
@@ -46,9 +51,10 @@ int GtkOverlayWrapper::height() const
     return height;
 }
 
-void GtkOverlayWrapper::reorder_overlay(Gtk::Fixed& child, int position)
+void GtkOverlayWrapper::reorder_child(IFixedLayoutWrapper& child, int position)
 {
-    m_handler.reorder_overlay(child, position);
+    auto&& h = static_cast<GtkFixedLayoutWrapper&>(child);
+    m_handler.reorder_overlay(h.get(), position);
 }
 
 Gtk::Overlay&GtkOverlayWrapper::get()
