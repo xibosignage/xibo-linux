@@ -7,10 +7,10 @@
 class Background : public IBackground
 {
 public:
-    static std::shared_ptr<IBackground> createOneColor(const std::string& hexColor,
+    static std::unique_ptr<IBackground> createOneColor(const std::string& hexColor,
                                                        int width,
                                                        int height);
-    static std::shared_ptr<IBackground> createWithImage(const std::string& imagePath,
+    static std::unique_ptr<IBackground> createWithImage(const std::string& imagePath,
                                                         int width,
                                                         int height);
 
@@ -30,11 +30,11 @@ public:
     IImageWrapper& handler() override;
 
 private:
-    Background(std::shared_ptr<IImageWrapper> handler);
+    Background(std::unique_ptr<IImageWrapper> handler);
     uint32_t colorToHexNumber(const std::string& hexColor) const;
 
 private:
-    std::shared_ptr<IImageWrapper> m_handler;
+    std::unique_ptr<IImageWrapper> m_handler;
     std::string m_hexColor;
 
 };

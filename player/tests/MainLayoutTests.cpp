@@ -15,42 +15,45 @@ const int DEFAULT_HEIGHT = 480;
 const int NEW_DEFAULT_WIDTH = 200;
 const int NEW_DEFAULT_HEIGHT = 200;
 
-std::pair<std::shared_ptr<MainLayout>, std::shared_ptr<NiceMock<MockOverlayWrapper>>>
+std::pair<std::shared_ptr<MainLayout>, NiceMock<MockOverlayWrapper>*>
 construct(int width, int height)
 {
-    auto overlay = std::make_shared<NiceMock<MockOverlayWrapper>>();
-    auto layout = std::make_shared<MainLayout>(width, height, overlay);
-    return std::pair{layout, overlay};
+    auto overlay = std::make_unique<NiceMock<MockOverlayWrapper>>();
+    auto overlayRaw = overlay.get();
+    auto layout = std::make_shared<MainLayout>(width, height, std::move(overlay));
+    return std::pair{layout, overlayRaw};
 }
 
-std::pair<std::shared_ptr<MainLayout>, std::shared_ptr<NiceMock<MockOverlayWrapper>>>
+std::pair<std::shared_ptr<MainLayout>, NiceMock<MockOverlayWrapper>*>
 construct()
 {
-    auto overlay = std::make_shared<NiceMock<MockOverlayWrapper>>();
-    auto layout = std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, overlay);
-    return std::pair{layout, overlay};
+    auto overlay = std::make_unique<NiceMock<MockOverlayWrapper>>();
+    auto overlayRaw = overlay.get();
+    auto layout = std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(overlay));
+    return std::pair{layout, overlayRaw};
 }
 
-std::shared_ptr<NiceMock<MockBackground>> createBackground()
+std::unique_ptr<NiceMock<MockBackground>> createBackground()
 {
-    auto background = std::make_shared<NiceMock<MockBackground>>();
-    auto stubImage = std::make_shared<NiceMock<MockImageWrapper>>();
+    auto background = std::make_unique<NiceMock<MockBackground>>();
+    auto stubImage = std::make_unique<NiceMock<MockImageWrapper>>();
 
     ON_CALL(*background, handler()).WillByDefault(ReturnRef(*stubImage));
 
     return background;
 }
 
-std::shared_ptr<NiceMock<MockRegion>> addRegion(MainLayout& layout)
+NiceMock<MockRegion>* addRegion(MainLayout& layout)
 {
-    auto region = std::make_shared<NiceMock<MockRegion>>();
-    auto stubFixed = std::make_shared<NiceMock<MockFixedLayoutWrapper>>();
+    auto region = std::make_unique<NiceMock<MockRegion>>();
+    auto regionRaw = region.get();
+    auto stubFixed = std::make_unique<NiceMock<MockFixedLayoutWrapper>>();
 
     ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stubFixed));
 
-    layout.addRegion(region);
+    layout.addRegion(std::move(region));
 
-    return region;
+    return regionRaw;
 }
 
 TEST(MainLayout, Constructor_NegativeWidth_ShouldThrowRunTimeError)
@@ -95,11 +98,11 @@ TEST(MainLayout, Constructor_VeryBigHeight_ShouldThrowRunTimeError)
 
 TEST(MainLayout, Constructor_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto mockOverlay = std::make_shared<NiceMock<MockOverlayWrapper>>();
+    auto mockOverlay = std::make_unique<NiceMock<MockOverlayWrapper>>();
 
     EXPECT_CALL(*mockOverlay, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, mockOverlay);
+    std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(mockOverlay));
 }
 
 TEST(MainLayout, Width_Default_Equals640)
@@ -145,7 +148,7 @@ TEST(MainLayout, SetBackground_WidthNotEqualLayotuWidth_RunTimeErrorShouldBeCall
 
     ON_CALL(*stubOverlay, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    ASSERT_THROW(layout->setBackground(stubBackground), std::runtime_error);
+    ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::runtime_error);
 }
 
 TEST(MainLayout, SetBackground_HeightNotEqualLayotHeight_RunTimeErrorShouldBeCalled)
@@ -155,7 +158,7 @@ TEST(MainLayout, SetBackground_HeightNotEqualLayotHeight_RunTimeErrorShouldBeCal
 
     ON_CALL(*stubOverlay, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    ASSERT_THROW(layout->setBackground(stubBackground), std::runtime_error);
+    ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::runtime_error);
 }
 
 TEST(MainLayout, SetBackground_2InRow_HandlerAdd2TimesRemove1Time)
@@ -259,10 +262,11 @@ TEST(MainLayout, SetSize_VeryBigHeight_ShouldThrowRunTimeError)
 TEST(MainLayout, SetSize_WithBackground_BackgroundSetSizeShouldBeCalled)
 {
     auto [layout, stubOverlay] = construct();
-    auto mock_background = createBackground();
-    layout->setBackground(mock_background);
+    auto mockBackground = createBackground();
+    auto mockBackgroundRaw = mockBackground.get();
+    layout->setBackground(std::move(mockBackground));
 
-    EXPECT_CALL(*mock_background, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*mockBackgroundRaw, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
     layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
@@ -288,25 +292,25 @@ TEST(MainLayout, AddRegion_Add1_HandlerAddChildShouldBeCalled)
 TEST(MainLayout, AddRegion_RegionWidthGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
     auto [layout, stubOverlay] = construct();
-    auto region = std::make_shared<NiceMock<MockRegion>>();
-    auto stubFixed = std::make_shared<NiceMock<MockFixedLayoutWrapper>>();
+    auto region = std::make_unique<NiceMock<MockRegion>>();
+    auto stubFixed = std::make_unique<NiceMock<MockFixedLayoutWrapper>>();
 
     ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stubFixed));
     ON_CALL(*region, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    EXPECT_THROW(layout->addRegion(region), std::runtime_error);
+    EXPECT_THROW(layout->addRegion(std::move(region)), std::runtime_error);
 }
 
 TEST(MainLayout, AddRegion_RegionHeightGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
     auto [layout, stubOverlay] = construct();
-    auto region = std::make_shared<NiceMock<MockRegion>>();
-    auto stubFixed = std::make_shared<NiceMock<MockFixedLayoutWrapper>>();
+    auto region = std::make_unique<NiceMock<MockRegion>>();
+    auto stubFixed = std::make_unique<NiceMock<MockFixedLayoutWrapper>>();
 
     ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stubFixed));
     ON_CALL(*region, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    EXPECT_THROW(layout->addRegion(region), std::runtime_error);
+    EXPECT_THROW(layout->addRegion(std::move(region)), std::runtime_error);
 }
 
 TEST(MainLayout, RemoveAllRegions_With3Regions_RegionsCountEquals0)
@@ -376,7 +380,7 @@ TEST(MainLayout, Region_Add1RegionAndGet0_ShouldReturnAddedRegion)
     auto [layout, stubOverlay] = construct();
     auto stubRegion = addRegion(*layout);
 
-    ASSERT_EQ(&layout->region(0), stubRegion.get());
+    ASSERT_EQ(&layout->region(0), stubRegion);
 }
 
 TEST(MainLayout, RegionsCount_Default_Equals0)
@@ -411,9 +415,10 @@ TEST(MainLayout, Show_WithBackground_BackgroundShowShouldBeCalled)
 {
     auto [layout, stubOverlay] = construct();
     auto mockBackground = createBackground();
-    layout->setBackground(mockBackground);
+    auto mockBackgroundRaw = mockBackground.get();
+    layout->setBackground(std::move(mockBackground));
 
-    EXPECT_CALL(*mockBackground, show());
+    EXPECT_CALL(*mockBackgroundRaw, show());
 
     layout->show();
 }

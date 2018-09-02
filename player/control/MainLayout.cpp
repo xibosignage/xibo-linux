@@ -2,7 +2,7 @@
 #include "utils/utilities.hpp"
 
 #include "IRegion.hpp"
-#include "Background.hpp"
+#include "IBackground.hpp"
 
 #include "GtkOverlayWrapper.hpp"
 
@@ -12,13 +12,13 @@ const int MIN_HEIGHT = 120;
 const int MAX_HEIGHT = 9999;
 
 MainLayout::MainLayout(int width, int height) :
-    MainLayout(width, height, std::make_shared<GtkOverlayWrapper>())
+    MainLayout(width, height, std::make_unique<GtkOverlayWrapper>())
 {
 }
 
-MainLayout::MainLayout(int width, int height, std::shared_ptr<IOverlayWrapper> handler)
+MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayWrapper> handler)
 {
-    m_handler = handler;
+    m_handler = std::move(handler);
     setSize(width, height);
 }
 
@@ -26,7 +26,7 @@ MainLayout::~MainLayout()
 {
 }
 
-void MainLayout::addRegion(std::shared_ptr<IRegion> region)
+void MainLayout::addRegion(std::unique_ptr<IRegion> region)
 {
     if(region)
     {
@@ -87,9 +87,9 @@ void MainLayout::reorderRegions()
     }
 }
 
-void MainLayout::setBackground(std::shared_ptr<IBackground> background)
+// NOTE check 100x100 layout and 1920x1080 background = crash
+void MainLayout::setBackground(std::unique_ptr<IBackground> background)
 {
-    // FIXME 100x100 layout and 1920x1080 background = crash
     if(background)
     {
         if(background->width() != width() || background->height() != height())

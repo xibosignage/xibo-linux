@@ -7,25 +7,25 @@
 #include <boost/filesystem/operations.hpp>
 #include <spdlog/spdlog.h>
 
-std::shared_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
+std::unique_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
 {
-    auto background = new Background(std::make_shared<GtkImageWrapper>(width, height));
-    auto backgroundPtr = std::shared_ptr<Background>(background);
+    auto background = new Background(std::make_unique<GtkImageWrapper>(width, height));
+    auto backgroundPtr = std::unique_ptr<Background>(background);
     background->setColor(hexColor);
     return backgroundPtr;
 }
 
-std::shared_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
+std::unique_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
 {
-    auto background = new Background(std::make_shared<GtkImageWrapper>(width, height));
-    auto backgroundPtr = std::shared_ptr<Background>(background);
+    auto background = new Background(std::make_unique<GtkImageWrapper>(width, height));
+    auto backgroundPtr = std::unique_ptr<Background>(background);
     background->setImage((utils::resourcesDir() / imagePath).string());
     return backgroundPtr;
 }
 
-Background::Background(std::shared_ptr<IImageWrapper> handler)
+Background::Background(std::unique_ptr<IImageWrapper> handler)
 {
-    m_handler = handler;
+    m_handler = std::move(handler);
 }
 
 int Background::width() const

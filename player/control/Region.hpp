@@ -34,7 +34,7 @@ private:
     void onMediaTimeout();
 
 private:
-    std::shared_ptr<IFixedLayoutWrapper> m_handler;
+    std::unique_ptr<IFixedLayoutWrapper> m_handler;
 
     int m_id;
     int m_left;

@@ -6,7 +6,7 @@
 Region::Region(int id, int width, int height, int left, int top, int zindex, bool looped) :
     m_id(id), m_left(left), m_top(top), m_zindex(zindex), m_looped(looped)
 {
-    m_handler = std::make_shared<GtkFixedLayoutWrapper>();
+    m_handler = std::make_unique<GtkFixedLayoutWrapper>();
     setSize(width, height);
 }
 
