@@ -20,9 +20,9 @@ public:
     int height() const override;
 
     void setBackground(std::shared_ptr<IBackground> background) override;
-    IBackground& background() override;
 
     void addRegion(std::shared_ptr<IRegion> region) override;
+    void removeAllRegions() override;
     IRegion& region(size_t index) override;
     size_t regionsCount() const override;
 

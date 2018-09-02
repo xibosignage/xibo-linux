@@ -1,13 +1,14 @@
-#include "VideoParser.hpp"
+#include "VideoFactory.hpp"
 #include "media/Video.hpp"
+#include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-VideoParser::VideoParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaParser(parentNode, mediaNode)
+VideoFactory::VideoFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaFactory(parentNode, mediaNode)
 {
 }
 
-std::unique_ptr<Media> VideoParser::doParse()
+std::unique_ptr<IMedia> VideoFactory::doCreate()
 {
     int id = attrs().template get<int>("id");
     auto uri = utils::resourcesDir() / options().get<std::string>("uri");

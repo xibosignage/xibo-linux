@@ -1,12 +1,13 @@
-#include "ImageParser.hpp"
+#include "ImageFactory.hpp"
+#include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-ImageParser::ImageParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaParser(parentNode, mediaNode)
+ImageFactory::ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaFactory(parentNode, mediaNode)
 {
 }
 
-std::unique_ptr<Media> ImageParser::doParse()
+std::unique_ptr<IMedia> ImageFactory::doCreate()
 {
     int id = attrs().template get<int>("id");
     auto uri = utils::resourcesDir() / options().get<std::string>("uri");
@@ -21,7 +22,7 @@ std::unique_ptr<Media> ImageParser::doParse()
     return std::make_unique<Image>(id, width, height, duration, uri.string(), scaleType, align, valign);
 }
 
-Image::ScaleType ImageParser::toScaleType(const std::string& scale_type)
+Image::ScaleType ImageFactory::toScaleType(const std::string& scale_type)
 {
     if(scale_type == "center")
         return Image::ScaleType::Scaled;
@@ -31,7 +32,7 @@ Image::ScaleType ImageParser::toScaleType(const std::string& scale_type)
         return Image::ScaleType::Invalid;
 }
 
-Image::Align ImageParser::toAlign(const std::string& align)
+Image::Align ImageFactory::toAlign(const std::string& align)
 {
     if(align == "left")
         return Image::Align::Left;
@@ -43,7 +44,7 @@ Image::Align ImageParser::toAlign(const std::string& align)
         return Image::Align::Invalid;
 }
 
-Image::Valign ImageParser::toValign(const std::string& valign)
+Image::Valign ImageFactory::toValign(const std::string& valign)
 {
     if(valign == "top")
         return Image::Valign::Top;

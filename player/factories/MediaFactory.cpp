@@ -1,8 +1,9 @@
-#include "MediaParser.hpp"
+#include "MediaFactory.hpp"
 #include "media/Audio.hpp"
+#include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-MediaParser::MediaParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
+MediaFactory::MediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
     m_parentNode(parentNode)
 {
     m_attrs = mediaNode.get_child("<xmlattr>");
@@ -10,29 +11,29 @@ MediaParser::MediaParser(const xlf_node& parentNode, const xlf_node& mediaNode) 
     m_audioNode = mediaNode.get_child_optional("audio");
 }
 
-std::unique_ptr<Media> MediaParser::parse()
+std::unique_ptr<IMedia> MediaFactory::create()
 {
-    auto media = doParse();
-    media->attachAudio(parseAudioNode(media->duration()));
+    auto media = doCreate();
+    media->attachAudio(createAudioNode(media->duration()));
     return media;
 }
 
-const xlf_node& MediaParser::attrs() const
+const xlf_node& MediaFactory::attrs() const
 {
     return m_attrs;
 }
 
-const xlf_node& MediaParser::options() const
+const xlf_node& MediaFactory::options() const
 {
     return m_options;
 }
 
-const xlf_node& MediaParser::parentNode() const
+const xlf_node& MediaFactory::parentNode() const
 {
     return m_parentNode;
 }
 
-std::unique_ptr<Media> MediaParser::parseAudioNode(int parentDuration)
+std::unique_ptr<IMedia> MediaFactory::createAudioNode(int parentDuration)
 {
     if(m_audioNode)
     {

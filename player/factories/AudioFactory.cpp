@@ -1,13 +1,14 @@
-#include "AudioParser.hpp"
+#include "AudioFactory.hpp"
 #include "media/Audio.hpp"
+#include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-AudioParser::AudioParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaParser(parentNode, mediaNode)
+AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaFactory(parentNode, mediaNode)
 {
 }
 
-std::unique_ptr<Media> AudioParser::doParse()
+std::unique_ptr<IMedia> AudioFactory::doCreate()
 {
     int id = attrs().template get<int>("id");
     auto uri = utils::resourcesDir() / options().get<std::string>("uri");

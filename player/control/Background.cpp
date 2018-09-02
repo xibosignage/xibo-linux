@@ -9,7 +9,7 @@
 
 std::shared_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
 {
-    auto background = new Background(width, height, std::make_shared<GtkImageWrapper>());
+    auto background = new Background(std::make_shared<GtkImageWrapper>(width, height));
     auto backgroundPtr = std::shared_ptr<Background>(background);
     background->setColor(hexColor);
     return backgroundPtr;
@@ -17,16 +17,15 @@ std::shared_ptr<IBackground> Background::createOneColor(const std::string& hexCo
 
 std::shared_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
 {
-    auto background = new Background(width, height, std::make_shared<GtkImageWrapper>());
+    auto background = new Background(std::make_shared<GtkImageWrapper>(width, height));
     auto backgroundPtr = std::shared_ptr<Background>(background);
     background->setImage((utils::resourcesDir() / imagePath).string());
     return backgroundPtr;
 }
 
-Background::Background(int width, int height, std::shared_ptr<IImageWrapper> handler)
+Background::Background(std::shared_ptr<IImageWrapper> handler)
 {
     m_handler = handler;
-    setSize(width, height);
 }
 
 int Background::width() const
@@ -56,9 +55,9 @@ const std::string& Background::hexColor() const
 
 void Background::setColor(const std::string& hexColor)
 {
-    m_hexColor = hexColor;
     uint32_t hexColorNumber = colorToHexNumber(hexColor);
     m_handler->setColor(hexColorNumber);
+    m_hexColor = hexColor;
 }
 
 void Background::setImage(const std::string& imagePath)

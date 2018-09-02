@@ -30,7 +30,7 @@ public:
     IImageWrapper& handler() override;
 
 private:
-    Background(int width, int height, std::shared_ptr<IImageWrapper> handler);
+    Background(std::shared_ptr<IImageWrapper> handler);
     uint32_t colorToHexNumber(const std::string& hexColor) const;
 
 private:

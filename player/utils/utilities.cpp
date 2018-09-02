@@ -5,17 +5,22 @@
 #include "control/MainLayout.hpp"
 #include "control/Region.hpp"
 
-#include "parsers/LayoutParser.hpp"
-#include "parsers/RegionParser.hpp"
-#include "parsers/ImageParser.hpp"
-#include "parsers/VideoParser.hpp"
-#include "parsers/AudioParser.hpp"
-#include "parsers/WebViewParser.hpp"
+#include "factories/MainLayoutFactory.hpp"
+#include "factories/RegionFactory.hpp"
+#include "factories/ImageFactory.hpp"
+#include "factories/VideoFactory.hpp"
+#include "factories/AudioFactory.hpp"
+#include "factories/WebViewFactory.hpp"
 
 #include <stdexcept>
-#include <spdlog/spdlog.h>
 #include <boost/filesystem/operations.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+std::shared_ptr<spdlog::logger> utils::logger()
+{
+    static auto logger = spdlog::get(LOGGER);
+    return logger;
+}
 
 DownloadManager& utils::downloadManager()
 {
@@ -32,37 +37,44 @@ boost::filesystem::path utils::resourcesDir()
     return downloadManager().resourcesDir();
 }
 
-std::unique_ptr<MediaParser> utils::getMediaParser(const xlf_node& parent_node, const xlf_node& media_node)
+std::unique_ptr<MediaFactory> utils::getMediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode)
 {
-    auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
+    auto type = mediaNode.get_child("<xmlattr>").get<std::string>("type");
 
     if(type == "image")
-        return std::make_unique<ImageParser>(parent_node, media_node);
+        return std::make_unique<ImageFactory>(parentNode, mediaNode);
     else if(type == "video")
-        return std::make_unique<VideoParser>(parent_node, media_node);
+        return std::make_unique<VideoFactory>(parentNode, mediaNode);
     else if(type == "audio")
-        return std::make_unique<AudioParser>(parent_node, media_node);
+        return std::make_unique<AudioFactory>(parentNode, mediaNode);
     else // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
-        return std::make_unique<WebViewParser>(parent_node, media_node);
+        return std::make_unique<WebViewFactory>(parentNode, mediaNode);
 }
 
-std::unique_ptr<MainLayout> utils::parseXlfLayout(const boost::filesystem::path& xlfPath)
+std::unique_ptr<IMainLayout> utils::parseAndCreateXlfLayout(const boost::filesystem::path& xlfPath)
 {
     boost::property_tree::ptree tree;
     boost::property_tree::read_xml(xlfPath.string(), tree);
+    auto layoutNode = tree.get_child("layout");
 
-    LayoutParser layout_parser(tree.get_child("layout"));
-    auto layout = layout_parser.parse();
-    for(auto regionNode : layout_parser)
+    MainLayoutFactory layoutFactory(layoutNode);
+    auto layout = layoutFactory.create();
+    for(auto [nodeName, regionNode] : layoutNode)
     {
-        RegionParser regionParser(regionNode);
-        auto region = regionParser.parse();
-        for(auto mediaNode : regionParser)
+        if(nodeName == "region")
         {
-            auto mediaParser = utils::getMediaParser(regionNode, mediaNode);
-            region->addMedia(mediaParser->parse());
+            RegionFactory regionFactory(regionNode);
+            auto region = regionFactory.create();
+            for(auto [nodeName, mediaNode] : regionNode)
+            {
+                if(nodeName == "media")
+                {
+                    auto mediaFactory = utils::getMediaFactory(regionNode, mediaNode);
+                    region->addMedia(mediaFactory->create());
+                }
+            }
+            layout->addRegion(std::move(region));
         }
-        layout->addRegion(std::move(region));
     }
     return layout;
 }

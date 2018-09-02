@@ -21,8 +21,9 @@ public:
     int width() const override;
     int height() const override;
     void addChild(IFixedLayoutWrapper& child, int top, int left, int width, int height) override;
-    void add(IImageWrapper& background) override;
-    void remove() override;
+    void removeChildren() override;
+    void addMainChild(IImageWrapper& background) override;
+    void removeMainChild() override;
     void reorderChild(IFixedLayoutWrapper& child, int position) override;
     Gtk::Overlay& get();
 

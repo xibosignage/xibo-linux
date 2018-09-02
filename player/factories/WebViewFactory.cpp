@@ -1,5 +1,6 @@
-#include "WebViewParser.hpp"
+#include "WebViewFactory.hpp"
 #include "media/WebView.hpp"
+#include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
 #include <spdlog/spdlog.h>
@@ -9,12 +10,12 @@
 
 const std::string DEFAULT_EXTENSION = ".html";
 
-WebViewParser::WebViewParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaParser(parentNode, mediaNode)
+WebViewFactory::WebViewFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaFactory(parentNode, mediaNode)
 {
 }
 
-std::unique_ptr<Media> WebViewParser::doParse()
+std::unique_ptr<IMedia> WebViewFactory::doCreate()
 {
     int id = attrs().template get<int>("id");
     auto filename = std::to_string(id) + DEFAULT_EXTENSION;
@@ -23,13 +24,13 @@ std::unique_ptr<Media> WebViewParser::doParse()
     int width = parentNode().get_child("<xmlattr>").get<double>("width");
     int height = parentNode().get_child("<xmlattr>").get<double>("height");
 
-    int mode_id = options().get<int>("modeId", -1);
+    int modeId = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
 
-    return std::make_unique<WebView>(id, width, height, duration, uri.string(), mode_id, transparency);
+    return std::make_unique<WebView>(id, width, height, duration, uri.string(), modeId, transparency);
 }
 
-boost::optional<int> WebViewParser::parseDuration(const boost::filesystem::path& path)
+boost::optional<int> WebViewFactory::parseDuration(const boost::filesystem::path& path)
 {
     std::ifstream in(path.string());
     std::string line;

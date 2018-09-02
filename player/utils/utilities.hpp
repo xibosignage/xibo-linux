@@ -2,22 +2,24 @@
 
 #include <cstdint>
 #include <string>
+#include <spdlog/logger.h>
 #include <boost/filesystem/path.hpp>
 
 #include "constants.hpp"
 
-class MediaParser;
-class MainLayout;
+class MediaFactory;
+class IMainLayout;
 class XMDSManager;
 class DownloadManager;
 
 namespace utils
 {
+    std::shared_ptr<spdlog::logger> logger();
     XMDSManager& xmdsManager();
     DownloadManager& downloadManager();
     boost::filesystem::path resourcesDir();
-    std::unique_ptr<MediaParser> getMediaParser(const xlf_node& parentNode, const xlf_node& mediaNode);
-    std::unique_ptr<MainLayout> parseXlfLayout(const boost::filesystem::path& xlf_path);
+    std::unique_ptr<MediaFactory> getMediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode);
+    std::unique_ptr<IMainLayout> parseAndCreateXlfLayout(const boost::filesystem::path& xlf_path);
     boost::property_tree::ptree parseXml(const std::string& xml);
 
     template <typename T>

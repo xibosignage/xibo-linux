@@ -49,7 +49,7 @@ int XiboApp::initPlayer()
 
 //    m_collection_interval.start();
 
-    window->add(utils::parseXlfLayout(findXlfFile()));
+    window->add(utils::parseAndCreateXlfLayout(findXlfFile()));
     window->show();
 
     return Gtk::Application::run(static_cast<GtkWindowWrapper&>(window->handler()).get());

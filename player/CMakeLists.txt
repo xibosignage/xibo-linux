@@ -15,11 +15,11 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 file(GLOB CONTROL_SOURCES ${CMAKE_SOURCE_DIR}/player/control/*.cpp)
 file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp)
 file(GLOB UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp)
-file(GLOB PARSER_SOURCES ${CMAKE_SOURCE_DIR}/player/parsers/*.cpp)
+file(GLOB FACTORIES_SOURCES ${CMAKE_SOURCE_DIR}/player/factories/*.cpp)
 file(GLOB WRAPPER_SOURCES ${CMAKE_SOURCE_DIR}/player/wrapper/*.cpp)
 file(GLOB XMDS_SOURCES ${CMAKE_SOURCE_DIR}/player/xmds/*.cpp)
 
-add_library(player_lib STATIC XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${PARSER_SOURCES} ${XMDS_SOURCES})
+add_library(player_lib STATIC XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${FACTORIES_SOURCES} ${XMDS_SOURCES})
 add_library(gst_wrapper SHARED ${WRAPPER_SOURCES})
 add_library(xibovideosink SHARED customsink/XiboVideoSink.cpp)
 

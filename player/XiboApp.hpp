@@ -3,7 +3,7 @@
 #include <gtkmm/application.h>
 #include <spdlog/spdlog.h>
 
-#include "parsers/CommandLineParser.hpp"
+#include "factories/CommandLineParser.hpp"
 #include "control/DownloadManager.hpp"
 #include "control/CollectionInterval.hpp"
 #include "control/PlayerSettings.hpp"

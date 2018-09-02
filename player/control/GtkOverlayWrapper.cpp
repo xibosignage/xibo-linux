@@ -21,13 +21,22 @@ void GtkOverlayWrapper::addChild(IFixedLayoutWrapper& child, int top, int left, 
     m_handler.add_overlay(h.get());
 }
 
-void GtkOverlayWrapper::add(IImageWrapper& background)
+void GtkOverlayWrapper::removeChildren()
+{
+    for(auto&& widget : m_handler.get_children())
+    {
+        m_handler.Gtk::Container::remove(*widget);
+    }
+    m_children.clear();
+}
+
+void GtkOverlayWrapper::addMainChild(IImageWrapper& background)
 {
     auto&& h = static_cast<GtkImageWrapper&>(background);
     m_handler.add(h.get());
 }
 
-void GtkOverlayWrapper::remove()
+void GtkOverlayWrapper::removeMainChild()
 {
     m_handler.remove();
 }

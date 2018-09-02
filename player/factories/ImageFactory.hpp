@@ -1,17 +1,17 @@
 #include "constants.hpp"
 #include "media/Image.hpp"
-#include "parsers/MediaParser.hpp"
+#include "factories/MediaFactory.hpp"
 #include <memory>
 
-class Media;
+class IMedia;
 
-class ImageParser : public MediaParser
+class ImageFactory : public MediaFactory
 {
 public:
-    ImageParser(const xlf_node& parentNode, const xlf_node& mediaNode);
+    ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode);
 
 protected:
-    std::unique_ptr<Media> doParse() override;
+    std::unique_ptr<IMedia> doCreate() override;
 
 private:
     Image::ScaleType toScaleType(const std::string& scaleType);

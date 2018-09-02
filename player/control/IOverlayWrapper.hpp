@@ -14,7 +14,8 @@ public:
     virtual int width() const = 0;
     virtual int height() const = 0;
     virtual void addChild(IFixedLayoutWrapper& child, int top, int left, int width, int height) = 0;
-    virtual void add(IImageWrapper& background) = 0;
-    virtual void remove() = 0;
+    virtual void removeChildren() = 0;
+    virtual void addMainChild(IImageWrapper& background) = 0;
+    virtual void removeMainChild() = 0;
     virtual void reorderChild(IFixedLayoutWrapper& child, int position) = 0;
 };
