@@ -14,18 +14,18 @@ WebView::WebView(int id, int width, int height, int duration, const std::string&
         auto path = "file://" + uri;
         spdlog::get(LOGGER)->trace("WebView file {}", path);
 
-        m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
-        webkit_web_view_load_uri(m_web_view, path.c_str());
+        m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
+        webkit_web_view_load_uri(m_webView, path.c_str());
 
         if(m_transparent)
         {
-            m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
-            screen_changed(m_handler.get_screen());
+            m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screenChanged));
+            screenChanged(m_handler.get_screen());
 
-            webkit_web_view_set_transparent(m_web_view, true);
+            webkit_web_view_set_transparent(m_webView, true);
         }
 
-        auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
+        auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView));
         m_handler.add(*widget);
         m_handler.set_size_request(width, height);
     }
@@ -35,7 +35,7 @@ WebView::WebView(int id, int width, int height, int duration, const std::string&
     }
 }
 
-void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
+void WebView::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen)
 {
     if(screen)
     {
@@ -57,18 +57,18 @@ void WebView::start()
 {
     Media::start();
     m_handler.show_all();
-    webkit_web_view_reload(m_web_view);
+    webkit_web_view_reload(m_webView);
 }
 
-void WebView::set_size(int width, int height)
+void WebView::setSize(int width, int height)
 {
-    Media::set_size(width, height);
+    Media::setSize(width, height);
     m_handler.set_size_request(width, height);
 }
 
-void WebView::request_handler()
+void WebView::requestHandler()
 {
-    handler_requested().emit(m_handler, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
+    handlerRequested().emit(m_handler, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
 }
 
 bool WebView::transparent() const

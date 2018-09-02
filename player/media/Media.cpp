@@ -24,44 +24,44 @@ void Media::stop()
 void Media::start()
 {
     m_started = true;
-    start_timer();
+    startTimer();
     if(m_audio)
     {
         m_audio->start();
     }
 }
 
-bool Media::is_running() const
+bool Media::isRunning() const
 {
     return m_started;
 }
 
-void Media::set_size(int width, int height)
+void Media::setSize(int width, int height)
 {
     m_width = width;
     m_height = height;
 }
 
-void Media::start_timer()
+void Media::startTimer()
 {
     Glib::signal_timeout().connect_once([=](){
-        media_timeout().emit();
+        mediaTimeout().emit();
     }, duration() * MSECS);
 }
 
-void Media::attach_audio(std::unique_ptr<IMedia> audio)
+void Media::attachAudio(std::unique_ptr<IMedia> audio)
 {
     m_audio = std::move(audio);
 }
 
-sigc::signal<void, Gtk::Widget&, int, int>& Media::handler_requested()
+sigc::signal<void, Gtk::Widget&, int, int>& Media::handlerRequested()
 {
-    return m_handler_requsted;
+    return m_handlerRequsted;
 }
 
-sigc::signal<void>& Media::media_timeout()
+sigc::signal<void>& Media::mediaTimeout()
 {
-    return m_media_timeout;
+    return m_mediaTimeout;
 }
 
 int Media::id() const

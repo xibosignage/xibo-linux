@@ -17,18 +17,18 @@ public:
 
     void stop() override;
     void start() override;
-    void start_timer() override;
-    void set_size(int width, int height) override;
-    void request_handler() override;
+    void startTimer() override;
+    void setSize(int width, int height) override;
+    void requestHandler() override;
 
     bool muted() const;
     bool looped() const;
 
 private:
-    bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
-    void no_more_pads();
-    void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
-    void set_volume(double volume);
+    bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
+    void noMorePads();
+    void onPadAdded(const Gst::RefPtr<Gst::Pad>& pad);
+    void setVolume(double volume);
     void play();
 
 private:
@@ -36,19 +36,19 @@ private:
     bool m_looped;
 
     std::shared_ptr<spdlog::logger> m_logger;
-    Gtk::DrawingArea m_video_window;
-    bool m_video_ended = false;
-    boost::format m_video_fmt;
+    Gtk::DrawingArea m_videoWindow;
+    bool m_videoEnded = false;
+    boost::format m_videoFmt;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
     Gst::RefPtr<Gst::FileSrc> m_source;
     Gst::RefPtr<Gst::Decodebin> m_decodebin;
     Gst::RefPtr<Gst::Volume> m_volume;
-    Gst::RefPtr<Gst::VideoConvert> m_video_converter;
-    Gst::RefPtr<Gst::VideoScale> m_video_scale;
-    Gst::RefPtr<Gst::Element> m_video_sink;
-    Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
-    Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
+    Gst::RefPtr<Gst::VideoConvert> m_videoConverter;
+    Gst::RefPtr<Gst::VideoScale> m_videoScale;
+    Gst::RefPtr<Gst::Element> m_videoSink;
+    Gst::RefPtr<Gst::AudioConvert> m_audioConverter;
+    Gst::RefPtr<Gst::AutoAudioSink> m_audioSink;
     Gst::RefPtr<Gst::Queue> m_queue;
     Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
 };

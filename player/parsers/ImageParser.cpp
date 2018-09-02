@@ -1,27 +1,27 @@
 #include "ImageParser.hpp"
 #include "utils/utilities.hpp"
 
-ImageParser::ImageParser(const xlf_node& parent_node, const xlf_node& media_node) :
-    MediaParser(parent_node, media_node)
+ImageParser::ImageParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaParser(parentNode, mediaNode)
 {
 }
 
 std::unique_ptr<Media> ImageParser::doParse()
 {
     int id = attrs().template get<int>("id");
-    auto uri = utils::resources_dir() / options().get<std::string>("uri");
+    auto uri = utils::resourcesDir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
-    int width = parent_node().get_child("<xmlattr>").get<double>("width");
-    int height = parent_node().get_child("<xmlattr>").get<double>("height");
+    int width = parentNode().get_child("<xmlattr>").get<double>("width");
+    int height = parentNode().get_child("<xmlattr>").get<double>("height");
 
-    auto scale_type = to_scale_type(options().get<std::string>("scaleType", "center"));
-    auto align = to_align(options().get<std::string>("align", "center"));
-    auto valign = to_valign(options().get<std::string>("valign", "middle"));
+    auto scaleType = toScaleType(options().get<std::string>("scaleType", "center"));
+    auto align = toAlign(options().get<std::string>("align", "center"));
+    auto valign = toValign(options().get<std::string>("valign", "middle"));
 
-    return std::make_unique<Image>(id, width, height, duration, uri.string(), scale_type, align, valign);
+    return std::make_unique<Image>(id, width, height, duration, uri.string(), scaleType, align, valign);
 }
 
-Image::ScaleType ImageParser::to_scale_type(const std::string& scale_type)
+Image::ScaleType ImageParser::toScaleType(const std::string& scale_type)
 {
     if(scale_type == "center")
         return Image::ScaleType::Scaled;
@@ -31,7 +31,7 @@ Image::ScaleType ImageParser::to_scale_type(const std::string& scale_type)
         return Image::ScaleType::Invalid;
 }
 
-Image::Align ImageParser::to_align(const std::string& align)
+Image::Align ImageParser::toAlign(const std::string& align)
 {
     if(align == "left")
         return Image::Align::Left;
@@ -43,7 +43,7 @@ Image::Align ImageParser::to_align(const std::string& align)
         return Image::Align::Invalid;
 }
 
-Image::Valign ImageParser::to_valign(const std::string& valign)
+Image::Valign ImageParser::toValign(const std::string& valign)
 {
     if(valign == "top")
         return Image::Valign::Top;

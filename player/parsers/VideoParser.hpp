@@ -7,7 +7,7 @@ class Media;
 class VideoParser : public MediaParser
 {
 public:
-    VideoParser(const xlf_node& parent_node, const xlf_node& media_node);
+    VideoParser(const xlf_node& parentNode, const xlf_node& mediaNode);
 
 protected:
     std::unique_ptr<Media> doParse() override;

@@ -2,15 +2,15 @@
 #include "media/Audio.hpp"
 #include "utils/utilities.hpp"
 
-AudioParser::AudioParser(const xlf_node& parent_node, const xlf_node& media_node) :
-    MediaParser(parent_node, media_node)
+AudioParser::AudioParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaParser(parentNode, mediaNode)
 {
 }
 
 std::unique_ptr<Media> AudioParser::doParse()
 {
     int id = attrs().template get<int>("id");
-    auto uri = utils::resources_dir() / options().get<std::string>("uri");
+    auto uri = utils::resourcesDir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
 
     bool mute = options().get<bool>("mute", false);

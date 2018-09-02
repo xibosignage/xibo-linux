@@ -15,22 +15,22 @@ public:
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    void set_size(int width, int height) override;
+    void setSize(int width, int height) override;
     int width() const override;
     int height() const override;
 
-    void set_background(std::shared_ptr<IBackground> background) override;
+    void setBackground(std::shared_ptr<IBackground> background) override;
     IBackground& background() override;
 
-    void add_region(std::shared_ptr<IRegion> region) override;
+    void addRegion(std::shared_ptr<IRegion> region) override;
     IRegion& region(size_t index) override;
-    size_t regions_count() const override;
+    size_t regionsCount() const override;
 
     IOverlayWrapper& handler() override;
     void show() override;
 
 private:
-    void reorder_regions();
+    void reorderRegions();
 
 private:
     std::shared_ptr<IOverlayWrapper> m_handler;

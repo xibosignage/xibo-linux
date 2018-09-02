@@ -7,26 +7,26 @@
 #include <boost/filesystem/operations.hpp>
 #include <spdlog/spdlog.h>
 
-std::shared_ptr<IBackground> Background::create_one_color(const std::string& hex_color, int width, int height)
+std::shared_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
 {
     auto background = new Background(width, height, std::make_shared<GtkImageWrapper>());
-    auto background_ptr = std::shared_ptr<Background>(background);
-    background->set_color(hex_color);
-    return background_ptr;
+    auto backgroundPtr = std::shared_ptr<Background>(background);
+    background->setColor(hexColor);
+    return backgroundPtr;
 }
 
-std::shared_ptr<IBackground> Background::create_with_image(const std::string& image_path, int width, int height)
+std::shared_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
 {
     auto background = new Background(width, height, std::make_shared<GtkImageWrapper>());
-    auto background_ptr = std::shared_ptr<Background>(background);
-    background->set_image((utils::resources_dir() / image_path).string());
-    return background_ptr;
+    auto backgroundPtr = std::shared_ptr<Background>(background);
+    background->setImage((utils::resourcesDir() / imagePath).string());
+    return backgroundPtr;
 }
 
 Background::Background(int width, int height, std::shared_ptr<IImageWrapper> handler)
 {
     m_handler = handler;
-    set_size(width, height);
+    setSize(width, height);
 }
 
 int Background::width() const
@@ -39,34 +39,34 @@ int Background::height() const
     return m_handler->height();
 }
 
-void Background::set_size(int width, int height)
+void Background::setSize(int width, int height)
 {
-    m_handler->set_size(width, height);
+    m_handler->setSize(width, height);
 }
 
-uint32_t Background::hex_color_number() const
+uint32_t Background::hexColorNumber() const
 {
-    return color_to_hex_number(m_hex_color);
+    return colorToHexNumber(m_hexColor);
 }
 
-const std::string& Background::hex_color() const
+const std::string& Background::hexColor() const
 {
-    return m_hex_color;
+    return m_hexColor;
 }
 
-void Background::set_color(const std::string& hex_color)
+void Background::setColor(const std::string& hexColor)
 {
-    m_hex_color = hex_color;
-    uint32_t hex_color_number = color_to_hex_number(hex_color);
-    m_handler->set_color(hex_color_number);
+    m_hexColor = hexColor;
+    uint32_t hexColorNumber = colorToHexNumber(hexColor);
+    m_handler->setColor(hexColorNumber);
 }
 
-void Background::set_image(const std::string& image_path)
+void Background::setImage(const std::string& imagePath)
 {
-    if(!boost::filesystem::exists(image_path))
+    if(!boost::filesystem::exists(imagePath))
         throw std::runtime_error("Path doesn't exist");
 
-    m_handler->set_image(image_path);
+    m_handler->setImage(imagePath);
 }
 
 void Background::show()
@@ -79,17 +79,17 @@ IImageWrapper& Background::handler()
     return *m_handler;
 }
 
-uint32_t Background::color_to_hex_number(const std::string& hex_color) const
+uint32_t Background::colorToHexNumber(const std::string& hexColor) const
 {
     // remove '#' sign at the beginning
-    std::string str_hex = hex_color.substr(1);
+    std::string strHex = hexColor.substr(1);
 
     // convert 3-digit hex to 6-digit hex
-    if(str_hex.size() == 3)
-        str_hex = std::string(2, str_hex[0]) + std::string(2, str_hex[1]) + std::string(2, str_hex[2]);
+    if(strHex.size() == 3)
+        strHex = std::string(2, strHex[0]) + std::string(2, strHex[1]) + std::string(2, strHex[2]);
     // add default alpha channel
-    if(str_hex.size() == 6)
-        str_hex += "FF";
+    if(strHex.size() == 6)
+        strHex += "FF";
 
-    return static_cast<uint32_t>(std::stoul(str_hex, nullptr, 16));
+    return static_cast<uint32_t>(std::stoul(strHex, nullptr, 16));
 }

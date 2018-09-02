@@ -13,12 +13,12 @@ namespace GetFile
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
-        Field<std::string> file_id{"fileId"};
-        Field<std::string> file_type{"fileType"};
-        Field<double> chunk_offset{"chunkOffset"};
-        Field<double> chunk_size{"chuckSize"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> fileId{"fileId"};
+        Field<std::string> fileType{"fileType"};
+        Field<double> chunkOffset{"chunkOffset"};
+        Field<double> chunkSize{"chuckSize"};
     };
 }
 

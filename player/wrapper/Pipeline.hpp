@@ -17,15 +17,15 @@ namespace Gst
         static Gst::RefPtr<Gst::Pipeline> create(const std::string& name);
         Gst::RefPtr<Gst::Pipeline> add(Gst::RefPtr<Gst::Element> other);
         Gst::RefPtr<Gst::Pipeline> remove(Gst::RefPtr<Gst::Element> other);
-        void add_bus_watch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler);
+        void addBusWatch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler);
 
     private:
         Pipeline(const std::string& name);
-        gboolean on_bus_watch(GstBus*, GstMessage* message, gpointer);
+        gboolean onBusWatch(GstBus*, GstMessage* message, gpointer);
 
     private:
-        std::function<bool(const Gst::RefPtr<Gst::Message>&)> m_watch_handler;
-        guint m_watch_id;
+        std::function<bool(const Gst::RefPtr<Gst::Message>&)> m_watchHandler;
+        guint m_watchId;
 
     };
 }

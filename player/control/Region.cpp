@@ -7,7 +7,7 @@ Region::Region(int id, int width, int height, int left, int top, int zindex, boo
     m_id(id), m_left(left), m_top(top), m_zindex(zindex), m_looped(looped)
 {
     m_handler = std::make_shared<GtkFixedLayoutWrapper>();
-    set_size(width, height);
+    setSize(width, height);
 }
 
 Region::~Region()
@@ -24,12 +24,12 @@ int Region::height() const
     return m_handler->height();
 }
 
-void Region::set_size(int width, int height)
+void Region::setSize(int width, int height)
 {
-    m_handler->set_size(width, height);
+    m_handler->setSize(width, height);
     for(auto&& media : m_media)
     {
-        media->set_size(width, height);
+        media->setSize(width, height);
     }
 }
 
@@ -43,7 +43,7 @@ int Region::top() const
     return m_top;
 }
 
-void Region::set_pos(int left, int top)
+void Region::setPos(int left, int top)
 {
     m_left = left;
     m_top = top;
@@ -69,19 +69,19 @@ void Region::show()
     if(!m_media.empty())
     {
         for(auto&& media : m_media)
-            media->request_handler();
+            media->requestHandler();
 
         m_handler->show();
         m_media[m_currentMediaIndex]->start();
     }
 }
 
-void Region::add_media(std::unique_ptr<IMedia> media)
+void Region::addMedia(std::unique_ptr<IMedia> media)
 {
-    media->handler_requested().connect([=](Gtk::Widget& widget, int left, int top){
-         m_handler->add_child(widget, left, top); // FIXME move after reallocation
+    media->handlerRequested().connect([=](Gtk::Widget& widget, int left, int top){
+         m_handler->addChild(widget, left, top); // FIXME move after reallocation
     });
-    media->media_timeout().connect(sigc::mem_fun(*this, &Region::on_media_timeout));
+    media->mediaTimeout().connect(sigc::mem_fun(*this, &Region::onMediaTimeout));
     m_media.push_back(std::move(media));
 }
 
@@ -90,7 +90,7 @@ IFixedLayoutWrapper& Region::handler()
     return *m_handler;
 }
 
-void Region::on_media_timeout()
+void Region::onMediaTimeout()
 {
     if(m_media.size() > 1)
     {

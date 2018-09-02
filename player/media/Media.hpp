@@ -12,14 +12,14 @@ public:
 
     void stop() override = 0;
     void start() override = 0;
-    void request_handler() override { }
-    bool is_running() const override;
-    void set_size(int width, int height) override;
-    void start_timer() override;
+    void requestHandler() override { }
+    bool isRunning() const override;
+    void setSize(int width, int height) override;
+    void startTimer() override;
 
-    void attach_audio(std::unique_ptr<IMedia> audio) override;
-    sigc::signal<void, Gtk::Widget&, int, int>& handler_requested() override;
-    sigc::signal<void>& media_timeout() override;
+    void attachAudio(std::unique_ptr<IMedia> audio) override;
+    sigc::signal<void, Gtk::Widget&, int, int>& handlerRequested() override;
+    sigc::signal<void>& mediaTimeout() override;
 
     int id() const override;
     int width() const override;
@@ -36,8 +36,8 @@ private:
     Render m_render;
     std::string m_uri;
 
-    sigc::signal<void, Gtk::Widget&, int, int> m_handler_requsted;
-    sigc::signal<void> m_media_timeout;
+    sigc::signal<void, Gtk::Widget&, int, int> m_handlerRequsted;
+    sigc::signal<void> m_mediaTimeout;
     std::unique_ptr<IMedia> m_audio;
     bool m_started = false;
 

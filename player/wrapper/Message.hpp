@@ -54,25 +54,25 @@ namespace Gst
     class MessageError
     {
     public:
-        MessageError(const std::string& text, const std::string& debug_info);
-        const std::string& get_text() const;
-        const std::string& get_debug_info() const;
+        MessageError(const std::string& text, const std::string& debugInfo);
+        const std::string& getText() const;
+        const std::string& getDebugInfo() const;
 
     private:
         std::string m_text;
-        std::string m_debug_info;
+        std::string m_debugInfo;
     };
 
     class Message
     {
     public:
-        Message(GstMessage* handler, bool take_ownership = true);
-        Gst::MessageError parse_error();
+        Message(GstMessage* handler, bool takeOwnership = true);
+        Gst::MessageError parseError();
         Gst::MessageType type() const;
 
     private:
         GstMessage* m_handler;
-        bool m_take_ownership;
+        bool m_takeOwnership;
 
     };
 }

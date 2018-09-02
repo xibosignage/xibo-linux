@@ -10,7 +10,7 @@ Gst::RefPtr<Gst::Queue> Gst::Queue::create()
     return std::shared_ptr<Gst::Queue>(new Gst::Queue);
 }
 
-void Gst::Queue::set_max_size_buffers(int max_size_buffers)
+void Gst::Queue::setMaxSizeBuffers(int maxSizeBuffers)
 {
-    g_object_set(m_element, "max-size-buffers", max_size_buffers, nullptr);
+    g_object_set(m_element, "max-size-buffers", maxSizeBuffers, nullptr);
 }

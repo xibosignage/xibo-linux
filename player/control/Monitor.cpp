@@ -14,7 +14,7 @@ Monitor::Monitor(Gtk::Window& window)
 #endif
 }
 
-Gdk::Rectangle Monitor::get_area()
+Gdk::Rectangle Monitor::getArea()
 {
     Gdk::Rectangle area;
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=23

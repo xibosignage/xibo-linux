@@ -12,16 +12,16 @@ public:
 
     void stop() override;
     void start() override;
-    void set_size(int width, int height) override;
-    void request_handler() override;
+    void setSize(int width, int height) override;
+    void requestHandler() override;
     bool transparent() const;
 
 private:
-    void screen_changed(const Glib::RefPtr<Gdk::Screen>& screen);
+    void screenChanged(const Glib::RefPtr<Gdk::Screen>& screen);
 
 private:
     bool m_transparent;
-    WebKitWebView* m_web_view = nullptr;
+    WebKitWebView* m_webView = nullptr;
     Gtk::ScrolledWindow m_handler;
 
 };

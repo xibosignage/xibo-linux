@@ -6,7 +6,7 @@
 MainWindow::MainWindow(int, int, bool, bool, bool, bool)
 {
     m_handler = std::make_unique<GtkWindowWrapper>();
-    m_handler->set_default_size(640, 480);
+    m_handler->setDefaultSize(640, 480);
 //    m_handler->move(x, y);
 //    m_handler->set_resizable(resizable);
 //    m_handler->set_decorated(decorated);

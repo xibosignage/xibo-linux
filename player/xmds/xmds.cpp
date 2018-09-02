@@ -2,22 +2,22 @@
 #include "soap.hpp"
 #include "utils/utilities.hpp"
 
-boost::property_tree::ptree xmds::parse_xml_response(const std::string& soap_response)
+boost::property_tree::ptree xmds::parseXmlResponse(const std::string& soapResponse)
 {
-    auto response_tree = soap::parse_soap_response(soap_response);
-    auto [_, message_node] = response_tree.front();
-    return utils::parse_xml(message_node.get_value<std::string>());
+    auto responseTree = soap::parseSoapResponse(soapResponse);
+    auto [_, messageNode] = responseTree.front();
+    return utils::parseXml(messageNode.get_value<std::string>());
 }
 
-bool xmds::parse_success_response(const std::string& soap_response)
+bool xmds::parseSuccessResponse(const std::string& soapResponse)
 {
-    auto response_tree = soap::parse_soap_response(soap_response);
-    return response_tree.get_child("success").get_value<bool>();
+    auto responseTree = soap::parseSoapResponse(soapResponse);
+    return responseTree.get_child("success").get_value<bool>();
 }
 
-std::string xmds::parse_file_response(const std::string& soap_response)
+std::string xmds::parseFileResponse(const std::string& soapResponse)
 {
-    auto response_tree = soap::parse_soap_response(soap_response);
-    return response_tree.begin()->second.get_value<std::string>();
+    auto responseTree = soap::parseSoapResponse(soapResponse);
+    return responseTree.begin()->second.get_value<std::string>();
 }
 

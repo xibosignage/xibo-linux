@@ -31,7 +31,7 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
     m_logger = spdlog::get(LOGGER);
 }
 
-int XiboApp::init_player()
+int XiboApp::initPlayer()
 {
     auto window = std::make_unique<MainWindow>(500, 500, false, false, true, true);
 
@@ -49,13 +49,13 @@ int XiboApp::init_player()
 
 //    m_collection_interval.start();
 
-    window->add(utils::parse_xlf_layout(find_xlf_file()));
+    window->add(utils::parseXlfLayout(findXlfFile()));
     window->show();
 
     return Gtk::Application::run(static_cast<GtkWindowWrapper&>(window->handler()).get());
 }
 
-void XiboApp::run_player(MainWindow& window)
+void XiboApp::runPlayer(MainWindow& window)
 {
 //    if(!window.is_visible())
 //    {
@@ -66,17 +66,17 @@ void XiboApp::run_player(MainWindow& window)
 //    }
 }
 
-void XiboApp::update_settings(const PlayerSettings& )
+void XiboApp::updateSettings(const PlayerSettings& )
 {
 //    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
 }
 
 // FIXME temporary workaround
-std::string XiboApp::find_xlf_file()
+std::string XiboApp::findXlfFile()
 {
     namespace fs = boost::filesystem;
 
-    fs::directory_iterator it(utils::resources_dir());
+    fs::directory_iterator it(utils::resourcesDir());
     fs::directory_iterator end;
 
     while(it != end)
@@ -102,14 +102,14 @@ XiboApp& XiboApp::app()
     return *m_app;
 }
 
-XMDSManager& XiboApp::xmds_manager()
+XMDSManager& XiboApp::xmdsManager()
 {
-    return *m_xmds_manager;
+    return *m_xmdsManager;
 }
 
-DownloadManager& XiboApp::download_manager()
+DownloadManager& XiboApp::downloadManager()
 {
-    return m_download_manager;
+    return m_downloadManager;
 }
 
 int XiboApp::run(int argc, char** argv)
@@ -118,19 +118,19 @@ int XiboApp::run(int argc, char** argv)
     {
         m_options.parse(argc, argv);
 
-        if(m_options.help_option())
+        if(m_options.helpOption())
         {
-            m_logger->info("{}", m_options.available_options());
+            m_logger->info("{}", m_options.availableOptions());
         }
         else
         {
-            if(m_options.version_option())
+            if(m_options.versionOption())
             {
-                m_logger->info("Project version: {}", get_version());
+                m_logger->info("Project version: {}", getVersion());
             }
             if(m_options.credentials())
             {
-                return init_player();
+                return initPlayer();
             }
         }
     }

@@ -14,12 +14,12 @@ int GtkFixedLayoutWrapper::height() const
     return height;
 }
 
-void GtkFixedLayoutWrapper::set_size(int width, int height)
+void GtkFixedLayoutWrapper::setSize(int width, int height)
 {
     m_handler.set_size_request(width, height);
 }
 
-void GtkFixedLayoutWrapper::add_child(Gtk::Widget& widget, int left, int top)
+void GtkFixedLayoutWrapper::addChild(Gtk::Widget& widget, int left, int top)
 {
     m_handler.put(widget, left, top);
 }

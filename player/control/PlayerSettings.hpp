@@ -5,27 +5,27 @@
 
 struct PlayerSettings
 {
-    int collect_interval;
-    std::string download_start_window;
-    std::string download_end_window;
-    bool stats_enabled;
-    std::string xmr_network_address;
+    int collectInterval;
+    std::string downloadStartWindow;
+    std::string downloadEndWindow;
+    bool statsEnabled;
+    std::string xmrNetworkAddress;
     double sizeX;
     double sizeY;
     double offsetX;
     double offsetY;
-    std::string log_level;
-    bool shell_commands_enabled;
-    bool modified_layouts_enabled;
-    int max_concurrent_downloads;
-    bool status_layout_update;
-    int screenshot_interval;
-    int screenshot_size;
-    int max_log_files_uploads;
-    int embedded_server_port;
-    bool prevent_sleep;
-    std::string display_name;
-    bool screenshot_requested;
+    std::string logLevel;
+    bool shellCommandsEnabled;
+    bool modifiedLayoutsEnabled;
+    int maxConcurrentDownloads;
+    bool statusLayoutUpdate;
+    int screenshotInterval;
+    int screenshotSize;
+    int maxLogFilesUploads;
+    int embeddedServerPort;
+    bool preventSleep;
+    std::string displayName;
+    bool screenshotRequested;
 };
 
 #endif // PLAYERSETTINGS_HPP

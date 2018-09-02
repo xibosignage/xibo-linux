@@ -9,21 +9,21 @@ Gst::Decodebin::Decodebin()
 {
     m_element = gst_element_factory_make("decodebin", nullptr);
 
-    auto on_pad_added = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&Decodebin::on_pad_added, this, ph::_1, ph::_2, ph::_3));
-    g_signal_connect_data(m_element, "pad-added", reinterpret_cast<GCallback>(on_pad_added), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    auto onPadAdded = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&Decodebin::onPadAdded, this, ph::_1, ph::_2, ph::_3));
+    g_signal_connect_data(m_element, "pad-added", reinterpret_cast<GCallback>(onPadAdded), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
-    auto no_more_pads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Decodebin::no_more_pads, this, ph::_1, ph::_2));
-    g_signal_connect_data(m_element, "no-more-pads", reinterpret_cast<GCallback>(no_more_pads), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    auto noMorePads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Decodebin::noMorePads, this, ph::_1, ph::_2));
+    g_signal_connect_data(m_element, "no-more-pads", reinterpret_cast<GCallback>(noMorePads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 }
 
-void Gst::Decodebin::on_pad_added(GstElement*, GstPad* pad, gpointer)
+void Gst::Decodebin::onPadAdded(GstElement*, GstPad* pad, gpointer)
 {
-    m_signal_pad_added.emit(std::make_shared<Gst::Pad>(pad, false));
+    m_signalPadAdded.emit(std::make_shared<Gst::Pad>(pad, false));
 }
 
-void Gst::Decodebin::no_more_pads(GstElement*, gpointer)
+void Gst::Decodebin::noMorePads(GstElement*, gpointer)
 {
-    m_signal_no_more_pads.emit();
+    m_signalNoMorePads.emit();
 }
 
 Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
@@ -31,12 +31,12 @@ Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
     return std::shared_ptr<Gst::Decodebin>(new Gst::Decodebin);
 }
 
-sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& Gst::Decodebin::signal_pad_added()
+sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& Gst::Decodebin::signalPadAdded()
 {
-    return m_signal_pad_added;
+    return m_signalPadAdded;
 }
 
-sigc::signal<void()>& Gst::Decodebin::signal_no_more_pads()
+sigc::signal<void()>& Gst::Decodebin::signalNoMorePads()
 {
-    return m_signal_no_more_pads;
+    return m_signalNoMorePads;
 }

@@ -5,7 +5,7 @@
 GtkOverlayWrapper::GtkOverlayWrapper()
 {
     m_handler.signal_get_child_position().
-            connect(sigc::mem_fun(*this, &GtkOverlayWrapper::on_get_child_position), false);
+            connect(sigc::mem_fun(*this, &GtkOverlayWrapper::onGetChildPosition), false);
 }
 
 void GtkOverlayWrapper::show()
@@ -13,7 +13,7 @@ void GtkOverlayWrapper::show()
     m_handler.show();
 }
 
-void GtkOverlayWrapper::add_child(IFixedLayoutWrapper& child, int top, int left, int width, int height)
+void GtkOverlayWrapper::addChild(IFixedLayoutWrapper& child, int top, int left, int width, int height)
 {
     auto&& h = static_cast<GtkFixedLayoutWrapper&>(child);
 
@@ -32,7 +32,7 @@ void GtkOverlayWrapper::remove()
     m_handler.remove();
 }
 
-void GtkOverlayWrapper::set_size(int width, int height)
+void GtkOverlayWrapper::setSize(int width, int height)
 {
     m_handler.set_size_request(width, height);
 }
@@ -51,7 +51,7 @@ int GtkOverlayWrapper::height() const
     return height;
 }
 
-void GtkOverlayWrapper::reorder_child(IFixedLayoutWrapper& child, int position)
+void GtkOverlayWrapper::reorderChild(IFixedLayoutWrapper& child, int position)
 {
     auto&& h = static_cast<GtkFixedLayoutWrapper&>(child);
     m_handler.reorder_overlay(h.get(), position);
@@ -62,7 +62,7 @@ Gtk::Overlay&GtkOverlayWrapper::get()
     return m_handler;
 }
 
-bool GtkOverlayWrapper::on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& alloc)
+bool GtkOverlayWrapper::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
 {
     auto it = m_children.find(widget);
     if(it != m_children.end())

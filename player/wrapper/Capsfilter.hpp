@@ -8,7 +8,7 @@ namespace Gst
     {
     public:
         static Gst::RefPtr<Gst::Capsfilter> create();
-        void set_caps(Gst::RefPtr<Gst::Caps> caps);
+        void setCaps(Gst::RefPtr<Gst::Caps> caps);
 
     private:
         Capsfilter();

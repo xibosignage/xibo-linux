@@ -10,8 +10,8 @@ namespace Gst
     {
     public:
         Structure(GstStructure* handler);
-        int get_height() const;
-        int get_width() const;
+        int getHeight() const;
+        int getWidth() const;
 
     private:
         GstStructure* m_handler = nullptr;
@@ -21,17 +21,17 @@ namespace Gst
     class Caps
     {
     public:
-        Caps(GstCaps* get_handler);
-        Caps(const std::string& string_caps);
+        Caps(GstCaps* getHandler);
+        Caps(const std::string& stringCaps);
         Caps(Caps&& other);
         Caps& operator=(Caps&& other);
         ~Caps();
-        static Gst::RefPtr<Gst::Caps> create(const std::string& string_caps);
-        Gst::RefPtr<Gst::Structure> get_structure(guint index) const;
-        GstCaps* get_handler();
+        static Gst::RefPtr<Gst::Caps> create(const std::string& stringCaps);
+        Gst::RefPtr<Gst::Structure> getStructure(guint index) const;
+        GstCaps* getHandler();
 
     private:
-        std::string m_string_caps;
+        std::string m_stringCaps;
         GstCaps* m_handler = nullptr;
     };
 }

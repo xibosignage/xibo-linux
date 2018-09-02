@@ -30,27 +30,27 @@ public:
     };
 
     Image(int id, int width, int height, int duration, const std::string& uri,
-          ScaleType scale_type, Align align, Valign valign);
+          ScaleType scaleType, Align align, Valign valign);
 
     void stop() override;
     void start() override;
-    void set_size(int width, int height) override;
-    void request_handler() override;
+    void setSize(int width, int height) override;
+    void requestHandler() override;
 
-    ScaleType scale_type() const;
+    ScaleType scaleType() const;
     Align align() const;
     Valign valign() const;
 
 private:
-    bool is_scaled() const;
-    int get_left_pos() const;
-    int get_top_pos() const;
+    bool isScaled() const;
+    int getLeftPos() const;
+    int getTopPos() const;
 
 private:
     Gtk::Image m_handler;
-    int m_actual_width;
-    int m_actual_height;
-    ScaleType m_scale_type;
+    int m_actualWidth;
+    int m_actualHeight;
+    ScaleType m_scaleType;
     Align m_align;
     Valign m_valign;
 

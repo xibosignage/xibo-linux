@@ -2,18 +2,18 @@
 #include "media/Video.hpp"
 #include "utils/utilities.hpp"
 
-VideoParser::VideoParser(const xlf_node& parent_node, const xlf_node& media_node) :
-    MediaParser(parent_node, media_node)
+VideoParser::VideoParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaParser(parentNode, mediaNode)
 {
 }
 
 std::unique_ptr<Media> VideoParser::doParse()
 {
     int id = attrs().template get<int>("id");
-    auto uri = utils::resources_dir() / options().get<std::string>("uri");
+    auto uri = utils::resourcesDir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
-    int width = parent_node().get_child("<xmlattr>").get<double>("width");
-    int height = parent_node().get_child("<xmlattr>").get<double>("height");
+    int width = parentNode().get_child("<xmlattr>").get<double>("width");
+    int height = parentNode().get_child("<xmlattr>").get<double>("height");
 
     bool mute = options().get<bool>("mute", false);
     bool loop = options().get<bool>("loop", false);

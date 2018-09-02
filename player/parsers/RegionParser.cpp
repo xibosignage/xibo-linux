@@ -3,14 +3,14 @@
 #include "parsers/MediaParser.hpp"
 #include "utils/utilities.hpp"
 
-RegionParser::RegionParser(const xlf_node& region_node) :
-    m_region_node(region_node)
+RegionParser::RegionParser(const xlf_node& regionNode) :
+    m_regionNode(regionNode)
 {
-    for(auto [region_node_name, media_node]: m_region_node)
+    for(auto [regionNodeName, mediaNode]: m_regionNode)
     {
-        if(region_node_name == "media")
+        if(regionNodeName == "media")
         {
-            m_media_nodes.push_back(media_node);
+            m_mediaNodes.push_back(mediaNode);
         }
     }
 }
@@ -19,8 +19,8 @@ std::unique_ptr<Region> RegionParser::parse()
 {
     //spdlog::get(LOGGER)->trace("Parsing region...");
 
-    auto attrs = m_region_node.get_child("<xmlattr>");
-    auto options = m_region_node.get_child("options");
+    auto attrs = m_regionNode.get_child("<xmlattr>");
+    auto options = m_regionNode.get_child("options");
 
     int id = attrs.get<int>("id");
     int width = static_cast<int>(attrs.get<float>("width"));
@@ -35,10 +35,10 @@ std::unique_ptr<Region> RegionParser::parse()
 
 std::vector<xlf_node>::const_iterator RegionParser::begin() const
 {
-    return std::cbegin(m_media_nodes);
+    return std::cbegin(m_mediaNodes);
 }
 
 std::vector<xlf_node>::const_iterator RegionParser::end() const
 {
-    return std::cend(m_media_nodes);
+    return std::cend(m_mediaNodes);
 }

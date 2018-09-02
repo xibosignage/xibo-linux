@@ -9,8 +9,8 @@
 
 const std::string DEFAULT_EXTENSION = ".html";
 
-WebViewParser::WebViewParser(const xlf_node& parent_node, const xlf_node& media_node) :
-    MediaParser(parent_node, media_node)
+WebViewParser::WebViewParser(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaParser(parentNode, mediaNode)
 {
 }
 
@@ -18,10 +18,10 @@ std::unique_ptr<Media> WebViewParser::doParse()
 {
     int id = attrs().template get<int>("id");
     auto filename = std::to_string(id) + DEFAULT_EXTENSION;
-    auto uri = utils::resources_dir() / filename;
-    int duration = parse_duration(uri).value_or(attrs().get<int>("duration"));
-    int width = parent_node().get_child("<xmlattr>").get<double>("width");
-    int height = parent_node().get_child("<xmlattr>").get<double>("height");
+    auto uri = utils::resourcesDir() / filename;
+    int duration = parseDuration(uri).value_or(attrs().get<int>("duration"));
+    int width = parentNode().get_child("<xmlattr>").get<double>("width");
+    int height = parentNode().get_child("<xmlattr>").get<double>("height");
 
     int mode_id = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
@@ -29,7 +29,7 @@ std::unique_ptr<Media> WebViewParser::doParse()
     return std::make_unique<WebView>(id, width, height, duration, uri.string(), mode_id, transparency);
 }
 
-boost::optional<int> WebViewParser::parse_duration(const boost::filesystem::path& path)
+boost::optional<int> WebViewParser::parseDuration(const boost::filesystem::path& path)
 {
     std::ifstream in(path.string());
     std::string line;

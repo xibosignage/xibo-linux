@@ -2,15 +2,15 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const NotifyStatus::Request& request)
+std::string soap::requestString(const NotifyStatus::Request& request)
 {
-    return create_request<NotifyStatus::Request>(request.server_key, request.hardware_key, request.status);
+    return createRequest<NotifyStatus::Request>(request.serverKey, request.hardwareKey, request.status);
 }
 
 template<>
-NotifyStatus::Response soap::create_response(const std::string& soap_response)
+NotifyStatus::Response soap::createResponse(const std::string& soapResponse)
 {
     NotifyStatus::Response result;
-    result.success = xmds::parse_success_response(soap_response);
+    result.success = xmds::parseSuccessResponse(soapResponse);
     return result;
 }

@@ -7,7 +7,7 @@ class Monitor : public IMonitor
 {
 public:
     Monitor(Gtk::Window& window);
-    Gdk::Rectangle get_area() override;
+    Gdk::Rectangle getArea() override;
 
 private:
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=23

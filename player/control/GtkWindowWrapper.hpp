@@ -9,11 +9,11 @@ class GtkWindowWrapper : public IWindowWrapper
     Gtk::Window m_handler;
 public:
     void add(IOverlayWrapper& overlay) override;
-    void set_default_size(int width, int height) override;
+    void setDefaultSize(int width, int height) override;
     void move(int x, int y) override;
-    void set_resizable(bool resizable) override;
-    void set_decorated(bool decorated) override;
+    void setResizable(bool resizable) override;
+    void setDecorated(bool decorated) override;
     void fullscreen() override;
-    void set_keep_above(bool keep_above) override;
+    void setKeepAbove(bool keep_above) override;
     Gtk::Window& get();
 };

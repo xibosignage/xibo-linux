@@ -14,7 +14,7 @@ DownloadManager::DownloadManager() :
     m_work{m_ioc}
 {
     m_logger = spdlog::get(LOGGER);
-    m_work_thread.reset(new std::thread([=](){
+    m_workThread.reset(new std::thread([=](){
         m_ioc.run();
     }));
 
@@ -24,22 +24,22 @@ DownloadManager::DownloadManager() :
 DownloadManager::~DownloadManager()
 {
     m_ioc.stop();
-    m_work_thread->join();
+    m_workThread->join();
 }
 
 void DownloadManager::init()
 {
-    m_resources_dir = boost::filesystem::current_path() / DEFAULT_FOLDER;
-    if(!boost::filesystem::exists(m_resources_dir))
+    m_resourcesDir = boost::filesystem::current_path() / DEFAULT_FOLDER;
+    if(!boost::filesystem::exists(m_resourcesDir))
     {
-        bool result = boost::filesystem::create_directory(m_resources_dir);
+        bool result = boost::filesystem::create_directory(m_resourcesDir);
         if(!result)
         {
             throw std::runtime_error("Unable to create resources directory");
         }
         else
         {
-            m_logger->info("Resource directory is {}", m_resources_dir.string());
+            m_logger->info("Resource directory is {}", m_resourcesDir.string());
         }
     }
 }
@@ -52,41 +52,41 @@ void DownloadManager::download(const std::string& filename, const std::string& p
     session->callback = callback;
 
     const int GROUPS_COUNT = 3;
-    std::regex url_regex("([A-Za-z]*://)(.*)(/.*)");
-    std::smatch base_match;
-    if(std::regex_match(path, base_match, url_regex) && base_match.size() > GROUPS_COUNT)
+    std::regex urlRegex("([A-Za-z]*://)(.*)(/.*)");
+    std::smatch baseMatch;
+    if(std::regex_match(path, baseMatch, urlRegex) && baseMatch.size() > GROUPS_COUNT)
     {
-        m_host = base_match[2].str();
-        session->target = base_match[3].str();
+        m_host = baseMatch[2].str();
+        session->target = baseMatch[3].str();
         m_logger->trace("Host: {} Target: {}", m_host, session->target);
     }
 
-    auto resolve = std::bind(&DownloadManager::on_resolve, this, std::placeholders::_1, std::placeholders::_2, session);
+    auto resolve = std::bind(&DownloadManager::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
     session->resolver.async_resolve(m_host, std::to_string(80), ip::resolver_base::numeric_service, resolve);
 }
 
-void DownloadManager::download(int layout_id, int region_id, int media_id, DownloadCallback callback)
+void DownloadManager::download(int layoutId, int regionId, int mediaId, DownloadCallback callback)
 {
-    utils::xmds_manager().get_resource(layout_id, region_id, media_id, [=](const GetResource::Response& response){
-        auto filename = resources_dir() / (std::to_string(media_id) + ".html");
+    utils::xmdsManager().getResource(layoutId, regionId, mediaId, [=](const GetResource::Response& response){
+        auto filename = resourcesDir() / (std::to_string(mediaId) + ".html");
         std::ofstream out(filename.string());
         out << response.resource;
         callback(filename.string());
     });
 }
 
-boost::filesystem::path DownloadManager::resources_dir()
+boost::filesystem::path DownloadManager::resourcesDir()
 {
-    return m_resources_dir;
+    return m_resourcesDir;
 }
 
-void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
+void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {
-        auto filename = resources_dir() / session->filename;
+        auto filename = resourcesDir() / session->filename;
         std::ofstream out(filename.string());
-        out << session->http_response.body();
+        out << session->httpResponse.body();
         session->callback(filename.string());
     }
     else
@@ -97,12 +97,12 @@ void DownloadManager::on_read(const boost::system::error_code& ec, std::size_t, 
 }
 
 #include <limits>
-void DownloadManager::on_write(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
+void DownloadManager::onWrite(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {  
-        auto read = std::bind(&DownloadManager::on_read, this, std::placeholders::_1, std::placeholders::_2, session);
-        http::async_read(session->socket, session->buffer, session->http_response, read);
+        auto read = std::bind(&DownloadManager::onRead, this, std::placeholders::_1, std::placeholders::_2, session);
+        http::async_read(session->socket, session->buffer, session->httpResponse, read);
     }
     else
     {
@@ -110,18 +110,18 @@ void DownloadManager::on_write(const boost::system::error_code& ec, std::size_t,
     }
 }
 
-void DownloadManager::on_connect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session)
+void DownloadManager::onConnect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {
-        session->http_request.method(http::verb::get);
-        session->http_request.target(session->target);
-        session->http_request.version(11);
-        session->http_request.set(http::field::host, m_host);
-        session->http_request.prepare_payload();
+        session->httpRequest.method(http::verb::get);
+        session->httpRequest.target(session->target);
+        session->httpRequest.version(11);
+        session->httpRequest.set(http::field::host, m_host);
+        session->httpRequest.prepare_payload();
 
-        auto write = std::bind(&DownloadManager::on_write, this, std::placeholders::_1, std::placeholders::_2, session);
-        http::async_write(session->socket, session->http_request, write);
+        auto write = std::bind(&DownloadManager::onWrite, this, std::placeholders::_1, std::placeholders::_2, session);
+        http::async_write(session->socket, session->httpRequest, write);
     }
     else
     {
@@ -129,11 +129,11 @@ void DownloadManager::on_connect(const boost::system::error_code& ec, ip::tcp::r
     }
 }
 
-void DownloadManager::on_resolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<DownloadSession> session)
+void DownloadManager::onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {
-        auto connect = std::bind(&DownloadManager::on_connect, this, std::placeholders::_1, std::placeholders::_2, session);
+        auto connect = std::bind(&DownloadManager::onConnect, this, std::placeholders::_1, std::placeholders::_2, session);
         asio::async_connect(session->socket, results.begin(), results.end(), connect);
     }
     else

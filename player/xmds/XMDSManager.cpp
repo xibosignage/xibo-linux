@@ -2,45 +2,45 @@
 
 const std::string DEFAULT_CLIENT_TYPE = "linux";
 
-XMDSManager::XMDSManager(const std::string &host, const std::string& server_key, const std::string& hardware_key) :
-    m_soap_manager(host), m_server_key(server_key), m_hardware_key(hardware_key)
+XMDSManager::XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey) :
+    m_soapManager(host), m_serverKey(serverKey), m_hardwareKey(hardwareKey)
 {
     m_logger = spdlog::get(LOGGER);
 }
 
-void XMDSManager::register_display(int client_code, const std::string& client_version,
-                                   const std::string& display_name, RegisterDisplayCallback callback)
+void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersion,
+                                   const std::string& displayName, RegisterDisplayCallback callback)
 {
     RegisterDisplay::Request request;
-    request.server_key = m_server_key;
-    request.hardware_key = m_hardware_key;
-    request.client_type = DEFAULT_CLIENT_TYPE;
-    request.client_code = client_code;
-    request.client_version = client_version; // FIXME get from player version (?)
-    request.mac_address = "test"; // FIXME get from the system
-    request.display_name = display_name;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.clientType = DEFAULT_CLIENT_TYPE;
+    request.clientCode = clientCode;
+    request.clientVersion = clientVersion; // FIXME get from player version (?)
+    request.macAddress = "test"; // FIXME get from the system
+    request.displayName = displayName;
 
-    m_soap_manager.send_request(request, callback);
+    m_soapManager.sendRequest(request, callback);
 }
 
-void XMDSManager::required_files(RequiredFilesCallback callback)
+void XMDSManager::requiredFiles(RequiredFilesCallback callback)
 {
     RequiredFiles::Request request;
-    request.server_key = m_server_key;
-    request.hardware_key = m_hardware_key;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
 
-    m_soap_manager.send_request(request, callback);
+    m_soapManager.sendRequest(request, callback);
 }
 
 
-void XMDSManager::get_resource(int layout_id, int region_id, int media_id, GetResourceCallback callback)
+void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback)
 {
     GetResource::Request request;
-    request.server_key = m_server_key;
-    request.hardware_key = m_hardware_key;
-    request.layout_id = layout_id;
-    request.region_id = std::to_string(region_id);
-    request.media_id = std::to_string(media_id);
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.layoutId = layoutId;
+    request.regionId = std::to_string(regionId);
+    request.mediaId = std::to_string(mediaId);
 
-    m_soap_manager.send_request(request, callback);
+    m_soapManager.sendRequest(request, callback);
 }

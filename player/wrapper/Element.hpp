@@ -53,15 +53,15 @@ namespace Gst
     public:
         virtual ~Element();
         Gst::RefPtr<Gst::Element> link(const Gst::RefPtr<Gst::Element>& other);
-        Gst::RefPtr<Gst::Element> link_filtered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter);
-        void set_state(Gst::State state);
-        Gst::State get_state() const;
-        Gst::RefPtr<Gst::Pad> get_static_pad(const std::string& name);
+        Gst::RefPtr<Gst::Element> linkFltered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter);
+        void setState(Gst::State state);
+        Gst::State getState() const;
+        Gst::RefPtr<Gst::Pad> getStaticPad(const std::string& name);
         static Gst::RefPtr<Gst::Element> create(const std::string& name);
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
-                  Gst::SeekType start_type, gint64 start, Gst::SeekType stop_type, gint64 stop);
-        GstElement* get_handler() const;
-        void reset_handler();
+                  Gst::SeekType startType, gint64 start, Gst::SeekType stopType, gint64 stop);
+        GstElement* getHandler() const;
+        void resetHandler();
 
     protected:
         Element() = default;

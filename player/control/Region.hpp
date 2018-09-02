@@ -16,22 +16,22 @@ public:
 
     int width() const override;
     int height() const override;
-    void set_size(int width, int height) override;
+    void setSize(int width, int height) override;
 
     int left() const override;
     int top() const override;
-    void set_pos(int left, int top) override;
+    void setPos(int left, int top) override;
 
     int id() const override;
     int zindex() const override;
     bool looped() const override;
     void show() override;
 
-    void add_media(std::unique_ptr<IMedia> media) override;
+    void addMedia(std::unique_ptr<IMedia> media) override;
     IFixedLayoutWrapper& handler() override;
 
 private:
-    void on_media_timeout();
+    void onMediaTimeout();
 
 private:
     std::shared_ptr<IFixedLayoutWrapper> m_handler;

@@ -10,12 +10,12 @@ class Media;
 class WebViewParser : public MediaParser
 {
 public:
-    WebViewParser(const xlf_node& parent_node, const xlf_node& media_node);
+    WebViewParser(const xlf_node& parentNode, const xlf_node& mediaNode);
 
 protected:
     std::unique_ptr<Media> doParse() override;
 
 private:
-    boost::optional<int> parse_duration(const boost::filesystem::path& path);
+    boost::optional<int> parseDuration(const boost::filesystem::path& path);
 
 };

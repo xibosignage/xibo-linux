@@ -13,9 +13,9 @@ namespace SubmitStats
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
-        Field<std::string> stat_xml{"statXml"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> statXml{"statXml"};
     };
 }
 

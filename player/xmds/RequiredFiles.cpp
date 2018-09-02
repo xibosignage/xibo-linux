@@ -3,7 +3,7 @@
 
 namespace RequiredFileHelper
 {
-    auto to_file_type(const std::string& type)
+    auto toFileType(const std::string& type)
     {
         using FileType = RequiredFiles::Response::FileType;
 
@@ -17,7 +17,7 @@ namespace RequiredFileHelper
         return FileType::Invalid;
     }
 
-    auto to_download_type(const std::string& type)
+    auto toDownloadType(const std::string& type)
     {
         using DownloadType = RequiredFiles::Response::DownloadType;
 
@@ -31,58 +31,58 @@ namespace RequiredFileHelper
 }
 
 const std::vector<RequiredFiles::Response::required_file>&
-RequiredFiles::Response::required_files() const
+RequiredFiles::Response::requiredFiles() const
 {
-    return m_required_media;
+    return m_requiredMedia;
 }
 
 const std::vector<RequiredFiles::Response::required_resource>&
-RequiredFiles::Response::required_resources() const
+RequiredFiles::Response::requiredResources() const
 {
-    return m_required_resources;
+    return m_requiredResources;
 }
 
-void RequiredFiles::Response::add_file(const boost::property_tree::ptree& attrs)
+void RequiredFiles::Response::addFile(const boost::property_tree::ptree& attrs)
 {
-    auto file_type = RequiredFileHelper::to_file_type(attrs.get<std::string>("type"));
-    if(file_type == FileType::Invalid) return;
+    auto fileType = RequiredFileHelper::toFileType(attrs.get<std::string>("type"));
+    if(fileType == FileType::Invalid) return;
 
-    if(file_type != FileType::Resource)
+    if(fileType != FileType::Resource)
     {
         int id = attrs.get<int>("id");
         size_t size = attrs.get<size_t>("size");
         std::string md5 = attrs.get<std::string>("md5");
         std::string path = attrs.get<std::string>("path");
-        std::string save_as = attrs.get<std::string>("saveAs");
-        auto download_type = RequiredFileHelper::to_download_type(attrs.get<std::string>("download"));
-        m_required_media.emplace_back(required_file{id, size, md5, path, save_as, download_type, file_type});
+        std::string saveAs = attrs.get<std::string>("saveAs");
+        auto downloadType = RequiredFileHelper::toDownloadType(attrs.get<std::string>("download"));
+        m_requiredMedia.emplace_back(required_file{id, size, md5, path, saveAs, downloadType, fileType});
     }
     else
     {
-        int layout_id = attrs.get<int>("layoutid");
-        int region_id = attrs.get<int>("regionid");
-        int media_id = attrs.get<int>("mediaid");
-        m_required_resources.emplace_back(required_resource{layout_id, region_id, media_id});
+        int layoutId = attrs.get<int>("layoutid");
+        int regionId = attrs.get<int>("regionid");
+        int mediaId = attrs.get<int>("mediaid");
+        m_requiredResources.emplace_back(required_resource{layoutId, regionId, mediaId});
     }
 }
 
 template<>
-std::string soap::request_string(const RequiredFiles::Request& request)
+std::string soap::requestString(const RequiredFiles::Request& request)
 {
-    return create_request<RequiredFiles::Request>(request.server_key, request.hardware_key);
+    return createRequest<RequiredFiles::Request>(request.serverKey, request.hardwareKey);
 }
 
 template<>
-RequiredFiles::Response soap::create_response(const std::string& soap_response)
+RequiredFiles::Response soap::createResponse(const std::string& soapResponse)
 {
-    auto files_node = xmds::parse_xml_response(soap_response).get_child("files");
+    auto filesNode = xmds::parseXmlResponse(soapResponse).get_child("files");
 
     RequiredFiles::Response result;
-    std::for_each(files_node.begin(), files_node.end(), [&result](const auto& file){
-        auto [name, file_node] = file;
+    std::for_each(filesNode.begin(), filesNode.end(), [&result](const auto& file){
+        auto [name, fileNode] = file;
         if(name == "file")
         {
-            result.add_file(file_node.get_child("<xmlattr>"));
+            result.addFile(fileNode.get_child("<xmlattr>"));
         }
     });
 

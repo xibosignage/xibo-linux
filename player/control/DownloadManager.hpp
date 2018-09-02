@@ -18,8 +18,8 @@ struct DownloadSession
     DownloadSession(asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
     ip::tcp::socket socket;
     ip::tcp::resolver resolver;
-    http::request<http::string_body> http_request;
-    http::response<http::string_body> http_response;
+    http::request<http::string_body> httpRequest;
+    http::response<http::string_body> httpResponse;
     beast::flat_buffer buffer;
     std::string filename;
     std::string target;
@@ -35,24 +35,24 @@ public:
     DownloadManager& operator=(const DownloadManager&) = delete;
 
     void download(const std::string& filename, const std::string& path, DownloadCallback callback);
-    void download(int layout_id, int region_id, int media_id, DownloadCallback callback);
-    boost::filesystem::path resources_dir();
+    void download(int layoutId, int regionId, int mediaId, DownloadCallback callback);
+    boost::filesystem::path resourcesDir();
 
 private:
     void init();
 
-    void on_read(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
-    void on_write(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
-    void on_connect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session);
-    void on_resolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<DownloadSession> session);
+    void onRead(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
+    void onWrite(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
+    void onConnect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session);
+    void onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<DownloadSession> session);
 
 private:
     asio::io_context m_ioc;
     asio::io_context::work m_work;
-    std::unique_ptr<std::thread> m_work_thread;
+    std::unique_ptr<std::thread> m_workThread;
     std::string m_host;
     std::shared_ptr<spdlog::logger> m_logger;
-    boost::filesystem::path m_resources_dir;
+    boost::filesystem::path m_resourcesDir;
 };
 
 

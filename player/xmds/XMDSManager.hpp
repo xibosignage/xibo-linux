@@ -16,19 +16,19 @@ using GetResourceCallback = std::function<void(const GetResource::Response&)>;
 class XMDSManager
 {
 public:
-    XMDSManager(const std::string& host, const std::string& server_key, const std::string& hardware_key);
+    XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    void register_display(int client_code,
-                          const std::string& client_version,
-                          const std::string& display_name,
+    void registerDisplay(int clientCode,
+                          const std::string& clientVersion,
+                          const std::string& displayName,
                           RegisterDisplayCallback callback);
-    void required_files(RequiredFilesCallback callback);
-    void get_resource(int layout_id, int region_id, int media_id, GetResourceCallback callback);
+    void requiredFiles(RequiredFilesCallback callback);
+    void getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback);
 
 private:
-    SOAPManager m_soap_manager;
-    std::string m_server_key;
-    std::string m_hardware_key;
+    SOAPManager m_soapManager;
+    std::string m_serverKey;
+    std::string m_hardwareKey;
     std::shared_ptr<spdlog::logger> m_logger;
 
 };

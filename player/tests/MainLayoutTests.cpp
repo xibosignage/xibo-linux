@@ -31,24 +31,24 @@ construct()
     return std::pair{layout, overlay};
 }
 
-std::shared_ptr<NiceMock<MockBackground>> create_background()
+std::shared_ptr<NiceMock<MockBackground>> createBackground()
 {
     auto background = std::make_shared<NiceMock<MockBackground>>();
-    auto stub_image = std::make_shared<NiceMock<MockImageWrapper>>();
+    auto stubImage = std::make_shared<NiceMock<MockImageWrapper>>();
 
-    ON_CALL(*background, handler()).WillByDefault(ReturnRef(*stub_image));
+    ON_CALL(*background, handler()).WillByDefault(ReturnRef(*stubImage));
 
     return background;
 }
 
-std::shared_ptr<NiceMock<MockRegion>> add_region(MainLayout& layout)
+std::shared_ptr<NiceMock<MockRegion>> addRegion(MainLayout& layout)
 {
     auto region = std::make_shared<NiceMock<MockRegion>>();
-    auto stub_fixed = std::make_shared<NiceMock<MockFixedLayoutWrapper>>();
+    auto stubFixed = std::make_shared<NiceMock<MockFixedLayoutWrapper>>();
 
-    ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stub_fixed));
+    ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stubFixed));
 
-    layout.add_region(region);
+    layout.addRegion(region);
 
     return region;
 }
@@ -95,313 +95,313 @@ TEST(MainLayout, Constructor_VeryBigHeight_ShouldThrowRunTimeError)
 
 TEST(MainLayout, Constructor_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto mock_overlay = std::make_shared<NiceMock<MockOverlayWrapper>>();
+    auto mockOverlay = std::make_shared<NiceMock<MockOverlayWrapper>>();
 
-    EXPECT_CALL(*mock_overlay, set_size(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    EXPECT_CALL(*mockOverlay, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, mock_overlay);
+    std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, mockOverlay);
 }
 
 TEST(MainLayout, Width_Default_Equals640)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    ON_CALL(*stub_overlay, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(*stubOverlay, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(layout->width(), DEFAULT_WIDTH);
 }
 
 TEST(MainLayout, Height_Default_Equals480)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    ON_CALL(*stub_overlay, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(*stubOverlay, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(layout->height(), DEFAULT_HEIGHT);
 }
 
 TEST(MainLayout, Background_Default_ShouldThrowRunTimeException)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
     ASSERT_THROW(layout->background(), std::runtime_error);
 }
 
 TEST(MainLayout, SetBackground_Null_HandlerAddShouldNotBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, add(_)).Times(0);
+    EXPECT_CALL(*mockOverlay, add(_)).Times(0);
 
-    layout->set_background(nullptr);
+    layout->setBackground(nullptr);
 }
 
 TEST(MainLayout, SetBackground_NotNull_HandlerAddShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, add(_));
+    EXPECT_CALL(*mockOverlay, add(_));
 
-    layout->set_background(create_background());
+    layout->setBackground(createBackground());
 }
 
 TEST(MainLayout, SetBackground_NotNull_BackgroundSetSizeShouldBeCalled)
 {
-    auto [layout, stub_overlay] = construct();
-    auto mock_background = create_background();
+    auto [layout, stubOverlay] = construct();
+    auto mockBackground = createBackground();
 
-    ON_CALL(*stub_overlay, width()).WillByDefault(Return(DEFAULT_WIDTH));
-    ON_CALL(*stub_overlay, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(*stubOverlay, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(*stubOverlay, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*mock_background, set_size(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    EXPECT_CALL(*mockBackground, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    layout->set_background(mock_background);
+    layout->setBackground(mockBackground);
 }
 
 TEST(MainLayout, SetBackground_2InRow_HandlerAdd2TimesRemove1Time)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, add(_)).Times(2);
-    EXPECT_CALL(*mock_overlay, remove()).Times(1);
+    EXPECT_CALL(*mockOverlay, add(_)).Times(2);
+    EXPECT_CALL(*mockOverlay, remove()).Times(1);
 
-    layout->set_background(create_background());
-    layout->set_background(create_background());
+    layout->setBackground(createBackground());
+    layout->setBackground(createBackground());
 }
 
 TEST(MainLayout, SetSize_Width200Height200_HandlerSetSizeShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*mockOverlay, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
-    layout->set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
+    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
 
 TEST(MainLayout, SetSize_Width200Height200_WidthEquals200)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    ON_CALL(*stub_overlay, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
+    ON_CALL(*stubOverlay, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
 
-    layout->set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
+    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
     ASSERT_EQ(layout->width(), NEW_DEFAULT_WIDTH);
 }
 
 TEST(MainLayout, SetSize_Width200Height200_HeightEquals200)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    ON_CALL(*stub_overlay, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
+    ON_CALL(*stubOverlay, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
 
-    layout->set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
+    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
     ASSERT_EQ(layout->height(), NEW_DEFAULT_HEIGHT);
 }
 
 TEST(MainLayout, SetSize_NegativeWidth_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(-1, NEW_DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(-1, NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_NegativeHeigth_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(NEW_DEFAULT_WIDTH, -1), std::runtime_error);
+    EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, -1), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_WidthGreaterThan9999_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(10000, NEW_DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(10000, NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_HeightGreaterThan9999_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(NEW_DEFAULT_WIDTH, 10000), std::runtime_error);
+    EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, 10000), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_WidthLesshanMinWidth160_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(159, DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(159, DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_HeightLessThanMinHeight120_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(DEFAULT_WIDTH, 119), std::runtime_error);
+    EXPECT_THROW(layout->setSize(DEFAULT_WIDTH, 119), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_VeryBigWidth_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(std::numeric_limits<int>::max(), NEW_DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(std::numeric_limits<int>::max(), NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_VeryBigHeight_ShouldThrowRunTimeError)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    EXPECT_THROW(layout->set_size(NEW_DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
+    EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_WithBackground_BackgroundSetSizeShouldBeCalled)
 {
-    auto [layout, stub_overlay] = construct();
-    auto mock_background = create_background();
-    layout->set_background(mock_background);
+    auto [layout, stubOverlay] = construct();
+    auto mock_background = createBackground();
+    layout->setBackground(mock_background);
 
-    EXPECT_CALL(*mock_background, set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*mock_background, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
-    layout->set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
+    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
 
 TEST(MainLayout, SetSize_WithRegion_RegionSetSizeShouldBeCalled)
 {
-    auto [layout, stub_overlay] = construct();
-    auto mock_region = add_region(*layout);
+    auto [layout, stubOverlay] = construct();
+    auto mock_region = addRegion(*layout);
 
     ON_CALL(*mock_region, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
     ON_CALL(*mock_region, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*mock_region, set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*mock_region, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
-    layout->set_size(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
+    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
 
 TEST(MainLayout, AddRegion_Null_HandlerAddChildShouldNotBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, add_child(_, _, _ ,_ , _)).Times(0);
+    EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _)).Times(0);
 
-    layout->add_region(nullptr);
+    layout->addRegion(nullptr);
 }
 
 TEST(MainLayout, AddRegion_Add1_HandlerAddChildShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, add_child(_, _, _ ,_ , _));
+    EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _));
 
-    add_region(*layout);
+    addRegion(*layout);
 }
 
 TEST(MainLayout, Region_DefaultGet0Element_ShouldThrowOutOfRangeException)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
     ASSERT_THROW(layout->region(0), std::out_of_range);
 }
 
 TEST(MainLayout, Region_Add1RegionAndGet1_ShouldThrowOutOfRangeException)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    add_region(*layout);
+    addRegion(*layout);
 
     ASSERT_THROW(layout->region(1), std::out_of_range);
 }
 
 TEST(MainLayout, Region_Add1RegionAndGetNegative_ShouldThrowOutOfRangeException)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    add_region(*layout);
+    addRegion(*layout);
 
     ASSERT_THROW(layout->region(-10), std::out_of_range);
 }
 
 TEST(MainLayout, Region_Add1RegionAndGetBigIndex_ShouldThrowOutOfRangeException)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    add_region(*layout);
+    addRegion(*layout);
 
     ASSERT_THROW(layout->region(std::numeric_limits<size_t>::max()), std::out_of_range);
 }
 
 TEST(MainLayout, Region_Add1RegionAndGet0_ShouldReturnAddedRegion)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    auto stub_region = add_region(*layout);
+    auto stubRegion = addRegion(*layout);
 
-    ASSERT_EQ(&layout->region(0), stub_region.get());
+    ASSERT_EQ(&layout->region(0), stubRegion.get());
 }
 
 TEST(MainLayout, RegionsCount_Default_Equals0)
 {
-    auto [layout, stub_overlay] = construct();
+    auto [layout, stubOverlay] = construct();
 
-    ASSERT_EQ(layout->regions_count(), 0);
+    ASSERT_EQ(layout->regionsCount(), 0);
 }
 
 TEST(MainLayout, RegionCount_Add3Regions_RegionCountEquals3)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
     const int REGIONS_COUNT = 3;
 
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        add_region(*layout);
+        addRegion(*layout);
     }
 
-    ASSERT_EQ(layout->regions_count(), REGIONS_COUNT);
+    ASSERT_EQ(layout->regionsCount(), REGIONS_COUNT);
 }
 
 TEST(MainLayout, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
 
-    EXPECT_CALL(*mock_overlay, show());
+    EXPECT_CALL(*mockOverlay, show());
 
     layout->show();
 }
 
 TEST(MainLayout, Show_WithBackground_BackgroundShowShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
-    auto mock_background = create_background();
-    layout->set_background(mock_background);
+    auto [layout, mockOverlay] = construct();
+    auto mockBackground = createBackground();
+    layout->setBackground(mockBackground);
 
-    EXPECT_CALL(*mock_background, show());
+    EXPECT_CALL(*mockBackground, show());
 
     layout->show();
 }
 
 TEST(MainLayout, Show_WithRegion_RegionShowShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
-    auto mock_region = add_region(*layout);
+    auto [layout, mockOverlay] = construct();
+    auto mockRegion = addRegion(*layout);
 
-    EXPECT_CALL(*mock_region, show());
+    EXPECT_CALL(*mockRegion, show());
 
     layout->show();
 }
 
 TEST(MainLayout, Show_With3Regions_HandlerReorderChildShouldBeCalled)
 {
-    auto [layout, mock_overlay] = construct();
+    auto [layout, mockOverlay] = construct();
     const int REGIONS_COUNT = 3;
 
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        auto stub_region = add_region(*layout);
+        addRegion(*layout);
     }
 
-    EXPECT_CALL(*mock_overlay, reorder_child(_, _)).Times(REGIONS_COUNT);
+    EXPECT_CALL(*mockOverlay, reorderChild(_, _)).Times(REGIONS_COUNT);
 
     layout->show();
 }

@@ -6,5 +6,5 @@ class IMonitor
 {
 public:
     virtual ~IMonitor() = default;
-    virtual Gdk::Rectangle get_area() = 0;
+    virtual Gdk::Rectangle getArea() = 0;
 };

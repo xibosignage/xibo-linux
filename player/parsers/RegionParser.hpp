@@ -9,13 +9,13 @@ class Region;
 class RegionParser
 {
 public:
-    RegionParser(const xlf_node& region_node);
+    RegionParser(const xlf_node& regionNode);
     std::unique_ptr<Region> parse();
     std::vector<xlf_node>::const_iterator begin() const;
     std::vector<xlf_node>::const_iterator end() const;
 
 private:
-    xlf_node m_region_node;
-    std::vector<xlf_node> m_media_nodes;
+    xlf_node m_regionNode;
+    std::vector<xlf_node> m_mediaNodes;
 
 };

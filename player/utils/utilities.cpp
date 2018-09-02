@@ -17,22 +17,22 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-DownloadManager& utils::download_manager()
+DownloadManager& utils::downloadManager()
 {
-    return XiboApp::app().download_manager();
+    return XiboApp::app().downloadManager();
 }
 
-XMDSManager& utils::xmds_manager()
+XMDSManager& utils::xmdsManager()
 {
-    return XiboApp::app().xmds_manager();
+    return XiboApp::app().xmdsManager();
 }
 
-boost::filesystem::path utils::resources_dir()
+boost::filesystem::path utils::resourcesDir()
 {
-    return download_manager().resources_dir();
+    return downloadManager().resourcesDir();
 }
 
-std::unique_ptr<MediaParser> utils::get_media_parser(const xlf_node& parent_node, const xlf_node& media_node)
+std::unique_ptr<MediaParser> utils::getMediaParser(const xlf_node& parent_node, const xlf_node& media_node)
 {
     auto type = media_node.get_child("<xmlattr>").get<std::string>("type");
 
@@ -46,28 +46,28 @@ std::unique_ptr<MediaParser> utils::get_media_parser(const xlf_node& parent_node
         return std::make_unique<WebViewParser>(parent_node, media_node);
 }
 
-std::unique_ptr<MainLayout> utils::parse_xlf_layout(const boost::filesystem::path& xlf_path)
+std::unique_ptr<MainLayout> utils::parseXlfLayout(const boost::filesystem::path& xlfPath)
 {
     boost::property_tree::ptree tree;
-    boost::property_tree::read_xml(xlf_path.string(), tree);
+    boost::property_tree::read_xml(xlfPath.string(), tree);
 
     LayoutParser layout_parser(tree.get_child("layout"));
     auto layout = layout_parser.parse();
-    for(auto region_node : layout_parser)
+    for(auto regionNode : layout_parser)
     {
-        RegionParser region_parser(region_node);
-        auto region = region_parser.parse();
-        for(auto media_node : region_parser)
+        RegionParser regionParser(regionNode);
+        auto region = regionParser.parse();
+        for(auto mediaNode : regionParser)
         {
-            auto media_parser = utils::get_media_parser(region_node, media_node);
-            region->add_media(media_parser->parse());
+            auto mediaParser = utils::getMediaParser(regionNode, mediaNode);
+            region->addMedia(mediaParser->parse());
         }
-        layout->add_region(std::move(region));
+        layout->addRegion(std::move(region));
     }
     return layout;
 }
 
-boost::property_tree::ptree utils::parse_xml(const std::string& xml)
+boost::property_tree::ptree utils::parseXml(const std::string& xml)
 {
     std::stringstream stream;
     stream << xml;

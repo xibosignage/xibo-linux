@@ -9,8 +9,8 @@ class GtkFixedLayoutWrapper : public IFixedLayoutWrapper
 public:
     int width() const override;
     int height() const override;
-    void set_size(int width, int height) override;
-    void add_child(Gtk::Widget& widget, int left, int top) override;
+    void setSize(int width, int height) override;
+    void addChild(Gtk::Widget& widget, int left, int top) override;
     void show() override;
     Gtk::Fixed& get();
 

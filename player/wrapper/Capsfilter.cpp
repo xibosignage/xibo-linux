@@ -11,8 +11,8 @@ Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()
     return std::shared_ptr<Gst::Capsfilter>(new Gst::Capsfilter);
 }
 
-void Gst::Capsfilter::set_caps(Gst::RefPtr<Gst::Caps> caps)
+void Gst::Capsfilter::setCaps(Gst::RefPtr<Gst::Caps> caps)
 {
     m_caps = std::move(caps);
-    g_object_set(m_element, "caps", m_caps->get_handler(), nullptr);
+    g_object_set(m_element, "caps", m_caps->getHandler(), nullptr);
 }

@@ -21,11 +21,11 @@ struct Session
     Session(asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
     ip::tcp::socket socket;
     ip::tcp::resolver resolver;
-    http::request<http::string_body> http_request;
+    http::request<http::string_body> httpRequest;
     beast::flat_buffer buffer;
-    http::response<http::string_body> http_response;
-    request soap_request;
-    callback response_callback; // NOTE: check if it should be move/copyable
+    http::response<http::string_body> httpResponse;
+    request soapRequest;
+    callback responseCallback; // NOTE: check if it should be move/copyable
 };
 
 class SOAPManager
@@ -37,33 +37,33 @@ public:
     SOAPManager& operator=(const SOAPManager&) = delete;
 
     template<typename request>
-    void send_request(const request& soap_request, typename Session<request>::callback&& response_callback)
+    void sendRequest(const request& soapRequest, typename Session<request>::callback&& responseCallback)
     {
         static_assert(std::is_copy_assignable_v<request> && std::is_copy_constructible_v<request>);
 
         auto session = std::make_shared<Session<request>>(m_ioc);
-        session->response_callback = response_callback;
-        session->soap_request = soap_request;
+        session->responseCallback = responseCallback;
+        session->soapRequest = soapRequest;
 
-        auto resolve = std::bind(&SOAPManager::on_resolve<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+        auto resolve = std::bind(&SOAPManager::onResolve<request>, this, std::placeholders::_1, std::placeholders::_2, session);
         session->resolver.async_resolve(m_host, std::to_string(m_port), ip::resolver_base::numeric_service, resolve);
     }
 
 private:
     template<typename request>
-    void on_read_soap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
+    void onReadSoap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
     {
         if(!ec)
         {
-            if(session->http_response.result() == http::status::ok)
+            if(session->httpResponse.result() == http::status::ok)
             {
                 using response = typename soap::request_traits<request>::response_t;
-                auto result = soap::create_response<response>(session->http_response.body());
-                session->response_callback(result);
+                auto result = soap::createResponse<response>(session->httpResponse.body());
+                session->responseCallback(result);
             }
             else
             {
-                m_logger->error("Receive SOAP request with HTTP error: {}", session->http_response.result_int());
+                m_logger->error("Receive SOAP request with HTTP error: {}", session->httpResponse.result_int());
             }
         }
         else
@@ -73,12 +73,12 @@ private:
     }
 
     template<typename request>
-    void on_write_soap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
+    void onWriteSoap(const boost::system::error_code& ec, std::size_t, std::shared_ptr<Session<request>> session)
     {
         if(!ec)
         {
-            auto read = std::bind(&SOAPManager::on_read_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-            http::async_read(session->socket, session->buffer, session->http_response, read);
+            auto read = std::bind(&SOAPManager::onReadSoap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            http::async_read(session->socket, session->buffer, session->httpResponse, read);
         }
         else
         {
@@ -87,21 +87,21 @@ private:
     }
 
     template<typename request>
-    void on_connect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<Session<request>> session)
+    void onConnect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<Session<request>> session)
     {
         if(!ec)
         {
-            session->http_request.method(http::verb::post);
-            session->http_request.target("/xmds.php?v=5");
-            session->http_request.version(11);
-            session->http_request.set(http::field::host, m_host);
-            session->http_request.body() = soap::request_string(session->soap_request);
-            session->http_request.prepare_payload();
+            session->httpRequest.method(http::verb::post);
+            session->httpRequest.target("/xmds.php?v=5");
+            session->httpRequest.version(11);
+            session->httpRequest.set(http::field::host, m_host);
+            session->httpRequest.body() = soap::requestString(session->soapRequest);
+            session->httpRequest.prepare_payload();
 
-            m_logger->trace("SOAP Request string: {}", soap::request_string(session->soap_request));
+            m_logger->trace("SOAP Request string: {}", soap::requestString(session->soapRequest));
 
-            auto write = std::bind(&SOAPManager::on_write_soap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-            http::async_write(session->socket, session->http_request, write);
+            auto write = std::bind(&SOAPManager::onWriteSoap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            http::async_write(session->socket, session->httpRequest, write);
         }
         else
         {
@@ -110,11 +110,11 @@ private:
     }
 
     template<typename request>
-    void on_resolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<Session<request>> session)
+    void onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, std::shared_ptr<Session<request>> session)
     {
         if(!ec)
         {
-            auto connect = std::bind(&SOAPManager::on_connect<request>, this, std::placeholders::_1, std::placeholders::_2, session);
+            auto connect = std::bind(&SOAPManager::onConnect<request>, this, std::placeholders::_1, std::placeholders::_2, session);
             asio::async_connect(session->socket, results.begin(), results.end(), connect);
         }
         else
@@ -126,7 +126,7 @@ private:
 private:
     asio::io_context m_ioc;
     asio::io_context::work m_work;
-    std::unique_ptr<std::thread> m_work_thread;
+    std::unique_ptr<std::thread> m_workThread;
     std::string m_host;
     std::shared_ptr<spdlog::logger> m_logger;
     int m_port;

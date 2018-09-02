@@ -13,9 +13,9 @@ namespace MediaInventory
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
-        Field<std::string> media_inventory{"mediaInventory"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> mediaInventory{"mediaInventory"};
     };
 }
 
