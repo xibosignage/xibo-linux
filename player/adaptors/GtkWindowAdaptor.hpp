@@ -1,14 +1,13 @@
 #pragma once
 
-#include "IWindowWrapper.hpp"
+#include "IWindowAdaptor.hpp"
 
 #include <gtkmm/window.h>
 
-class GtkWindowWrapper : public IWindowWrapper
+class GtkWindowAdaptor : public IWindowAdaptor
 {
-    Gtk::Window m_handler;
 public:
-    void add(IOverlayWrapper& overlay) override;
+    void add(IOverlayAdaptor& overlay) override;
     void setDefaultSize(int width, int height) override;
     void move(int x, int y) override;
     void setResizable(bool resizable) override;
@@ -16,4 +15,8 @@ public:
     void fullscreen() override;
     void setKeepAbove(bool keep_above) override;
     Gtk::Window& get();
+
+private:
+    Gtk::Window m_handler;
+
 };

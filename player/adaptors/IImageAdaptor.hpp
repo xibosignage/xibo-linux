@@ -2,10 +2,10 @@
 
 #include <string>
 
-class IImageWrapper
+class IImageAdaptor
 {
 public:
-    virtual ~IImageWrapper() = default;
+    virtual ~IImageAdaptor() = default;
     virtual int width() const = 0;
     virtual int height() const = 0;
     virtual void setSize(int width, int height) = 0;

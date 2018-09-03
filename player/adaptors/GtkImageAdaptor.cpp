@@ -1,48 +1,48 @@
-#include "GtkImageWrapper.hpp"
+#include "GtkImageAdaptor.hpp"
 
-GtkImageWrapper::GtkImageWrapper(int width, int height)
+GtkImageAdaptor::GtkImageAdaptor(int width, int height)
 {
     m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, width, height);
 }
 
-int GtkImageWrapper::width() const
+int GtkImageAdaptor::width() const
 {
     return get_pixbuf()->get_width();
 }
 
-int GtkImageWrapper::height() const
+int GtkImageAdaptor::height() const
 {
     return get_pixbuf()->get_height();
 }
 
-void GtkImageWrapper::setSize(int width, int height)
+void GtkImageAdaptor::setSize(int width, int height)
 {
     m_pixbuf = get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
     m_handler.set(m_pixbuf);
 }
 
-void GtkImageWrapper::setColor(uint32_t hex_color_number)
+void GtkImageAdaptor::setColor(uint32_t hex_color_number)
 {
     m_pixbuf->fill(hex_color_number);
 }
 
-void GtkImageWrapper::setImage(const std::string& image_path)
+void GtkImageAdaptor::setImage(const std::string& image_path)
 {
     m_pixbuf = Gdk::Pixbuf::create_from_file(image_path, width(), height());
     m_handler.set(m_pixbuf);
 }
 
-void GtkImageWrapper::show()
+void GtkImageAdaptor::show()
 {
     m_handler.show();
 }
 
-Gtk::Image& GtkImageWrapper::get()
+Gtk::Image& GtkImageAdaptor::get()
 {
     return m_handler;
 }
 
-Glib::RefPtr<Gdk::Pixbuf> GtkImageWrapper::get_pixbuf() const
+Glib::RefPtr<Gdk::Pixbuf> GtkImageAdaptor::get_pixbuf() const
 {
     return m_pixbuf;
 }

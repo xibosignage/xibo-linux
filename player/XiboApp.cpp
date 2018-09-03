@@ -5,7 +5,7 @@
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "control/GtkWindowWrapper.hpp"
+#include "adaptors/GtkWindowAdaptor.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -52,7 +52,7 @@ int XiboApp::initPlayer()
     window->add(utils::parseAndCreateXlfLayout(findXlfFile()));
     window->show();
 
-    return Gtk::Application::run(static_cast<GtkWindowWrapper&>(window->handler()).get());
+    return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());
 }
 
 void XiboApp::runPlayer(MainWindow& window)

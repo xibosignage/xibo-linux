@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IFixedLayoutWrapper.hpp"
+#include "IFixedLayoutAdaptor.hpp"
 
 #include <gtkmm/fixed.h>
 
-class GtkFixedLayoutWrapper : public IFixedLayoutWrapper
+class GtkFixedLayoutAdaptor : public IFixedLayoutAdaptor
 {
 public:
     int width() const override;

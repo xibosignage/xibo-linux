@@ -1,12 +1,12 @@
 #pragma once
 
-class IOverlayWrapper;
+class IOverlayAdaptor;
 
-class IWindowWrapper
+class IWindowAdaptor
 {
 public:
-    virtual ~IWindowWrapper() = default;
-    virtual void add(IOverlayWrapper& overlay) = 0;
+    virtual ~IWindowAdaptor() = default;
+    virtual void add(IOverlayAdaptor& overlay) = 0;
     virtual void setDefaultSize(int width, int height) = 0;
     virtual void move(int x, int y) = 0;
     virtual void setResizable(bool resizable) = 0;

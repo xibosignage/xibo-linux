@@ -13,10 +13,10 @@ public:
 
     void add(std::unique_ptr<IMainLayout> layout) override;
     void show() override;
-    IWindowWrapper& handler() override;
+    IWindowAdaptor& handler() override;
 
 private:
-    std::unique_ptr<IWindowWrapper> m_handler;
+    std::unique_ptr<IWindowAdaptor> m_handler;
     std::unique_ptr<IMainLayout> m_layout;
 
 };

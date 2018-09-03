@@ -27,14 +27,14 @@ public:
 
     void setImage(const std::string& imagePath) override;
     void show() override;
-    IImageWrapper& handler() override;
+    IImageAdaptor& handler() override;
 
 private:
-    Background(std::unique_ptr<IImageWrapper> handler);
+    Background(std::unique_ptr<IImageAdaptor> handler);
     uint32_t colorToHexNumber(const std::string& hexColor) const;
 
 private:
-    std::unique_ptr<IImageWrapper> m_handler;
+    std::unique_ptr<IImageAdaptor> m_handler;
     std::string m_hexColor;
 
 };

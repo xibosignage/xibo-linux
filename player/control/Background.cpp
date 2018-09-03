@@ -1,15 +1,15 @@
 #include "Background.hpp"
 #include "constants.hpp"
-#include "utils/utilities.hpp"
 
-#include "GtkImageWrapper.hpp"
+#include "utils/utilities.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
 
 #include <boost/filesystem/operations.hpp>
 #include <spdlog/spdlog.h>
 
 std::unique_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
 {
-    auto background = new Background(std::make_unique<GtkImageWrapper>(width, height));
+    auto background = new Background(std::make_unique<GtkImageAdaptor>(width, height));
     auto backgroundPtr = std::unique_ptr<Background>(background);
     background->setColor(hexColor);
     return backgroundPtr;
@@ -17,13 +17,13 @@ std::unique_ptr<IBackground> Background::createOneColor(const std::string& hexCo
 
 std::unique_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
 {
-    auto background = new Background(std::make_unique<GtkImageWrapper>(width, height));
+    auto background = new Background(std::make_unique<GtkImageAdaptor>(width, height));
     auto backgroundPtr = std::unique_ptr<Background>(background);
     background->setImage((utils::resourcesDir() / imagePath).string());
     return backgroundPtr;
 }
 
-Background::Background(std::unique_ptr<IImageWrapper> handler)
+Background::Background(std::unique_ptr<IImageAdaptor> handler)
 {
     m_handler = std::move(handler);
 }
@@ -73,7 +73,7 @@ void Background::show()
     m_handler->show();
 }
 
-IImageWrapper& Background::handler()
+IImageAdaptor& Background::handler()
 {
     return *m_handler;
 }

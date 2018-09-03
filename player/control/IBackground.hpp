@@ -2,7 +2,7 @@
 
 #include <string>
 
-class IImageWrapper;
+class IImageAdaptor;
 
 class IBackground
 {
@@ -19,5 +19,5 @@ public:
 
     virtual void setImage(const std::string& imagePath) = 0;
     virtual void show() = 0;
-    virtual IImageWrapper& handler() = 0;
+    virtual IImageAdaptor& handler() = 0;
 };

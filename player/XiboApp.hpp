@@ -3,9 +3,9 @@
 #include <gtkmm/application.h>
 #include <spdlog/spdlog.h>
 
-#include "factories/CommandLineParser.hpp"
-#include "control/DownloadManager.hpp"
-#include "control/CollectionInterval.hpp"
+#include "parsers/CommandLineParser.hpp"
+#include "managers/DownloadManager.hpp"
+#include "managers/CollectionInterval.hpp"
 #include "control/PlayerSettings.hpp"
 
 class XMDSManager;

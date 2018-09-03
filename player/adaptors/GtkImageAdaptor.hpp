@@ -1,13 +1,13 @@
 #pragma once
 
-#include "IImageWrapper.hpp"
+#include "IImageAdaptor.hpp"
 
 #include <gtkmm/image.h>
 
-class GtkImageWrapper : public IImageWrapper
+class GtkImageAdaptor : public IImageAdaptor
 {
 public:
-    GtkImageWrapper(int width, int height);
+    GtkImageAdaptor(int width, int height);
 
     int width() const override;
     int height() const override;

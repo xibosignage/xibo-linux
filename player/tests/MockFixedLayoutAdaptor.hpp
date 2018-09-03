@@ -1,10 +1,10 @@
 #pragma once
 
-#include "control/IFixedLayoutWrapper.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
 
 #include <gmock/gmock.h>
 
-class MockFixedLayoutWrapper : public IFixedLayoutWrapper
+class MockFixedLayoutAdaptor : public IFixedLayoutAdaptor
 {
 public:
     MOCK_CONST_METHOD0(width, int());

@@ -1,10 +1,10 @@
 #include "MainLayout.hpp"
-#include "utils/utilities.hpp"
 
 #include "IRegion.hpp"
 #include "IBackground.hpp"
 
-#include "GtkOverlayWrapper.hpp"
+#include "utils/utilities.hpp"
+#include "adaptors/GtkOverlayAdaptor.hpp"
 
 const int MIN_WIDTH = 160;
 const int MAX_WIDTH = 9999;
@@ -12,11 +12,11 @@ const int MIN_HEIGHT = 120;
 const int MAX_HEIGHT = 9999;
 
 MainLayout::MainLayout(int width, int height) :
-    MainLayout(width, height, std::make_unique<GtkOverlayWrapper>())
+    MainLayout(width, height, std::make_unique<GtkOverlayAdaptor>())
 {
 }
 
-MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayWrapper> handler)
+MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor> handler)
 {
     m_handler = std::move(handler);
     setSize(width, height);
@@ -54,7 +54,7 @@ size_t MainLayout::regionsCount() const
     return m_regions.size();
 }
 
-IOverlayWrapper& MainLayout::handler()
+IOverlayAdaptor& MainLayout::handler()
 {
     return *m_handler;
 }
@@ -102,6 +102,14 @@ void MainLayout::setBackground(std::unique_ptr<IBackground> background)
         m_background = std::move(background);
         m_handler->addMainChild(m_background->handler());
     }
+}
+
+IBackground& MainLayout::background()
+{
+    if(!m_background)
+        throw std::runtime_error("No background set");
+
+    return *m_background;
 }
 
 void MainLayout::setSize(int width, int height)

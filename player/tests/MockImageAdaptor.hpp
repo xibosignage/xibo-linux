@@ -1,10 +1,10 @@
 #pragma once
 
-#include "control/IImageWrapper.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 
 #include <gmock/gmock.h>
 
-class MockImageWrapper : public IImageWrapper
+class MockImageAdaptor : public IImageAdaptor
 {
 public:
     MOCK_CONST_METHOD0(width, int());

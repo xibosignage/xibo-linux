@@ -1,11 +1,11 @@
 #include "MainWindow.hpp"
 #include "constants.hpp"
 
-#include "GtkWindowWrapper.hpp"
+#include "adaptors/GtkWindowAdaptor.hpp"
 
 MainWindow::MainWindow(int, int, bool, bool, bool, bool)
 {
-    m_handler = std::make_unique<GtkWindowWrapper>();
+    m_handler = std::make_unique<GtkWindowAdaptor>();
     m_handler->setDefaultSize(640, 480);
 //    m_handler->move(x, y);
 //    m_handler->set_resizable(resizable);
@@ -28,7 +28,7 @@ void MainWindow::show()
     m_layout->show();
 }
 
-IWindowWrapper& MainWindow::handler()
+IWindowAdaptor& MainWindow::handler()
 {
     return *m_handler;
 }

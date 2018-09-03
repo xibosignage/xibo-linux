@@ -2,10 +2,10 @@
 
 #include <gtkmm/widget.h>
 
-class IFixedLayoutWrapper
+class IFixedLayoutAdaptor
 {
 public:
-    virtual ~IFixedLayoutWrapper() = default;
+    virtual ~IFixedLayoutAdaptor() = default;
     virtual int width() const = 0;
     virtual int height() const = 0;
     virtual void setSize(int width, int height) = 0;

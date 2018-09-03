@@ -28,13 +28,13 @@ public:
     void show() override;
 
     void addMedia(std::unique_ptr<IMedia> media) override;
-    IFixedLayoutWrapper& handler() override;
+    IFixedLayoutAdaptor& handler() override;
 
 private:
     void onMediaTimeout();
 
 private:
-    std::unique_ptr<IFixedLayoutWrapper> m_handler;
+    std::unique_ptr<IFixedLayoutAdaptor> m_handler;
 
     int m_id;
     int m_left;

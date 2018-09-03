@@ -1,12 +1,12 @@
 #include "Region.hpp"
-#include "media/IMedia.hpp"
 
-#include "GtkFixedLayoutWrapper.hpp"
+#include "media/IMedia.hpp"
+#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 Region::Region(int id, int width, int height, int left, int top, int zindex, bool looped) :
     m_id(id), m_left(left), m_top(top), m_zindex(zindex), m_looped(looped)
 {
-    m_handler = std::make_unique<GtkFixedLayoutWrapper>();
+    m_handler = std::make_unique<GtkFixedLayoutAdaptor>();
     setSize(width, height);
 }
 
@@ -85,7 +85,7 @@ void Region::addMedia(std::unique_ptr<IMedia> media)
     m_media.push_back(std::move(media));
 }
 
-IFixedLayoutWrapper& Region::handler()
+IFixedLayoutAdaptor& Region::handler()
 {
     return *m_handler;
 }

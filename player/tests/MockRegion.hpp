@@ -18,5 +18,5 @@ public:
     MOCK_CONST_METHOD0(looped, bool());
     MOCK_METHOD0(show, void());
     MOCK_METHOD1(addMedia, void(std::unique_ptr<IMedia> media));
-    MOCK_METHOD0(handler, IFixedLayoutWrapper&());
+    MOCK_METHOD0(handler, IFixedLayoutAdaptor&());
 };

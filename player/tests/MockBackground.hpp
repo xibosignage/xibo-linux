@@ -15,5 +15,5 @@ public:
     MOCK_METHOD1(setColor, void(const std::string& hexColor));
     MOCK_METHOD1(setImage, void(const std::string& imagePath));
     MOCK_METHOD0(show, void());
-    MOCK_METHOD0(handler, IImageWrapper&());
+    MOCK_METHOD0(handler, IImageAdaptor&());
 };

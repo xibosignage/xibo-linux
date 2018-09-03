@@ -3,7 +3,7 @@
 #include <memory>
 
 class IMedia;
-class IFixedLayoutWrapper;
+class IFixedLayoutAdaptor;
 
 class IRegion
 {
@@ -24,6 +24,6 @@ public:
     virtual void show() = 0;
 
     virtual void addMedia(std::unique_ptr<IMedia> media) = 0;
-    virtual IFixedLayoutWrapper& handler() = 0;
+    virtual IFixedLayoutAdaptor& handler() = 0;
 
 };

@@ -1,9 +1,10 @@
 #include "CollectionInterval.hpp"
+#include "DownloadManager.hpp"
 
 #include "constants.hpp"
+
 #include "utils/utilities.hpp"
-#include "PlayerSettings.hpp"
-#include "DownloadManager.hpp"
+#include "control/PlayerSettings.hpp"
 
 #include <glibmm/main.h>
 
