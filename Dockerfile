@@ -28,7 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 
-ENV MMCOMMON=0.9.10 SIGC=2.10.0 GLIB=2.56.1 GLIBMM=2.56.0 SPDLOG=1.1.0 GTEST=1.8.0 \
+ENV MMCOMMON=0.9.10 SIGC=2.10.0 GLIB=2.56.1 GLIBMM=2.56.0 SPDLOG=1.1.0 GTEST=1.8.1 \
     CMAKE_MAJOR=3 CMAKE_MINOR=12 CMAKE_PATCH=1 BOOST_MAJOR=1 BOOST_MINOR=68
 ENV BOOST=${BOOST_MAJOR}_${BOOST_MINOR}_0 CMAKE=${CMAKE_MAJOR}.${CMAKE_MINOR}.${CMAKE_PATCH}
 

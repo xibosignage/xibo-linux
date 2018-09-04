@@ -2,7 +2,6 @@
 
 #include "constants.hpp"
 #include "control/MainLayout.hpp"
-#include "media/IMedia.hpp"
 
 #include "MockOverlayAdaptor.hpp"
 #include "MockBackground.hpp"

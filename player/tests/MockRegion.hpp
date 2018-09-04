@@ -1,6 +1,7 @@
 #pragma once
 
 #include "control/IRegion.hpp"
+#include "media/IMedia.hpp"
 
 #include <gmock/gmock.h>
 
