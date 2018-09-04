@@ -21,7 +21,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   curl \
   libxml-parser-perl \
   git \
-  g++-7 \
+  g++-8 \
   libffi-dev \
   libmount-dev
 
@@ -121,8 +121,8 @@ RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar
     rm -r googletest-release-${GTEST} && \
     rm gtest.tar.gz
 
-RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 90
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 90
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 RUN mkdir -p /app
 
 ADD . /app

@@ -5,7 +5,6 @@
 
 #include <spdlog/spdlog.h>
 #include <boost/property_tree/xml_parser.hpp>
-#include <boost/filesystem.hpp>
 #include <regex>
 
 const std::string DEFAULT_EXTENSION = ".html";
@@ -30,7 +29,7 @@ std::unique_ptr<IMedia> WebViewFactory::doCreate()
     return std::make_unique<WebView>(id, width, height, duration, uri.string(), modeId, transparency);
 }
 
-boost::optional<int> WebViewFactory::parseDuration(const boost::filesystem::path& path)
+boost::optional<int> WebViewFactory::parseDuration(const std::filesystem::path& path)
 {
     std::ifstream in(path.string());
     std::string line;

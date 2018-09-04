@@ -11,7 +11,6 @@
 #include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
-#include <boost/filesystem/operations.hpp>
 #include <chrono>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
@@ -74,7 +73,7 @@ void XiboApp::updateSettings(const PlayerSettings& )
 // FIXME temporary workaround
 std::string XiboApp::findXlfFile()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 
     fs::directory_iterator it(utils::resourcesDir());
     fs::directory_iterator end;

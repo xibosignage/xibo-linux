@@ -13,7 +13,6 @@
 #include "factories/WebViewFactory.hpp"
 
 #include <stdexcept>
-#include <boost/filesystem/operations.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
 std::shared_ptr<spdlog::logger> utils::logger()
@@ -32,7 +31,7 @@ XMDSManager& utils::xmdsManager()
     return XiboApp::app().xmdsManager();
 }
 
-boost::filesystem::path utils::resourcesDir()
+std::filesystem::path utils::resourcesDir()
 {
     return downloadManager().resourcesDir();
 }
@@ -51,7 +50,7 @@ std::unique_ptr<MediaFactory> utils::getMediaFactory(const xlf_node& parentNode,
         return std::make_unique<WebViewFactory>(parentNode, mediaNode);
 }
 
-std::unique_ptr<IMainLayout> utils::parseAndCreateXlfLayout(const boost::filesystem::path& xlfPath)
+std::unique_ptr<IMainLayout> utils::parseAndCreateXlfLayout(const std::filesystem::path& xlfPath)
 {
     boost::property_tree::ptree tree;
     boost::property_tree::read_xml(xlfPath.string(), tree);

@@ -6,11 +6,6 @@
 #include "utils/utilities.hpp"
 #include "adaptors/GtkOverlayAdaptor.hpp"
 
-const int MIN_WIDTH = 160;
-const int MAX_WIDTH = 9999;
-const int MIN_HEIGHT = 120;
-const int MAX_HEIGHT = 9999;
-
 MainLayout::MainLayout(int width, int height) :
     MainLayout(width, height, std::make_unique<GtkOverlayAdaptor>())
 {
@@ -114,7 +109,7 @@ IBackground& MainLayout::background()
 
 void MainLayout::setSize(int width, int height)
 {
-    if(width < MIN_WIDTH || width > MAX_WIDTH || height < MIN_HEIGHT || height > MAX_HEIGHT)
+    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
         throw std::runtime_error("Width or height is too small/large");
 
     m_handler->setSize(width, height);

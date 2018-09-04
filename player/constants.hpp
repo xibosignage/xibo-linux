@@ -13,6 +13,11 @@ const int INVALID_POS = -1;
 const uint MSECS = 1000;
 const int MAX_VOLUME = 100;
 
+const int MIN_DISPLAY_WIDTH = 160;
+const int MAX_DISPLAY_WIDTH = 9999;
+const int MIN_DISPLAY_HEIGHT = 120;
+const int MAX_DISPLAY_HEIGHT = 9999;
+
 enum class MediaType
 {
     Image,

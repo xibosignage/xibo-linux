@@ -3,7 +3,7 @@
 #include "constants.hpp"
 
 #include <spdlog/spdlog.h>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 Image::Image(int id, int width, int height, int duration, const std::string& uri,
              ScaleType scaleType, Align align, Valign valign) :
@@ -12,7 +12,7 @@ Image::Image(int id, int width, int height, int duration, const std::string& uri
 {
     try
     {
-        if(boost::filesystem::exists(uri))
+        if(std::filesystem::exists(uri))
         {
             auto pixbuf = Gdk::Pixbuf::create_from_file(uri, width, height, isScaled());
             m_actualWidth = pixbuf->get_width();

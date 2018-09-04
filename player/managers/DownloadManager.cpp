@@ -6,7 +6,6 @@
 
 #include <regex>
 #include <fstream>
-#include <boost/filesystem.hpp>
 
 const std::string DEFAULT_FOLDER = "LayerTest";
 
@@ -29,10 +28,10 @@ DownloadManager::~DownloadManager()
 
 void DownloadManager::init()
 {
-    m_resourcesDir = boost::filesystem::current_path() / DEFAULT_FOLDER;
-    if(!boost::filesystem::exists(m_resourcesDir))
+    m_resourcesDir = std::filesystem::current_path() / DEFAULT_FOLDER;
+    if(!std::filesystem::exists(m_resourcesDir))
     {
-        bool result = boost::filesystem::create_directory(m_resourcesDir);
+        bool result = std::filesystem::create_directory(m_resourcesDir);
         if(!result)
         {
             throw std::runtime_error("Unable to create resources directory");
@@ -75,7 +74,7 @@ void DownloadManager::download(int layoutId, int regionId, int mediaId, Download
     });
 }
 
-boost::filesystem::path DownloadManager::resourcesDir()
+std::filesystem::path DownloadManager::resourcesDir()
 {
     return m_resourcesDir;
 }

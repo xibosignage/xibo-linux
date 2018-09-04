@@ -3,7 +3,7 @@
 
 #include <boost/beast.hpp>
 #include <boost/asio.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 #include <spdlog/spdlog.h>
 
 namespace beast = boost::beast;
@@ -36,7 +36,7 @@ public:
 
     void download(const std::string& filename, const std::string& path, DownloadCallback callback);
     void download(int layoutId, int regionId, int mediaId, DownloadCallback callback);
-    boost::filesystem::path resourcesDir();
+    std::filesystem::path resourcesDir();
 
 private:
     void init();
@@ -52,7 +52,7 @@ private:
     std::unique_ptr<std::thread> m_workThread;
     std::string m_host;
     std::shared_ptr<spdlog::logger> m_logger;
-    boost::filesystem::path m_resourcesDir;
+    std::filesystem::path m_resourcesDir;
 };
 
 

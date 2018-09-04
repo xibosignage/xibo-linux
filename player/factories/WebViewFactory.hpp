@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <boost/optional/optional.hpp>
-#include <boost/filesystem/path.hpp>
+#include <filesystem>
 
 class IMedia;
 
@@ -16,6 +16,6 @@ protected:
     std::unique_ptr<IMedia> doCreate() override;
 
 private:
-    boost::optional<int> parseDuration(const boost::filesystem::path& path);
+    boost::optional<int> parseDuration(const std::filesystem::path& path);
 
 };

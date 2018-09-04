@@ -17,7 +17,7 @@ public:
     virtual const std::string& hexColor() const = 0;
     virtual void setColor(const std::string& hexColor) = 0;
 
-    virtual void setImage(const std::string& imagePath) = 0;
+    virtual void setImage(const uint8_t* imageData, size_t dataSize) = 0;
     virtual void show() = 0;
     virtual IImageAdaptor& handler() = 0;
 };

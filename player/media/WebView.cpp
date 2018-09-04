@@ -3,13 +3,13 @@
 #include "constants.hpp"
 
 #include <spdlog/spdlog.h>
-#include <boost/filesystem/operations.hpp>
+#include <filesystem>
 
 WebView::WebView(int id, int width, int height, int duration, const std::string& uri, int modeId, bool transparent) :
     Media(id, width, height, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
     m_transparent(transparent)
 {
-    if(boost::filesystem::exists(uri))
+    if(std::filesystem::exists(uri))
     {
         auto path = "file://" + uri;
         spdlog::get(LOGGER)->trace("WebView file {}", path);

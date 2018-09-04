@@ -1,3 +1,6 @@
+#include "test_utils.hpp"
+
+#include "constants.hpp"
 #include "control/MainLayout.hpp"
 #include "media/IMedia.hpp"
 
@@ -9,28 +12,14 @@
 
 using namespace ::testing;
 
-const int DEFAULT_WIDTH = 640;
-const int DEFAULT_HEIGHT = 480;
-
-const int NEW_DEFAULT_WIDTH = 200;
-const int NEW_DEFAULT_HEIGHT = 200;
-
-std::pair<std::shared_ptr<MainLayout>, NiceMock<MockOverlayAdaptor>*>
-construct(int width, int height)
+auto construct_layout(int width, int height)
 {
-    auto overlay = std::make_unique<NiceMock<MockOverlayAdaptor>>();
-    auto overlayRaw = overlay.get();
-    auto layout = std::make_shared<MainLayout>(width, height, std::move(overlay));
-    return std::pair{layout, overlayRaw};
+    return construct<MainLayout, MockOverlayAdaptor>(width, height);
 }
 
-std::pair<std::shared_ptr<MainLayout>, NiceMock<MockOverlayAdaptor>*>
-construct()
+auto construct_layout()
 {
-    auto overlay = std::make_unique<NiceMock<MockOverlayAdaptor>>();
-    auto overlayRaw = overlay.get();
-    auto layout = std::make_shared<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(overlay));
-    return std::pair{layout, overlayRaw};
+    return construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 }
 
 NiceMock<MockBackground>* createBackground()
@@ -53,50 +42,44 @@ NiceMock<MockRegion>* createRegion()
     return region;
 }
 
-template<typename T>
-std::unique_ptr<T> unique(T* pointer)
-{
-    return std::unique_ptr<T>{pointer};
-}
-
 TEST(MainLayout, Constructor_NegativeWidth_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(-1, DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(construct_layout(-1, DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, Constructor_NegativeHeigth_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(DEFAULT_WIDTH, -1), std::runtime_error);
+    EXPECT_THROW(construct_layout(DEFAULT_WIDTH, -1), std::runtime_error);
 }
 
-TEST(MainLayout, Constructor_WidthGreaterThanMaxWidth9999_ShouldThrowRunTimeError)
+TEST(MainLayout, Constructor_WidthGreaterThanMaxWidth_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(10000, DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(construct_layout(MAX_DISPLAY_WIDTH + 1, DEFAULT_HEIGHT), std::runtime_error);
 }
 
-TEST(MainLayout, Constructor_HeightGreaterThanMaxHeight9999_ShouldThrowRunTimeError)
+TEST(MainLayout, Constructor_HeightGreaterThanMaxHeight_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(DEFAULT_WIDTH, 10000), std::runtime_error);
+    EXPECT_THROW(construct_layout(DEFAULT_WIDTH, MAX_DISPLAY_HEIGHT + 1), std::runtime_error);
 }
 
-TEST(MainLayout, Constructor_WidthLesshanMinWidth160_ShouldThrowRunTimeError)
+TEST(MainLayout, Constructor_WidthLesshanMinWidth_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(159, DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(construct_layout(MIN_DISPLAY_WIDTH - 1, DEFAULT_HEIGHT), std::runtime_error);
 }
 
-TEST(MainLayout, Constructor_HeightLessThanMinHeight120_ShouldThrowRunTimeError)
+TEST(MainLayout, Constructor_HeightLessThanMinHeight_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(DEFAULT_WIDTH, 119), std::runtime_error);
+    EXPECT_THROW(construct_layout(DEFAULT_WIDTH, MIN_DISPLAY_HEIGHT - 1), std::runtime_error);
 }
 
 TEST(MainLayout, Constructor_VeryBigWidth_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(std::numeric_limits<int>::max(), DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(construct_layout(std::numeric_limits<int>::max(), DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, Constructor_VeryBigHeight_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct(DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
+    EXPECT_THROW(construct_layout(DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
 }
 
 TEST(MainLayout, Constructor_Default_HandlerSetSizeShouldBeCalled)
@@ -110,7 +93,7 @@ TEST(MainLayout, Constructor_Default_HandlerSetSizeShouldBeCalled)
 
 TEST(MainLayout, Width_Default_Equals640)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ON_CALL(*stubOverlay, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
@@ -119,7 +102,7 @@ TEST(MainLayout, Width_Default_Equals640)
 
 TEST(MainLayout, Height_Default_Equals480)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ON_CALL(*stubOverlay, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
@@ -128,14 +111,14 @@ TEST(MainLayout, Height_Default_Equals480)
 
 TEST(MainLayout, Background_NotSet_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     EXPECT_THROW(layout->background(), std::runtime_error);
 }
 
 TEST(MainLayout, SetBackground_Null_HandlerAddShouldNotBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addMainChild(_)).Times(0);
 
@@ -144,7 +127,7 @@ TEST(MainLayout, SetBackground_Null_HandlerAddShouldNotBeCalled)
 
 TEST(MainLayout, SetBackground_NotNull_HandlerAddShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addMainChild(_));
 
@@ -153,7 +136,7 @@ TEST(MainLayout, SetBackground_NotNull_HandlerAddShouldBeCalled)
 
 TEST(MainLayout, SetBackground_NotNull_BackgroundShouldReturnExistingObject)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto stubBackground = createBackground();
 
     layout->setBackground(unique(stubBackground));
@@ -163,7 +146,7 @@ TEST(MainLayout, SetBackground_NotNull_BackgroundShouldReturnExistingObject)
 
 TEST(MainLayout, SetBackground_WidthNotEqualLayotuWidth_RunTimeErrorShouldBeCalled)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto stubBackground = createBackground();
 
     ON_CALL(*stubOverlay, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
@@ -173,7 +156,7 @@ TEST(MainLayout, SetBackground_WidthNotEqualLayotuWidth_RunTimeErrorShouldBeCall
 
 TEST(MainLayout, SetBackground_HeightNotEqualLayotHeight_RunTimeErrorShouldBeCalled)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto stubBackground = createBackground();
 
     ON_CALL(*stubOverlay, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
@@ -183,7 +166,7 @@ TEST(MainLayout, SetBackground_HeightNotEqualLayotHeight_RunTimeErrorShouldBeCal
 
 TEST(MainLayout, SetBackground_2InRow_HandlerAdd2TimesRemove1Time)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addMainChild(_)).Times(2);
     EXPECT_CALL(*mockOverlay, removeMainChild()).Times(1);
@@ -194,7 +177,7 @@ TEST(MainLayout, SetBackground_2InRow_HandlerAdd2TimesRemove1Time)
 
 TEST(MainLayout, SetSize_Width200Height200_HandlerSetSizeShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
@@ -203,7 +186,7 @@ TEST(MainLayout, SetSize_Width200Height200_HandlerSetSizeShouldBeCalled)
 
 TEST(MainLayout, SetSize_Width200Height200_WidthEquals200)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ON_CALL(*stubOverlay, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
 
@@ -214,7 +197,7 @@ TEST(MainLayout, SetSize_Width200Height200_WidthEquals200)
 
 TEST(MainLayout, SetSize_Width200Height200_HeightEquals200)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ON_CALL(*stubOverlay, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
 
@@ -225,63 +208,63 @@ TEST(MainLayout, SetSize_Width200Height200_HeightEquals200)
 
 TEST(MainLayout, SetSize_NegativeWidth_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     EXPECT_THROW(layout->setSize(-1, NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_NegativeHeigth_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, -1), std::runtime_error);
 }
 
-TEST(MainLayout, SetSize_WidthGreaterThan9999_ShouldThrowRunTimeError)
+TEST(MainLayout, SetSize_WidthGreaterThan_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
-    EXPECT_THROW(layout->setSize(10000, NEW_DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(MAX_DISPLAY_WIDTH + 1, NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
-TEST(MainLayout, SetSize_HeightGreaterThan9999_ShouldThrowRunTimeError)
+TEST(MainLayout, SetSize_HeightGreaterThan_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
-    EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, 10000), std::runtime_error);
+    EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, MAX_DISPLAY_HEIGHT + 1), std::runtime_error);
 }
 
-TEST(MainLayout, SetSize_WidthLesshanMinWidth160_ShouldThrowRunTimeError)
+TEST(MainLayout, SetSize_WidthLesshanMinWidth_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
-    EXPECT_THROW(layout->setSize(159, DEFAULT_HEIGHT), std::runtime_error);
+    EXPECT_THROW(layout->setSize(MIN_DISPLAY_WIDTH - 1, DEFAULT_HEIGHT), std::runtime_error);
 }
 
-TEST(MainLayout, SetSize_HeightLessThanMinHeight120_ShouldThrowRunTimeError)
+TEST(MainLayout, SetSize_HeightLessThanMinHeight_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
-    EXPECT_THROW(layout->setSize(DEFAULT_WIDTH, 119), std::runtime_error);
+    EXPECT_THROW(layout->setSize(DEFAULT_WIDTH, MIN_DISPLAY_HEIGHT - 1), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_VeryBigWidth_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     EXPECT_THROW(layout->setSize(std::numeric_limits<int>::max(), NEW_DEFAULT_HEIGHT), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_VeryBigHeight_ShouldThrowRunTimeError)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     EXPECT_THROW(layout->setSize(NEW_DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
 }
 
 TEST(MainLayout, SetSize_WithBackground_BackgroundSetSizeShouldBeCalled)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto mockBackground = createBackground();
     layout->setBackground(unique(mockBackground));
 
@@ -292,7 +275,7 @@ TEST(MainLayout, SetSize_WithBackground_BackgroundSetSizeShouldBeCalled)
 
 TEST(MainLayout, AddRegion_Null_HandlerAddChildShouldNotBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _)).Times(0);
 
@@ -301,7 +284,7 @@ TEST(MainLayout, AddRegion_Null_HandlerAddChildShouldNotBeCalled)
 
 TEST(MainLayout, AddRegion_Add1_HandlerAddChildShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _));
 
@@ -310,7 +293,7 @@ TEST(MainLayout, AddRegion_Add1_HandlerAddChildShouldBeCalled)
 
 TEST(MainLayout, AddRegion_RegionWidthGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto stubRegion = createRegion();
 
     ON_CALL(*stubRegion, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
@@ -320,7 +303,7 @@ TEST(MainLayout, AddRegion_RegionWidthGreaterThanLayoutWidth_RunTimeErrorShouldB
 
 TEST(MainLayout, AddRegion_RegionHeightGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto stubRegion = createRegion();
 
     ON_CALL(*stubRegion, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
@@ -330,7 +313,7 @@ TEST(MainLayout, AddRegion_RegionHeightGreaterThanLayoutWidth_RunTimeErrorShould
 
 TEST(MainLayout, RemoveAllRegions_With3Regions_RegionsCountEquals0)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
@@ -344,7 +327,7 @@ TEST(MainLayout, RemoveAllRegions_With3Regions_RegionsCountEquals0)
 
 TEST(MainLayout, RemoveAllRegions_With3Regions_HandlerRemoveChildrenShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
@@ -358,14 +341,14 @@ TEST(MainLayout, RemoveAllRegions_With3Regions_HandlerRemoveChildrenShouldBeCall
 
 TEST(MainLayout, Region_DefaultGet0Element_ShouldThrowOutOfRangeException)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ASSERT_THROW(layout->region(0), std::out_of_range);
 }
 
 TEST(MainLayout, Region_Add1RegionAndGet1_ShouldThrowOutOfRangeException)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     layout->addRegion(unique(createRegion()));
 
@@ -374,7 +357,7 @@ TEST(MainLayout, Region_Add1RegionAndGet1_ShouldThrowOutOfRangeException)
 
 TEST(MainLayout, Region_Add1RegionAndGetNegative_ShouldThrowOutOfRangeException)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     layout->addRegion(unique(createRegion()));
 
@@ -383,7 +366,7 @@ TEST(MainLayout, Region_Add1RegionAndGetNegative_ShouldThrowOutOfRangeException)
 
 TEST(MainLayout, Region_Add1RegionAndGetBigIndex_ShouldThrowOutOfRangeException)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     layout->addRegion(unique(createRegion()));
 
@@ -392,7 +375,7 @@ TEST(MainLayout, Region_Add1RegionAndGetBigIndex_ShouldThrowOutOfRangeException)
 
 TEST(MainLayout, Region_Add1RegionAndGet0_ShouldReturnAddedRegion)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     auto stubRegion = createRegion();
     layout->addRegion(unique(stubRegion));
@@ -402,14 +385,14 @@ TEST(MainLayout, Region_Add1RegionAndGet0_ShouldReturnAddedRegion)
 
 TEST(MainLayout, RegionsCount_Default_Equals0)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
 
     ASSERT_EQ(layout->regionsCount(), 0);
 }
 
 TEST(MainLayout, RegionsCount_Add3Regions_RegionCountEquals3)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
@@ -421,7 +404,7 @@ TEST(MainLayout, RegionsCount_Add3Regions_RegionCountEquals3)
 
 TEST(MainLayout, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, show());
 
@@ -430,7 +413,7 @@ TEST(MainLayout, Show_Default_HandlerShowShouldBeCalled)
 
 TEST(MainLayout, Show_WithBackground_BackgroundShowShouldBeCalled)
 {
-    auto [layout, stubOverlay] = construct();
+    auto [layout, stubOverlay] = construct_layout();
     auto mockBackground = createBackground();
     layout->setBackground(unique(mockBackground));
 
@@ -441,7 +424,7 @@ TEST(MainLayout, Show_WithBackground_BackgroundShowShouldBeCalled)
 
 TEST(MainLayout, Show_WithRegion_RegionShowShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
     auto mockRegion = createRegion();
     layout->addRegion(unique(mockRegion));
 
@@ -452,7 +435,7 @@ TEST(MainLayout, Show_WithRegion_RegionShowShouldBeCalled)
 
 TEST(MainLayout, Show_With3Regions_HandlerReorderChildShouldBeCalled)
 {
-    auto [layout, mockOverlay] = construct();
+    auto [layout, mockOverlay] = construct_layout();
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {

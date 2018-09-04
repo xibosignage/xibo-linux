@@ -1,31 +1,25 @@
 #include "Background.hpp"
 #include "constants.hpp"
 
-#include "utils/utilities.hpp"
 #include "adaptors/GtkImageAdaptor.hpp"
 
-#include <boost/filesystem/operations.hpp>
-#include <spdlog/spdlog.h>
+#include <regex>
 
-std::unique_ptr<IBackground> Background::createOneColor(const std::string& hexColor, int width, int height)
+const int SHORT_COLOR_WITHOUT_ALPHA = 3;
+const int COLOR_WITHOUT_ALPHA = 6;
+const int COLOR_BASE = 16;
+const std::string DEFAULT_ALPHA_CHANNEL = "FF";
+
+Background::Background(int width, int height) :
+    Background(width, height, std::make_unique<GtkImageAdaptor>())
 {
-    auto background = new Background(std::make_unique<GtkImageAdaptor>(width, height));
-    auto backgroundPtr = std::unique_ptr<Background>(background);
-    background->setColor(hexColor);
-    return backgroundPtr;
+
 }
 
-std::unique_ptr<IBackground> Background::createWithImage(const std::string& imagePath, int width, int height)
+Background::Background(int width, int height, std::unique_ptr<IImageAdaptor> handler) :
+    m_handler(std::move(handler))
 {
-    auto background = new Background(std::make_unique<GtkImageAdaptor>(width, height));
-    auto backgroundPtr = std::unique_ptr<Background>(background);
-    background->setImage((utils::resourcesDir() / imagePath).string());
-    return backgroundPtr;
-}
-
-Background::Background(std::unique_ptr<IImageAdaptor> handler)
-{
-    m_handler = std::move(handler);
+    setSize(width, height);
 }
 
 int Background::width() const
@@ -40,16 +34,22 @@ int Background::height() const
 
 void Background::setSize(int width, int height)
 {
+    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+        throw std::runtime_error("Width or height is too small/large");
+
     m_handler->setSize(width, height);
 }
 
 uint32_t Background::hexColorNumber() const
 {
-    return colorToHexNumber(m_hexColor);
+    return colorToHexNumber(hexColor());
 }
 
 const std::string& Background::hexColor() const
 {
+    if(m_hexColor.empty())
+        throw std::runtime_error("Color doesn't exist");
+
     return m_hexColor;
 }
 
@@ -60,12 +60,9 @@ void Background::setColor(const std::string& hexColor)
     m_hexColor = hexColor;
 }
 
-void Background::setImage(const std::string& imagePath)
+void Background::setImage(const uint8_t* imageData, size_t dataSize)
 {
-    if(!boost::filesystem::exists(imagePath))
-        throw std::runtime_error("Path doesn't exist");
-
-    m_handler->setImage(imagePath);
+    m_handler->setImage(imageData, dataSize);
 }
 
 void Background::show()
@@ -80,15 +77,20 @@ IImageAdaptor& Background::handler()
 
 uint32_t Background::colorToHexNumber(const std::string& hexColor) const
 {
-    // remove '#' sign at the beginning
-    std::string strHex = hexColor.substr(1);
+    std::smatch match;
+    std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$");
+    if(!std::regex_match(hexColor, match, hexColorRegex))
+        throw std::invalid_argument("HEX color should be 3, 6, or 8 digits with # at the beginning");
 
-    // convert 3-digit hex to 6-digit hex
-    if(strHex.size() == 3)
-        strHex = std::string(2, strHex[0]) + std::string(2, strHex[1]) + std::string(2, strHex[2]);
-    // add default alpha channel
-    if(strHex.size() == 6)
-        strHex += "FF";
+    std::string colorWithoutNumberSign = match[1];
 
-    return static_cast<uint32_t>(std::stoul(strHex, nullptr, 16));
+    if(colorWithoutNumberSign.size() == SHORT_COLOR_WITHOUT_ALPHA)
+        colorWithoutNumberSign = std::string(2, colorWithoutNumberSign[0]) +
+                                 std::string(2, colorWithoutNumberSign[1]) +
+                                 std::string(2, colorWithoutNumberSign[2]);
+
+    if(colorWithoutNumberSign.size() == COLOR_WITHOUT_ALPHA)
+        colorWithoutNumberSign += DEFAULT_ALPHA_CHANNEL;
+
+    return static_cast<uint32_t>(std::stoul(colorWithoutNumberSign, nullptr, COLOR_BASE));
 }

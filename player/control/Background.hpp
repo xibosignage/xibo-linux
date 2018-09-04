@@ -7,12 +7,8 @@
 class Background : public IBackground
 {
 public:
-    static std::unique_ptr<IBackground> createOneColor(const std::string& hexColor,
-                                                       int width,
-                                                       int height);
-    static std::unique_ptr<IBackground> createWithImage(const std::string& imagePath,
-                                                        int width,
-                                                        int height);
+    Background(int width, int height);
+    Background(int width, int height, std::unique_ptr<IImageAdaptor> handler);
 
     Background(const Background&) = delete;
     Background& operator=(const Background&) = delete;
@@ -25,12 +21,11 @@ public:
     const std::string& hexColor() const override;
     void setColor(const std::string& hexColor) override;
 
-    void setImage(const std::string& imagePath) override;
+    void setImage(const uint8_t* imageData, size_t dataSize) override;
     void show() override;
     IImageAdaptor& handler() override;
 
 private:
-    Background(std::unique_ptr<IImageAdaptor> handler);
     uint32_t colorToHexNumber(const std::string& hexColor) const;
 
 private:

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.66 REQUIRED system filesystem program_options)
+find_package(Boost 1.66 REQUIRED system program_options)
 
 # modules
 include(FindSonameLibs)
