@@ -68,6 +68,10 @@ namespace Gst
         Element(const std::string& name);
 
     protected:
+        void setElement(GstElement* element);
+        GstElement* element() const;
+
+    private:
         GstElement* m_element = nullptr;
 
     };

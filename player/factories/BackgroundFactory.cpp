@@ -9,7 +9,7 @@ std::unique_ptr<IBackground> BackgroundFactory::create(int width, int height,
                                                        const std::filesystem::path& imagePath,
                                                        const std::string& color)
 {
-    if(!color.empty() && imagePath.empty())
+    if(!color.empty() && !std::filesystem::is_regular_file(imagePath))
         return createOneColor(width, height, color);
 
     if(!imagePath.empty())

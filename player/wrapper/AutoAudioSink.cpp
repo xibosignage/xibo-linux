@@ -2,7 +2,7 @@
 
 Gst::AutoAudioSink::AutoAudioSink()
 {
-    m_element = gst_element_factory_make("autoaudiosink", nullptr);
+    setElement(gst_element_factory_make("autoaudiosink", nullptr));
 }
 
 Gst::RefPtr<Gst::AutoAudioSink> Gst::AutoAudioSink::create()

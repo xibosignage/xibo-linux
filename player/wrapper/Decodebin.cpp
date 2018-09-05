@@ -7,13 +7,13 @@ namespace ph = std::placeholders;
 
 Gst::Decodebin::Decodebin()
 {
-    m_element = gst_element_factory_make("decodebin", nullptr);
+    setElement(gst_element_factory_make("decodebin", nullptr));
 
     auto onPadAdded = get_wrapper<0, void, GstElement*, GstPad*, gpointer>(std::bind(&Decodebin::onPadAdded, this, ph::_1, ph::_2, ph::_3));
-    g_signal_connect_data(m_element, "pad-added", reinterpret_cast<GCallback>(onPadAdded), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    g_signal_connect_data(element(), "pad-added", reinterpret_cast<GCallback>(onPadAdded), nullptr, nullptr, static_cast<GConnectFlags>(0));
 
     auto noMorePads = get_wrapper<1, void, GstElement*, gpointer>(std::bind(&Decodebin::noMorePads, this, ph::_1, ph::_2));
-    g_signal_connect_data(m_element, "no-more-pads", reinterpret_cast<GCallback>(noMorePads), nullptr, nullptr, static_cast<GConnectFlags>(0));
+    g_signal_connect_data(element(), "no-more-pads", reinterpret_cast<GCallback>(noMorePads), nullptr, nullptr, static_cast<GConnectFlags>(0));
 }
 
 void Gst::Decodebin::onPadAdded(GstElement*, GstPad* pad, gpointer)

@@ -3,7 +3,7 @@
 
 Gst::Capsfilter::Capsfilter()
 {
-    m_element = gst_element_factory_make("capsfilter", nullptr);
+    setElement(gst_element_factory_make("capsfilter", nullptr));
 }
 
 Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()
@@ -14,5 +14,5 @@ Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()
 void Gst::Capsfilter::setCaps(Gst::RefPtr<Gst::Caps> caps)
 {
     m_caps = std::move(caps);
-    g_object_set(m_element, "caps", m_caps->getHandler(), nullptr);
+    g_object_set(element(), "caps", m_caps->getHandler(), nullptr);
 }

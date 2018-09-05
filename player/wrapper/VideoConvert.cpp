@@ -2,7 +2,7 @@
 
 Gst::VideoConvert::VideoConvert()
 {
-    m_element = gst_element_factory_make("videoconvert", nullptr);
+    setElement(gst_element_factory_make("videoconvert", nullptr));
 }
 
 Gst::RefPtr<Gst::VideoConvert> Gst::VideoConvert::create()

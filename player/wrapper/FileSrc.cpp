@@ -2,7 +2,7 @@
 
 Gst::FileSrc::FileSrc()
 {
-    m_element = gst_element_factory_make("filesrc", nullptr);
+    setElement(gst_element_factory_make("filesrc", nullptr));
 }
 
 Gst::RefPtr<Gst::FileSrc> Gst::FileSrc::create()
@@ -12,5 +12,5 @@ Gst::RefPtr<Gst::FileSrc> Gst::FileSrc::create()
 
 void Gst::FileSrc::setLocation(const std::string& uri)
 {
-    g_object_set(m_element, "location", uri.c_str(), nullptr);
+    g_object_set(element(), "location", uri.c_str(), nullptr);
 }

@@ -6,6 +6,16 @@ Gst::Element::Element(const std::string& name)
     m_element = gst_element_factory_make(name.c_str(), nullptr);
 }
 
+void Gst::Element::setElement(GstElement* element)
+{
+    m_element = element;
+}
+
+GstElement* Gst::Element::element() const
+{
+    return m_element;
+}
+
 Gst::Element::~Element()
 {
     if(m_element)

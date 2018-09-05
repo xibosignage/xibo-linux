@@ -31,7 +31,12 @@ public:
     void show() override;
 
 private:
-    void reorderRegions();
+    void sortAndReorderRegions();
+    void sortRegionsByZindex();
+    void showBackground();
+    void sortReorderAndShowRegions();
+    void removePreviousBackground();
+    void setBackgroundSize(int width, int height);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

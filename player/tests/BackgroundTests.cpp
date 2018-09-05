@@ -1,7 +1,7 @@
 #include "test_utils.hpp"
 
-#include "constants.hpp"
 #include "control/Background.hpp"
+
 #include "MockImageAdaptor.hpp"
 
 using namespace ::testing;
@@ -22,10 +22,9 @@ struct Color
     uint numberColor;
 };
 
-class BackgroundTest : public Test { };
-class BackgroundValidColor : public BackgroundTest, public WithParamInterface<Color> { };
-class BackgroundInvalidColor :  public BackgroundTest, public WithParamInterface<std::string> { };
-
+class BackgroundTest : public TestWithParam<Size> { };
+class BackgroundValidColorTest : public TestWithParam<Color> { };
+class BackgroundInvalidColorTest :  public TestWithParam<std::string> { };
 
 const std::vector<Color> validColors =
     {{"#000", 255}, {"#FFF", 4294967295}, {"#123", 287454207}, {"#1FA", 301968127}, {"#fff", 4294967295}, {"#fFf", 4294967295},
@@ -39,45 +38,19 @@ const std::vector<std::string> invalidColors =
     "#dfdfd1s", "#1111d", "", " ", "   "};
 
 
-TEST(BackgroundTest, Constructor_NegativeWidth_ShouldThrowRunTimeError)
+TEST_P(BackgroundTest, Constructor_InvalidSize_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct_background(-1, DEFAULT_HEIGHT), std::runtime_error);
+    ASSERT_THROW(construct_background(GetParam().width, GetParam().height), std::runtime_error);
 }
 
-TEST(BackgroundTest, Constructor_NegativeHeigth_ShouldThrowRunTimeError)
+TEST_P(BackgroundTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
 {
-    EXPECT_THROW(construct_background(DEFAULT_WIDTH, -1), std::runtime_error);
+    auto [background, stubImage] = construct_background();
+
+    ASSERT_THROW(background->setSize(GetParam().width, GetParam().height), std::runtime_error);
 }
 
-TEST(BackgroundTest, Constructor_WidthGreaterThanMaxWidth_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(MAX_DISPLAY_WIDTH + 1, DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, Constructor_HeightGreaterThanMaxHeight_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(DEFAULT_WIDTH, MAX_DISPLAY_HEIGHT + 1), std::runtime_error);
-}
-
-TEST(BackgroundTest, Constructor_WidthLesshanMinWidth_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(MIN_DISPLAY_WIDTH - 1, DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, Constructor_HeightLessThanMinHeight_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(DEFAULT_WIDTH, MIN_DISPLAY_HEIGHT - 1), std::runtime_error);
-}
-
-TEST(BackgroundTest, Constructor_VeryBigWidth_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(std::numeric_limits<int>::max(), DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, Constructor_VeryBigHeight_ShouldThrowRunTimeError)
-{
-    EXPECT_THROW(construct_background(DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
-}
+INSTANTIATE_TEST_CASE_P(Suite, BackgroundTest, ::testing::ValuesIn(invalidSizes));
 
 TEST(BackgroundTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
 {
@@ -137,62 +110,6 @@ TEST(BackgroundTest, SetSize_Width200Height200_HeightEquals200)
     ASSERT_EQ(background->height(), NEW_DEFAULT_HEIGHT);
 }
 
-TEST(BackgroundTest, SetSize_NegativeWidth_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(-1, NEW_DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_NegativeHeigth_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(NEW_DEFAULT_WIDTH, -1), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_WidthGreaterThan_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(MAX_DISPLAY_WIDTH + 1, NEW_DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_HeightGreaterThan_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(NEW_DEFAULT_WIDTH, MAX_DISPLAY_HEIGHT + 1), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_WidthLesshanMinWidth_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(MIN_DISPLAY_WIDTH - 1, DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_HeightLessThanMinHeight_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(DEFAULT_WIDTH, MIN_DISPLAY_HEIGHT - 1), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_VeryBigWidth_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(std::numeric_limits<int>::max(), NEW_DEFAULT_HEIGHT), std::runtime_error);
-}
-
-TEST(BackgroundTest, SetSize_VeryBigHeight_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setSize(NEW_DEFAULT_WIDTH, std::numeric_limits<int>::max()), std::runtime_error);
-}
-
 TEST(BackgroundTest, Show_Default_HandlerShowShouldBeCalled)
 {
     auto [background, mockImage] = construct_background();
@@ -213,38 +130,6 @@ TEST(BackgroundTest, SetImage_Default_HandlerSetImageShouldBeCalled)
     background->setImage(fakeData, BUFFER_SIZE);
 }
 
-TEST(BackgroundTest, HexColor_NotSet_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->hexColor(), std::runtime_error);
-}
-
-TEST(BackgroundTest, HexColor_Set_Equals000000FF)
-{
-    auto [background, stubImage] = construct_background();
-
-    background->setColor("#000000FF");
-
-    ASSERT_EQ(background->hexColor(), "#000000FF");
-}
-
-TEST(BackgroundTest, HexColorNumber_NotSet_ShouldThrowRunTimeError)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->hexColorNumber(), std::runtime_error);
-}
-
-TEST(BackgroundTest, HexColorNumber_Set_Equals255)
-{
-    auto [background, stubImage] = construct_background();
-
-    background->setColor("#000000FF");
-
-    ASSERT_EQ(background->hexColorNumber(), 255);
-}
-
 TEST(BackgroundTest, SetColor_InvalidColor_HandlerSetColorShouldNotBeCalled)
 {
     auto [background, mockImage] = construct_background();
@@ -254,7 +139,7 @@ TEST(BackgroundTest, SetColor_InvalidColor_HandlerSetColorShouldNotBeCalled)
     EXPECT_ANY_THROW(background->setColor("#sss"));
 }
 
-TEST_P(BackgroundValidColor, SetColor_Valid_HandlerSetColorShouldBeCalled)
+TEST_P(BackgroundValidColorTest, SetColor_Valid_HandlerSetColorShouldBeCalled)
 {
     auto [background, mockImage] = construct_background();
 
@@ -263,34 +148,16 @@ TEST_P(BackgroundValidColor, SetColor_Valid_HandlerSetColorShouldBeCalled)
     background->setColor(GetParam().strColor);
 }
 
-TEST_P(BackgroundValidColor, HexColor_Valid_HexColorEqualsParam)
+INSTANTIATE_TEST_CASE_P(Suite, BackgroundValidColorTest, ::testing::ValuesIn(validColors));
+
+TEST_P(BackgroundInvalidColorTest, SetColor_Invalid_InvalidArgumentShouldBeThrown)
 {
     auto [background, stubImage] = construct_background();
 
-    background->setColor(GetParam().strColor);
-
-    ASSERT_EQ(background->hexColor(), GetParam().strColor);
+    ASSERT_THROW(background->setColor(GetParam()), std::invalid_argument);
 }
 
-TEST_P(BackgroundValidColor, HexColorNumber_Valid_HexColorEqualsParamConvertedToNumber)
-{
-    auto [background, stubImage] = construct_background();
-
-    background->setColor(GetParam().strColor);
-
-    ASSERT_EQ(background->hexColorNumber(), GetParam().numberColor);
-}
-
-INSTANTIATE_TEST_CASE_P(Suite, BackgroundValidColor, ::testing::ValuesIn(validColors));
-
-TEST_P(BackgroundInvalidColor, SetColor_Invalid_InvalidArgumentShouldBeThrown)
-{
-    auto [background, stubImage] = construct_background();
-
-    EXPECT_THROW(background->setColor(GetParam()), std::invalid_argument);
-}
-
-TEST_P(BackgroundInvalidColor, SetColor_Invalid_HandlerSetColorShouldNotBeCalled)
+TEST_P(BackgroundInvalidColorTest, SetColor_Invalid_HandlerSetColorShouldNotBeCalled)
 {
     auto [background, mockImage] = construct_background();
 
@@ -299,5 +166,5 @@ TEST_P(BackgroundInvalidColor, SetColor_Invalid_HandlerSetColorShouldNotBeCalled
     EXPECT_ANY_THROW(background->setColor(GetParam()););
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, BackgroundInvalidColor, ::testing::ValuesIn(invalidColors));
+INSTANTIATE_TEST_CASE_P(Suite, BackgroundInvalidColorTest, ::testing::ValuesIn(invalidColors));
 

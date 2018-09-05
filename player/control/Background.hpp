@@ -17,11 +17,9 @@ public:
     int height() const override;
     void setSize(int width, int height) override;
 
-    uint32_t hexColorNumber() const override;
-    const std::string& hexColor() const override;
     void setColor(const std::string& hexColor) override;
-
     void setImage(const uint8_t* imageData, size_t dataSize) override;
+
     void show() override;
     IImageAdaptor& handler() override;
 
@@ -30,6 +28,5 @@ private:
 
 private:
     std::unique_ptr<IImageAdaptor> m_handler;
-    std::string m_hexColor;
 
 };

@@ -2,7 +2,7 @@
 
 Gst::Queue::Queue()
 {
-    m_element = gst_element_factory_make("queue", nullptr);
+    setElement(gst_element_factory_make("queue", nullptr));
 }
 
 Gst::RefPtr<Gst::Queue> Gst::Queue::create()
@@ -12,5 +12,5 @@ Gst::RefPtr<Gst::Queue> Gst::Queue::create()
 
 void Gst::Queue::setMaxSizeBuffers(int maxSizeBuffers)
 {
-    g_object_set(m_element, "max-size-buffers", maxSizeBuffers, nullptr);
+    g_object_set(element(), "max-size-buffers", maxSizeBuffers, nullptr);
 }

@@ -2,7 +2,7 @@
 
 Gst::Volume::Volume()
 {
-    m_element = gst_element_factory_make("volume", nullptr);
+    setElement(gst_element_factory_make("volume", nullptr));
 }
 
 Gst::RefPtr<Gst::Volume> Gst::Volume::create()
@@ -12,12 +12,12 @@ Gst::RefPtr<Gst::Volume> Gst::Volume::create()
 
 void Gst::Volume::setVolume(double volume)
 {
-    g_object_set(m_element, "volume", volume, nullptr);
+    g_object_set(element(), "volume", volume, nullptr);
 }
 
 double Gst::Volume::getVolume() const
 {
     double volume;
-    g_object_get(m_element, "volume", &volume, nullptr);
+    g_object_get(element(), "volume", &volume, nullptr);
     return volume;
 }

@@ -32,7 +32,7 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 
 int XiboApp::initPlayer()
 {
-    auto window = std::make_unique<MainWindow>(500, 500, false, false, true, true);
+    auto window = std::make_unique<MainWindow>(640, 480);
 
 //    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 
@@ -48,20 +48,20 @@ int XiboApp::initPlayer()
 
 //    m_collection_interval.start();
 
-    window->add(utils::parseAndCreateXlfLayout(findXlfFile()));
-    window->show();
+    window->addLayout(utils::parseAndCreateXlfLayout(findXlfFile()));
+    window->showLayout();
 
     return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());
 }
 
 void XiboApp::runPlayer(MainWindow& window)
 {
-//    if(!window.is_visible())
+//    if(!window.isVisible())
 //    {
 //        m_logger->info("Player started");
-//        m_layout = utils::parse_xlf_layout(find_xlf_file());
-//        window.add(*m_layout);
-//        window.show_all();
+//        m_layout = utils::parseAndCreateXlfLayout(findXlfFile());
+//        window.addLayout(*m_layout);
+//        window.showLayout();
 //    }
 }
 

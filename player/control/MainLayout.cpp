@@ -11,9 +11,9 @@ MainLayout::MainLayout(int width, int height) :
 {
 }
 
-MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor> handler)
+MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor> handler) :
+    m_handler(std::move(handler))
 {
-    m_handler = std::move(handler);
     setSize(width, height);
 }
 
@@ -57,28 +57,61 @@ IOverlayAdaptor& MainLayout::handler()
 void MainLayout::show()
 {
     m_handler->show();
-    reorderRegions();
+    showBackground();
+    sortReorderAndShowRegions();
+}
+
+void MainLayout::sortAndReorderRegions()
+{
+    sortRegionsByZindex();
+
+    for(size_t i = 0; i != regionsCount(); ++i)
+    {
+        int orderInParentWidget = static_cast<int>(i);
+        utils::logger()->trace("Zindex: {} Id: {} Order: {}", m_regions[i]->zindex(),
+                                                              m_regions[i]->id(),
+                                                              orderInParentWidget);
+        m_handler->reorderChild(m_regions[i]->handler(), orderInParentWidget);
+    }
+}
+
+void MainLayout::sortRegionsByZindex()
+{
+    std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
+        return first->zindex() < second->zindex();
+    });
+}
+
+void MainLayout::showBackground()
+{
     if(m_background)
     {
         m_background->show();
     }
+}
+
+void MainLayout::sortReorderAndShowRegions()
+{
+    sortAndReorderRegions();
     for(auto&& region : m_regions)
     {
         region->show();
     }
 }
 
-void MainLayout::reorderRegions()
+void MainLayout::removePreviousBackground()
 {
-    std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
-        return first->zindex() < second->zindex();
-    });
-
-    for(size_t i = 0; i != regionsCount(); ++i)
+    if(m_background)
     {
-        utils::logger()->trace("zindex: {} id: {} order: {}", m_regions[i]->zindex(),
-                                                              m_regions[i]->id(), i);
-        m_handler->reorderChild(m_regions[i]->handler(), static_cast<int>(i));
+        m_handler->removeMainChild();
+    }
+}
+
+void MainLayout::setBackgroundSize(int width, int height)
+{
+    if(m_background)
+    {
+        m_background->setSize(width, height);
     }
 }
 
@@ -90,10 +123,7 @@ void MainLayout::setBackground(std::unique_ptr<IBackground> background)
         if(background->width() != width() || background->height() != height())
             throw std::runtime_error("Background's and layout's size should be the same");
 
-        if(m_background)
-        {
-            m_handler->removeMainChild();
-        }
+        removePreviousBackground();
         m_background = std::move(background);
         m_handler->addMainChild(m_background->handler());
     }
@@ -113,10 +143,7 @@ void MainLayout::setSize(int width, int height)
         throw std::runtime_error("Width or height is too small/large");
 
     m_handler->setSize(width, height);
-    if(m_background)
-    {
-        m_background->setSize(width, height);
-    }
+    setBackgroundSize(width, height);
 }
 
 int MainLayout::width() const

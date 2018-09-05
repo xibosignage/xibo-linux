@@ -40,24 +40,10 @@ void Background::setSize(int width, int height)
     m_handler->setSize(width, height);
 }
 
-uint32_t Background::hexColorNumber() const
-{
-    return colorToHexNumber(hexColor());
-}
-
-const std::string& Background::hexColor() const
-{
-    if(m_hexColor.empty())
-        throw std::runtime_error("Color doesn't exist");
-
-    return m_hexColor;
-}
-
 void Background::setColor(const std::string& hexColor)
 {
     uint32_t hexColorNumber = colorToHexNumber(hexColor);
     m_handler->setColor(hexColorNumber);
-    m_hexColor = hexColor;
 }
 
 void Background::setImage(const uint8_t* imageData, size_t dataSize)
