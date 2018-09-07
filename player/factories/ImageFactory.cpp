@@ -2,8 +2,8 @@
 #include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-ImageFactory::ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaFactory(parentNode, mediaNode)
+ImageFactory::ImageFactory(const xlf_node& mediaNode) :
+    MediaFactory(mediaNode)
 {
 }
 
@@ -12,8 +12,8 @@ std::unique_ptr<IMedia> ImageFactory::doCreate()
     int id = attrs().template get<int>("id");
     auto uri = utils::resourcesDir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
-    int width = parentNode().get_child("<xmlattr>").get<double>("width");
-    int height = parentNode().get_child("<xmlattr>").get<double>("height");
+    int width = 400; /*static_cast<int>(attrs().get<double>("width"));*/
+    int height = 400; /*static_cast<int>(attrs().get<double>("height"));*/
 
     auto scaleType = toScaleType(options().get<std::string>("scaleType", "center"));
     auto align = toAlign(options().get<std::string>("align", "center"));

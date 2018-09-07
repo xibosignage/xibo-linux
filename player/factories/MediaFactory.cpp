@@ -3,8 +3,7 @@
 #include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-MediaFactory::MediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    m_parentNode(parentNode)
+MediaFactory::MediaFactory(const xlf_node& mediaNode)
 {
     m_attrs = mediaNode.get_child("<xmlattr>");
     m_options = mediaNode.get_child("options");
@@ -26,11 +25,6 @@ const xlf_node& MediaFactory::attrs() const
 const xlf_node& MediaFactory::options() const
 {
     return m_options;
-}
-
-const xlf_node& MediaFactory::parentNode() const
-{
-    return m_parentNode;
 }
 
 std::unique_ptr<IMedia> MediaFactory::createAudioNode(int parentDuration)

@@ -9,8 +9,8 @@
 
 const std::string DEFAULT_EXTENSION = ".html";
 
-WebViewFactory::WebViewFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaFactory(parentNode, mediaNode)
+WebViewFactory::WebViewFactory(const xlf_node& mediaNode) :
+    MediaFactory(mediaNode)
 {
 }
 
@@ -20,8 +20,8 @@ std::unique_ptr<IMedia> WebViewFactory::doCreate()
     auto filename = std::to_string(id) + DEFAULT_EXTENSION;
     auto uri = utils::resourcesDir() / filename;
     int duration = parseDuration(uri).value_or(attrs().get<int>("duration"));
-    int width = parentNode().get_child("<xmlattr>").get<double>("width");
-    int height = parentNode().get_child("<xmlattr>").get<double>("height");
+    int width = static_cast<int>(attrs().get<double>("width"));
+    int height = static_cast<int>(attrs().get<double>("height"));
 
     int modeId = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);

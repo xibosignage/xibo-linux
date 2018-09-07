@@ -12,11 +12,13 @@ public:
     void stop() override;
     void start() override;
     void startTimer() override;
+    Gtk::Widget& handler() override { }
 
     bool muted() const;
     bool looped() const;
     double volume() const;
 
+    void apply(MediaVisitor& visitor) override;
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
     void noMorePads();

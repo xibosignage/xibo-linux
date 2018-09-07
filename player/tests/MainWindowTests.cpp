@@ -3,7 +3,7 @@
 #include "control/MainWindow.hpp"
 
 #include "control/IBackground.hpp"
-#include "control/IRegion.hpp"
+#include "control/IMediaContainer.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IImageAdaptor.hpp"

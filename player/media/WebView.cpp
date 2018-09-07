@@ -66,12 +66,18 @@ void WebView::setSize(int width, int height)
     m_handler.set_size_request(width, height);
 }
 
-void WebView::requestHandler()
+#include "media/MediaVisitor.hpp"
+void WebView::apply(MediaVisitor& visitor)
 {
-    handlerRequested().emit(m_handler, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
+    visitor.visit(*this);
 }
 
 bool WebView::transparent() const
 {
     return m_transparent;
+}
+
+Gtk::Widget& WebView::handler()
+{
+    return m_handler;
 }

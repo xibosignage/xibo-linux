@@ -7,7 +7,7 @@
 #include <regex>
 #include <fstream>
 
-const std::string DEFAULT_FOLDER = "GoPro";
+const std::string DEFAULT_FOLDER = "LayerTest";
 
 DownloadManager::DownloadManager() :
     m_work{m_ioc}

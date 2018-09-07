@@ -35,7 +35,8 @@ public:
     void stop() override;
     void start() override;
     void setSize(int width, int height) override;
-    void requestHandler() override;
+    Gtk::Widget& handler() override;
+    void apply(MediaVisitor& visitor) override;
 
     ScaleType scaleType() const;
     Align align() const;
@@ -43,8 +44,6 @@ public:
 
 private:
     bool isScaled() const;
-    int getLeftPos() const;
-    int getTopPos() const;
 
 private:
     Gtk::Image m_handler;

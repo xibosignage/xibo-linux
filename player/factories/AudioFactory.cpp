@@ -3,8 +3,8 @@
 #include "media/IMedia.hpp"
 #include "utils/utilities.hpp"
 
-AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
-    MediaFactory(parentNode, mediaNode)
+AudioFactory::AudioFactory(const xlf_node& mediaNode) :
+    MediaFactory(mediaNode)
 {
 }
 

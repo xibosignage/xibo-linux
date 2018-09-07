@@ -134,6 +134,12 @@ void Audio::startTimer()
     }
 }
 
+#include "media/MediaVisitor.hpp"
+void Audio::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
+}
+
 bool Audio::muted() const
 {
     return m_muted;

@@ -45,7 +45,7 @@ void Media::setSize(int width, int height)
 void Media::startTimer()
 {
     Glib::signal_timeout().connect_once([=](){
-        mediaTimeout().emit();
+        m_mediaTimeout.emit();
     }, duration() * MSECS);
 }
 
@@ -54,14 +54,9 @@ void Media::attachAudio(std::unique_ptr<IMedia> audio)
     m_audio = std::move(audio);
 }
 
-sigc::signal<void, Gtk::Widget&, int, int>& Media::handlerRequested()
+void Media::connect(OnMediaTimeout callback)
 {
-    return m_handlerRequsted;
-}
-
-sigc::signal<void>& Media::mediaTimeout()
-{
-    return m_mediaTimeout;
+    m_mediaTimeout.connect(callback);
 }
 
 int Media::id() const
@@ -92,4 +87,9 @@ Media::Render Media::render() const
 const std::string& Media::uri() const
 {
     return m_uri;
+}
+
+sigc::signal<void>& Media::mediaTimeout()
+{
+    return m_mediaTimeout;
 }

@@ -18,6 +18,8 @@ Image::Image(int id, int width, int height, int duration, const std::string& uri
             m_actualWidth = pixbuf->get_width();
             m_actualHeight = pixbuf->get_height();
             m_handler.set(pixbuf);
+
+            Media::setSize(m_actualWidth, m_actualHeight);
         }
         else
         {
@@ -44,17 +46,23 @@ void Image::start()
 
 void Image::setSize(int width, int height)
 {
-    Media::setSize(width, height);
-
     auto new_pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
     m_actualWidth = new_pixbuf->get_width();
     m_actualHeight = new_pixbuf->get_height();
     m_handler.set(new_pixbuf);
+
+    Media::setSize(m_actualWidth, m_actualHeight);
 }
 
-void Image::requestHandler()
+Gtk::Widget& Image::handler()
 {
-    handlerRequested().emit(m_handler, getLeftPos(), getTopPos());
+    return m_handler;
+}
+
+#include "media/MediaVisitor.hpp"
+void Image::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
 }
 
 Image::ScaleType Image::scaleType() const
@@ -77,36 +85,4 @@ bool Image::isScaled() const
     if(m_scaleType == ScaleType::Scaled)
         return true;
     return false;
-}
-
-int Image::getLeftPos() const
-{
-    switch(m_align)
-    {
-        case Align::Center:
-            return (width() - m_actualWidth) / 2;
-        case Align::Left:
-            return DEFAULT_LEFT_POS;
-        case Align::Right:
-            return width() - m_actualWidth;
-        default:
-            break;
-    }
-    return INVALID_POS;
-}
-
-int Image::getTopPos() const
-{
-    switch(m_valign)
-    {
-        case Valign::Middle:
-            return (height() - m_actualHeight) / 2;
-        case Valign::Top:
-            return DEFAULT_TOP_POS;
-        case Valign::Bottom:
-            return height() - m_actualHeight;
-        default:
-            break;
-    }
-    return INVALID_POS;
 }

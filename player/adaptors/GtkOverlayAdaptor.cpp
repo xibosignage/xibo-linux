@@ -13,11 +13,11 @@ void GtkOverlayAdaptor::show()
     m_handler.show();
 }
 
-void GtkOverlayAdaptor::addChild(IFixedLayoutAdaptor& child, int top, int left, int width, int height)
+void GtkOverlayAdaptor::addChild(IFixedLayoutAdaptor& child, int width, int height, int x, int y)
 {
     auto&& h = static_cast<GtkFixedLayoutAdaptor&>(child);
 
-    m_children.insert(std::make_pair(&h.get(), ChildInfo{top, left, width, height}));
+    m_children.insert(std::make_pair(&h.get(), ChildInfo{width, height, x, y}));
     m_handler.add_overlay(h.get());
 }
 
@@ -77,8 +77,8 @@ bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& 
     if(it != m_children.end())
     {
         ChildInfo info = it->second;
-        alloc.set_x(info.top); // scale
-        alloc.set_y(info.left); // scale
+        alloc.set_x(info.x); // scale
+        alloc.set_y(info.y); // scale
         alloc.set_width(info.width);
         alloc.set_height(info.height);
         return true;

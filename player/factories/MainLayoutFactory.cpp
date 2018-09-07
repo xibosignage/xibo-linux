@@ -13,21 +13,10 @@ MainLayoutFactory::MainLayoutFactory(const xlf_node& layoutNode) :
 
 std::unique_ptr<IMainLayout> MainLayoutFactory::create()
 {
-    auto attrs = m_layoutNode.get_child("<xmlattr>");
+    int width = m_layoutNode.get<int>("<xmlattr>.width");
+    int height = m_layoutNode.get<int>("<xmlattr>.height");
+    auto imagePath = utils::resourcesDir() / m_layoutNode.get<std::string>("<xmlattr>.background", {});
+    std::string color = m_layoutNode.get<std::string>("<xmlattr>.bgcolor", {});
 
-    int width = attrs.get<int>("width");
-    int height = attrs.get<int>("height");
-    auto imagePath = utils::resourcesDir() / attrs.get<std::string>("background", {});
-    std::string color = attrs.get<std::string>("bgcolor", {});
-
-    return createLayout(width, height, imagePath, color);
-}
-
-std::unique_ptr<IMainLayout> MainLayoutFactory::createLayout(int width, int height,
-                                                             const std::filesystem::path& imagePath,
-                                                             const std::string& color)
-{
-    auto layout = std::make_unique<MainLayout>(width, height);
-    layout->setBackground(BackgroundFactory().create(width, height, imagePath, color));
-    return layout;
+    return std::make_unique<MainLayout>(width, height);
 }

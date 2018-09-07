@@ -6,7 +6,7 @@ boost::property_tree::ptree xmds::parseXmlResponse(const std::string& soapRespon
 {
     auto responseTree = soap::parseSoapResponse(soapResponse);
     auto [_, messageNode] = responseTree.front();
-    return utils::parseXml(messageNode.get_value<std::string>());
+    return utils::parseXmlFromString(messageNode.get_value<std::string>());
 }
 
 bool xmds::parseSuccessResponse(const std::string& soapResponse)

@@ -9,10 +9,10 @@ class GtkOverlayAdaptor : public IOverlayAdaptor
 public:
     struct ChildInfo
     {
-        int top;
-        int left;
         int width;
         int height;
+        int x;
+        int y;
     };
 
     GtkOverlayAdaptor();
@@ -20,7 +20,7 @@ public:
     void setSize(int width, int height) override;
     int width() const override;
     int height() const override;
-    void addChild(IFixedLayoutAdaptor& child, int top, int left, int width, int height) override;
+    void addChild(IFixedLayoutAdaptor& child, int width, int height, int x, int y) override;
     void removeChildren() override;
     void addMainChild(IImageAdaptor& background) override;
     void removeMainChild() override;
@@ -33,4 +33,5 @@ private:
 private:
     Gtk::Overlay m_handler;
     std::map<Gtk::Widget*, ChildInfo> m_children;
+
 };

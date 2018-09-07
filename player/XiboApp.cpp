@@ -5,6 +5,7 @@
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
+#include "control/MainController.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
 
 #include <spdlog/fmt/ostr.h>
@@ -48,7 +49,9 @@ int XiboApp::initPlayer()
 
 //    m_collection_interval.start();
 
-    window->addLayout(utils::parseAndCreateXlfLayout(findXlfFile()));
+    auto parsedXlfTree = utils::parseXmlFromPath(findXlfFile());
+    MainBuilder controller;
+    window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
     window->showLayout();
 
     return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());

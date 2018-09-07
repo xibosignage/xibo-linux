@@ -1,6 +1,6 @@
 #include "MainLayout.hpp"
 
-#include "IRegion.hpp"
+#include "IMediaContainer.hpp"
 #include "IBackground.hpp"
 
 #include "utils/utilities.hpp"
@@ -21,32 +21,34 @@ MainLayout::~MainLayout()
 {
 }
 
-void MainLayout::addRegion(std::unique_ptr<IRegion> region)
+void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y)
 {
-    if(region)
+    if(mediaContainer)
     {
-        if(region->width() > width() || region->height() > height())
+        if(mediaContainer->width() > width() || mediaContainer->height() > height())
             throw std::runtime_error("Region width/height should not be greater than in layout");
 
-        m_handler->addChild(region->handler(), region->top(), region->left(), region->width(), region->height());
-        m_regions.push_back(std::move(region));
+        m_handler->addChild(mediaContainer->handler(),
+                            mediaContainer->width(), mediaContainer->height(),
+                            x, y);
+        m_containers.push_back(std::move(mediaContainer));
     }
 }
 
-void MainLayout::removeAllRegions()
+void MainLayout::removeAllContainers()
 {
     m_handler->removeChildren();
-    m_regions.clear();
+    m_containers.clear();
 }
 
-IRegion& MainLayout::region(size_t index)
+IMediaContainer& MainLayout::mediaContainer(size_t index)
 {
-    return *m_regions.at(index);
+    return *m_containers.at(index);
 }
 
-size_t MainLayout::regionsCount() const
+size_t MainLayout::mediaContainersCount() const
 {
-    return m_regions.size();
+    return m_containers.size();
 }
 
 IOverlayAdaptor& MainLayout::handler()
@@ -58,27 +60,27 @@ void MainLayout::show()
 {
     m_handler->show();
     showBackground();
-    sortReorderAndShowRegions();
+    sortReorderAndShowContainers();
 }
 
-void MainLayout::sortAndReorderRegions()
+void MainLayout::sortAndReorderContainers()
 {
-    sortRegionsByZindex();
+    sortContainersByZorder();
 
-    for(size_t i = 0; i != regionsCount(); ++i)
+    for(size_t i = 0; i != mediaContainersCount(); ++i)
     {
         int orderInParentWidget = static_cast<int>(i);
-        utils::logger()->trace("Zindex: {} Id: {} Order: {}", m_regions[i]->zindex(),
-                                                              m_regions[i]->id(),
+        utils::logger()->trace("Zindex: {} Id: {} Order: {}", m_containers[i]->zorder(),
+                                                              m_containers[i]->id(),
                                                               orderInParentWidget);
-        m_handler->reorderChild(m_regions[i]->handler(), orderInParentWidget);
+        m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
     }
 }
 
-void MainLayout::sortRegionsByZindex()
+void MainLayout::sortContainersByZorder()
 {
-    std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
-        return first->zindex() < second->zindex();
+    std::sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
+        return first->zorder() < second->zorder();
     });
 }
 
@@ -90,12 +92,12 @@ void MainLayout::showBackground()
     }
 }
 
-void MainLayout::sortReorderAndShowRegions()
+void MainLayout::sortReorderAndShowContainers()
 {
-    sortAndReorderRegions();
-    for(auto&& region : m_regions)
+    sortAndReorderContainers();
+    for(auto&& container : m_containers)
     {
-        region->show();
+        container->show();
     }
 }
 

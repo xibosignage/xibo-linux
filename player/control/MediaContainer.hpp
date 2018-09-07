@@ -1,45 +1,42 @@
 #pragma once
 
-#include "IRegion.hpp"
+#include "IMediaContainer.hpp"
 
 #include <vector>
 #include <sigc++/signal.h>
 
-class Region : public IRegion
+class MediaContainer : public IMediaContainer
 {
 public:
-    Region(int id, int width, int height, int left, int top, int zindex, bool looped);
-    ~Region() override;
+    MediaContainer(int id, int zorder, bool looped);
+    MediaContainer(int id, int zorder, bool looped, std::unique_ptr<IFixedLayoutAdaptor>);
 
-    Region(const Region& other) = delete;
-    Region& operator=(const Region& other) = delete;
+    ~MediaContainer() override;
+
+    MediaContainer(const MediaContainer& other) = delete;
+    MediaContainer& operator=(const MediaContainer& other) = delete;
 
     int width() const override;
     int height() const override;
     void setSize(int width, int height) override;
 
-    int left() const override;
-    int top() const override;
-    void setPos(int left, int top) override;
-
     int id() const override;
-    int zindex() const override;
-    bool looped() const override;
+    int zorder() const override;
     void show() override;
 
+    void addMedia(std::unique_ptr<IMedia> media, int x, int y) override;
     void addMedia(std::unique_ptr<IMedia> media) override;
     IFixedLayoutAdaptor& handler() override;
 
 private:
     void onMediaTimeout();
+    void initAndAddMediaToList(std::unique_ptr<IMedia> media);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
 
     int m_id;
-    int m_left;
-    int m_top;
-    int m_zindex;
+    int m_zorder;
     bool m_looped;
 
     std::vector<std::unique_ptr<IMedia>> m_media;

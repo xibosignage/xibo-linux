@@ -209,9 +209,15 @@ void Video::setSize(int width_, int height_)
     }
 }
 
-void Video::requestHandler()
+Gtk::Widget& Video::handler()
 {
-    handlerRequested().emit(m_videoWindow, DEFAULT_LEFT_POS, DEFAULT_TOP_POS);
+    return m_videoWindow;
+}
+
+#include "media/MediaVisitor.hpp"
+void Video::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
 }
 
 bool Video::looped() const

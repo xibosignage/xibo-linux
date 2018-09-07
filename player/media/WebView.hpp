@@ -13,9 +13,10 @@ public:
     void stop() override;
     void start() override;
     void setSize(int width, int height) override;
-    void requestHandler() override;
+    Gtk::Widget& handler() override;
     bool transparent() const;
 
+    void apply(MediaVisitor& visitor) override;
 private:
     void screenChanged(const Glib::RefPtr<Gdk::Screen>& screen);
 

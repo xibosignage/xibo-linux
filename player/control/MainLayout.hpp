@@ -22,24 +22,24 @@ public:
     void setBackground(std::unique_ptr<IBackground> background) override;
     IBackground& background() override;
 
-    void addRegion(std::unique_ptr<IRegion> region) override;
-    void removeAllRegions() override;
-    IRegion& region(size_t index) override;
-    size_t regionsCount() const override;
+    void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) override;
+    void removeAllContainers() override;
+    IMediaContainer& mediaContainer(size_t index) override;
+    size_t mediaContainersCount() const override;
 
     IOverlayAdaptor& handler() override;
     void show() override;
 
 private:
-    void sortAndReorderRegions();
-    void sortRegionsByZindex();
+    void sortAndReorderContainers();
+    void sortContainersByZorder();
     void showBackground();
-    void sortReorderAndShowRegions();
+    void sortReorderAndShowContainers();
     void removePreviousBackground();
     void setBackgroundSize(int width, int height);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;
     std::unique_ptr<IBackground> m_background;
-    std::vector<std::unique_ptr<IRegion>> m_regions;
+    std::vector<std::unique_ptr<IMediaContainer>> m_containers;
 };

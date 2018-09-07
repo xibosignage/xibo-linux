@@ -5,7 +5,7 @@
 #include "MockOverlayAdaptor.hpp"
 #include "MockBackground.hpp"
 #include "MockImageAdaptor.hpp"
-#include "MockRegion.hpp"
+#include "MockMediaContainer.hpp"
 #include "MockFixedLayoutAdaptor.hpp"
 
 using namespace ::testing;
@@ -30,14 +30,14 @@ NiceMock<MockBackground>* createBackground()
     return background;
 }
 
-NiceMock<MockRegion>* createRegion()
+NiceMock<MockMediaContainer>* createMediaContainer()
 {
-    auto region = new NiceMock<MockRegion>;
+    auto mediaContainer = new NiceMock<MockMediaContainer>;
     auto stubFixed = std::make_unique<NiceMock<MockFixedLayoutAdaptor>>();
 
-    ON_CALL(*region, handler()).WillByDefault(ReturnRef(*stubFixed));
+    ON_CALL(*mediaContainer, handler()).WillByDefault(ReturnRef(*stubFixed));
 
-    return region;
+    return mediaContainer;
 }
 
 class MainLayoutTest : public TestWithParam<Size> { };
@@ -197,7 +197,7 @@ TEST(MainLayoutTest, AddRegion_Null_HandlerAddChildShouldNotBeCalled)
 
     EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _)).Times(0);
 
-    layout->addRegion(nullptr);
+    layout->addMediaContainer(nullptr, DEFAULT_X_POS, DEFAULT_Y_POS);
 }
 
 TEST(MainLayoutTest, AddRegion_Add1_HandlerAddChildShouldBeCalled)
@@ -206,27 +206,27 @@ TEST(MainLayoutTest, AddRegion_Add1_HandlerAddChildShouldBeCalled)
 
     EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _));
 
-    layout->addRegion(unique(createRegion()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
 }
 
 TEST(MainLayoutTest, AddRegion_RegionWidthGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
     auto [layout, stubOverlay] = construct_layout();
-    auto stubRegion = createRegion();
+    auto stubRegion = createMediaContainer();
 
     ON_CALL(*stubRegion, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    ASSERT_THROW(layout->addRegion(unique(stubRegion)), std::runtime_error);
+    ASSERT_THROW(layout->addMediaContainer(unique(stubRegion), DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
 }
 
 TEST(MainLayoutTest, AddRegion_RegionHeightGreaterThanLayoutWidth_RunTimeErrorShouldBeThrown)
 {
     auto [layout, stubOverlay] = construct_layout();
-    auto stubRegion = createRegion();
+    auto stubRegion = createMediaContainer();
 
     ON_CALL(*stubRegion, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    ASSERT_THROW(layout->addRegion(unique(stubRegion)), std::runtime_error);
+    ASSERT_THROW(layout->addMediaContainer(unique(stubRegion), DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
 }
 
 TEST(MainLayoutTest, RemoveAllRegions_With3Regions_RegionsCountEquals0)
@@ -235,12 +235,12 @@ TEST(MainLayoutTest, RemoveAllRegions_With3Regions_RegionsCountEquals0)
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        layout->addRegion(unique(createRegion()));
+        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
     }
 
-    layout->removeAllRegions();
+    layout->removeAllContainers();
 
-    ASSERT_EQ(layout->regionsCount(), 0);
+    ASSERT_EQ(layout->mediaContainersCount(), 0);
 }
 
 TEST(MainLayoutTest, RemoveAllRegions_With3Regions_HandlerRemoveChildrenShouldBeCalled)
@@ -249,63 +249,63 @@ TEST(MainLayoutTest, RemoveAllRegions_With3Regions_HandlerRemoveChildrenShouldBe
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        layout->addRegion(unique(createRegion()));
+        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
     }
 
     EXPECT_CALL(*mockOverlay, removeChildren());
 
-    layout->removeAllRegions();
+    layout->removeAllContainers();
 }
 
 TEST(MainLayoutTest, Region_DefaultGet0Element_ShouldThrowOutOfRangeException)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    ASSERT_THROW(layout->region(0), std::out_of_range);
+    ASSERT_THROW(layout->mediaContainer(0), std::out_of_range);
 }
 
 TEST(MainLayoutTest, Region_Add1RegionAndGet1_ShouldThrowOutOfRangeException)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    layout->addRegion(unique(createRegion()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
 
-    ASSERT_THROW(layout->region(1), std::out_of_range);
+    ASSERT_THROW(layout->mediaContainer(1), std::out_of_range);
 }
 
 TEST(MainLayoutTest, Region_Add1RegionAndGetNegative_ShouldThrowOutOfRangeException)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    layout->addRegion(unique(createRegion()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
 
-    ASSERT_THROW(layout->region(-10), std::out_of_range);
+    ASSERT_THROW(layout->mediaContainer(-10), std::out_of_range);
 }
 
 TEST(MainLayoutTest, Region_Add1RegionAndGetBigIndex_ShouldThrowOutOfRangeException)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    layout->addRegion(unique(createRegion()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
 
-    ASSERT_THROW(layout->region(std::numeric_limits<size_t>::max()), std::out_of_range);
+    ASSERT_THROW(layout->mediaContainer(std::numeric_limits<size_t>::max()), std::out_of_range);
 }
 
 TEST(MainLayoutTest, Region_Add1RegionAndGet0_ShouldReturnAddedRegion)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    auto stubRegion = createRegion();
-    layout->addRegion(unique(stubRegion));
+    auto stubRegion = createMediaContainer();
+    layout->addMediaContainer(unique(stubRegion), DEFAULT_X_POS, DEFAULT_Y_POS);
 
-    ASSERT_EQ(&layout->region(0), stubRegion);
+    ASSERT_EQ(&layout->mediaContainer(0), stubRegion);
 }
 
 TEST(MainLayoutTest, RegionsCount_Default_Equals0)
 {
     auto [layout, stubOverlay] = construct_layout();
 
-    ASSERT_EQ(layout->regionsCount(), 0);
+    ASSERT_EQ(layout->mediaContainersCount(), 0);
 }
 
 TEST(MainLayoutTest, RegionsCount_Add3Regions_RegionCountEquals3)
@@ -314,10 +314,10 @@ TEST(MainLayoutTest, RegionsCount_Add3Regions_RegionCountEquals3)
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        layout->addRegion(unique(createRegion()));
+        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
     }
 
-    ASSERT_EQ(layout->regionsCount(), REGIONS_COUNT);
+    ASSERT_EQ(layout->mediaContainersCount(), REGIONS_COUNT);
 }
 
 TEST(MainLayoutTest, Show_Default_HandlerShowShouldBeCalled)
@@ -343,8 +343,8 @@ TEST(MainLayoutTest, Show_WithBackground_BackgroundShowShouldBeCalled)
 TEST(MainLayoutTest, Show_WithRegion_RegionShowShouldBeCalled)
 {
     auto [layout, mockOverlay] = construct_layout();
-    auto mockRegion = createRegion();
-    layout->addRegion(unique(mockRegion));
+    auto mockRegion = createMediaContainer();
+    layout->addMediaContainer(unique(mockRegion), DEFAULT_X_POS, DEFAULT_Y_POS);
 
     EXPECT_CALL(*mockRegion, show());
 
@@ -357,7 +357,7 @@ TEST(MainLayoutTest, Show_With3Regions_HandlerReorderChildShouldBeCalled)
     const int REGIONS_COUNT = 3;
     for(int i = 0; i != REGIONS_COUNT; ++i)
     {
-        layout->addRegion(unique(createRegion()));
+        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
     }
 
     EXPECT_CALL(*mockOverlay, reorderChild(_, _)).Times(REGIONS_COUNT);
