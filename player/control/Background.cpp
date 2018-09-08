@@ -63,12 +63,11 @@ IImageAdaptor& Background::handler()
 
 uint32_t Background::colorToHexNumber(const std::string& hexColor) const
 {
-    std::smatch match;
-    std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$");
-    if(!std::regex_match(hexColor, match, hexColorRegex))
+    if(!isValidColor(hexColor))
         throw std::invalid_argument("HEX color should be 3, 6, or 8 digits with # at the beginning");
 
-    std::string colorWithoutNumberSign = match[1];
+    size_t positionAfterNumberSign = hexColor.find('#') + 1;
+    std::string colorWithoutNumberSign = hexColor.substr(positionAfterNumberSign);
 
     if(colorWithoutNumberSign.size() == SHORT_COLOR_WITHOUT_ALPHA)
         colorWithoutNumberSign = std::string(2, colorWithoutNumberSign[0]) +
@@ -79,4 +78,15 @@ uint32_t Background::colorToHexNumber(const std::string& hexColor) const
         colorWithoutNumberSign += DEFAULT_ALPHA_CHANNEL;
 
     return static_cast<uint32_t>(std::stoul(colorWithoutNumberSign, nullptr, COLOR_BASE));
+}
+
+bool Background::isValidColor(const std::string& hexColor) const
+{
+    std::smatch match;
+    std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$");
+
+    if(!std::regex_match(hexColor, match, hexColorRegex))
+        return false;
+
+    return true;
 }

@@ -16,7 +16,7 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.hardwareKey = m_hardwareKey;
     request.clientType = DEFAULT_CLIENT_TYPE;
     request.clientCode = clientCode;
-    request.clientVersion = clientVersion; // FIXME get from player version (?)
+    request.clientVersion = clientVersion; // WARNING get from player version (?)
     request.macAddress = "test"; // FIXME get from the system
     request.displayName = displayName;
 

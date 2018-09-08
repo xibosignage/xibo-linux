@@ -2,11 +2,11 @@
 
 #include "control/MainLayout.hpp"
 
-#include "MockOverlayAdaptor.hpp"
-#include "MockBackground.hpp"
-#include "MockImageAdaptor.hpp"
-#include "MockMediaContainer.hpp"
-#include "MockFixedLayoutAdaptor.hpp"
+#include "mocks/MockOverlayAdaptor.hpp"
+#include "mocks/MockBackground.hpp"
+#include "mocks/MockImageAdaptor.hpp"
+#include "mocks/MockMediaContainer.hpp"
+#include "mocks/MockFixedLayoutAdaptor.hpp"
 
 using namespace ::testing;
 
@@ -85,20 +85,13 @@ TEST(MainLayoutTest, Height_Default_Equals480)
     ASSERT_EQ(layout->height(), DEFAULT_HEIGHT);
 }
 
-TEST(MainLayoutTest, Background_NotSet_ShouldThrowRunTimeError)
-{
-    auto [layout, stubOverlay] = construct_layout();
-
-    ASSERT_THROW(layout->background(), std::runtime_error);
-}
-
 TEST(MainLayoutTest, SetBackground_Null_HandlerAddShouldNotBeCalled)
 {
     auto [layout, mockOverlay] = construct_layout();
 
     EXPECT_CALL(*mockOverlay, addMainChild(_)).Times(0);
 
-    layout->setBackground(nullptr);
+    ASSERT_THROW(layout->setBackground(nullptr), std::runtime_error);
 }
 
 TEST(MainLayoutTest, SetBackground_NotNull_HandlerAddShouldBeCalled)
@@ -108,16 +101,6 @@ TEST(MainLayoutTest, SetBackground_NotNull_HandlerAddShouldBeCalled)
     EXPECT_CALL(*mockOverlay, addMainChild(_));
 
     layout->setBackground(unique(createBackground()));
-}
-
-TEST(MainLayoutTest, SetBackground_NotNull_BackgroundShouldReturnExistingObject)
-{
-    auto [layout, stubOverlay] = construct_layout();
-    auto stubBackground = createBackground();
-
-    layout->setBackground(unique(stubBackground));
-
-    ASSERT_EQ(&layout->background(), stubBackground);
 }
 
 TEST(MainLayoutTest, SetBackground_WidthNotEqualLayotuWidth_RunTimeErrorShouldBeCalled)
@@ -197,9 +180,9 @@ TEST(MainLayoutTest, AddMediaContainer_Null_HandlerAddChildShouldNotBeCalled)
 {
     auto [layout, mockOverlay] = construct_layout();
 
-    EXPECT_CALL(*mockOverlay, addChild(_, _, _ ,_ , _)).Times(0);
+    EXPECT_CALL(*mockOverlay, addChild(_, _, _, _ , _)).Times(0);
 
-    layout->addMediaContainer(nullptr, DEFAULT_X_POS, DEFAULT_Y_POS);
+    ASSERT_THROW(layout->addMediaContainer(nullptr, DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
 }
 
 TEST(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
@@ -231,14 +214,9 @@ TEST(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_Run
     ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
 }
 
-TEST(MainLayoutTest, RemoveAllCotnainers_With3Containers_HandlerRemoveChildrenShouldBeCalled)
+TEST(MainLayoutTest, RemoveAllCotnainers_Default_HandlerRemoveChildrenShouldBeCalled)
 {
     auto [layout, mockOverlay] = construct_layout();
-    const int CONTAINERS_COUNT = 3;
-    for(int i = 0; i != CONTAINERS_COUNT; ++i)
-    {
-        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
-    }
 
     EXPECT_CALL(*mockOverlay, removeChildren());
 
@@ -276,6 +254,7 @@ TEST(MainLayoutTest, Show_WithMediaContainer_MediaContainerShowShouldBeCalled)
     layout->show();
 }
 
+// TEST zorder
 TEST(MainLayoutTest, Show_With3MediaContainers_HandlerReorderChildShouldBeCalled)
 {
     auto [layout, mockOverlay] = construct_layout();

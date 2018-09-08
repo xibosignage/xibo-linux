@@ -25,6 +25,7 @@ public:
 
 private:
     uint32_t colorToHexNumber(const std::string& hexColor) const;
+    bool isValidColor(const std::string& hexColor) const;
 
 private:
     std::unique_ptr<IImageAdaptor> m_handler;

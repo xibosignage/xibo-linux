@@ -76,7 +76,7 @@ void CollectionInterval::onRegisterDisplay(const RegisterDisplay::Response& resp
         m_logger->debug("Display is still waiting for approval in CMS");
         break;
     default:
-        m_logger->critical("Invalid display status"); // FIXME exception(?)
+        m_logger->critical("Invalid display status"); // WARNING exception(?)
         break;
     }
 }

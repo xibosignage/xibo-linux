@@ -67,19 +67,19 @@ IFixedLayoutAdaptor& MediaContainer::handler()
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia> media, int x, int y)
 {
-    if(media)
-    {
-        m_handler->addChild(media->handler(), x, y);
-        initAndAddMediaToList(std::move(media));
-    }
+    if(!media)
+        throw std::runtime_error("Invalid media given");
+
+    m_handler->addChild(media->handler(), x, y);
+    initAndAddMediaToList(std::move(media));
 }
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia> media)
 {
-    if(media)
-    {
-        initAndAddMediaToList(std::move(media));
-    }
+    if(!media)
+        throw std::runtime_error("Invalid media given");
+
+    initAndAddMediaToList(std::move(media));
 }
 
 void MediaContainer::removeAllMedia()

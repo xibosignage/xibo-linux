@@ -20,7 +20,7 @@ MainWindow::MainWindow(int width, int height, std::unique_ptr<IWindowAdaptor> ha
     m_handler->disableWindowResize();
 }
 
-// FIXME add check for screen size and tests for this
+// TEST coordinates
 void MainWindow::setPos(int x, int y)
 {
     if(x < 0 || y < 0)

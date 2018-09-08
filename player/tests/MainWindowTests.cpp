@@ -8,9 +8,9 @@
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IImageAdaptor.hpp"
 
-#include "MockWindowAdaptor.hpp"
-#include "MockMainLayout.hpp"
-#include "MockOverlayAdaptor.hpp"
+#include "mocks/MockWindowAdaptor.hpp"
+#include "mocks/MockMainLayout.hpp"
+#include "mocks/MockOverlayAdaptor.hpp"
 
 using namespace ::testing;
 

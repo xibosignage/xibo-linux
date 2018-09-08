@@ -16,8 +16,6 @@ public:
     virtual int height() const = 0;
 
     virtual void setBackground(std::unique_ptr<IBackground> background) = 0;
-    virtual IBackground& background() = 0;
-
     virtual void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) = 0;
     virtual void removeAllContainers() = 0;
 

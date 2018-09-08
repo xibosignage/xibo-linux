@@ -20,8 +20,6 @@ public:
     int height() const override;
 
     void setBackground(std::unique_ptr<IBackground> background) override;
-    IBackground& background() override;
-
     void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) override;
     void removeAllContainers() override;
 

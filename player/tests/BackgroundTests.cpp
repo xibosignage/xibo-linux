@@ -2,7 +2,7 @@
 
 #include "control/Background.hpp"
 
-#include "MockImageAdaptor.hpp"
+#include "mocks/MockImageAdaptor.hpp"
 
 using namespace ::testing;
 

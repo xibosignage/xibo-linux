@@ -23,18 +23,17 @@ MainLayout::~MainLayout()
 {
 }
 
+// TEST coordinates
 void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y)
 {
-    if(mediaContainer)
-    {
-        if(mediaContainer->width() > width() || mediaContainer->height() > height())
-            throw std::runtime_error("Region width/height should not be greater than in layout");
+    if(!mediaContainer)
+        throw std::runtime_error("Invalid media container given");
 
-        m_handler->addChild(mediaContainer->handler(),
-                            mediaContainer->width(), mediaContainer->height(),
-                            x, y);
-        m_containers.push_back(std::move(mediaContainer));
-    }
+    if(mediaContainer->width() > width() || mediaContainer->height() > height())
+        throw std::runtime_error("Container width/height should not be greater than in layout");
+
+    m_handler->addChild(mediaContainer->handler(), mediaContainer->width(), mediaContainer->height(), x, y);
+    m_containers.push_back(std::move(mediaContainer));
 }
 
 void MainLayout::removeAllContainers()
@@ -62,7 +61,7 @@ void MainLayout::sortAndReorderContainers()
     for(size_t i = 0; i != m_containers.size(); ++i)
     {
         int orderInParentWidget = static_cast<int>(i);
-        utils::logger()->trace("Zindex: {} Order: {}", m_containers[i]->zorder(),
+        utils::logger()->trace("Zorder: {} Order: {}", m_containers[i]->zorder(),
                                                        orderInParentWidget);
         m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
     }
@@ -111,23 +110,15 @@ void MainLayout::setBackgroundSize(int width, int height)
 // NOTE check 100x100 layout and 1920x1080 background = crash
 void MainLayout::setBackground(std::unique_ptr<IBackground> background)
 {
-    if(background)
-    {
-        if(background->width() != width() || background->height() != height())
-            throw std::runtime_error("Background's and layout's size should be the same");
+    if(!background)
+        throw std::runtime_error("Invalid background given");
 
-        removePreviousBackground();
-        m_background = std::move(background);
-        m_handler->addMainChild(m_background->handler());
-    }
-}
+    if(background->width() != width() || background->height() != height())
+        throw std::runtime_error("Background's and layout's size should be the same");
 
-IBackground& MainLayout::background()
-{
-    if(!m_background)
-        throw std::runtime_error("No background set");
-
-    return *m_background;
+    removePreviousBackground();
+    m_background = std::move(background);
+    m_handler->addMainChild(m_background->handler());
 }
 
 void MainLayout::setSize(int width, int height)
