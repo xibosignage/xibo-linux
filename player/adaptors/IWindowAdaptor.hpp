@@ -1,12 +1,14 @@
 #pragma once
 
+#include "IWidgetAdaptor.hpp"
+
 class IOverlayAdaptor;
 
-class IWindowAdaptor
+class IWindowAdaptor : public IWidgetAdaptor
 {
 public:
     virtual ~IWindowAdaptor() = default;
-    virtual void add(IOverlayAdaptor& overlay) = 0;
+    virtual void add(IWidgetAdaptor& child) = 0;
     virtual void setDefaultSize(int width, int height) = 0;
     virtual void move(int x, int y) = 0;
     virtual void disableWindowResize() = 0;

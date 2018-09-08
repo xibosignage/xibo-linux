@@ -1,10 +1,11 @@
 #pragma once
 
 #include "IOverlayAdaptor.hpp"
+#include "GtkBaseAdaptor.hpp"
 
 #include <gtkmm/overlay.h>
 
-class GtkOverlayAdaptor : public IOverlayAdaptor
+class GtkOverlayAdaptor : public GtkBaseAdaptor<IOverlayAdaptor>
 {
 public:
     struct ChildInfo
@@ -20,12 +21,13 @@ public:
     void setSize(int width, int height) override;
     int width() const override;
     int height() const override;
-    void addChild(IFixedLayoutAdaptor& child, int width, int height, int x, int y) override;
+    void addChild(IWidgetAdaptor& child, int width, int height, int x, int y) override;
     void removeChildren() override;
-    void addMainChild(IImageAdaptor& background) override;
+    void addMainChild(IWidgetAdaptor& mainChild) override;
     void removeMainChild() override;
-    void reorderChild(IFixedLayoutAdaptor& child, int position) override;
-    Gtk::Overlay& get();
+    void reorderChild(IWidgetAdaptor& child, int position) override;
+    Gtk::Overlay* get() override;
+    void apply(AdaptorVisitor& visitor) override;
 
 private:
     bool onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc);

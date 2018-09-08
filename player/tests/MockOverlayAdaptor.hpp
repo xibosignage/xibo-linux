@@ -11,9 +11,10 @@ public:
     MOCK_METHOD2(setSize, void(int width, int height));
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
-    MOCK_METHOD5(addChild, void(IFixedLayoutAdaptor& child, int top, int left, int width, int height));
+    MOCK_METHOD5(addChild, void(IWidgetAdaptor& child, int top, int left, int width, int height));
     MOCK_METHOD0(removeChildren, void());
-    MOCK_METHOD1(addMainChild, void(IImageAdaptor& background));
+    MOCK_METHOD1(addMainChild, void(IWidgetAdaptor& mainChild));
     MOCK_METHOD0(removeMainChild, void());
-    MOCK_METHOD2(reorderChild, void(IFixedLayoutAdaptor& child, int position));
+    MOCK_METHOD2(reorderChild, void(IWidgetAdaptor& child, int position));
+    MOCK_METHOD1(apply, void(AdaptorVisitor& visitor));
 };

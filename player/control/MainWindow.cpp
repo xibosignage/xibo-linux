@@ -2,6 +2,7 @@
 #include "constants.hpp"
 
 #include "adaptors/GtkWindowAdaptor.hpp"
+#include "adaptors/IOverlayAdaptor.hpp"
 
 MainWindow::MainWindow(int width, int height) :
     MainWindow(width, height, std::make_unique<GtkWindowAdaptor>())

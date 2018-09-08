@@ -19,7 +19,7 @@ public:
     void start() override;
     void startTimer() override;
     void setSize(int width, int height) override;
-    Gtk::Widget& handler() override;
+    IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
 
     bool muted() const;

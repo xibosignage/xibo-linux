@@ -36,6 +36,8 @@ auto construct_mock_layout()
 
 const int DEFAULT_POS = 100;
 
+const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+
 class MainWindowTest : public TestWithParam<Size> { };
 
 TEST_P(MainWindowTest, Constructor_InvalidSize_ShouldThrowRunTimeError)
@@ -43,7 +45,7 @@ TEST_P(MainWindowTest, Constructor_InvalidSize_ShouldThrowRunTimeError)
     ASSERT_THROW(construct_window(GetParam().width, GetParam().height), std::runtime_error);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainWindowTest, ::testing::ValuesIn(invalidSizes));
+INSTANTIATE_TEST_CASE_P(Suite, MainWindowTest, ::testing::ValuesIn(invalidMainWindowSizes));
 
 TEST(MainWindowTest, Constuctor_Default_HandlerSetDefaultSizeShouldBeCalled)
 {

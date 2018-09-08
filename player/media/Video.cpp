@@ -209,9 +209,10 @@ void Video::setSize(int width_, int height_)
     }
 }
 
-Gtk::Widget& Video::handler()
+#include "adaptors/GtkImageAdaptor.hpp"
+IWidgetAdaptor& Video::handler()
 {
-    return m_videoWindow;
+    return *new GtkImageAdaptor;
 }
 
 #include "media/MediaVisitor.hpp"

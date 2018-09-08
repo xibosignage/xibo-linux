@@ -1,15 +1,14 @@
 #include "GtkWindowAdaptor.hpp"
-#include "GtkOverlayAdaptor.hpp"
 
 GtkWindowAdaptor::GtkWindowAdaptor()
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &GtkWindowAdaptor::onRealized));
 }
 
-void GtkWindowAdaptor::add(IOverlayAdaptor& overlay)
+void GtkWindowAdaptor::add(IWidgetAdaptor& child)
 {
-    auto&& gtk_overlay = static_cast<GtkOverlayAdaptor&>(overlay);
-    m_handler.add(gtk_overlay.get());
+    auto&& handler = getHandler(child);
+    m_handler.add(handler);
 }
 
 void GtkWindowAdaptor::setDefaultSize(int width, int height)
@@ -57,9 +56,14 @@ void GtkWindowAdaptor::setKeepAbove(bool keep_above)
     m_handler.set_keep_above(keep_above);
 }
 
-Gtk::Window& GtkWindowAdaptor::get()
+Gtk::Window* GtkWindowAdaptor::get()
 {
-    return m_handler;
+    return &m_handler;
+}
+
+void GtkWindowAdaptor::apply(AdaptorVisitor& visitor)
+{
+    visitor.visit(*this);
 }
 
 void GtkWindowAdaptor::onRealized()

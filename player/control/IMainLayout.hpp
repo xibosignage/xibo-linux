@@ -20,8 +20,6 @@ public:
 
     virtual void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) = 0;
     virtual void removeAllContainers() = 0;
-    virtual IMediaContainer& mediaContainer(size_t index) = 0;
-    virtual size_t mediaContainersCount() const = 0;
 
     virtual IOverlayAdaptor& handler() = 0;
     virtual void show() = 0;

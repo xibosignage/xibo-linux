@@ -5,16 +5,18 @@
 #include "media/IMedia.hpp"
 #include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
-MediaContainer::MediaContainer(int id, int zorder, bool looped) :
-    MediaContainer(id, zorder, looped, std::make_unique<GtkFixedLayoutAdaptor>())
+const int MIN_WIDTH = 1;
+const int MIN_HEIGHT = 1;
+
+MediaContainer::MediaContainer(int width, int height, int zorder) :
+    MediaContainer(width, height, zorder, std::make_unique<GtkFixedLayoutAdaptor>())
 {
 }
 
-MediaContainer::MediaContainer(int id, int zorder, bool looped,
-                               std::unique_ptr<IFixedLayoutAdaptor> handler) :
-    m_handler(std::move(handler)), m_id(id), m_zorder(zorder), m_looped(looped)
+MediaContainer::MediaContainer(int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor> handler) :
+    m_handler(std::move(handler)), m_zorder(zorder)
 {
-
+    setSize(width, height);
 }
 
 MediaContainer::~MediaContainer()
@@ -33,12 +35,15 @@ int MediaContainer::height() const
 
 void MediaContainer::setSize(int width, int height)
 {
+    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH || height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
+        throw std::runtime_error("Width/height is too large/small");
+
     m_handler->setSize(width, height);
 }
 
-int MediaContainer::id() const
+void MediaContainer::loopMediaInContainer()
 {
-    return m_id;
+    m_looped = true;
 }
 
 int MediaContainer::zorder() const
@@ -48,9 +53,9 @@ int MediaContainer::zorder() const
 
 void MediaContainer::show()
 {
+    m_handler->show();
     if(!m_media.empty())
     {
-        m_handler->show();
         m_media[m_currentMediaIndex]->start();
     }
 }
@@ -62,13 +67,24 @@ IFixedLayoutAdaptor& MediaContainer::handler()
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia> media, int x, int y)
 {
-    m_handler->addChild(media->handler(), x, y);
-    initAndAddMediaToList(std::move(media));
+    if(media)
+    {
+        m_handler->addChild(media->handler(), x, y);
+        initAndAddMediaToList(std::move(media));
+    }
 }
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia> media)
 {
-    initAndAddMediaToList(std::move(media));
+    if(media)
+    {
+        initAndAddMediaToList(std::move(media));
+    }
+}
+
+void MediaContainer::removeAllMedia()
+{
+    m_handler->removeChildren();
 }
 
 void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia> media)

@@ -17,13 +17,14 @@ struct Size
     int height;
 };
 
+template<int MaxWidth, int MinWidth, int MaxHeight, int MinHeight>
 const std::vector<Size> invalidSizes = {
     {-1, DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, -1},
-    {MAX_DISPLAY_WIDTH + 1, DEFAULT_HEIGHT},
-    {DEFAULT_WIDTH, MAX_DISPLAY_HEIGHT + 1},
-    {MIN_DISPLAY_WIDTH - 1, DEFAULT_HEIGHT},
-    {DEFAULT_WIDTH, MIN_DISPLAY_HEIGHT - 1},
+    {MaxWidth + 1, DEFAULT_HEIGHT},
+    {DEFAULT_WIDTH, MaxHeight + 1},
+    {MinWidth - 1, DEFAULT_HEIGHT},
+    {DEFAULT_WIDTH, MinHeight - 1},
     {std::numeric_limits<int>::max(), DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, std::numeric_limits<int>::max()},
     {std::numeric_limits<int>::min(), DEFAULT_HEIGHT},

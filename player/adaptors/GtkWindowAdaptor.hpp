@@ -1,15 +1,16 @@
 #pragma once
 
 #include "IWindowAdaptor.hpp"
+#include "GtkBaseAdaptor.hpp"
 
 #include <gtkmm/window.h>
 
-class GtkWindowAdaptor : public IWindowAdaptor
+class GtkWindowAdaptor : public GtkBaseAdaptor<IWindowAdaptor>
 {
 public:
     GtkWindowAdaptor();
 
-    void add(IOverlayAdaptor& overlay) override;
+    void add(IWidgetAdaptor& child) override;
     void setDefaultSize(int width, int height) override;
     void move(int x, int y) override;
     void disableWindowResize() override;
@@ -19,7 +20,8 @@ public:
     void unfullscreen() override;
     void setCursorVisible(bool cursorVisible) override;
     bool isVisible() const override;
-    Gtk::Window& get();
+    Gtk::Window* get() override;
+    void apply(AdaptorVisitor& visitor) override;
 
 private:
     void onRealized();

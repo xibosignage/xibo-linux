@@ -13,4 +13,5 @@ public:
     MOCK_METHOD1(setColor, void(uint32_t hexColor));
     MOCK_METHOD2(setImage, void(const uint8_t* imageData, size_t dataSize));
     MOCK_METHOD0(show, void());
+    MOCK_METHOD1(apply, void(AdaptorVisitor& visitor));
 };

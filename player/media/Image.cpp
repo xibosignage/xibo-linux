@@ -54,9 +54,10 @@ void Image::setSize(int width, int height)
     Media::setSize(m_actualWidth, m_actualHeight);
 }
 
-Gtk::Widget& Image::handler()
+#include "adaptors/GtkImageAdaptor.hpp"
+IWidgetAdaptor& Image::handler()
 {
-    return m_handler;
+    return *new GtkImageAdaptor;
 }
 
 #include "media/MediaVisitor.hpp"

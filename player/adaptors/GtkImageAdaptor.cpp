@@ -44,7 +44,12 @@ void GtkImageAdaptor::show()
     m_handler.show();
 }
 
-Gtk::Image& GtkImageAdaptor::get()
+Gtk::Image* GtkImageAdaptor::get()
 {
-    return m_handler;
+    return &m_handler;
+}
+
+void GtkImageAdaptor::apply(AdaptorVisitor& visitor)
+{
+    visitor.visit(*this);
 }

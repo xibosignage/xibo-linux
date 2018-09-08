@@ -5,6 +5,8 @@
 
 #include "utils/utilities.hpp"
 #include "adaptors/GtkOverlayAdaptor.hpp"
+#include "adaptors/IImageAdaptor.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
 
 MainLayout::MainLayout(int width, int height) :
     MainLayout(width, height, std::make_unique<GtkOverlayAdaptor>())
@@ -41,16 +43,6 @@ void MainLayout::removeAllContainers()
     m_containers.clear();
 }
 
-IMediaContainer& MainLayout::mediaContainer(size_t index)
-{
-    return *m_containers.at(index);
-}
-
-size_t MainLayout::mediaContainersCount() const
-{
-    return m_containers.size();
-}
-
 IOverlayAdaptor& MainLayout::handler()
 {
     return *m_handler;
@@ -67,12 +59,11 @@ void MainLayout::sortAndReorderContainers()
 {
     sortContainersByZorder();
 
-    for(size_t i = 0; i != mediaContainersCount(); ++i)
+    for(size_t i = 0; i != m_containers.size(); ++i)
     {
         int orderInParentWidget = static_cast<int>(i);
-        utils::logger()->trace("Zindex: {} Id: {} Order: {}", m_containers[i]->zorder(),
-                                                              m_containers[i]->id(),
-                                                              orderInParentWidget);
+        utils::logger()->trace("Zindex: {} Order: {}", m_containers[i]->zorder(),
+                                                       orderInParentWidget);
         m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
     }
 }

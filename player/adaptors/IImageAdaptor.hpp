@@ -1,8 +1,10 @@
 #pragma once
 
+#include "IWidgetAdaptor.hpp"
+
 #include <string>
 
-class IImageAdaptor
+class IImageAdaptor : public IWidgetAdaptor
 {
 public:
     virtual ~IImageAdaptor() = default;

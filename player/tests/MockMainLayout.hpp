@@ -14,8 +14,6 @@ public:
     MOCK_METHOD0(background, IBackground&());
     MOCK_METHOD3(addMediaContainer, void(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y));
     MOCK_METHOD0(removeAllContainers, void());
-    MOCK_METHOD1(mediaContainer, IMediaContainer&(size_t index));
-    MOCK_CONST_METHOD0(mediaContainersCount, size_t());
     MOCK_METHOD0(show, void());
     MOCK_METHOD0(handler, IOverlayAdaptor&());
 };

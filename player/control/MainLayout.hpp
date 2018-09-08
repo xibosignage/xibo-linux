@@ -24,8 +24,6 @@ public:
 
     void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) override;
     void removeAllContainers() override;
-    IMediaContainer& mediaContainer(size_t index) override;
-    size_t mediaContainersCount() const override;
 
     IOverlayAdaptor& handler() override;
     void show() override;

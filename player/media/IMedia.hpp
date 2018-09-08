@@ -2,11 +2,10 @@
 
 #include <string>
 #include <memory>
-#include <sigc++/signal.h>
-
-#include <gtkmm/widget.h> // FIXME
+#include <functional>
 
 class MediaVisitor;
+class IWidgetAdaptor;
 
 using OnMediaTimeout = std::function<void()>;
 
@@ -30,7 +29,7 @@ public:
     virtual void attachAudio(std::unique_ptr<IMedia> audio) = 0;
     virtual void connect(OnMediaTimeout callback) = 0;
 
-    virtual Gtk::Widget& handler() = 0;
+    virtual IWidgetAdaptor& handler() = 0;
     virtual void apply(MediaVisitor& visitor) = 0;
 
     virtual int id() const = 0;

@@ -1,6 +1,4 @@
 #include "GtkOverlayAdaptor.hpp"
-#include "GtkImageAdaptor.hpp"
-#include "GtkFixedLayoutAdaptor.hpp"
 
 GtkOverlayAdaptor::GtkOverlayAdaptor()
 {
@@ -13,12 +11,12 @@ void GtkOverlayAdaptor::show()
     m_handler.show();
 }
 
-void GtkOverlayAdaptor::addChild(IFixedLayoutAdaptor& child, int width, int height, int x, int y)
+void GtkOverlayAdaptor::addChild(IWidgetAdaptor& child, int width, int height, int x, int y)
 {
-    auto&& h = static_cast<GtkFixedLayoutAdaptor&>(child);
+    auto&& handler = getHandler(child);
 
-    m_children.insert(std::make_pair(&h.get(), ChildInfo{width, height, x, y}));
-    m_handler.add_overlay(h.get());
+    m_children.insert(std::make_pair(&handler, ChildInfo{width, height, x, y}));
+    m_handler.add_overlay(handler);
 }
 
 void GtkOverlayAdaptor::removeChildren()
@@ -30,10 +28,10 @@ void GtkOverlayAdaptor::removeChildren()
     m_children.clear();
 }
 
-void GtkOverlayAdaptor::addMainChild(IImageAdaptor& background)
+void GtkOverlayAdaptor::addMainChild(IWidgetAdaptor& mainChild)
 {
-    auto&& h = static_cast<GtkImageAdaptor&>(background);
-    m_handler.add(h.get());
+    auto&& handler = getHandler(mainChild);
+    m_handler.add(handler);
 }
 
 void GtkOverlayAdaptor::removeMainChild()
@@ -60,15 +58,20 @@ int GtkOverlayAdaptor::height() const
     return height;
 }
 
-void GtkOverlayAdaptor::reorderChild(IFixedLayoutAdaptor& child, int position)
+void GtkOverlayAdaptor::reorderChild(IWidgetAdaptor& child, int position)
 {
-    auto&& h = static_cast<GtkFixedLayoutAdaptor&>(child);
-    m_handler.reorder_overlay(h.get(), position);
+    auto&& handler = getHandler(child);
+    m_handler.reorder_overlay(handler, position);
 }
 
-Gtk::Overlay&GtkOverlayAdaptor::get()
+Gtk::Overlay* GtkOverlayAdaptor::get()
 {
-    return m_handler;
+    return &m_handler;
+}
+
+void GtkOverlayAdaptor::apply(AdaptorVisitor& visitor)
+{
+    visitor.visit(*this);
 }
 
 bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)

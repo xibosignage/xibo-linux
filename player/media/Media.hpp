@@ -2,6 +2,8 @@
 
 #include "IMedia.hpp"
 
+#include <sigc++/signal.h>
+
 class Media : public IMedia
 {
 public:

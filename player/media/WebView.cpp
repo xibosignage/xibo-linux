@@ -77,7 +77,8 @@ bool WebView::transparent() const
     return m_transparent;
 }
 
-Gtk::Widget& WebView::handler()
+#include "adaptors/GtkImageAdaptor.hpp"
+IWidgetAdaptor& WebView::handler()
 {
-    return m_handler;
+    return *new GtkImageAdaptor;
 }

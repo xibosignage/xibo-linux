@@ -18,5 +18,7 @@ std::unique_ptr<IMainLayout> MainLayoutFactory::create()
     auto imagePath = utils::resourcesDir() / m_layoutNode.get<std::string>("<xmlattr>.background", {});
     std::string color = m_layoutNode.get<std::string>("<xmlattr>.bgcolor", {});
 
-    return std::make_unique<MainLayout>(width, height);
+    auto layout = std::make_unique<MainLayout>(width, height);
+    layout->setBackground(BackgroundFactory().create(width, height, imagePath, color));
+    return layout;
 }

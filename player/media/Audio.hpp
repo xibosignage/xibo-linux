@@ -12,7 +12,7 @@ public:
     void stop() override;
     void start() override;
     void startTimer() override;
-    Gtk::Widget& handler() override { }
+    IWidgetAdaptor& handler() override { }
 
     bool muted() const;
     bool looped() const;

@@ -22,6 +22,8 @@ struct Color
     uint numberColor;
 };
 
+const auto invalidBackgroundSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+
 class BackgroundTest : public TestWithParam<Size> { };
 class BackgroundValidColorTest : public TestWithParam<Color> { };
 class BackgroundInvalidColorTest :  public TestWithParam<std::string> { };
@@ -50,7 +52,7 @@ TEST_P(BackgroundTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
     ASSERT_THROW(background->setSize(GetParam().width, GetParam().height), std::runtime_error);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, BackgroundTest, ::testing::ValuesIn(invalidSizes));
+INSTANTIATE_TEST_CASE_P(Suite, BackgroundTest, ::testing::ValuesIn(invalidBackgroundSizes));
 
 TEST(BackgroundTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
 {

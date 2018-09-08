@@ -13,7 +13,7 @@ public:
     void stop() override;
     void start() override;
     void setSize(int width, int height) override;
-    Gtk::Widget& handler() override;
+    IWidgetAdaptor& handler() override;
     bool transparent() const;
 
     void apply(MediaVisitor& visitor) override;
