@@ -1,0 +1,32 @@
+name: xibo-player-test
+version: 0.3.1-alpha
+summary: Xibo Linux Player
+description: Test snap package for Xibo Linux Player
+grade: devel
+confinement: strict
+
+apps:
+  xibo-player-test:
+    command: desktop-launch $SNAP/player/player
+    environment:
+      LD_LIBRARY_PATH: $SNAP/player/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
+  # xibo-player-tests:
+  #   command: player/tests/unit_tests
+
+parts:
+  player-sources:
+    source: build
+    plugin: dump
+    prime:
+      - player/libs
+      - player/player
+      - usr/lib/x86_64-linux-gnu
+      # - player/tests/unit_tests
+    stage-packages:
+      - libgstreamer1.0-0
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-good
+      - libcanberra-gtk3-module
+      - gstreamer1.0-libav
+      - libwebkitgtk-3.0-0
+    after: [desktop-gtk3] 
