@@ -62,3 +62,7 @@ workflows:
           filters:
             tags:
               only: /.*/
+            branches:
+                only:
+                  - master
+                  - develop
