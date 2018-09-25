@@ -5,9 +5,17 @@ description: Test snap package for Xibo Linux Player
 grade: devel
 confinement: strict
 
+slots:
+  dbus-daemon: # name this whatever you want
+    interface: dbus
+    bus: session
+    name: org.gtkmm.xibo # adjust accordingly
+
 apps:
   xibo-player-test:
     command: desktop-launch $SNAP/player/player
+    plugs: [gsettings, network, home, unity7, x11]
+    slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/player/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
   # xibo-player-tests:
