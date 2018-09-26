@@ -1,7 +1,7 @@
 #include "Background.hpp"
 #include "constants.hpp"
 
-#include "adaptors/GtkImageAdaptor.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 
 #include <regex>
 
@@ -10,16 +10,9 @@ const int COLOR_WITHOUT_ALPHA = 6;
 const int COLOR_BASE = 16;
 const std::string DEFAULT_ALPHA_CHANNEL = "FF";
 
-Background::Background(int width, int height) :
-    Background(width, height, std::make_unique<GtkImageAdaptor>())
-{
-
-}
-
-Background::Background(int width, int height, std::unique_ptr<IImageAdaptor> handler) :
+Background::Background(std::unique_ptr<IImageAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
-    setSize(width, height);
 }
 
 int Background::width() const
@@ -82,10 +75,9 @@ uint32_t Background::colorToHexNumber(const std::string& hexColor) const
 
 bool Background::isValidColor(const std::string& hexColor) const
 {
-    std::smatch match;
     std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$");
 
-    if(!std::regex_match(hexColor, match, hexColorRegex))
+    if(!std::regex_match(hexColor, hexColorRegex))
         return false;
 
     return true;

@@ -15,17 +15,20 @@ const int MIN_HEIGHT = 1;
 
 auto construct_container(int zorder)
 {
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, zorder);
-}
-
-auto construct_container(int width, int height)
-{
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(width, height, DEFAULT_ZORDER);
+    return construct<MediaContainer, MockFixedLayoutAdaptor>(zorder);
 }
 
 auto construct_container()
 {
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER);
+    auto [container, adaptor] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER);
+    container->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    return std::pair{container, adaptor};
+}
+
+auto construct_container_without_size()
+{
+    auto [container, adaptor] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER);
+    return std::pair{container, adaptor};
 }
 
 NiceMock<MockMedia>* createMedia()
@@ -42,107 +45,100 @@ const auto invalidMediaContainerSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_WIDT
 
 class MediaContainerTest : public TestWithParam<Size> { };
 
-TEST_P(MediaContainerTest, Constructor_InvalidSize_ShouldThrowRunTimeError)
-{
-    ASSERT_THROW(construct_container(GetParam().width, GetParam().height), std::runtime_error);
-}
-
 TEST_P(MediaContainerTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container_without_size();
 
     ASSERT_THROW(container->setSize(GetParam().width, GetParam().height), std::runtime_error);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MediaContainerTest, ::testing::ValuesIn(invalidMediaContainerSizes));
 
-TEST(MediaContainerTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
+TEST(MediaContainerTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto mockFixed = std::make_unique<NiceMock<MockFixedLayoutAdaptor>>();
+    auto [container, containerHandlerStub] = construct_container();
 
-    EXPECT_CALL(*mockFixed, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    std::make_shared<MediaContainer>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, std::move(mockFixed));
+    ASSERT_EQ(&container->handler(), containerHandlerStub);
 }
 
-TEST(MediaContainerTest, Width_Default_Equals640)
+TEST(MediaContainerTest, Width_HandlerReturnsDefaultWidth_ContainerWidthEqualsDefault)
 {
-    auto [layout, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
 
-    ON_CALL(*stubFixed, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(*containerHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
-    ASSERT_EQ(layout->width(), DEFAULT_WIDTH);
+    ASSERT_EQ(container->width(), DEFAULT_WIDTH);
 }
 
-TEST(MediaContainerTest, Height_Default_Equals480)
+TEST(MediaContainerTest, Height_HandlerReturnsDefaultHeight_ContainerHeightEqualsDefault)
 {
-    auto [layout, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
 
-    ON_CALL(*stubFixed, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(*containerHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
-    ASSERT_EQ(layout->height(), DEFAULT_HEIGHT);
+    ASSERT_EQ(container->height(), DEFAULT_HEIGHT);
 }
 
-TEST(MediaContainerTest, SetSize_Width200Height200_HandlerSetSizeShouldBeCalled)
+TEST(MediaContainerTest, SetSize_Width200Height200_HandlerSetSizeWidth200Height200Called)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*containerHandlerMock, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
     container->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
 
-TEST(MediaContainerTest, SetSize_Width200Height200_WidthEquals200)
+TEST(MediaContainerTest, SetSize_Width200Height200_ContainerWidthEquals200)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
 
-    ON_CALL(*stubFixed, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
+    ON_CALL(*containerHandlerStub, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
 
     container->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
     ASSERT_EQ(container->width(), NEW_DEFAULT_WIDTH);
 }
 
-TEST(MediaContainerTest, SetSize_Width200Height200_HeightEquals200)
+TEST(MediaContainerTest, SetSize_Width200Height200_ContainerHeightEquals200)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
 
-    ON_CALL(*stubFixed, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
+    ON_CALL(*containerHandlerStub, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
 
     container->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
     ASSERT_EQ(container->height(), NEW_DEFAULT_HEIGHT);
 }
 
-TEST(MediaContainerTest, Zorder_Default_Equals0)
+TEST(MediaContainerTest, Zorder_Default_ContainerZorderEquals0)
 {
-    auto [layout, stubFixed] = construct_container();
+    auto [layout, containerHandlerStub] = construct_container();
 
     ASSERT_EQ(layout->zorder(), DEFAULT_ZORDER);
 }
 
 TEST(MediaContainerTest, AddMediaWithCoords_Null_HandlerAddChildShouldNotBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, addChild(_, _, _)).Times(0);
+    EXPECT_CALL(*containerHandlerMock, addChild(_, _, _)).Times(0);
 
     ASSERT_THROW(container->addMedia(nullptr, DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
 }
 
 TEST(MediaContainerTest, AddMediaWithCoords_Valid_HandlerAddChildShouldBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
     auto stubMedia = createMedia();
 
-    EXPECT_CALL(*mockFixed, addChild(_, DEFAULT_X_POS, DEFAULT_Y_POS));
+    EXPECT_CALL(*containerHandlerMock, addChild(_, DEFAULT_X_POS, DEFAULT_Y_POS));
 
     container->addMedia(unique(stubMedia), DEFAULT_X_POS, DEFAULT_Y_POS);
 }
 
 TEST(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
     auto mockMedia = createMedia();
 
     EXPECT_CALL(*mockMedia, connect(_));
@@ -152,25 +148,25 @@ TEST(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
 
 TEST(MediaContainerTest, AddMediaWithoutCoords_Null_HandlerAddChildShouldNotBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, addChild(_, _, _)).Times(0);
+    EXPECT_CALL(*containerHandlerMock, addChild(_, _, _)).Times(0);
 
     ASSERT_THROW(container->addMedia(nullptr), std::runtime_error);
 }
 
 TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_HandlerAddChildShouldNotBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, addChild(_, _, _)).Times(0);
+    EXPECT_CALL(*containerHandlerMock, addChild(_, _, _)).Times(0);
 
     container->addMedia(unique(createMedia()));
 }
 
 TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_MediaConnectShouldBeCalled)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
     auto mockMedia = createMedia();
 
     EXPECT_CALL(*mockMedia, connect(_));
@@ -180,25 +176,25 @@ TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_MediaConnectShouldBeCalled)
 
 TEST(MediaContainerTest, RemoveAllMedia_Default_HandlerRemoveChildrenShouldBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, removeChildren());
+    EXPECT_CALL(*containerHandlerMock, removeChildren());
 
     container->removeAllMedia();
 }
 
 TEST(MediaContainerTest, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [container, mockFixed] = construct_container();
+    auto [container, containerHandlerMock] = construct_container();
 
-    EXPECT_CALL(*mockFixed, show());
+    EXPECT_CALL(*containerHandlerMock, show());
 
     container->show();
 }
 
 TEST(MediaContainerTest, Show_With1Media_MediaStartShouldBeCalled)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
     auto mockMedia = createMedia();
     container->addMedia(unique(mockMedia));
 
@@ -209,7 +205,7 @@ TEST(MediaContainerTest, Show_With1Media_MediaStartShouldBeCalled)
 
 TEST(MediaContainerTest, Show_With2Media_FirstMediaStartShouldBeCalled)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
     auto mockMediaFirst = createMedia();
     container->addMedia(unique(mockMediaFirst));
     container->addMedia(unique(createMedia()));
@@ -221,7 +217,7 @@ TEST(MediaContainerTest, Show_With2Media_FirstMediaStartShouldBeCalled)
 
 TEST(MediaContainerTest, Show_With2Media_SecondMediaStartShouldNotBeCalled)
 {
-    auto [container, stubFixed] = construct_container();
+    auto [container, containerHandlerStub] = construct_container();
     container->addMedia(unique(createMedia()));
     auto mockMediaSecond = createMedia();
     container->addMedia(unique(mockMediaSecond));

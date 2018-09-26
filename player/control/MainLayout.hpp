@@ -7,9 +7,7 @@
 class MainLayout : public IMainLayout
 {
 public:
-    MainLayout(int width, int height);
-    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor> handler);
-
+    MainLayout(std::unique_ptr<IOverlayAdaptor>&& handler);
     ~MainLayout() override;
 
     MainLayout(const MainLayout& other) = delete;
@@ -19,8 +17,8 @@ public:
     int width() const override;
     int height() const override;
 
-    void setBackground(std::unique_ptr<IBackground> background) override;
-    void addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y) override;
+    void setBackground(std::unique_ptr<IBackground>&& background) override;
+    void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) override;
     void removeAllContainers() override;
 
     IOverlayAdaptor& handler() override;
@@ -38,4 +36,5 @@ private:
     std::unique_ptr<IOverlayAdaptor> m_handler;
     std::unique_ptr<IBackground> m_background;
     std::vector<std::unique_ptr<IMediaContainer>> m_containers;
+
 };

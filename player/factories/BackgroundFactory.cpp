@@ -1,7 +1,7 @@
 #include "BackgroundFactory.hpp"
 
 #include "control/Background.hpp"
-#include "adaptors/IImageAdaptor.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
 
 #include <fstream>
 
@@ -21,17 +21,23 @@ std::unique_ptr<IBackground> BackgroundFactory::create(int width, int height,
 std::unique_ptr<IBackground> BackgroundFactory::createWithImage(int width, int height,
                                                                 const std::filesystem::path& imagePath)
 {
-    auto background = std::make_unique<Background>(width, height);
+    auto background = std::make_unique<Background>(std::make_unique<GtkImageAdaptor>());
     auto imageData = getRawData(imagePath);
+
+    background->setSize(width, height);
     background->setImage(imageData.data(), imageData.size());
+
     return background;
 }
 
 std::unique_ptr<IBackground> BackgroundFactory::createOneColor(int width, int height,
                                                                const std::string& color)
 {
-    auto background = std::make_unique<Background>(width, height);
+    auto background = std::make_unique<Background>(std::make_unique<GtkImageAdaptor>());
+
+    background->setSize(width, height);
     background->setColor(color);
+
     return background;
 }
 

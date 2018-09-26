@@ -3,20 +3,15 @@
 #include "IMediaContainer.hpp"
 #include "IBackground.hpp"
 
-#include "utils/utilities.hpp"
-#include "adaptors/GtkOverlayAdaptor.hpp"
 #include "adaptors/IImageAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
+#include "adaptors/IOverlayAdaptor.hpp"
 
-MainLayout::MainLayout(int width, int height) :
-    MainLayout(width, height, std::make_unique<GtkOverlayAdaptor>())
-{
-}
+#include "utils/utilities.hpp"
 
-MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor> handler) :
+MainLayout::MainLayout(std::unique_ptr<IOverlayAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
-    setSize(width, height);
 }
 
 MainLayout::~MainLayout()
@@ -24,7 +19,7 @@ MainLayout::~MainLayout()
 }
 
 // TEST coordinates
-void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer> mediaContainer, int x, int y)
+void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y)
 {
     if(!mediaContainer)
         throw std::runtime_error("Invalid media container given");
@@ -61,8 +56,7 @@ void MainLayout::sortAndReorderContainers()
     for(size_t i = 0; i != m_containers.size(); ++i)
     {
         int orderInParentWidget = static_cast<int>(i);
-        utils::logger()->trace("Zorder: {} Order: {}", m_containers[i]->zorder(),
-                                                       orderInParentWidget);
+        utils::logger()->trace("Zorder: {} Order in overlay: {}", m_containers[i]->zorder(), orderInParentWidget);
         m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
     }
 }
@@ -108,7 +102,7 @@ void MainLayout::setBackgroundSize(int width, int height)
 }
 
 // NOTE check 100x100 layout and 1920x1080 background = crash
-void MainLayout::setBackground(std::unique_ptr<IBackground> background)
+void MainLayout::setBackground(std::unique_ptr<IBackground>&& background)
 {
     if(!background)
         throw std::runtime_error("Invalid background given");

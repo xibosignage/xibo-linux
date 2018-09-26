@@ -8,9 +8,7 @@
 class MediaContainer : public IMediaContainer
 {
 public:
-    MediaContainer(int width, int height, int zorder);
-    MediaContainer(int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>);
-
+    MediaContainer(int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~MediaContainer() override;
 
     MediaContainer(const MediaContainer& other) = delete;
@@ -24,14 +22,14 @@ public:
     int zorder() const override;
     void show() override;
 
-    void addMedia(std::unique_ptr<IMedia> media, int x, int y) override;
-    void addMedia(std::unique_ptr<IMedia> media) override;
+    void addMedia(std::unique_ptr<IMedia>&& media, int x, int y) override;
+    void addMedia(std::unique_ptr<IMedia>&& media) override;
     void removeAllMedia() override;
     IFixedLayoutAdaptor& handler() override;
 
 private:
     void onMediaTimeout();
-    void initAndAddMediaToList(std::unique_ptr<IMedia> media);
+    void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;

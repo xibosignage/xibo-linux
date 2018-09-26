@@ -7,8 +7,7 @@
 class Background : public IBackground
 {
 public:
-    Background(int width, int height);
-    Background(int width, int height, std::unique_ptr<IImageAdaptor> handler);
+    Background(std::unique_ptr<IImageAdaptor>&& handler);
 
     Background(const Background&) = delete;
     Background& operator=(const Background&) = delete;

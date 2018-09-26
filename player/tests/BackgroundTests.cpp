@@ -6,14 +6,17 @@
 
 using namespace ::testing;
 
-auto construct_background(int width, int height)
-{
-    return construct<Background, MockImageAdaptor>(width, height);
-}
-
 auto construct_background()
 {
-    return construct<Background, MockImageAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    auto [background, adaptor] = construct<Background, MockImageAdaptor>();
+    background->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    return std::pair{background, adaptor};
+}
+
+auto construct_background_without_size()
+{
+    auto [background, adaptor] = construct<Background, MockImageAdaptor>();
+    return std::pair{background, adaptor};
 }
 
 struct Color
@@ -40,72 +43,65 @@ const std::vector<std::string> invalidColors =
     "#dfdfd1s", "#1111d", "", " ", "   "};
 
 
-TEST_P(BackgroundTest, Constructor_InvalidSize_ShouldThrowRunTimeError)
-{
-    ASSERT_THROW(construct_background(GetParam().width, GetParam().height), std::runtime_error);
-}
-
 TEST_P(BackgroundTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background_without_size();
 
     ASSERT_THROW(background->setSize(GetParam().width, GetParam().height), std::runtime_error);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundTest, ::testing::ValuesIn(invalidBackgroundSizes));
 
-TEST(BackgroundTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
+TEST(BackgroundTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto mockImage = std::make_unique<NiceMock<MockImageAdaptor>>();
+    auto [background, backgroundHandlerStub] = construct_background();
 
-    EXPECT_CALL(*mockImage, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    std::make_shared<Background>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(mockImage));
+    ASSERT_EQ(&background->handler(), backgroundHandlerStub);
 }
 
-TEST(BackgroundTest, Width_Default_EqualsDefaultWidth)
+TEST(BackgroundTest, Width_HandlerReturnsDefaultWidth_BackgroundWidthEqualsDefault)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background();
 
-    ON_CALL(*stubImage, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(*backgroundHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(background->width(), DEFAULT_WIDTH);
 }
 
-TEST(BackgroundTest, Height_Default_EqualsDefaultHeight)
+TEST(BackgroundTest, Height_HandlerReturnsDefaultHeight_BackgroundHeightEqualsDefault)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background();
 
-    ON_CALL(*stubImage, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(*backgroundHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(background->height(), DEFAULT_HEIGHT);
 }
 
-TEST(BackgroundTest, SetSize_Width200Height200_HandlerSetSizeShouldBeCalled)
+TEST(BackgroundTest, SetSize_Width200Height200_HandlerSetSize200Width200HeightCalled)
 {
-    auto [background, mockImage] = construct_background();
+    auto [background, backgroundHandlerMock] = construct_background();
 
-    EXPECT_CALL(*mockImage, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
+    EXPECT_CALL(*backgroundHandlerMock, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
 
     background->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 }
 
-TEST(BackgroundTest, SetSize_Width200Height200_WidthEquals200)
+TEST(BackgroundTest, SetSize_Width200Height200_BackgroundWidthEquals200)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background();
 
-    ON_CALL(*stubImage, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
+    ON_CALL(*backgroundHandlerStub, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
 
     background->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
     ASSERT_EQ(background->width(), NEW_DEFAULT_WIDTH);
 }
 
-TEST(BackgroundTest, SetSize_Width200Height200_HeightEquals200)
+TEST(BackgroundTest, SetSize_Width200Height200_BackgroundHeightEquals200)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background();
 
-    ON_CALL(*stubImage, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
+    ON_CALL(*backgroundHandlerStub, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
 
     background->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
 
@@ -114,59 +110,49 @@ TEST(BackgroundTest, SetSize_Width200Height200_HeightEquals200)
 
 TEST(BackgroundTest, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [background, mockImage] = construct_background();
+    auto [background, backgroundHandlerMock] = construct_background();
 
-    EXPECT_CALL(*mockImage, show());
+    EXPECT_CALL(*backgroundHandlerMock, show());
 
     background->show();
 }
 
 TEST(BackgroundTest, SetImage_Default_HandlerSetImageShouldBeCalled)
 {
-    auto [background, mockImage] = construct_background();
+    auto [background, backgroundHandlerMock] = construct_background();
     const int BUFFER_SIZE = 5;
     uint8_t fakeData[BUFFER_SIZE];
 
-    EXPECT_CALL(*mockImage, setImage(_, _));
+    EXPECT_CALL(*backgroundHandlerMock, setImage(fakeData, BUFFER_SIZE));
 
     background->setImage(fakeData, BUFFER_SIZE);
 }
 
-TEST(BackgroundTest, SetColor_InvalidColor_HandlerSetColorShouldNotBeCalled)
+TEST_P(BackgroundValidColorTest, SetColor_ValidColor_HandlerSetColorShouldBeCalled)
 {
-    auto [background, mockImage] = construct_background();
+    auto [background, backgroundHandlerMock] = construct_background();
 
-    EXPECT_CALL(*mockImage, setColor(_)).Times(0);
-
-    EXPECT_ANY_THROW(background->setColor("#sss"));
-}
-
-TEST_P(BackgroundValidColorTest, SetColor_Valid_HandlerSetColorShouldBeCalled)
-{
-    auto [background, mockImage] = construct_background();
-
-    EXPECT_CALL(*mockImage, setColor(GetParam().numberColor));
+    EXPECT_CALL(*backgroundHandlerMock, setColor(GetParam().numberColor));
 
     background->setColor(GetParam().strColor);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundValidColorTest, ::testing::ValuesIn(validColors));
 
-TEST_P(BackgroundInvalidColorTest, SetColor_Invalid_InvalidArgumentShouldBeThrown)
+TEST_P(BackgroundInvalidColorTest, SetColor_InvalidColor_InvalidArgumentShouldBeThrown)
 {
-    auto [background, stubImage] = construct_background();
+    auto [background, backgroundHandlerStub] = construct_background();
 
     ASSERT_THROW(background->setColor(GetParam()), std::invalid_argument);
 }
 
-TEST_P(BackgroundInvalidColorTest, SetColor_Invalid_HandlerSetColorShouldNotBeCalled)
+TEST_P(BackgroundInvalidColorTest, SetColor_InvalidColor_HandlerSetColorShouldNotBeCalled)
 {
-    auto [background, mockImage] = construct_background();
+    auto [background, backgroundHandlerMock] = construct_background();
 
-    EXPECT_CALL(*mockImage, setColor(_)).Times(0);
+    EXPECT_CALL(*backgroundHandlerMock, setColor(_)).Times(0);
 
-    EXPECT_ANY_THROW(background->setColor(GetParam()););
+    EXPECT_ANY_THROW(background->setColor(GetParam()));
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundInvalidColorTest, ::testing::ValuesIn(invalidColors));
-

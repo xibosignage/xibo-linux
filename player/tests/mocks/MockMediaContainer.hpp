@@ -14,8 +14,8 @@ public:
     MOCK_METHOD0(loopMediaInContainer, void());
     MOCK_CONST_METHOD0(zorder, int());
     MOCK_METHOD0(show, void());
-    MOCK_METHOD3(addMedia, void(std::unique_ptr<IMedia> media, int x, int y));
-    MOCK_METHOD1(addMedia, void(std::unique_ptr<IMedia> media));
+    MOCK_METHOD3(addMedia, void(std::unique_ptr<IMedia>&& media, int x, int y));
+    MOCK_METHOD1(addMedia, void(std::unique_ptr<IMedia>&& media));
     MOCK_METHOD0(removeAllMedia, void());
     MOCK_METHOD0(handler, IFixedLayoutAdaptor&());
 };

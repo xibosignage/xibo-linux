@@ -1,23 +1,22 @@
 #include "MainWindow.hpp"
 #include "constants.hpp"
 
-#include "adaptors/GtkWindowAdaptor.hpp"
+#include "adaptors/IWindowAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
 
-MainWindow::MainWindow(int width, int height) :
-    MainWindow(width, height, std::make_unique<GtkWindowAdaptor>())
+MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
+    m_handler(std::move(handler))
 {
+    m_handler->disableWindowDecoration();
+    m_handler->disableWindowResize();
 }
 
-MainWindow::MainWindow(int width, int height, std::unique_ptr<IWindowAdaptor> handler) :
-    m_handler(std::move(handler))
+void MainWindow::setSize(int width, int height)
 {
     if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
         throw std::runtime_error("Width or height is too small/large");
 
     m_handler->setDefaultSize(width, height);
-    m_handler->disableWindowDecoration();
-    m_handler->disableWindowResize();
 }
 
 // TEST coordinates
@@ -52,7 +51,7 @@ bool MainWindow::isVisible() const
     return m_handler->isVisible();
 }
 
-void MainWindow::addLayout(std::unique_ptr<IMainLayout> layout)
+void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
 {
     if(!layout)
         throw std::runtime_error("Invalid layout given");

@@ -6,19 +6,19 @@
 class MainWindow : public IMainWindow
 {
 public:
-    MainWindow(int width, int height);
-    MainWindow(int width, int height, std::unique_ptr<IWindowAdaptor> handler);
+    MainWindow(std::unique_ptr<IWindowAdaptor>&& handler);
 
     MainWindow(const MainWindow& other) = delete;
     MainWindow& operator=(const MainWindow& other) = delete;
 
+    void setSize(int width, int height) override;
     void setPos(int x, int y) override;
     void setKeepAbove(bool keepAbove) override;
     void setFullscreen(bool fullscreen) override;
     void setCursorVisible(bool cursorVisible) override;
     bool isVisible() const override;
 
-    void addLayout(std::unique_ptr<IMainLayout> layout) override;
+    void addLayout(std::unique_ptr<IMainLayout>&& layout) override;
     void showLayout() override;
     IWindowAdaptor& handler() override;
 
