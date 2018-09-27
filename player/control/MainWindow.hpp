@@ -23,6 +23,10 @@ public:
     IWindowAdaptor& handler() override;
 
 private:
+    void checkWindowNewSize(int width, int height);
+    void checkWindowCoordinates(int x, int y);
+
+private:
     std::unique_ptr<IWindowAdaptor> m_handler;
     std::unique_ptr<IMainLayout> m_layout;
 

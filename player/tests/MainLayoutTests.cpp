@@ -44,17 +44,19 @@ NiceMock<MockMediaContainer>* createMediaContainer()
 }
 
 const auto invalidMainLayoutSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_X_POS, DEFAULT_HEIGHT, MIN_Y_POS>;
 
-class MainLayoutTest : public TestWithParam<Size> { };
+class MainLayoutTestSize : public TestWithParam<Size> { };
+class MainLayoutTestPos : public TestWithParam<Point> { };
 
-TEST_P(MainLayoutTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
+TEST_P(MainLayoutTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto [layout, layoutHandlerStub] = construct_layout_without_size();
 
     ASSERT_THROW(layout->setSize(GetParam().width, GetParam().height), std::invalid_argument);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTest, ::testing::ValuesIn(invalidMainLayoutSizes));
+INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestSize, ::testing::ValuesIn(invalidMainLayoutSizes));
 
 TEST(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
@@ -171,6 +173,16 @@ TEST(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
 
     layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
 }
+
+TEST_P(MainLayoutTestPos, AddMediaContainer_InvalidPos_ShouldThrowInvalidArgError)
+{
+    auto [layout, layoutHandlerStub] = construct_layout();
+    auto stubContainer = createMediaContainer();
+
+    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), GetParam().x, GetParam().y), std::invalid_argument);
+}
+
+INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestPos, ::testing::ValuesIn(invalidMainLayoutPos));
 
 TEST(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
 {

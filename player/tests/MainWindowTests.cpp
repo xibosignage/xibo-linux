@@ -41,16 +41,16 @@ const int DEFAULT_POS = 100;
 
 const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
 
-class MainWindowTest : public TestWithParam<Size> { };
+class MainWindowTestSize : public TestWithParam<Size> { };
 
-TEST_P(MainWindowTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
+TEST_P(MainWindowTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto [window, windowHandlerStub] = construct_window_without_size();
 
-    ASSERT_THROW(window->setSize(GetParam().width, GetParam().height), std::runtime_error);
+    ASSERT_THROW(window->setSize(GetParam().width, GetParam().height), std::invalid_argument);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainWindowTest, ::testing::ValuesIn(invalidMainWindowSizes));
+INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestSize, ::testing::ValuesIn(invalidMainWindowSizes));
 
 TEST(MainWindowTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
@@ -131,25 +131,25 @@ TEST(MainWindowTest, SetFullscreen_False_HandlerUnfullscreenShouldBeCalled)
     window->setFullscreen(false);
 }
 
-TEST(MainWindowTest, SetPos_XPosNegative_RunTimeErrorShouldBeThrown)
+TEST(MainWindowTest, SetPos_XPosNegative_InvalidArgErrorShouldBeThrown)
 {
     auto [window, windowHandlerStub] = construct_window();
 
-    ASSERT_THROW(window->setPos(-1, DEFAULT_POS), std::runtime_error);
+    ASSERT_THROW(window->setPos(-1, DEFAULT_POS), std::invalid_argument);
 }
 
-TEST(MainWindowTest, SetPos_YPosNegative_RunTimeErrorShouldBeThrown)
+TEST(MainWindowTest, SetPos_YPosNegative_InvalidArgErrorShouldBeThrown)
 {
     auto [window, windowHandlerStub] = construct_window();
 
-    ASSERT_THROW(window->setPos(DEFAULT_POS, -1), std::runtime_error);
+    ASSERT_THROW(window->setPos(DEFAULT_POS, -1), std::invalid_argument);
 }
 
-TEST(MainWindowTest, SetPos_BothPosNegative_RunTimeErrorShouldBeThrown)
+TEST(MainWindowTest, SetPos_BothPosNegative_InvalidArgErrorShouldBeThrown)
 {
     auto [window, windowHandlerStub] = construct_window();
 
-    ASSERT_THROW(window->setPos(-1, -1), std::runtime_error);
+    ASSERT_THROW(window->setPos(-1, -1), std::invalid_argument);
 }
 
 TEST(MainWindowTest, SetPos_ValidPos_HandlerMoveWithValidPosShouldBeCalled)
@@ -159,15 +159,6 @@ TEST(MainWindowTest, SetPos_ValidPos_HandlerMoveWithValidPosShouldBeCalled)
     EXPECT_CALL(*windowHandlerMock, move(DEFAULT_POS, DEFAULT_POS));
 
     window->setPos(DEFAULT_POS, DEFAULT_POS);
-}
-
-TEST(MainWindowTest, AddLayout_NullLayout_AdaptorAddShouldNotBeCalled)
-{
-    auto [window, windowHandlerMock] = construct_window();
-
-    EXPECT_CALL(*windowHandlerMock, add(_)).Times(0);
-
-    ASSERT_THROW(window->addLayout(nullptr), std::runtime_error);
 }
 
 TEST(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)

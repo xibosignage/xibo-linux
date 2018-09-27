@@ -4,6 +4,8 @@
 #include "adaptors/IWindowAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
 
+#include <cassert>
+
 MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
@@ -13,19 +15,30 @@ MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
 
 void MainWindow::setSize(int width, int height)
 {
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
-        throw std::runtime_error("Width or height is too small/large");
+    checkWindowNewSize(width, height);
 
     m_handler->setDefaultSize(width, height);
 }
 
-// TEST coordinates
+// TODO specify after adding Monitor max width and height
+void MainWindow::checkWindowNewSize(int width, int height)
+{
+    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width or height is too small/large");
+}
+
 void MainWindow::setPos(int x, int y)
 {
-    if(x < 0 || y < 0)
-        throw std::runtime_error("x or y position should be greater than 0");
+    checkWindowCoordinates(x, y);
 
     m_handler->move(x, y);
+}
+
+// TODO specify after adding Monitor max width and height
+void MainWindow::checkWindowCoordinates(int x, int y)
+{
+    if(x < MIN_X_POS || y < MIN_Y_POS)
+        throw std::invalid_argument("x or y position should be greater than 0");
 }
 
 void MainWindow::setKeepAbove(bool keepAbove)
@@ -53,8 +66,7 @@ bool MainWindow::isVisible() const
 
 void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
 {
-    if(!layout)
-        throw std::runtime_error("Invalid layout given");
+    assert(layout);
 
     m_layout = std::move(layout);
     m_handler->add(m_layout->handler());

@@ -13,11 +13,6 @@ const int DEFAULT_ZORDER = 0;
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
-auto construct_container(int zorder)
-{
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(zorder);
-}
-
 auto construct_container()
 {
     auto [container, adaptor] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER);

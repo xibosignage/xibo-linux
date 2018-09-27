@@ -17,6 +17,12 @@ struct Size
     int height;
 };
 
+struct Point
+{
+    int x;
+    int y;
+};
+
 template<int MaxWidth, int MinWidth, int MaxHeight, int MinHeight>
 const std::vector<Size> invalidSizes = {
     {-1, DEFAULT_HEIGHT},
@@ -25,10 +31,30 @@ const std::vector<Size> invalidSizes = {
     {DEFAULT_WIDTH, MaxHeight + 1},
     {MinWidth - 1, DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, MinHeight - 1},
+    {MinWidth - 1, MaxHeight + 1},
+    {MaxWidth + 1, MinHeight - 1},
+    {MaxWidth + 1, MaxHeight + 1},
+    {MinWidth - 1, MinHeight - 1},
     {std::numeric_limits<int>::max(), DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, std::numeric_limits<int>::max()},
     {std::numeric_limits<int>::min(), DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, std::numeric_limits<int>::min()}
+};
+
+template<int MaxX, int MinX, int MaxY, int MinY>
+const std::vector<Point> invalidPositions = {
+    {MaxX + 1, DEFAULT_Y_POS},
+    {DEFAULT_X_POS, MaxY + 1},
+    {MinX - 1, DEFAULT_Y_POS},
+    {DEFAULT_X_POS, MinY - 1},
+    {MinX - 1, MaxY + 1},
+    {MaxX + 1, MinY - 1},
+    {MaxX + 1, MaxY + 1},
+    {MinX - 1, MinY - 1},
+    {std::numeric_limits<int>::max(), DEFAULT_Y_POS},
+    {DEFAULT_X_POS, std::numeric_limits<int>::max()},
+    {std::numeric_limits<int>::min(), DEFAULT_Y_POS},
+    {DEFAULT_X_POS, std::numeric_limits<int>::min()}
 };
 
 template<typename Testee, typename MockAdaptor, typename... Args>
