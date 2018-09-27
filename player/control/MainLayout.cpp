@@ -67,7 +67,6 @@ void MainLayout::checkContainerSize(int containerWidth, int containerHeight)
         throw std::invalid_argument("Container width/height should not be greater than in layout");
 }
 
-// TEST coordinates
 void MainLayout::checkContainerCoordinates(int x, int y)
 {
     if(x > width() || x < MIN_X_POS || y > height() || y < MIN_Y_POS)

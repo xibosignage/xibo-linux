@@ -1,0 +1,5 @@
+G_SLICE=always-malloc G_DEBUG=gc-friendly valgrind --gen-suppressions=all --suppressions=base.supp --show-leak-kinds=all --leak-check=yes --show-reachable=no ./build-XiboLinuxStack-Desktop_Qt_5_10_1_GCC_64bit-Default/player/player --example-dir=/home/stivius/XiboLinuxStack/XiboExamples/GoPro 2>log.txt
+
+GST_DEBUG="GST_TRACER:7" GST_TRACERS="leaks" ./build-XiboLinuxStack-Desktop_Qt_5_10_1_GCC_64bit-Default/player/player --example-dir=/home/stivius/XiboLinuxStack/XiboExamples/GoPro
+
+gcovr -r ../player/ --object-directory ../build-XiboLinuxStack-Desktop_Qt_5_11_1_GCC_64bit-Default --html --html-details -o example-html-details.html
