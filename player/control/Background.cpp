@@ -2,13 +2,9 @@
 #include "constants.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
+#include "utils/ColorToHexConverter.hpp"
 
-#include <regex>
-
-const int SHORT_COLOR_WITHOUT_ALPHA = 3;
-const int COLOR_WITHOUT_ALPHA = 6;
-const int COLOR_BASE = 16;
-const std::string DEFAULT_ALPHA_CHANNEL = "FF";
+#include <cassert>
 
 Background::Background(std::unique_ptr<IImageAdaptor>&& handler) :
     m_handler(std::move(handler))
@@ -27,10 +23,15 @@ int Background::height() const
 
 void Background::setSize(int width, int height)
 {
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
-        throw std::runtime_error("Width or height is too small/large");
+    checkBackgroundNewSize(width, height);
 
     m_handler->setSize(width, height);
+}
+
+void Background::checkBackgroundNewSize(int width, int height)
+{
+    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width or height is too small/large");
 }
 
 void Background::setColor(const std::string& hexColor)
@@ -39,8 +40,16 @@ void Background::setColor(const std::string& hexColor)
     m_handler->setColor(hexColorNumber);
 }
 
+uint32_t Background::colorToHexNumber(const std::string& color) const
+{
+    ColorToHexConverter converter;
+    return converter.colorToHex(color);
+}
+
 void Background::setImage(const uint8_t* imageData, size_t dataSize)
 {
+    assert(imageData);
+
     m_handler->setImage(imageData, dataSize);
 }
 
@@ -52,33 +61,4 @@ void Background::show()
 IImageAdaptor& Background::handler()
 {
     return *m_handler;
-}
-
-uint32_t Background::colorToHexNumber(const std::string& hexColor) const
-{
-    if(!isValidColor(hexColor))
-        throw std::invalid_argument("HEX color should be 3, 6, or 8 digits with # at the beginning");
-
-    size_t positionAfterNumberSign = hexColor.find('#') + 1;
-    std::string colorWithoutNumberSign = hexColor.substr(positionAfterNumberSign);
-
-    if(colorWithoutNumberSign.size() == SHORT_COLOR_WITHOUT_ALPHA)
-        colorWithoutNumberSign = std::string(2, colorWithoutNumberSign[0]) +
-                                 std::string(2, colorWithoutNumberSign[1]) +
-                                 std::string(2, colorWithoutNumberSign[2]);
-
-    if(colorWithoutNumberSign.size() == COLOR_WITHOUT_ALPHA)
-        colorWithoutNumberSign += DEFAULT_ALPHA_CHANNEL;
-
-    return static_cast<uint32_t>(std::stoul(colorWithoutNumberSign, nullptr, COLOR_BASE));
-}
-
-bool Background::isValidColor(const std::string& hexColor) const
-{
-    std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3}|[A-Fa-f0-9]{8})$");
-
-    if(!std::regex_match(hexColor, hexColorRegex))
-        return false;
-
-    return true;
 }

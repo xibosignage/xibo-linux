@@ -45,11 +45,11 @@ const auto invalidMediaContainerSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_WIDT
 
 class MediaContainerTest : public TestWithParam<Size> { };
 
-TEST_P(MediaContainerTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
+TEST_P(MediaContainerTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto [container, containerHandlerStub] = construct_container_without_size();
 
-    ASSERT_THROW(container->setSize(GetParam().width, GetParam().height), std::runtime_error);
+    ASSERT_THROW(container->setSize(GetParam().width, GetParam().height), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MediaContainerTest, ::testing::ValuesIn(invalidMediaContainerSizes));
@@ -117,15 +117,6 @@ TEST(MediaContainerTest, Zorder_Default_ContainerZorderEquals0)
     ASSERT_EQ(layout->zorder(), DEFAULT_ZORDER);
 }
 
-TEST(MediaContainerTest, AddMediaWithCoords_Null_HandlerAddChildShouldNotBeCalled)
-{
-    auto [container, containerHandlerMock] = construct_container();
-
-    EXPECT_CALL(*containerHandlerMock, addChild(_, _, _)).Times(0);
-
-    ASSERT_THROW(container->addMedia(nullptr, DEFAULT_X_POS, DEFAULT_Y_POS), std::runtime_error);
-}
-
 TEST(MediaContainerTest, AddMediaWithCoords_Valid_HandlerAddChildShouldBeCalled)
 {
     auto [container, containerHandlerMock] = construct_container();
@@ -144,15 +135,6 @@ TEST(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
     EXPECT_CALL(*mockMedia, connect(_));
 
     container->addMedia(unique(mockMedia), DEFAULT_X_POS, DEFAULT_Y_POS);
-}
-
-TEST(MediaContainerTest, AddMediaWithoutCoords_Null_HandlerAddChildShouldNotBeCalled)
-{
-    auto [container, containerHandlerMock] = construct_container();
-
-    EXPECT_CALL(*containerHandlerMock, addChild(_, _, _)).Times(0);
-
-    ASSERT_THROW(container->addMedia(nullptr), std::runtime_error);
 }
 
 TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_HandlerAddChildShouldNotBeCalled)

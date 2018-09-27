@@ -25,12 +25,16 @@ public:
     void show() override;
 
 private:
-    void sortAndReorderContainers();
-    void sortContainersByZorder();
     void showBackground();
     void sortReorderAndShowContainers();
-    void removePreviousBackground();
+    void sortAndReorderContainers();
+    void sortContainersByZorder();
+    void removePreviousBackgroundIfSet();
     void setBackgroundSize(int width, int height);
+    void checkContainerSize(int containerWidth, int containerHeight);
+    void checkContainerCoordinates(int x, int y);
+    void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
+    void checkLayoutNewSize(int width, int height);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

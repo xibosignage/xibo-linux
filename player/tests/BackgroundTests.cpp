@@ -33,21 +33,22 @@ class BackgroundInvalidColorTest :  public TestWithParam<std::string> { };
 
 const std::vector<Color> validColors =
     {{"#000", 255}, {"#FFF", 4294967295}, {"#123", 287454207}, {"#1FA", 301968127}, {"#fff", 4294967295}, {"#fFf", 4294967295},
-    {"#000000", 255}, {"#12Ff32", 318714623}, {"#4312AA", 1125296895}, {"#aaFFbb", 2868886527}, {"#FfFfFf", 4294967295},
-    {"#000000FF", 255}, {"#00fd00FF", 16580863}, {"#FFFFFFFF", 4294967295}, {"#FFF000ff", 4293918975}};
+     {"#000000", 255}, {"#12Ff32", 318714623}, {"#4312AA", 1125296895}, {"#aaFFbb", 2868886527}, {"#FfFfFf", 4294967295},
+     {"#000000FF", 255}, {"#00fd00FF", 16580863}, {"#FFFFFFFF", 4294967295}, {"#FFF000ff", 4293918975}, {"#FFFF", 4294967295},
+     {"#123F", 287454207}, {"#1234", 287454020}};
 
 const std::vector<std::string> invalidColors =
-    {"#sss", "121", "asdfasdf", "11G", "#12H", "#1111",
+    {"#sss", "121", "asdfasdf", "11G", "#12H", "#111V",
     "#11", "#1", "1", "#dfdsaw", "#11111", "#1111111"
     "#111111111", "zzzzzz", "test me", "invalid",
     "#dfdfd1s", "#1111d", "", " ", "   "};
 
 
-TEST_P(BackgroundTest, SetSize_InvalidSize_ShouldThrowRunTimeError)
+TEST_P(BackgroundTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto [background, backgroundHandlerStub] = construct_background_without_size();
 
-    ASSERT_THROW(background->setSize(GetParam().width, GetParam().height), std::runtime_error);
+    ASSERT_THROW(background->setSize(GetParam().width, GetParam().height), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundTest, ::testing::ValuesIn(invalidBackgroundSizes));

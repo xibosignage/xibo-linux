@@ -4,8 +4,11 @@
 #include "media/IMedia.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 
+#include <cassert>
+
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
+const int FIRST_MEDIA_INDEX = 0;
 
 MediaContainer::MediaContainer(int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
     m_handler(std::move(handler)), m_zorder(zorder)
@@ -28,10 +31,15 @@ int MediaContainer::height() const
 
 void MediaContainer::setSize(int width, int height)
 {
-    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH || height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
-        throw std::runtime_error("Width/height is too large/small");
+    checkContainerNewSize(width, height);
 
     m_handler->setSize(width, height);
+}
+
+void MediaContainer::checkContainerNewSize(int width, int height)
+{
+    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH || height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width/height is too large/small");
 }
 
 void MediaContainer::loopMediaInContainer()
@@ -44,35 +52,23 @@ int MediaContainer::zorder() const
     return m_zorder;
 }
 
-void MediaContainer::show()
-{
-    m_handler->show();
-    if(!m_media.empty())
-    {
-        m_media[m_currentMediaIndex]->start();
-    }
-}
-
 IFixedLayoutAdaptor& MediaContainer::handler()
 {
     return *m_handler;
 }
 
-void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
+void MediaContainer::show()
 {
-    if(!media)
-        throw std::runtime_error("Invalid media given");
-
-    m_handler->addChild(media->handler(), x, y);
-    initAndAddMediaToList(std::move(media));
+    m_handler->show();
+    showCurrentMedia();
 }
 
-void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media)
+void MediaContainer::showCurrentMedia()
 {
-    if(!media)
-        throw std::runtime_error("Invalid media given");
-
-    initAndAddMediaToList(std::move(media));
+    if(!m_media.empty())
+    {
+        m_media[m_currentMediaIndex]->start();
+    }
 }
 
 void MediaContainer::removeAllMedia()
@@ -80,18 +76,33 @@ void MediaContainer::removeAllMedia()
     m_handler->removeChildren();
 }
 
-void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
+void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
-    media->connect(std::bind(&MediaContainer::onMediaTimeout, this));
-    m_media.push_back(std::move(media));
+    auto&& addedMedia = initAndAddMediaToList(std::move(media));
+    m_handler->addChild(addedMedia.handler(), x, y);
 }
 
+void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media)
+{
+    initAndAddMediaToList(std::move(media));
+}
+
+IMedia& MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
+{
+    assert(media);
+
+    media->connect(std::bind(&MediaContainer::onMediaTimeout, this));
+    m_media.push_back(std::move(media));
+    return *m_media.back();
+}
+
+// TODO Refactor after Media unit-tests
 void MediaContainer::onMediaTimeout()
 {
     if(m_media.size() > 1)
     {
         m_media[m_currentMediaIndex]->stop();
-        m_currentMediaIndex = m_currentMediaIndex + 1 >= m_media.size() ? 0 : m_currentMediaIndex + 1;
+        m_currentMediaIndex = m_currentMediaIndex + 1 >= m_media.size() ? FIRST_MEDIA_INDEX : m_currentMediaIndex + 1;
         m_media[m_currentMediaIndex]->start();
     }
     else

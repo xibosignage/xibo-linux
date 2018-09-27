@@ -1,9 +1,7 @@
 #pragma once
 
 #include "IMediaContainer.hpp"
-
 #include <vector>
-#include <sigc++/signal.h>
 
 class MediaContainer : public IMediaContainer
 {
@@ -29,13 +27,16 @@ public:
 
 private:
     void onMediaTimeout();
-    void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
+    IMedia& initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
+    void showCurrentMedia();
+    void checkContainerNewSize(int width, int height);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     int m_zorder;
-    bool m_looped = false;
 
     std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
+    bool m_looped = false;
+
 };
