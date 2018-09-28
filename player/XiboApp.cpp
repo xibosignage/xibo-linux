@@ -5,7 +5,7 @@
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "control/MainController.hpp"
+#include "creators/MainBuilder.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
 
 #include <spdlog/fmt/ostr.h>

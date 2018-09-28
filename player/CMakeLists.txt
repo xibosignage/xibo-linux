@@ -16,14 +16,14 @@ file(GLOB ADAPTORS_SOURCES ${CMAKE_SOURCE_DIR}/player/adaptors/*.cpp ${CMAKE_SOU
 file(GLOB CONTROL_SOURCES ${CMAKE_SOURCE_DIR}/player/control/*.cpp ${CMAKE_SOURCE_DIR}/player/control/*.hpp)
 file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp ${CMAKE_SOURCE_DIR}/player/media/*.hpp)
 file(GLOB UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp ${CMAKE_SOURCE_DIR}/player/utils/*.hpp)
-file(GLOB FACTORIES_SOURCES ${CMAKE_SOURCE_DIR}/player/factories/*.cpp ${CMAKE_SOURCE_DIR}/player/factories/*.hpp)
+file(GLOB CREATORS_SOURCES ${CMAKE_SOURCE_DIR}/player/creators/*.cpp ${CMAKE_SOURCE_DIR}/player/creators/*.hpp)
 file(GLOB MANAGERS_SOURCES ${CMAKE_SOURCE_DIR}/player/managers/*.cpp ${CMAKE_SOURCE_DIR}/player/managers/*.hpp)
 file(GLOB PARSERS_SOURCES ${CMAKE_SOURCE_DIR}/player/parsers/*.cpp ${CMAKE_SOURCE_DIR}/player/parsers/*.hpp)
 file(GLOB WRAPPER_SOURCES ${CMAKE_SOURCE_DIR}/player/wrapper/*.cpp ${CMAKE_SOURCE_DIR}/player/wrapper/*.hpp)
 file(GLOB XMDS_SOURCES ${CMAKE_SOURCE_DIR}/player/xmds/*.cpp ${CMAKE_SOURCE_DIR}/player/xmds/*.hpp)
 
 add_library(player_lib STATIC XiboApp.cpp ${ADAPTORS_SOURCES} ${CONTROL_SOURCES} ${MEDIA_SOURCES}
-                                          ${UTILS_SOURCES} ${FACTORIES_SOURCES} ${MANAGERS_SOURCES}
+                                          ${UTILS_SOURCES} ${CREATORS_SOURCES} ${MANAGERS_SOURCES}
                                           ${PARSERS_SOURCES} ${XMDS_SOURCES})
 target_link_libraries(player_lib stdc++fs)
 add_library(gst_wrapper SHARED ${WRAPPER_SOURCES})

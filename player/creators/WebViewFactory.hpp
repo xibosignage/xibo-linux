@@ -1,5 +1,5 @@
 #include "constants.hpp"
-#include "factories/MediaFactory.hpp"
+#include "creators/MediaFactory.hpp"
 
 #include <memory>
 #include <boost/optional/optional.hpp>

@@ -1,6 +1,6 @@
 #include "constants.hpp"
 #include "media/Image.hpp"
-#include "factories/MediaFactory.hpp"
+#include "creators/MediaFactory.hpp"
 #include <memory>
 
 class IMedia;
