@@ -20,9 +20,8 @@ const int DEFAULT_VIDEO_BUFFER = 500;
 
 namespace ph = std::placeholders;
 
-Video::Video(int id, int width, int height, int duration, const std::string& uri, bool muted, bool looped) :
-    Media(id, width, height, duration, Render::Native, uri), m_muted(muted), m_looped(looped),
-    m_videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
+Video::Video(int width, int height, int duration, const std::string& uri, bool muted, bool looped) :
+    m_muted(muted), m_looped(looped), m_videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
@@ -172,18 +171,16 @@ void Video::play()
     m_pipeline->setState(Gst::State::PLAYING);
 }
 
-void Video::stop()
+void Video::doStop()
 {
-    Media::stop();
     m_videoWindow.hide();
     m_logger->debug("[Video] Stopped");
     m_pipeline->setState(Gst::State::NULL_STATE);
     m_videoEnded = true;
 }
 
-void Video::start()
+void Video::doStart()
 {
-    Media::start();
     m_videoWindow.show();
     play();
 }
@@ -200,7 +197,7 @@ void Video::setSize(int width_, int height_)
 {
     if(width_ != width() || height_ != height())
     {
-        Media::setSize(width_, height_);
+//        Media::setSize(width_, height_);
         spdlog::get(LOGGER)->debug("set size {} {}", width_, height_);
 
         m_capsfilter->setCaps(Gst::Caps::create((m_videoFmt % width_ % height_).str()));

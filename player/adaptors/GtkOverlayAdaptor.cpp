@@ -11,6 +11,16 @@ void GtkOverlayAdaptor::show()
     m_handler.show();
 }
 
+bool GtkOverlayAdaptor::isShown() const
+{
+    return m_handler.is_visible();
+}
+
+void GtkOverlayAdaptor::scale(double scaleX, double scaleY)
+{
+
+}
+
 void GtkOverlayAdaptor::addChild(IWidgetAdaptor& child, int width, int height, int x, int y)
 {
     auto&& handler = getHandler(child);
@@ -80,6 +90,7 @@ bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& 
     if(it != m_children.end())
     {
         ChildInfo info = it->second;
+
         alloc.set_x(info.x); // scale
         alloc.set_y(info.y); // scale
         alloc.set_width(info.width);

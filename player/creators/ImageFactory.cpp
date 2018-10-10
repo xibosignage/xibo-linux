@@ -1,25 +1,34 @@
 #include "ImageFactory.hpp"
-#include "media/IMedia.hpp"
-#include "utils/utilities.hpp"
 
-ImageFactory::ImageFactory(const xlf_node& mediaNode) :
-    MediaFactory(mediaNode)
+#include "media/IMedia.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
+
+#include "utils/utilities.hpp"
+#include "utils/Helpers.hpp"
+
+ImageFactory::ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
+    MediaFactory(parentNode, mediaNode)
 {
 }
 
 std::unique_ptr<IMedia> ImageFactory::doCreate()
 {
-    int id = attrs().template get<int>("id");
-    auto uri = utils::resourcesDir() / options().get<std::string>("uri");
+    auto path = utils::resourcesDir() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
-    int width = 400; /*static_cast<int>(attrs().get<double>("width"));*/
-    int height = 400; /*static_cast<int>(attrs().get<double>("height"));*/
+    int width = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("width"));
+    int height = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("height"));
 
     auto scaleType = toScaleType(options().get<std::string>("scaleType", "center"));
     auto align = toAlign(options().get<std::string>("align", "center"));
     auto valign = toValign(options().get<std::string>("valign", "middle"));
 
-    return std::make_unique<Image>(id, width, height, duration, uri.string(), scaleType, align, valign);
+    auto adaptor = std::make_unique<GtkImageAdaptor>();
+    adaptor->setSize(width, height);
+    adaptor->setImage(path.string());
+
+    auto image = std::make_unique<Image>(scaleType, align, valign, std::move(adaptor));
+    image->setDuration(duration);
+    return image;
 }
 
 Image::ScaleType ImageFactory::toScaleType(const std::string& scale_type)

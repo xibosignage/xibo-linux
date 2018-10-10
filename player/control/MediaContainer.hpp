@@ -1,12 +1,13 @@
 #pragma once
 
 #include "IMediaContainer.hpp"
+
 #include <vector>
 
 class MediaContainer : public IMediaContainer
 {
 public:
-    MediaContainer(int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+    MediaContainer(int zorder, bool looped, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~MediaContainer() override;
 
     MediaContainer(const MediaContainer& other) = delete;
@@ -14,9 +15,8 @@ public:
 
     int width() const override;
     int height() const override;
-    void setSize(int width, int height) override;
+    void scale(double scaleX, double scaleY) override;
 
-    void loopMediaInContainer() override;
     int zorder() const override;
     void show() override;
 
@@ -26,17 +26,18 @@ public:
     IFixedLayoutAdaptor& handler() override;
 
 private:
-    void onMediaTimeout();
     IMedia& initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
     void showCurrentMedia();
-    void checkContainerNewSize(int width, int height);
+    void checkContainerSize(int width, int height);
+    void onMediaTimeout();
+    void scaleMedia(double scaleX, double scaleY);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     int m_zorder;
+    bool m_looped;
 
     std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
-    bool m_looped = false;
 
 };

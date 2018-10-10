@@ -19,6 +19,11 @@ void GtkFixedLayoutAdaptor::setSize(int width, int height)
     m_handler.set_size_request(width, height);
 }
 
+void GtkFixedLayoutAdaptor::scale(double scaleX, double scaleY)
+{
+
+}
+
 void GtkFixedLayoutAdaptor::addChild(IWidgetAdaptor& child, int left, int top)
 {
     auto&& handler = getHandler(child);

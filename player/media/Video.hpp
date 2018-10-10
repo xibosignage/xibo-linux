@@ -12,18 +12,22 @@ class XiboVideoSink;
 class Video : public Media
 {
 public:
-    Video(int id, int width, int height, int duration, const std::string& uri, bool muted, bool looped);
+    Video(int width, int height, int duration, const std::string& uri, bool muted, bool looped);
     ~Video() override;
 
-    void stop() override;
-    void start() override;
     void startTimer() override;
-    void setSize(int width, int height) override;
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
 
     bool muted() const;
     bool looped() const;
+
+protected:
+    void doStop() override;
+    void doStart() override;
+    void setSize(int, int) override;
+    int width() const override { }
+    int height() const override { }
 
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);

@@ -17,7 +17,7 @@ namespace utils
     std::filesystem::path resourcesDir();
     boost::property_tree::ptree parseXmlFromPath(const std::filesystem::path& xlfPath);
     boost::property_tree::ptree parseXmlFromString(const std::string& xml);
-    std::vector<uint8_t> getRawData(const std::filesystem::path& path);
+    std::vector<uint8_t> getRawData(const std::string& path);
 
     template <typename T>
     class Finalizer

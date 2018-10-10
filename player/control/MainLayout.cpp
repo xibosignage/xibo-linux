@@ -6,12 +6,14 @@
 #include "adaptors/IImageAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
-
 #include "utils/utilities.hpp"
+
+#include <cassert>
 
 MainLayout::MainLayout(std::unique_ptr<IOverlayAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
+    assert(m_handler);
 }
 
 MainLayout::~MainLayout()
@@ -28,26 +30,22 @@ int MainLayout::height() const
     return m_handler->height();
 }
 
-void MainLayout::setSize(int width, int height)
+void MainLayout::scale(double scaleX, double scaleY)
 {
-    checkLayoutNewSize(width, height);
+    assert(m_background);
+    assert(m_containers.size() > 0);
 
-    m_handler->setSize(width, height);
-    setBackgroundSize(width, height);
+    m_handler->scale(scaleX, scaleY);
+    m_background->scale(scaleX, scaleY);
+    scaleContainers(scaleX, scaleY);
 }
 
-void MainLayout::setBackgroundSize(int width, int height)
+void MainLayout::scaleContainers(double scaleX, double scaleY)
 {
-    if(m_background)
+    for(auto&& container : m_containers)
     {
-        m_background->setSize(width, height);
+        container->scale(scaleX, scaleY);
     }
-}
-
-void MainLayout::checkLayoutNewSize(int width, int height)
-{
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
-        throw std::invalid_argument("Width or height is too small/large");
 }
 
 void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y)
@@ -73,12 +71,6 @@ void MainLayout::checkContainerCoordinates(int x, int y)
         throw std::invalid_argument("Container x/y pos should not be greater than layout's width and height");
 }
 
-void MainLayout::removeAllContainers()
-{
-    m_handler->removeChildren();
-    m_containers.clear();
-}
-
 IOverlayAdaptor& MainLayout::handler()
 {
     return *m_handler;
@@ -86,22 +78,21 @@ IOverlayAdaptor& MainLayout::handler()
 
 void MainLayout::show()
 {
-    m_handler->show();
-    showBackground();
-    sortReorderAndShowContainers();
-}
+    assert(m_background);
+    assert(m_containers.size() > 0);
 
-void MainLayout::showBackground()
-{
-    if(m_background)
+    if(!m_handler->isShown())
     {
+        m_handler->show();
         m_background->show();
+        sortReorderAndShowContainers();
     }
 }
 
 void MainLayout::sortReorderAndShowContainers()
 {
     sortAndReorderContainers();
+
     for(auto&& container : m_containers)
     {
         container->show();

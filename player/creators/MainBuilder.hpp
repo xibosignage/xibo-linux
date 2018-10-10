@@ -23,6 +23,6 @@ private:
     std::vector<MediaContainerStruct> collectContainers(const xlf_node& layoutNode);
     std::unique_ptr<IMediaContainer> buildContainer(const xlf_node& containerNode);
     std::vector<MediaStruct> collectMedia(const xlf_node& containerNode);
-    std::unique_ptr<IMedia> buildMedia(const xlf_node& mediaNode);
+    std::unique_ptr<IMedia> buildMedia(const xlf_node& containerNode, const xlf_node& mediaNode);
 
 };

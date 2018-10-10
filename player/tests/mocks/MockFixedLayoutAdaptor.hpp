@@ -10,6 +10,7 @@ public:
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(setSize, void(int width, int height));
+    MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD3(addChild, void(IWidgetAdaptor& child, int left, int top));
     MOCK_METHOD0(removeChildren, void());
     MOCK_METHOD0(show, void());

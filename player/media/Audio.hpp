@@ -6,11 +6,9 @@
 class Audio : public Media
 {
 public:
-    Audio(int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
+    Audio(int duration, const std::string& uri, bool muted, bool looped, double volume);
     ~Audio() override;
 
-    void stop() override;
-    void start() override;
     void startTimer() override;
     IWidgetAdaptor& handler() override { }
 
@@ -19,6 +17,14 @@ public:
     double volume() const;
 
     void apply(MediaVisitor& visitor) override;
+
+protected:
+    void doStop() override;
+    void doStart() override;
+    void setSize(int, int) override { }
+    int width() const override { }
+    int height() const override { }
+
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
     void noMorePads();

@@ -18,6 +18,8 @@ public:
 
     GtkOverlayAdaptor();
     void show() override;
+    bool isShown() const override;
+    void scale(double scaleX, double scaleY) override;
     void setSize(int width, int height) override;
     int width() const override;
     int height() const override;

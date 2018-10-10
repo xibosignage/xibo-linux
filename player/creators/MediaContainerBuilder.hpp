@@ -2,10 +2,11 @@
 
 #include <memory>
 #include <vector>
-#include <boost/optional/optional_fwd.hpp>
+#include <boost/optional/optional.hpp>
 
-class IMediaContainer;
-class IMedia;
+#include "control/IMediaContainer.hpp"
+#include "media/IMedia.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
 
 struct MediaStruct
 {
@@ -15,29 +16,32 @@ struct MediaStruct
     int y;
 };
 
+
+const int DEFAULT_ZORDER = 0;
+const bool DEFAULT_LOOP = false;
+
 class MediaContainerBuilder
 {
 public:
-    template<typename MediaContainerFactory>
-    std::unique_ptr<IMediaContainer> build()
-    {
-        auto container = MediaContainerFactory().create(m_zorder);
+    std::unique_ptr<IMediaContainer> build();
 
-        prepareContainer(*container);
+    MediaContainerBuilder& adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor);
+    MediaContainerBuilder& width(int width);
+    MediaContainerBuilder& height(int height);
+    MediaContainerBuilder& zorder(const boost::optional<int>& zorder);
+    MediaContainerBuilder& loop(const boost::optional<bool>& loop);
+    MediaContainerBuilder& media(std::vector<MediaStruct>&& media);
 
-        return container;
-    }
-
-    MediaContainerBuilder& setWidth(int width);
-    MediaContainerBuilder& setHeight(int height);
-    MediaContainerBuilder& setZorder(const boost::optional<int>& zorder);
-    MediaContainerBuilder& setLoop(const boost::optional<bool>& loop);
-    MediaContainerBuilder& setMedia(std::vector<MediaStruct>&& media);
+protected:
+    virtual std::unique_ptr<IMediaContainer> createContainer(int zorder, bool loop);
 
 private:
-    void prepareContainer(IMediaContainer& container);
+    void addAllMedia(IMediaContainer& container);
+    void checkWidth(int width);
+    void checkHeight(int height);
 
 private:
+    std::unique_ptr<IFixedLayoutAdaptor> m_adaptor;
     int m_width;
     int m_height;
     int m_zorder;

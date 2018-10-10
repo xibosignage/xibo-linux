@@ -41,12 +41,9 @@ boost::property_tree::ptree utils::parseXmlFromString(const std::string& xml)
     return tree;
 }
 
-std::vector<uint8_t> utils::getRawData(const std::filesystem::path& path)
+std::vector<uint8_t> utils::getRawData(const std::string& path)
 {
-    if(!std::filesystem::exists(path))
-        throw std::runtime_error("Path doesn't exist");
-
-    std::ifstream ifs(path.string(), std::ios::binary | std::ios::ate);
+    std::ifstream ifs(path, std::ios::binary | std::ios::ate);
     std::ifstream::pos_type pos = ifs.tellg();
 
     std::vector<uint8_t> result(pos);

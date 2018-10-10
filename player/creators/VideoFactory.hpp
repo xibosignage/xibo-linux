@@ -7,7 +7,7 @@ class IMedia;
 class VideoFactory : public MediaFactory
 {
 public:
-    VideoFactory(const xlf_node& mediaNode);
+    VideoFactory(const xlf_node& parentNode, const xlf_node& mediaNode);
 
 protected:
     std::unique_ptr<IMedia> doCreate() override;

@@ -1,15 +1,16 @@
 #include "MainBuilder.hpp"
 
-#include "creators/MainLayoutBuilder.hpp"
-#include "creators/BackgroundBuilder.hpp"
-#include "creators/MediaContainerBuilder.hpp"
-
 #include "creators/ImageFactory.hpp"
 #include "creators/VideoFactory.hpp"
 #include "creators/AudioFactory.hpp"
 #include "creators/WebViewFactory.hpp"
 
-#include "creators/ConcreteFactories.hpp"
+#include "creators/BackgroundBuilder.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
+#include "creators/MainLayoutBuilder.hpp"
+#include "adaptors/GtkOverlayAdaptor.hpp"
+#include "creators/MediaContainerBuilder.hpp"
+#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include "media/GetMediaPosition.hpp"
 #include "parsers/Resources.hpp"
@@ -17,6 +18,7 @@
 namespace LayoutXlf = ResourcesXlf::Layout;
 namespace RegionXlf = ResourcesXlf::Region;
 namespace MediaXlf = ResourcesXlf::Media;
+
 
 std::unique_ptr<IMainLayout> MainBuilder::buildLayoutWithChildren(const xlf_node& tree)
 {
@@ -28,11 +30,9 @@ std::unique_ptr<IMainLayout> MainBuilder::buildLayout(const xlf_node& layoutNode
     int width = LayoutXlf::width(layoutNode);
     int height = LayoutXlf::height(layoutNode);
 
-    return MainLayoutBuilder().setWidth(width)
-                              .setHeight(height)
-                              .setBackground(buildBackground(layoutNode))
-                              .setMediaContainers(collectContainers(layoutNode))
-                              .build<MainLayoutFactory>();
+    MainLayoutBuilder builder;
+    return builder.adaptor(std::make_unique<GtkOverlayAdaptor>()).width(width).height(height)
+                  .background(buildBackground(layoutNode)).mediaContainers(collectContainers(layoutNode)).build();
 }
 
 std::unique_ptr<IBackground> MainBuilder::buildBackground(const xlf_node& layoutNode)
@@ -42,13 +42,9 @@ std::unique_ptr<IBackground> MainBuilder::buildBackground(const xlf_node& layout
     auto path = LayoutXlf::backgroundPath(layoutNode);
     auto color = LayoutXlf::backgroundColor(layoutNode);
 
-    return BackgroundBuilder().setWidth(width)
-                              .setHeight(height)
-                              .setPath(path)
-                              .setColor(color)
-                              .build<BackgroundFactory>();
+    BackgroundBuilder builder{std::make_unique<FileSystemAdaptor>()};
+    return builder.adaptor(std::make_unique<GtkImageAdaptor>()).width(width).height(height).path(path).color(color).build();
 }
-
 
 std::vector<MediaContainerStruct> MainBuilder::collectContainers(const xlf_node& layoutNode)
 {
@@ -72,12 +68,10 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
     auto zorder = RegionXlf::zindex(containerNode);
     auto loop = RegionXlf::loop(containerNode);
 
-    return MediaContainerBuilder().setWidth(width)
-                                  .setHeight(height)
-                                  .setZorder(zorder)
-                                  .setLoop(loop)
-                                  .setMedia(collectMedia(containerNode))
-                                  .build<MediaContainerFactory>();
+    MediaContainerBuilder builder;
+    return builder.adaptor(std::make_unique<GtkFixedLayoutAdaptor>())
+                  .width(width).height(height).zorder(zorder).loop(loop)
+                  .media(collectMedia(containerNode)).build();
 }
 
 std::vector<MediaStruct> MainBuilder::collectMedia(const xlf_node& containerNode)
@@ -88,7 +82,7 @@ std::vector<MediaStruct> MainBuilder::collectMedia(const xlf_node& containerNode
         if(nodeName == MediaXlf::NodeName)
         {
             auto type = MediaXlf::type(mediaNode);
-            auto builtMedia = buildMedia(mediaNode);
+            auto builtMedia = buildMedia(containerNode, mediaNode);
             int containerWidth = RegionXlf::width(containerNode);
             int containerHeight = RegionXlf::height(containerNode);
 
@@ -101,20 +95,20 @@ std::vector<MediaStruct> MainBuilder::collectMedia(const xlf_node& containerNode
     return media;
 }
 
-std::unique_ptr<IMedia> MainBuilder::buildMedia(const xlf_node& mediaNode)
+std::unique_ptr<IMedia> MainBuilder::buildMedia(const xlf_node& containerNode, const xlf_node& mediaNode)
 {
     auto type = MediaXlf::type(mediaNode);
 
     std::unique_ptr<MediaFactory> factory;
 
     if(type == MediaXlf::ImageType)
-        factory = std::make_unique<ImageFactory>(mediaNode);
+        factory = std::make_unique<ImageFactory>(containerNode, mediaNode);
     else if(type == MediaXlf::VideoType)
-        factory = std::make_unique<VideoFactory>(mediaNode);
+        factory = std::make_unique<VideoFactory>(containerNode, mediaNode);
     else if(type == MediaXlf::AudioType)
-        factory = std::make_unique<AudioFactory>(mediaNode);
+        factory = std::make_unique<AudioFactory>(containerNode, mediaNode);
     else // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
-        factory = std::make_unique<WebViewFactory>(mediaNode);
+        factory = std::make_unique<WebViewFactory>(containerNode, mediaNode);
 
     return factory->create();
 }

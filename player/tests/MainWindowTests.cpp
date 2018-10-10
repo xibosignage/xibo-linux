@@ -29,12 +29,12 @@ auto construct_window_without_size()
 
 auto construct_mock_layout()
 {
-    auto stubLayout = new NiceMock<MockMainLayout>;
-    auto layoutHandlerStub = std::make_shared<NiceMock<MockOverlayAdaptor>>();
+    auto handler = new NiceMock<MockOverlayAdaptor>;
+    auto layout = new NiceMock<MockMainLayout>(unique(handler));
 
-    ON_CALL(*stubLayout, handler()).WillByDefault(ReturnRef(*layoutHandlerStub));
+    ON_CALL(*layout, handler()).WillByDefault(ReturnRef(*handler));
 
-    return std::pair{stubLayout, layoutHandlerStub};
+    return std::pair{layout, handler};
 }
 
 const int DEFAULT_POS = 100;

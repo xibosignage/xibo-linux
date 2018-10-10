@@ -10,7 +10,7 @@ class IMedia;
 class WebViewFactory : public MediaFactory
 {
 public:
-    WebViewFactory(const xlf_node& mediaNode);
+    WebViewFactory(const xlf_node& parentNode, const xlf_node& mediaNode);
 
 protected:
     std::unique_ptr<IMedia> doCreate() override;

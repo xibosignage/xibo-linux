@@ -8,6 +8,8 @@ class MockOverlayAdaptor : public IOverlayAdaptor
 {
 public:
     MOCK_METHOD0(show, void());
+    MOCK_CONST_METHOD0(isShown, bool());
+    MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD2(setSize, void(int width, int height));
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());

@@ -12,9 +12,8 @@ public:
 
     virtual int width() const = 0;
     virtual int height() const = 0;
-    virtual void setSize(int width, int height) = 0;
+    virtual void scale(double scaleX, double scaleY) = 0;
 
-    virtual void loopMediaInContainer() = 0;
     virtual int zorder() const = 0;
     virtual void show() = 0;
 

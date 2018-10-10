@@ -1,50 +1,84 @@
 #include "MediaContainerBuilder.hpp"
+#include "constants.hpp"
 
-#include "control/IMediaContainer.hpp"
-#include "media/IMedia.hpp"
+#include "control/MediaContainer.hpp"
 
-#include <boost/optional/optional.hpp>
+const int MIN_WIDTH = 1;
+const int MIN_HEIGHT = 1;
 
-const int DEFAULT_ZORDER = 0;
-const bool DEFAULT_LOOP = false;
-
-MediaContainerBuilder& MediaContainerBuilder::setWidth(int width)
+std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 {
+    assert(m_adaptor);
+
+    m_adaptor->setSize(m_width, m_height);
+
+    auto container = createContainer(m_zorder, m_loop);
+    addAllMedia(*container);
+    return container;
+}
+
+std::unique_ptr<IMediaContainer> MediaContainerBuilder::createContainer(int zorder, bool loop)
+{
+    return std::make_unique<MediaContainer>(zorder, loop, std::move(m_adaptor));
+}
+
+MediaContainerBuilder& MediaContainerBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
+{
+    m_adaptor = std::move(adaptor);
+    return *this;
+}
+
+MediaContainerBuilder& MediaContainerBuilder::width(int width)
+{
+    checkWidth(width);
+
     m_width = width;
     return *this;
 }
 
-MediaContainerBuilder& MediaContainerBuilder::setHeight(int height)
+void MediaContainerBuilder::checkWidth(int width)
 {
+    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH)
+        throw std::invalid_argument("Width is too large/small");
+}
+
+MediaContainerBuilder& MediaContainerBuilder::height(int height)
+{
+    checkHeight(height);
+
     m_height = height;
     return *this;
 }
 
-MediaContainerBuilder& MediaContainerBuilder::setZorder(const boost::optional<int>& zorder)
+void MediaContainerBuilder::checkHeight(int height)
+{
+    if(height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Height is too large/small");
+}
+
+// FIXME it should not be default zorder
+MediaContainerBuilder& MediaContainerBuilder::zorder(const boost::optional<int>& zorder)
 {
     m_zorder = zorder.value_or(DEFAULT_ZORDER);
     return *this;
 }
 
-MediaContainerBuilder& MediaContainerBuilder::setLoop(const boost::optional<bool>& loop)
+MediaContainerBuilder& MediaContainerBuilder::loop(const boost::optional<bool>& loop)
 {
     m_loop = loop.value_or(DEFAULT_LOOP);
     return *this;
 }
 
-MediaContainerBuilder& MediaContainerBuilder::setMedia(std::vector<MediaStruct>&& media)
+MediaContainerBuilder& MediaContainerBuilder::media(std::vector<MediaStruct>&& media)
 {
     m_media = std::move(media);
     return *this;
 }
 
-void MediaContainerBuilder::prepareContainer(IMediaContainer& container)
+void MediaContainerBuilder::addAllMedia(IMediaContainer& container)
 {
-    container.setSize(m_width, m_height);
-    if(m_loop)
-    {
-        container.loopMediaInContainer();
-    }
+    assert(m_media.size() > 0);
+
     for(auto&& ct : m_media)
     {
         if(ct.type != "audio")

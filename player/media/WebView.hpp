@@ -8,15 +8,20 @@
 class WebView : public Media
 {
 public:
-    WebView(int id, int width, int height, int duration, const std::string& uri, int modeId, bool transparent);
+    WebView(int width, int height, int duration, const std::string& uri, bool transparent);
 
-    void stop() override;
-    void start() override;
-    void setSize(int width, int height) override;
     IWidgetAdaptor& handler() override;
     bool transparent() const;
 
     void apply(MediaVisitor& visitor) override;
+
+protected:
+    void doStop() override;
+    void doStart() override;
+    void setSize(int, int) override;
+    int width() const override { }
+    int height() const override { }
+
 private:
     void screenChanged(const Glib::RefPtr<Gdk::Screen>& screen);
 

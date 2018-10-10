@@ -11,6 +11,7 @@ public:
     int width() const override;
     int height() const override;
     void setSize(int width, int height) override;
+    void scale(double scaleX, double scaleY) override;
     void addChild(IWidgetAdaptor& child, int left, int top) override;
     void removeChildren() override;
     void show() override;

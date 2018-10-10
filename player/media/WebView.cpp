@@ -5,8 +5,7 @@
 #include <spdlog/spdlog.h>
 #include <filesystem>
 
-WebView::WebView(int id, int width, int height, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, width, height, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
+WebView::WebView(int width, int height, int duration, const std::string& uri, bool transparent) :
     m_transparent(transparent)
 {
     if(std::filesystem::exists(uri))
@@ -47,22 +46,19 @@ void WebView::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen)
     }
 }
 
-void WebView::stop()
+void WebView::doStop()
 {
-    Media::stop();
     m_handler.hide();
 }
 
-void WebView::start()
+void WebView::doStart()
 {
-    Media::start();
     m_handler.show_all();
     webkit_web_view_reload(m_webView);
 }
 
 void WebView::setSize(int width, int height)
 {
-    Media::setSize(width, height);
     m_handler.set_size_request(width, height);
 }
 

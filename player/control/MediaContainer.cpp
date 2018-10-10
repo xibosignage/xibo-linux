@@ -6,13 +6,12 @@
 
 #include <cassert>
 
-const int MIN_WIDTH = 1;
-const int MIN_HEIGHT = 1;
 const int FIRST_MEDIA_INDEX = 0;
 
-MediaContainer::MediaContainer(int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
-    m_handler(std::move(handler)), m_zorder(zorder)
+MediaContainer::MediaContainer(int zorder, bool looped, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+    m_handler(std::move(handler)), m_zorder(zorder), m_looped(looped)
 {
+    assert(m_handler);
 }
 
 MediaContainer::~MediaContainer()
@@ -29,22 +28,21 @@ int MediaContainer::height() const
     return m_handler->height();
 }
 
-void MediaContainer::setSize(int width, int height)
+void MediaContainer::scale(double scaleX, double scaleY)
 {
-    checkContainerNewSize(width, height);
+    assert(m_media.size() > 0);
 
-    m_handler->setSize(width, height);
+    m_handler->scale(scaleX, scaleY);
+    scaleMedia(scaleX, scaleY);
 }
 
-void MediaContainer::checkContainerNewSize(int width, int height)
+void MediaContainer::scaleMedia(double scaleX, double scaleY)
 {
-    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH || height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
-        throw std::invalid_argument("Width/height is too large/small");
-}
-
-void MediaContainer::loopMediaInContainer()
-{
-    m_looped = true;
+    for(auto&& media : m_media)
+    {
+        // FIXME scale media
+        // TEST scale media called
+    }
 }
 
 int MediaContainer::zorder() const
@@ -59,16 +57,15 @@ IFixedLayoutAdaptor& MediaContainer::handler()
 
 void MediaContainer::show()
 {
+    assert(m_media.size() > 0);
+
     m_handler->show();
     showCurrentMedia();
 }
 
 void MediaContainer::showCurrentMedia()
 {
-    if(!m_media.empty())
-    {
-        m_media[m_currentMediaIndex]->start();
-    }
+    m_media[m_currentMediaIndex]->start();
 }
 
 void MediaContainer::removeAllMedia()

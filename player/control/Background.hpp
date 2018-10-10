@@ -14,20 +14,12 @@ public:
 
     int width() const override;
     int height() const override;
-    void setSize(int width, int height) override;
-
-    void setColor(const std::string& color) override;
-    void setImage(const uint8_t* imageData, size_t dataSize) override;
+    void scale(double scaleX, double scaleY) override;
 
     void show() override;
     IImageAdaptor& handler() override;
 
 private:
-    uint32_t colorToHexNumber(const std::string& hexColor) const;
-    void checkBackgroundNewSize(int width, int height);
-
-private:
     std::unique_ptr<IImageAdaptor> m_handler;
-
 
 };

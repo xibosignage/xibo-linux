@@ -1,73 +1,59 @@
-#include "test_utils.hpp"
-
-#include "control/MainLayout.hpp"
-
-#include "mocks/MockOverlayAdaptor.hpp"
-#include "mocks/MockBackground.hpp"
-#include "mocks/MockImageAdaptor.hpp"
-#include "mocks/MockMediaContainer.hpp"
-#include "mocks/MockFixedLayoutAdaptor.hpp"
+#include "MainLayoutTests.hpp"
 
 using namespace ::testing;
 
-auto construct_layout()
-{
-    auto [layout, adaptor] = construct<MainLayout, MockOverlayAdaptor>();
-    layout->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    return std::pair{layout, adaptor};
-}
-
-auto construct_layout_without_size()
-{
-    auto [layout, adaptor] = construct<MainLayout, MockOverlayAdaptor>();
-    return std::pair{layout, adaptor};
-}
-
 NiceMock<MockBackground>* createBackground()
 {
-    auto background = new NiceMock<MockBackground>;
-    auto backgroundHandlerStub = std::make_unique<NiceMock<MockImageAdaptor>>();
+    auto handler = new NiceMock<MockImageAdaptor>;
+    auto background = new NiceMock<MockBackground>(unique(handler));
 
-    ON_CALL(*background, handler()).WillByDefault(ReturnRef(*backgroundHandlerStub));
+    ON_CALL(*background, handler()).WillByDefault(ReturnRef(*handler));
 
     return background;
 }
 
 NiceMock<MockMediaContainer>* createMediaContainer()
 {
-    auto mediaContainer = new NiceMock<MockMediaContainer>;
-    auto containerHandlerStub = std::make_unique<NiceMock<MockFixedLayoutAdaptor>>();
+    auto handler = new NiceMock<MockFixedLayoutAdaptor>;
+    auto mediaContainer = new NiceMock<MockMediaContainer>(unique(handler));
 
-    ON_CALL(*mediaContainer, handler()).WillByDefault(ReturnRef(*containerHandlerStub));
+    ON_CALL(*mediaContainer, handler()).WillByDefault(ReturnRef(*handler));
 
     return mediaContainer;
 }
 
-const auto invalidMainLayoutSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
-const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_X_POS, DEFAULT_HEIGHT, MIN_Y_POS>;
-
-class MainLayoutTestSize : public TestWithParam<Size> { };
-class MainLayoutTestPos : public TestWithParam<Point> { };
-
-TEST_P(MainLayoutTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
+auto constructLayout()
 {
-    auto [layout, layoutHandlerStub] = construct_layout_without_size();
-
-    ASSERT_THROW(layout->setSize(GetParam().width, GetParam().height), std::invalid_argument);
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->setBackground(unique(createBackground()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_X_POS);
+    return std::pair{layout, handler};
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestSize, ::testing::ValuesIn(invalidMainLayoutSizes));
+auto constructLayoutWithoutBackground()
+{
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_X_POS);
+    return std::pair{layout, handler};
+}
+
+auto constructLayoutWithoutContainer()
+{
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->setBackground(unique(createBackground()));
+    return std::pair{layout, handler};
+}
 
 TEST(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayout();
 
     ASSERT_EQ(&layout->handler(), layoutHandlerStub);
 }
 
 TEST(MainLayoutTest, Width_HandlerReturnsDefaultWidth_LayoutWidthEqualsDefault)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayout();
 
     ON_CALL(*layoutHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
@@ -76,7 +62,7 @@ TEST(MainLayoutTest, Width_HandlerReturnsDefaultWidth_LayoutWidthEqualsDefault)
 
 TEST(MainLayoutTest, Height_HandlerReturnsDefaultHeight_LayoutHeightEqualsDefault)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayout();
 
     ON_CALL(*layoutHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
@@ -85,7 +71,7 @@ TEST(MainLayoutTest, Height_HandlerReturnsDefaultHeight_LayoutHeightEqualsDefaul
 
 TEST(MainLayoutTest, SetBackground_Valid_HandlerAddMainChildShouldBeCalled)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutBackground();
 
     EXPECT_CALL(*layoutHandlerMock, addMainChild(_));
 
@@ -94,7 +80,7 @@ TEST(MainLayoutTest, SetBackground_Valid_HandlerAddMainChildShouldBeCalled)
 
 TEST(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidArgErrorShouldBeCalled)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutBackground();
     auto stubBackground = createBackground();
 
     ON_CALL(*layoutHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
@@ -104,7 +90,7 @@ TEST(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidArg
 
 TEST(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_InvalidArgErrorShouldBeCalled)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutBackground();
     auto stubBackground = createBackground();
 
     ON_CALL(*layoutHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
@@ -114,7 +100,7 @@ TEST(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_InvalidA
 
 TEST(MainLayoutTest, SetBackground_2InRow_HandlerAddMainChild2TimesCalledRemoveMainChild1TimeCalled)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutBackground();
 
     EXPECT_CALL(*layoutHandlerMock, addMainChild(_)).Times(2);
     EXPECT_CALL(*layoutHandlerMock, removeMainChild()).Times(1);
@@ -123,51 +109,9 @@ TEST(MainLayoutTest, SetBackground_2InRow_HandlerAddMainChild2TimesCalledRemoveM
     layout->setBackground(unique(createBackground()));
 }
 
-TEST(MainLayoutTest, SetSize_Width200Height200_HandlerSetSize200Width200HeightCalled)
-{
-    auto [layout, layoutHandlerMock] = construct_layout();
-
-    EXPECT_CALL(*layoutHandlerMock, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
-
-    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
-}
-
-TEST(MainLayoutTest, SetSize_Width200Height200_LayoutWidthEquals200)
-{
-    auto [layout, layoutHandlerStub] = construct_layout();
-
-    ON_CALL(*layoutHandlerStub, width()).WillByDefault(Return(NEW_DEFAULT_WIDTH));
-
-    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
-
-    ASSERT_EQ(layout->width(), NEW_DEFAULT_WIDTH);
-}
-
-TEST(MainLayoutTest, SetSize_Width200Height200_LayoutHeightEquals200)
-{
-    auto [layout, layoutHandlerStub] = construct_layout();
-
-    ON_CALL(*layoutHandlerStub, height()).WillByDefault(Return(NEW_DEFAULT_HEIGHT));
-
-    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
-
-    ASSERT_EQ(layout->height(), NEW_DEFAULT_HEIGHT);
-}
-
-TEST(MainLayoutTest, SetSize_WithBackground_BackgroundSetSizeShouldBeCalled)
-{
-    auto [layout, layoutHandlerStub] = construct_layout();
-    auto mockBackground = createBackground();
-    layout->setBackground(unique(mockBackground));
-
-    EXPECT_CALL(*mockBackground, setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT));
-
-    layout->setSize(NEW_DEFAULT_WIDTH, NEW_DEFAULT_HEIGHT);
-}
-
 TEST(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutContainer();
 
     EXPECT_CALL(*layoutHandlerMock, addChild(_, _, _ ,_ , _));
 
@@ -176,7 +120,7 @@ TEST(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
 
 TEST_P(MainLayoutTestPos, AddMediaContainer_InvalidPos_ShouldThrowInvalidArgError)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto stubContainer = createMediaContainer();
 
     ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), GetParam().x, GetParam().y), std::invalid_argument);
@@ -186,7 +130,7 @@ INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestPos, ::testing::ValuesIn(invalidMai
 
 TEST(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto stubContainer = createMediaContainer();
 
     ON_CALL(*stubContainer, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
@@ -196,7 +140,7 @@ TEST(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_Inva
 
 TEST(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto stubContainer = createMediaContainer();
 
     ON_CALL(*stubContainer, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
@@ -204,57 +148,119 @@ TEST(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_Inv
     ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_X_POS, DEFAULT_Y_POS), std::invalid_argument);
 }
 
-TEST(MainLayoutTest, RemoveAllCotnainers_Default_HandlerRemoveChildrenShouldBeCalled)
+TEST(MainLayoutTest, Scale_Default_HandlerScaleShouldBeCalled)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
+    auto [layout, layoutHandlerMock] = constructLayout();
 
-    EXPECT_CALL(*layoutHandlerMock, removeChildren());
+    EXPECT_CALL(*layoutHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
-    layout->removeAllContainers();
+    layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+}
+
+TEST(MainLayoutTest, Scale_Default_ContainerScaleShouldBeCalled)
+{
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutContainer();
+    auto mockContainer = createMediaContainer();
+    layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
+
+    EXPECT_CALL(*mockContainer, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+}
+
+TEST(MainLayoutTest, Scale_Default_BackgroundScaleShouldBeCalled)
+{
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutBackground();
+    auto mockBackground = createBackground();
+    layout->setBackground(unique(mockBackground));
+
+    EXPECT_CALL(*mockBackground, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
 TEST(MainLayoutTest, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
+    auto [layout, layoutHandlerMock] = constructLayout();
 
     EXPECT_CALL(*layoutHandlerMock, show());
+    ON_CALL(*layoutHandlerMock, isShown()).WillByDefault(Return(false));
 
+    layout->show();
+}
+
+TEST(MainLayoutTest, Show_CallTwice_HandlerShowShouldBeCalledOnce)
+{
+    auto [layout, layoutHandlerMock] = constructLayout();
+
+    EXPECT_CALL(*layoutHandlerMock, show()).Times(1);
+
+    layout->show();
+    ON_CALL(*layoutHandlerMock, isShown()).WillByDefault(Return(true));
     layout->show();
 }
 
 TEST(MainLayoutTest, Show_WithBackground_BackgroundShowShouldBeCalled)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutBackground();
     auto mockBackground = createBackground();
     layout->setBackground(unique(mockBackground));
 
     EXPECT_CALL(*mockBackground, show());
+    ON_CALL(*layoutHandlerStub, isShown()).WillByDefault(Return(false));
 
+    layout->show();
+}
+
+TEST(MainLayoutTest, Show_WithBackgroundTwice_BackgroundShowShouldBeCalledOnce)
+{
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutBackground();
+    auto mockBackground = createBackground();
+    layout->setBackground(unique(mockBackground));
+
+    EXPECT_CALL(*mockBackground, show()).Times(1);
+
+    layout->show();
+    ON_CALL(*layoutHandlerStub, isShown()).WillByDefault(Return(true));
     layout->show();
 }
 
 TEST(MainLayoutTest, Show_WithMediaContainer_MediaContainerShowShouldBeCalled)
 {
-    auto [layout, layoutHandlerStub] = construct_layout();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto mockContainer = createMediaContainer();
     layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
 
     EXPECT_CALL(*mockContainer, show());
+    ON_CALL(*layoutHandlerStub, isShown()).WillByDefault(Return(false));
 
     layout->show();
 }
 
-// TEST zorder
-TEST(MainLayoutTest, Show_With3MediaContainers_HandlerReorderChildShouldBeCalled)
+TEST(MainLayoutTest, Show_WithMediaContainerTwice_MediaContainerShowShouldBeCalledOnce)
 {
-    auto [layout, layoutHandlerMock] = construct_layout();
-    const int CONTAINERS_COUNT = 3;
-    for(int i = 0; i != CONTAINERS_COUNT; ++i)
-    {
-        layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
-    }
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
+    auto mockContainer = createMediaContainer();
+    layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
 
-    EXPECT_CALL(*layoutHandlerMock, reorderChild(_, _)).Times(CONTAINERS_COUNT);
+    EXPECT_CALL(*mockContainer, show()).Times(1);
+
+    layout->show();
+    ON_CALL(*layoutHandlerStub, isShown()).WillByDefault(Return(true));
+    layout->show();
+}
+
+TEST_P(MainLayoutReorderTest, Show_With3MediaContainers_HandlerReorderChildShouldBeCalledWithCorrectOrder)
+{
+    auto [layout, layoutHandlerMock] = constructLayoutWithoutContainer();
+
+    for(int zorder : GetParam())
+        addContainer(*layout, zorder);
+
+    for(size_t index = 0; index != GetParam().size(); ++index)
+        EXPECT_CALL(*layoutHandlerMock, reorderChild(Ref(container(index)->handler()), static_cast<int>(index)));
 
     layout->show();
 }
+
+INSTANTIATE_TEST_CASE_P(Suite, MainLayoutReorderTest, ::testing::ValuesIn(zorders));

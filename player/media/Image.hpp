@@ -1,7 +1,11 @@
 #pragma once
 
 #include "Media.hpp"
-#include <gtkmm/image.h>
+#include "utils/Helpers.hpp"
+
+#include <filesystem>
+
+class IImageAdaptor;
 
 class Image : public Media
 {
@@ -29,26 +33,25 @@ public:
         Invalid
     };
 
-    Image(int id, int width, int height, int duration, const std::string& uri,
-          ScaleType scaleType, Align align, Valign valign);
-
-    void stop() override;
-    void start() override;
-    void setSize(int width, int height) override;
-    IWidgetAdaptor& handler() override;
-    void apply(MediaVisitor& visitor) override;
+    Image(ScaleType type, Align align, Valign valign, std::unique_ptr<IImageAdaptor>&& handler);
 
     ScaleType scaleType() const;
     Align align() const;
     Valign valign() const;
 
-private:
-    bool isScaled() const;
+    int width() const override;
+    int height() const override;
+    void setSize(int, int) override { }
+
+    IWidgetAdaptor& handler() override;
+    void apply(MediaVisitor& visitor) override;
+
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    Gtk::Image m_handler;
-    int m_actualWidth;
-    int m_actualHeight;
+    std::unique_ptr<IImageAdaptor> m_handler;
     ScaleType m_scaleType;
     Align m_align;
     Valign m_valign;

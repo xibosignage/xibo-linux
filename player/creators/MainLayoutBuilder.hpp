@@ -3,9 +3,11 @@
 #include <memory>
 #include <vector>
 
-class IMainLayout;
-class IBackground;
-class IMediaContainer;
+#include "control/IMainLayout.hpp"
+#include "control/IBackground.hpp"
+#include "control/IMediaContainer.hpp"
+
+#include "adaptors/IOverlayAdaptor.hpp"
 
 struct MediaContainerStruct
 {
@@ -17,25 +19,24 @@ struct MediaContainerStruct
 class MainLayoutBuilder
 {
 public:
-    template<typename MainLayoutFactory>
-    std::unique_ptr<IMainLayout> build()
-    {
-        auto layout = MainLayoutFactory().create();
+    std::unique_ptr<IMainLayout> build();
 
-        prepareLayout(*layout);
+    MainLayoutBuilder& adaptor(std::unique_ptr<IOverlayAdaptor>&& adaptor);
+    MainLayoutBuilder& width(int width);
+    MainLayoutBuilder& height(int height);
+    MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
+    MainLayoutBuilder& mediaContainers(std::vector<MediaContainerStruct>&& mediaContainers);
 
-        return layout;
-    }
-
-    MainLayoutBuilder& setWidth(int width);
-    MainLayoutBuilder& setHeight(int height);
-    MainLayoutBuilder& setBackground(std::unique_ptr<IBackground>&& background);
-    MainLayoutBuilder& setMediaContainers(std::vector<MediaContainerStruct>&& mediaContainers);
+protected:
+    virtual std::unique_ptr<IMainLayout> createLayout();
 
 private:
     void prepareLayout(IMainLayout& layout);
+    void checkWidth(int width);
+    void checkHeight(int height);
 
 private:
+    std::unique_ptr<IOverlayAdaptor> m_adaptor;
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;

@@ -1,66 +1,43 @@
 #include "Image.hpp"
 
 #include "constants.hpp"
+#include "adaptors/IImageAdaptor.hpp"
+#include "media/MediaVisitor.hpp"
 
-#include <spdlog/spdlog.h>
-#include <filesystem>
+#include <cassert>
 
-Image::Image(int id, int width, int height, int duration, const std::string& uri,
-             ScaleType scaleType, Align align, Valign valign) :
-    Media(id, width, height, duration, Render::Native, uri),
-    m_scaleType(scaleType), m_align(align), m_valign(valign)
+Image::Image(Image::ScaleType type, Image::Align align, Image::Valign valign, std::unique_ptr<IImageAdaptor>&& handler) :
+    m_handler(std::move(handler)), m_scaleType(type), m_align(align), m_valign(valign)
 {
-    try
-    {
-        if(std::filesystem::exists(uri))
-        {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(uri, width, height, isScaled());
-            m_actualWidth = pixbuf->get_width();
-            m_actualHeight = pixbuf->get_height();
-            m_handler.set(pixbuf);
-
-            Media::setSize(m_actualWidth, m_actualHeight);
-        }
-        else
-        {
-            spdlog::get(LOGGER)->error("Could not find image: {}", uri);
-        }
-    }
-    catch(const Gdk::PixbufError& error)
-    {
-        spdlog::get(LOGGER)->error("Image creation error: {}", std::string{error.what()});
-    }
 }
 
-void Image::stop()
+// FIXME change name after adding Visible/Invisible media
+void Image::doStop()
 {
-    m_handler.hide();
-    Media::stop();
+    m_handler->hide();
 }
 
-void Image::start()
+// FIXME change name after adding Visible/Invisible media
+void Image::doStart()
 {
-    m_handler.show();
-    Media::start();
+    m_handler->show();
 }
 
-void Image::setSize(int width, int height)
+int Image::width() const
 {
-    auto new_pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-    m_actualWidth = new_pixbuf->get_width();
-    m_actualHeight = new_pixbuf->get_height();
-    m_handler.set(new_pixbuf);
-
-    Media::setSize(m_actualWidth, m_actualHeight);
+    return m_handler->width();
 }
 
-#include "adaptors/GtkImageAdaptor.hpp"
+int Image::height() const
+{
+    return m_handler->height();
+}
+
 IWidgetAdaptor& Image::handler()
 {
-    return *new GtkImageAdaptor;
+    return *m_handler;
 }
 
-#include "media/MediaVisitor.hpp"
 void Image::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
@@ -79,11 +56,4 @@ Image::Align Image::align() const
 Image::Valign Image::valign() const
 {
     return m_valign;
-}
-
-bool Image::isScaled() const
-{
-    if(m_scaleType == ScaleType::Scaled)
-        return true;
-    return false;
 }

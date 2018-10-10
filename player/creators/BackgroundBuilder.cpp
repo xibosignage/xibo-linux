@@ -1,42 +1,94 @@
 #include "BackgroundBuilder.hpp"
+
+#include "control/Background.hpp"
+#include "adaptors/IImageAdaptor.hpp"
+
 #include "utils/utilities.hpp"
+#include "utils/Helpers.hpp"
+#include "utils/ColorToHexConverter.hpp"
 
-#include <boost/optional/optional.hpp>
-
-BackgroundBuilder& BackgroundBuilder::setWidth(int width)
+BackgroundBuilder::BackgroundBuilder(std::unique_ptr<IFileSystemAdaptor>&& filesystem) :
+    m_filesystem(std::move(filesystem))
 {
+}
+
+std::unique_ptr<IBackground> BackgroundBuilder::build()
+{
+    assert(m_adaptor);
+
+    m_adaptor->setSize(m_width, m_height);
+
+    if(m_hexColor && m_path.empty())
+        m_adaptor->setColor(m_hexColor.value());
+
+    if(!m_path.empty())
+        m_adaptor->setImage(m_path.string());
+
+    return createBackground();
+}
+
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground()
+{
+    return std::make_unique<Background>(std::move(m_adaptor));
+}
+
+BackgroundBuilder& BackgroundBuilder::adaptor(std::unique_ptr<IImageAdaptor>&& adaptor)
+{
+    m_adaptor = std::move(adaptor);
+    return *this;
+}
+
+BackgroundBuilder& BackgroundBuilder::width(int width)
+{
+    checkWidth(width);
+
     m_width = width;
     return *this;
 }
 
-BackgroundBuilder& BackgroundBuilder::setHeight(int height)
+void BackgroundBuilder::checkWidth(int width)
 {
+    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH)
+        throw std::invalid_argument("Width is too small/large");
+}
+
+BackgroundBuilder& BackgroundBuilder::height(int height)
+{
+    checkHeight(height);
+
     m_height = height;
     return *this;
 }
 
-BackgroundBuilder& BackgroundBuilder::setColor(const boost::optional<std::string>& color)
+void BackgroundBuilder::checkHeight(int height)
 {
-    m_color = color.value_or(std::string{});
-    return *this;
+    if(height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Height is too small/large");
 }
 
-BackgroundBuilder& BackgroundBuilder::setPath(const boost::optional<std::string>& path)
+// TODO specify always provided or not
+BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& color)
 {
-    m_path = utils::resourcesDir() / path.value_or(std::string{});
-    return *this;
-}
-
-void BackgroundBuilder::prepareBackground(IBackground& background)
-{
-    background.setSize(m_width, m_height);
-
-    if(!m_color.empty() && !std::filesystem::is_regular_file(m_path))
-        background.setColor(m_color);
-
-    if(!m_path.empty())
+    if(color)
     {
-        auto imageData = utils::getRawData(m_path);
-        background.setImage(imageData.data(), imageData.size());
+        ColorToHexConverter converter;
+        m_hexColor = converter.colorToHex(color.value());
     }
+    return *this;
+}
+
+BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
+{
+    auto fullPath = m_filesystem->resourcesDirectory() / path.value_or(std::string{});
+
+    checkPath(fullPath);
+
+    m_path = fullPath;
+    return *this;
+}
+
+void BackgroundBuilder::checkPath(FilePath path)
+{
+    if(!m_filesystem->isRegularFile(path))
+        throw std::runtime_error("Not valid path");
 }

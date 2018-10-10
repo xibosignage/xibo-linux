@@ -13,28 +13,26 @@ public:
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    void setSize(int width, int height) override;
+    void scale(double scaleX, double scaleY) override;
     int width() const override;
     int height() const override;
 
     void setBackground(std::unique_ptr<IBackground>&& background) override;
     void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) override;
-    void removeAllContainers() override;
 
     IOverlayAdaptor& handler() override;
     void show() override;
 
 private:
-    void showBackground();
     void sortReorderAndShowContainers();
     void sortAndReorderContainers();
     void sortContainersByZorder();
     void removePreviousBackgroundIfSet();
-    void setBackgroundSize(int width, int height);
+    void scaleContainers(double scaleX, double scaleY);
     void checkContainerSize(int containerWidth, int containerHeight);
     void checkContainerCoordinates(int x, int y);
     void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
-    void checkLayoutNewSize(int width, int height);
+    void checkLayoutSize(int width, int height);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

@@ -16,8 +16,8 @@ const double MAX_GST_VOLUME = 1.0;
 
 namespace ph = std::placeholders;
 
-Audio::Audio(int id, int duration, const std::string& uri, bool muted, bool looped, double volume) :
-    Media(id, -1, -1, duration, Render::Native, uri), m_muted(muted), m_looped(looped) // FIXME
+Audio::Audio(int duration, const std::string& uri, bool muted, bool looped, double volume) :
+    m_muted(muted), m_looped(looped)
 {
     gst_init(nullptr, nullptr);
     m_logger = spdlog::get(LOGGER);
@@ -112,17 +112,15 @@ void Audio::play()
     m_pipeline->setState(Gst::State::PLAYING);
 }
 
-void Audio::stop()
+void Audio::doStart()
 {
-    Media::stop();
     m_logger->debug("[Audio] Stopped");
     m_pipeline->setState(Gst::State::NULL_STATE);
     m_audioEnded = true;
 }
 
-void Audio::start()
+void Audio::doStop()
 {
-    Media::start();
     play();
 }
 

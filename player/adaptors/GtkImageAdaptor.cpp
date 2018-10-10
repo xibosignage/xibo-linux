@@ -7,41 +7,48 @@ const int DEFAULT_HEIGHT = 1;
 
 GtkImageAdaptor::GtkImageAdaptor()
 {
-    m_pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+    m_handler.set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, DEFAULT_WIDTH, DEFAULT_HEIGHT));
 }
 
 int GtkImageAdaptor::width() const
 {
-    return m_pixbuf->get_width();
+    return pixbuf()->get_width();
 }
 
 int GtkImageAdaptor::height() const
 {
-    return m_pixbuf->get_height();
+    return pixbuf()->get_height();
 }
 
 void GtkImageAdaptor::setSize(int width, int height)
 {
-    m_pixbuf = m_pixbuf->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-    m_handler.set(m_pixbuf);
+    auto newPixbuf = pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
+    m_handler.set(newPixbuf);
+}
+
+void GtkImageAdaptor::scale(double scaleX, double scaleY)
+{
+
 }
 
 void GtkImageAdaptor::setColor(uint32_t hex_color_number)
 {
-    m_pixbuf->fill(hex_color_number);
+    pixbuf()->fill(hex_color_number);
 }
 
-void GtkImageAdaptor::setImage(const uint8_t* imageData, size_t dataSize)
+void GtkImageAdaptor::setImage(const std::string& path)
 {
-    auto pixbuf = Gdk::PixbufLoader::create();
-    pixbuf->write(imageData, dataSize);
-    pixbuf->close();
-    m_handler.set(pixbuf->get_pixbuf());
+    m_handler.set(Gdk::Pixbuf::create_from_file(path, width(), height()));
 }
 
 void GtkImageAdaptor::show()
 {
     m_handler.show();
+}
+
+void GtkImageAdaptor::hide()
+{
+    m_handler.hide();
 }
 
 Gtk::Image* GtkImageAdaptor::get()
@@ -52,4 +59,14 @@ Gtk::Image* GtkImageAdaptor::get()
 void GtkImageAdaptor::apply(AdaptorVisitor& visitor)
 {
     visitor.visit(*this);
+}
+
+Glib::RefPtr<const Gdk::Pixbuf> GtkImageAdaptor::pixbuf() const
+{
+    return m_handler.get_pixbuf();
+}
+
+Glib::RefPtr<Gdk::Pixbuf> GtkImageAdaptor::pixbuf()
+{
+    return m_handler.get_pixbuf();
 }

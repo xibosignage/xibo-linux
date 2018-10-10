@@ -4,24 +4,16 @@
 #include <memory>
 
 #include "constants.hpp"
+#include "utils/Helpers.hpp"
 
 const int DEFAULT_WIDTH = 640;
 const int DEFAULT_HEIGHT = 480;
 
+const double DEFAULT_XSCALE = 0.5;
+const double DEFAULT_YSCALE = 0.5;
+
 const int NEW_DEFAULT_WIDTH = 200;
 const int NEW_DEFAULT_HEIGHT = 200;
-
-struct Size
-{
-    int width;
-    int height;
-};
-
-struct Point
-{
-    int x;
-    int y;
-};
 
 template<int MaxWidth, int MinWidth, int MaxHeight, int MinHeight>
 const std::vector<Size> invalidSizes = {
@@ -64,6 +56,12 @@ auto construct(Args... args)
     auto adaptorRaw = adaptor.get();
     auto testee = std::make_shared<Testee>(std::forward<Args>(args)..., std::move(adaptor));
     return std::pair{testee, adaptorRaw};
+}
+
+template<typename Testee, typename MockAdaptor, typename... Args>
+auto fake_construct(Args... args)
+{
+    return std::make_unique<testing::NiceMock<Testee>>(std::forward<Args>(args)..., std::make_unique<testing::NiceMock<MockAdaptor>>());
 }
 
 template<typename T>
