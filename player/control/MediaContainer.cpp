@@ -33,15 +33,14 @@ void MediaContainer::scale(double scaleX, double scaleY)
     assert(m_media.size() > 0);
 
     m_handler->scale(scaleX, scaleY);
-    scaleMedia(scaleX, scaleY);
+    scaleVisibleMedia(scaleX, scaleY);
 }
 
-void MediaContainer::scaleMedia(double scaleX, double scaleY)
+void MediaContainer::scaleVisibleMedia(double scaleX, double scaleY)
 {
     for(auto media : m_visibleMedia)
     {
         media->scale(scaleX, scaleY);
-        // TEST scale media called
     }
 }
 
@@ -60,17 +59,12 @@ void MediaContainer::show()
     assert(m_media.size() > 0);
 
     m_handler->show();
-    showCurrentMedia();
+    startCurrentMedia();
 }
 
-void MediaContainer::showCurrentMedia()
+void MediaContainer::startCurrentMedia()
 {
     m_media[m_currentMediaIndex]->start();
-}
-
-void MediaContainer::removeAllMedia()
-{
-    m_handler->removeChildren();
 }
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)

@@ -32,7 +32,6 @@ private:
     void checkContainerSize(int containerWidth, int containerHeight);
     void checkContainerCoordinates(int x, int y);
     void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
-    void checkLayoutSize(int width, int height);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

@@ -2,13 +2,6 @@
 
 using namespace testing;
 
-const int MIN_WIDTH = 1;
-const int MIN_HEIGHT = 1;
-
-const auto invalidMediaContainerSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_WIDTH, MAX_DISPLAY_HEIGHT, MIN_HEIGHT>;
-
-class MainLayoutBuilderSizeTest : public TestWithParam<Size> { };
-
 TEST(MainLayoutBuilderTest, Construct_ValidSize_HandlerSetSizeShouldBeCalled)
 {
     auto layoutHandlerMock = std::make_unique<NiceMock<MockOverlayAdaptor>>();

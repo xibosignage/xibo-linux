@@ -157,7 +157,7 @@ TEST(MainLayoutTest, Scale_Default_HandlerScaleShouldBeCalled)
     layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST(MainLayoutTest, Scale_Default_ContainerScaleShouldBeCalled)
+TEST(MainLayoutTest, Scale_WithContainer_ContainerScaleShouldBeCalled)
 {
     auto [layout, layoutHandlerMock] = constructLayoutWithoutContainer();
     auto mockContainer = createMediaContainer();
@@ -168,7 +168,7 @@ TEST(MainLayoutTest, Scale_Default_ContainerScaleShouldBeCalled)
     layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST(MainLayoutTest, Scale_Default_BackgroundScaleShouldBeCalled)
+TEST(MainLayoutTest, Scale_WithBackground_BackgroundScaleShouldBeCalled)
 {
     auto [layout, layoutHandlerMock] = constructLayoutWithoutBackground();
     auto mockBackground = createBackground();

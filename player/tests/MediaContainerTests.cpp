@@ -111,20 +111,22 @@ TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_MediaConnectShouldBeCalled)
     container->addMedia(unique(mockMedia));
 }
 
-TEST(MediaContainerTest, RemoveAllMedia_Default_HandlerRemoveChildrenShouldBeCalled)
-{
-    auto [container, containerHandlerMock] = constructContainer();
-
-    EXPECT_CALL(*containerHandlerMock, removeChildren());
-
-    container->removeAllMedia();
-}
-
 TEST(MediaContainerTest, Scale_Default_HandlerScaleShouldBeCalled)
 {
     auto [container, containerHandlerMock] = constructContainer();
 
     EXPECT_CALL(*containerHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    container->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+}
+
+TEST(MediaContainerTest, Scale_MediaWithPos_MediaScaleShouldBeCalled)
+{
+    auto [container, containerHandlerMock] = constructContainerWithoutMedia();
+    auto mockMedia = createMediaWithPos();
+    container->addMedia(unique(mockMedia), DEFAULT_XPOS, DEFAULT_YPOS);
+
+    EXPECT_CALL(*mockMedia, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     container->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }

@@ -18,7 +18,7 @@ TEST_P(MediaContainerBuilderSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgE
 
 INSTANTIATE_TEST_CASE_P(Suite, MediaContainerBuilderSizeTest, ::testing::ValuesIn(invalidMediaContainerSizes));
 
-TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPos)
+TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPosShouldBeCalled)
 {
     auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
 
@@ -27,11 +27,29 @@ TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPos)
     MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultAdaptor().defaultSize().build();
 }
 
-TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithoutPos)
+TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithoutPosShouldNotBeCalled)
+{
+    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+
+    EXPECT_CALL(*container, addMedia(_)).Times(0);
+
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultAdaptor().defaultSize().build();
+}
+
+TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithoutPosShouldBeCalled)
 {
     auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
 
     EXPECT_CALL(*container, addMedia(_)).Times(1);
+
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultAdaptor().defaultSize().build();
+}
+
+TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithPosShouldNotBeCalled)
+{
+    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+
+    EXPECT_CALL(*container, addMedia(_, _, _)).Times(0);
 
     MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultAdaptor().defaultSize().build();
 }

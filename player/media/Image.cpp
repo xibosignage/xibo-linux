@@ -31,9 +31,9 @@ int Image::height() const
     return m_handler->height();
 }
 
-void Image::scale(double, double)
+void Image::scale(double scaleX, double scaleY)
 {
-
+    m_handler->scale(scaleX, scaleY);
 }
 
 IWidgetAdaptor& Image::handler()

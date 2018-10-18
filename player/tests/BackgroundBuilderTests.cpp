@@ -19,7 +19,7 @@ TEST_P(BackgroundBuilderSizeTest, Construct_InvalidSize_ShouldThrowInvalidArgErr
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundBuilderSizeTest, ::testing::ValuesIn(invalidBackgroundSizes));
 
-TEST_P(BackgroundBuilderValidColorTest, Construct_ValidColor_HandlerSetColorShouldBeCalled)
+TEST_P(BackgroundBuilderValidColorTest, Construct_ValidColor_HandlerSetColorWithConvertedStringShouldBeCalled)
 {
     auto backgroundHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
 
@@ -70,7 +70,7 @@ TEST(BackgroundBuilderTest, Construct_DefaultColorPath_HandlerSetImageShouldBeCa
     builder.defaultSize().color(DEFAULT_COLOR).path(DEFAULT_PATH).adaptor(std::move(backgroundHandlerMock)).build();
 }
 
-TEST(BackgroundBuilderTest, Construct_InvalidPath_HandlerSetImageShouldNotBeCalled)
+TEST(BackgroundBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
 {
     auto adaptor = std::make_unique<NiceMock<MockFileSystemAdaptor>>();
 

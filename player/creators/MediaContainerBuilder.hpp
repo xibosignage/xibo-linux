@@ -15,7 +15,6 @@ struct MediaWithPos
     int y;
 };
 
-
 const int DEFAULT_ZORDER = 0;
 const bool DEFAULT_LOOP = false;
 

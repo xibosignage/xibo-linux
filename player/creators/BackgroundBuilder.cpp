@@ -79,6 +79,7 @@ BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& 
 
 BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
 {
+    assert(m_filesystem);
     auto fullPath = m_filesystem->resourcesDirectory() / path.value_or(std::string{});
 
     checkPath(fullPath);

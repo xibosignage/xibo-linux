@@ -11,6 +11,13 @@
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
+const int MIN_WIDTH = 1;
+const int MIN_HEIGHT = 1;
+
+const auto invalidMediaContainerSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_WIDTH, MAX_DISPLAY_HEIGHT, MIN_HEIGHT>;
+
+class MainLayoutBuilderSizeTest : public testing::TestWithParam<Size> { };
+
 class MainLayoutBuilderTest : public MainLayoutBuilder
 {
 public:

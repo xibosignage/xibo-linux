@@ -22,15 +22,13 @@ public:
 
     void addMedia(std::unique_ptr<IMedia>&& media, int x, int y) override;
     void addMedia(std::unique_ptr<IMedia>&& media) override;
-    void removeAllMedia() override;
     IFixedLayoutAdaptor& handler() override;
 
 private:
     void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
-    void showCurrentMedia();
-    void checkContainerSize(int width, int height);
+    void startCurrentMedia();
     void onMediaTimeout();
-    void scaleMedia(double scaleX, double scaleY);
+    void scaleVisibleMedia(double scaleX, double scaleY);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
