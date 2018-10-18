@@ -24,20 +24,20 @@ void GetMediaPosition::visit(Image& image)
 
 void GetMediaPosition::visit(Audio&)
 {
-    m_mediaX = DEFAULT_X_POS;
-    m_mediaY = DEFAULT_Y_POS;
+    m_mediaX = DEFAULT_XPOS;
+    m_mediaY = DEFAULT_YPOS;
 }
 
 void GetMediaPosition::visit(Video&)
 {
-    m_mediaX = DEFAULT_X_POS;
-    m_mediaY = DEFAULT_Y_POS;
+    m_mediaX = DEFAULT_XPOS;
+    m_mediaY = DEFAULT_YPOS;
 }
 
 void GetMediaPosition::visit(WebView&)
 {
-    m_mediaX = DEFAULT_X_POS;
-    m_mediaY = DEFAULT_Y_POS;
+    m_mediaX = DEFAULT_XPOS;
+    m_mediaY = DEFAULT_YPOS;
 }
 
 int GetMediaPosition::getImageX(Image::Align align, int imageWidth)
@@ -47,7 +47,7 @@ int GetMediaPosition::getImageX(Image::Align align, int imageWidth)
     case Image::Align::Center:
         return (m_containerWidth - imageWidth) / 2;
     case Image::Align::Left:
-        return DEFAULT_X_POS;
+        return DEFAULT_XPOS;
     case Image::Align::Right:
         return m_containerWidth - imageWidth;
     default:
@@ -63,7 +63,7 @@ int GetMediaPosition::getImageY(Image::Valign valign, int imageHeight)
     case Image::Valign::Middle:
         return (m_containerHeight - imageHeight) / 2;
     case Image::Valign::Top:
-        return DEFAULT_Y_POS;
+        return DEFAULT_YPOS;
     case Image::Valign::Bottom:
         return m_containerHeight - imageHeight;
     default:

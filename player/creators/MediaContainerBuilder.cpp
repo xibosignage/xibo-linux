@@ -69,21 +69,29 @@ MediaContainerBuilder& MediaContainerBuilder::loop(const boost::optional<bool>& 
     return *this;
 }
 
-MediaContainerBuilder& MediaContainerBuilder::media(std::vector<MediaStruct>&& media)
+MediaContainerBuilder& MediaContainerBuilder::visibleMedia(std::vector<MediaWithPos>&& visibleMedia)
 {
-    m_media = std::move(media);
+    m_visibleMedia = std::move(visibleMedia);
+    return *this;
+}
+
+MediaContainerBuilder& MediaContainerBuilder::invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& invisibleMedia)
+{
+    m_invisibleMedia = std::move(invisibleMedia);
     return *this;
 }
 
 void MediaContainerBuilder::addAllMedia(IMediaContainer& container)
 {
-    assert(m_media.size() > 0);
+    assert(m_visibleMedia.size() > 0 || m_invisibleMedia.size() > 0);
 
-    for(auto&& ct : m_media)
+    for(auto&& ct : m_visibleMedia)
     {
-        if(ct.type != "audio")
-            container.addMedia(std::move(ct.media), ct.x, ct.y);
-        else
-            container.addMedia(std::move(ct.media));
+        container.addMedia(std::move(ct.media), ct.x, ct.y);
+    }
+
+    for(auto&& media : m_invisibleMedia)
+    {
+        container.addMedia(std::move(media));
     }
 }

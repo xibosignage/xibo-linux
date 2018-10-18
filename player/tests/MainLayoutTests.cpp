@@ -26,14 +26,14 @@ auto constructLayout()
 {
     auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
     layout->setBackground(unique(createBackground()));
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_X_POS);
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
     return std::pair{layout, handler};
 }
 
 auto constructLayoutWithoutBackground()
 {
     auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_X_POS);
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
     return std::pair{layout, handler};
 }
 
@@ -115,7 +115,7 @@ TEST(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
 
     EXPECT_CALL(*layoutHandlerMock, addChild(_, _, _ ,_ , _));
 
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_X_POS, DEFAULT_Y_POS);
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST_P(MainLayoutTestPos, AddMediaContainer_InvalidPos_ShouldThrowInvalidArgError)
@@ -135,7 +135,7 @@ TEST(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_Inva
 
     ON_CALL(*stubContainer, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_X_POS, DEFAULT_Y_POS), std::invalid_argument);
+    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
 TEST(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
@@ -145,7 +145,7 @@ TEST(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_Inv
 
     ON_CALL(*stubContainer, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_X_POS, DEFAULT_Y_POS), std::invalid_argument);
+    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
 TEST(MainLayoutTest, Scale_Default_HandlerScaleShouldBeCalled)
@@ -161,7 +161,7 @@ TEST(MainLayoutTest, Scale_Default_ContainerScaleShouldBeCalled)
 {
     auto [layout, layoutHandlerMock] = constructLayoutWithoutContainer();
     auto mockContainer = createMediaContainer();
-    layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
+    layout->addMediaContainer(unique(mockContainer), DEFAULT_XPOS, DEFAULT_YPOS);
 
     EXPECT_CALL(*mockContainer, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
@@ -229,7 +229,7 @@ TEST(MainLayoutTest, Show_WithMediaContainer_MediaContainerShowShouldBeCalled)
 {
     auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto mockContainer = createMediaContainer();
-    layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
+    layout->addMediaContainer(unique(mockContainer), DEFAULT_XPOS, DEFAULT_YPOS);
 
     EXPECT_CALL(*mockContainer, show());
     ON_CALL(*layoutHandlerStub, isShown()).WillByDefault(Return(false));
@@ -241,7 +241,7 @@ TEST(MainLayoutTest, Show_WithMediaContainerTwice_MediaContainerShowShouldBeCall
 {
     auto [layout, layoutHandlerStub] = constructLayoutWithoutContainer();
     auto mockContainer = createMediaContainer();
-    layout->addMediaContainer(unique(mockContainer), DEFAULT_X_POS, DEFAULT_Y_POS);
+    layout->addMediaContainer(unique(mockContainer), DEFAULT_XPOS, DEFAULT_YPOS);
 
     EXPECT_CALL(*mockContainer, show()).Times(1);
 

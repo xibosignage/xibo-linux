@@ -7,8 +7,8 @@ class IMediaContainer;
 class IMedia;
 class IBackground;
 
-struct MediaContainerStruct;
-struct MediaStruct;
+struct MediaContainerWithPos;
+struct MediaWithPos;
 
 class MainBuilder
 {
@@ -20,9 +20,10 @@ public:
 private:
     std::unique_ptr<IMainLayout> buildLayout(const xlf_node& layoutNode);
     std::unique_ptr<IBackground> buildBackground(const xlf_node& layoutNode);
-    std::vector<MediaContainerStruct> collectContainers(const xlf_node& layoutNode);
+    std::vector<MediaContainerWithPos> collectContainers(const xlf_node& layoutNode);
     std::unique_ptr<IMediaContainer> buildContainer(const xlf_node& containerNode);
-    std::vector<MediaStruct> collectMedia(const xlf_node& containerNode);
+    std::vector<MediaWithPos> collectVisibleMedia(const xlf_node& containerNode);
+    std::vector<std::unique_ptr<IMedia> > collectInvisibleMedia(const xlf_node& containerNode);
     std::unique_ptr<IMedia> buildMedia(const xlf_node& containerNode, const xlf_node& mediaNode);
 
 };

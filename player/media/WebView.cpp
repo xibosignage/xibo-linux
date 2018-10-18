@@ -57,10 +57,10 @@ void WebView::doStart()
     webkit_web_view_reload(m_webView);
 }
 
-void WebView::setSize(int width, int height)
-{
-    m_handler.set_size_request(width, height);
-}
+//void WebView::setSize(int width, int height)
+//{
+//    m_handler.set_size_request(width, height);
+//}
 
 #include "media/MediaVisitor.hpp"
 void WebView::apply(MediaVisitor& visitor)

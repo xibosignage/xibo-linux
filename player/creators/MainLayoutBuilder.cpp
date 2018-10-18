@@ -61,7 +61,7 @@ MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& 
     return *this;
 }
 
-MainLayoutBuilder& MainLayoutBuilder::mediaContainers(std::vector<MediaContainerStruct>&& mediaContainers)
+MainLayoutBuilder& MainLayoutBuilder::mediaContainers(std::vector<MediaContainerWithPos>&& mediaContainers)
 {
     m_mediaContainers = std::move(mediaContainers);
     return *this;

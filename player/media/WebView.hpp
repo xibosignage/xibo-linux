@@ -5,7 +5,7 @@
 #include <gtkmm/scrolledwindow.h>
 #include <webkit/webkit.h>
 
-class WebView : public Media
+class WebView : public Media<IVisibleMedia>
 {
 public:
     WebView(int width, int height, int duration, const std::string& uri, bool transparent);
@@ -18,7 +18,8 @@ public:
 protected:
     void doStop() override;
     void doStart() override;
-    void setSize(int, int) override;
+
+    void scale(double, double) override { }
     int width() const override { }
     int height() const override { }
 

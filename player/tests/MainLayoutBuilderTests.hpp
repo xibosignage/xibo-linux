@@ -32,8 +32,8 @@ public:
 
     MainLayoutBuilderTest& defaultContainers()
     {
-        std::vector<MediaContainerStruct> containers;
-        containers.push_back(MediaContainerStruct{fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_X_POS, DEFAULT_Y_POS});
+        std::vector<MediaContainerWithPos> containers;
+        containers.push_back(MediaContainerWithPos{fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
         return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
     }
 

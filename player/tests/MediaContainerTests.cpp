@@ -11,14 +11,21 @@
 
 using namespace ::testing;
 
-NiceMock<MockMedia>* createMedia()
+NiceMock<MockVisibleMedia>* createMediaWithPos()
 {
     auto handler = new NiceMock<MockWidgetAdaptor>;
-    auto container = new NiceMock<MockMedia>(unique(handler));
+    auto media = new NiceMock<MockVisibleMedia>(unique(handler));
 
-    ON_CALL(*container, handler()).WillByDefault(ReturnRef(*handler));
+    ON_CALL(*media, handler()).WillByDefault(ReturnRef(*handler));
 
-    return container;
+    return media;
+}
+
+NiceMock<MockInvisibleMedia>* createMedia()
+{
+    auto media = new NiceMock<MockInvisibleMedia>;
+
+    return media;
 }
 
 auto constructContainer()
@@ -68,21 +75,21 @@ TEST(MediaContainerTest, Zorder_Default_ContainerZorderEquals0)
 TEST(MediaContainerTest, AddMediaWithCoords_Valid_HandlerAddChildShouldBeCalled)
 {
     auto [container, containerHandlerMock] = constructContainerWithoutMedia();
-    auto stubMedia = createMedia();
+    auto stubMedia = createMediaWithPos();
 
-    EXPECT_CALL(*containerHandlerMock, addChild(_, DEFAULT_X_POS, DEFAULT_Y_POS));
+    EXPECT_CALL(*containerHandlerMock, addChild(_, DEFAULT_XPOS, DEFAULT_YPOS));
 
-    container->addMedia(unique(stubMedia), DEFAULT_X_POS, DEFAULT_Y_POS);
+    container->addMedia(unique(stubMedia), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
 {
     auto [container, containerHandlerStub] = constructContainerWithoutMedia();
-    auto mockMedia = createMedia();
+    auto mockMedia = createMediaWithPos();
 
     EXPECT_CALL(*mockMedia, connect(_));
 
-    container->addMedia(unique(mockMedia), DEFAULT_X_POS, DEFAULT_Y_POS);
+    container->addMedia(unique(mockMedia), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST(MediaContainerTest, AddMediaWithoutCoords_Valid_HandlerAddChildShouldNotBeCalled)
@@ -143,7 +150,7 @@ TEST(MediaContainerTest, Show_With1Media_MediaStartShouldBeCalled)
 }
 
 TEST(MediaContainerTest, Show_With2Media_FirstMediaStartShouldBeCalled)
-{        
+{
     auto [container, containerHandlerStub] = constructContainerWithoutMedia();
     auto mockMediaFirst = createMedia();
     container->addMedia(unique(mockMediaFirst));

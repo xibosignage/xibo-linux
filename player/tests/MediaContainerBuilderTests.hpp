@@ -33,16 +33,16 @@ public:
 
     MediaContainerBuilderTest& defaultVisibleMedia()
     {
-        std::vector<MediaStruct> allMedia;
-        allMedia.push_back(MediaStruct{fake_construct<MockMedia, MockWidgetAdaptor>(), "video", DEFAULT_X_POS, DEFAULT_Y_POS});
-        return static_cast<MediaContainerBuilderTest&>(media(std::move(allMedia)));
+        std::vector<MediaWithPos> media;
+        media.push_back(MediaWithPos{fake_construct<MockVisibleMedia, MockWidgetAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        return static_cast<MediaContainerBuilderTest&>(visibleMedia(std::move(media)));
     }
 
-    MediaContainerBuilderTest& defaultInvisibleMedia() // FIXME positions should not be there
+    MediaContainerBuilderTest& defaultInvisibleMedia()
     {
-        std::vector<MediaStruct> allMedia;
-        allMedia.push_back(MediaStruct{fake_construct<MockMedia, MockWidgetAdaptor>(), "audio", DEFAULT_X_POS, DEFAULT_Y_POS});
-        return static_cast<MediaContainerBuilderTest&>(media(std::move(allMedia)));
+        std::vector<std::unique_ptr<IMedia>> media;
+        media.push_back(std::make_unique<MockInvisibleMedia>());
+        return static_cast<MediaContainerBuilderTest&>(invisibleMedia(std::move(media)));
     }
 
     MediaContainerBuilder& defaultSize()

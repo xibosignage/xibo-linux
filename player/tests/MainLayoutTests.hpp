@@ -32,7 +32,7 @@ public:
         auto container = createMediaContainer();
 
         ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
-        layout.addMediaContainer(unique(container), DEFAULT_X_POS, DEFAULT_Y_POS);
+        layout.addMediaContainer(unique(container), DEFAULT_XPOS, DEFAULT_YPOS);
 
         pushContainerAndSort(container);
     }

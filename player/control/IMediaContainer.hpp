@@ -2,7 +2,10 @@
 
 #include <memory>
 
+class IVisibleMedia;
+class IInvisibleMedia;
 class IMedia;
+
 class IFixedLayoutAdaptor;
 
 class IMediaContainer

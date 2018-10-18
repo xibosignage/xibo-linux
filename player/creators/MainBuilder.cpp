@@ -46,16 +46,16 @@ std::unique_ptr<IBackground> MainBuilder::buildBackground(const xlf_node& layout
     return builder.adaptor(std::make_unique<GtkImageAdaptor>()).width(width).height(height).path(path).color(color).build();
 }
 
-std::vector<MediaContainerStruct> MainBuilder::collectContainers(const xlf_node& layoutNode)
+std::vector<MediaContainerWithPos> MainBuilder::collectContainers(const xlf_node& layoutNode)
 {
-    std::vector<MediaContainerStruct> containers;
+    std::vector<MediaContainerWithPos> containers;
     for(auto [nodeName, containerNode] : layoutNode)
     {
         if(nodeName == RegionXlf::NodeName)
         {
             int x = RegionXlf::left(containerNode);
             int y = RegionXlf::top(containerNode);
-            containers.emplace_back(MediaContainerStruct{buildContainer(containerNode), x, y});
+            containers.emplace_back(MediaContainerWithPos{buildContainer(containerNode), x, y});
         }
     }
     return containers;
@@ -71,25 +71,38 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
     MediaContainerBuilder builder;
     return builder.adaptor(std::make_unique<GtkFixedLayoutAdaptor>())
                   .width(width).height(height).zorder(zorder).loop(loop)
-                  .media(collectMedia(containerNode)).build();
+                  .visibleMedia(collectVisibleMedia(containerNode))
+                  .invisibleMedia(collectInvisibleMedia(containerNode)).build();
 }
 
-std::vector<MediaStruct> MainBuilder::collectMedia(const xlf_node& containerNode)
+std::vector<MediaWithPos> MainBuilder::collectVisibleMedia(const xlf_node& containerNode)
 {
-    std::vector<MediaStruct> media;
+    std::vector<MediaWithPos> media;
     for(auto [nodeName, mediaNode] : containerNode)
     {
-        if(nodeName == MediaXlf::NodeName)
+        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) != MediaXlf::AudioType)
         {
-            auto type = MediaXlf::type(mediaNode);
             auto builtMedia = buildMedia(containerNode, mediaNode);
             int containerWidth = RegionXlf::width(containerNode);
             int containerHeight = RegionXlf::height(containerNode);
 
-            GetMediaPosition visitor(containerWidth, containerHeight);
+            GetMediaPosition visitor(containerWidth, containerHeight); // FIXME change from visitor
             builtMedia->apply(visitor);
 
-            media.emplace_back(MediaStruct{std::move(builtMedia), type, visitor.getMediaX(), visitor.getMediaY()});
+            media.emplace_back(MediaWithPos{std::move(builtMedia), visitor.getMediaX(), visitor.getMediaY()});
+        }
+    }
+    return media;
+}
+
+std::vector<std::unique_ptr<IMedia>> MainBuilder::collectInvisibleMedia(const xlf_node& containerNode)
+{
+    std::vector<std::unique_ptr<IMedia>> media;
+    for(auto [nodeName, mediaNode] : containerNode)
+    {
+        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) == MediaXlf::AudioType)
+        {
+            media.emplace_back(buildMedia(containerNode, mediaNode));
         }
     }
     return media;

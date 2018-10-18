@@ -3,14 +3,13 @@
 #include "wrapper/GstFwd.hpp"
 #include <spdlog/spdlog.h>
 
-class Audio : public Media
+class Audio : public Media<IInvisibleMedia>
 {
 public:
     Audio(int duration, const std::string& uri, bool muted, bool looped, double volume);
     ~Audio() override;
 
     void startTimer() override;
-    IWidgetAdaptor& handler() override { }
 
     bool muted() const;
     bool looped() const;
@@ -21,9 +20,6 @@ public:
 protected:
     void doStop() override;
     void doStart() override;
-    void setSize(int, int) override { }
-    int width() const override { }
-    int height() const override { }
 
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);

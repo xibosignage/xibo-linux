@@ -35,18 +35,18 @@ const std::vector<Size> invalidSizes = {
 
 template<int MaxX, int MinX, int MaxY, int MinY>
 const std::vector<Point> invalidPositions = {
-    {MaxX + 1, DEFAULT_Y_POS},
-    {DEFAULT_X_POS, MaxY + 1},
-    {MinX - 1, DEFAULT_Y_POS},
-    {DEFAULT_X_POS, MinY - 1},
+    {MaxX + 1, DEFAULT_YPOS},
+    {DEFAULT_XPOS, MaxY + 1},
+    {MinX - 1, DEFAULT_YPOS},
+    {DEFAULT_XPOS, MinY - 1},
     {MinX - 1, MaxY + 1},
     {MaxX + 1, MinY - 1},
     {MaxX + 1, MaxY + 1},
     {MinX - 1, MinY - 1},
-    {std::numeric_limits<int>::max(), DEFAULT_Y_POS},
-    {DEFAULT_X_POS, std::numeric_limits<int>::max()},
-    {std::numeric_limits<int>::min(), DEFAULT_Y_POS},
-    {DEFAULT_X_POS, std::numeric_limits<int>::min()}
+    {std::numeric_limits<int>::max(), DEFAULT_YPOS},
+    {DEFAULT_XPOS, std::numeric_limits<int>::max()},
+    {std::numeric_limits<int>::min(), DEFAULT_YPOS},
+    {DEFAULT_XPOS, std::numeric_limits<int>::min()}
 };
 
 template<typename Testee, typename MockAdaptor, typename... Args>

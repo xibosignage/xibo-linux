@@ -38,9 +38,9 @@ void MediaContainer::scale(double scaleX, double scaleY)
 
 void MediaContainer::scaleMedia(double scaleX, double scaleY)
 {
-    for(auto&& media : m_media)
+    for(auto media : m_visibleMedia)
     {
-        // FIXME scale media
+        media->scale(scaleX, scaleY);
         // TEST scale media called
     }
 }
@@ -75,8 +75,12 @@ void MediaContainer::removeAllMedia()
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
-    auto&& addedMedia = initAndAddMediaToList(std::move(media));
-    m_handler->addChild(addedMedia.handler(), x, y);
+    auto visibleMedia = dynamic_cast<IVisibleMedia*>(media.get());
+
+    m_handler->addChild(visibleMedia->handler(), x, y);
+    m_visibleMedia.push_back(visibleMedia);
+
+    initAndAddMediaToList(std::move(media));
 }
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media)
@@ -84,13 +88,12 @@ void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media)
     initAndAddMediaToList(std::move(media));
 }
 
-IMedia& MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
+void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
 {
     assert(media);
 
     media->connect(std::bind(&MediaContainer::onMediaTimeout, this));
     m_media.push_back(std::move(media));
-    return *m_media.back();
 }
 
 // TODO Refactor after Media unit-tests

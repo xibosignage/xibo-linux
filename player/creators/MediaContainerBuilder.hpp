@@ -8,10 +8,9 @@
 #include "media/IMedia.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 
-struct MediaStruct
+struct MediaWithPos
 {
     std::unique_ptr<IMedia> media;
-    std::string type;
     int x;
     int y;
 };
@@ -30,7 +29,8 @@ public:
     MediaContainerBuilder& height(int height);
     MediaContainerBuilder& zorder(const boost::optional<int>& zorder);
     MediaContainerBuilder& loop(const boost::optional<bool>& loop);
-    MediaContainerBuilder& media(std::vector<MediaStruct>&& media);
+    MediaContainerBuilder& visibleMedia(std::vector<MediaWithPos>&& visibleMedia);
+    MediaContainerBuilder& invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& visibleMedia);
 
 protected:
     virtual std::unique_ptr<IMediaContainer> createContainer(int zorder, bool loop);
@@ -46,6 +46,7 @@ private:
     int m_height;
     int m_zorder;
     bool m_loop;
-    std::vector<MediaStruct> m_media;
+    std::vector<MediaWithPos> m_visibleMedia;
+    std::vector<std::unique_ptr<IMedia>> m_invisibleMedia;
 
 };

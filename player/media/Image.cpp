@@ -11,13 +11,11 @@ Image::Image(Image::ScaleType type, Image::Align align, Image::Valign valign, st
 {
 }
 
-// FIXME change name after adding Visible/Invisible media
 void Image::doStop()
 {
     m_handler->hide();
 }
 
-// FIXME change name after adding Visible/Invisible media
 void Image::doStart()
 {
     m_handler->show();
@@ -31,6 +29,11 @@ int Image::width() const
 int Image::height() const
 {
     return m_handler->height();
+}
+
+void Image::scale(double, double)
+{
+
 }
 
 IWidgetAdaptor& Image::handler()

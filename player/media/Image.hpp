@@ -7,7 +7,7 @@
 
 class IImageAdaptor;
 
-class Image : public Media
+class Image : public Media<IVisibleMedia>
 {
 public:
     enum class ScaleType
@@ -41,7 +41,7 @@ public:
 
     int width() const override;
     int height() const override;
-    void setSize(int, int) override { }
+    void scale(double, double) override;
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;

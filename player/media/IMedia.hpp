@@ -18,17 +18,28 @@ public:
     virtual void start() = 0;
     virtual void startTimer() = 0;
 
-    virtual int width() const = 0;
-    virtual int height() const = 0;
-    virtual void setSize(int width, int height) = 0;
-
     virtual int duration() const = 0;
     virtual void setDuration(int duration) = 0;
 
     virtual void attachAudio(std::unique_ptr<IMedia>&& audio) = 0;
     virtual void connect(OnMediaTimeout callback) = 0;
 
-    virtual IWidgetAdaptor& handler() = 0;
     virtual void apply(MediaVisitor& visitor) = 0;
+
+};
+
+class IVisibleMedia : public IMedia
+{
+public:
+    virtual int width() const = 0;
+    virtual int height() const = 0;
+    virtual void scale(double scaleX, double scaleY) = 0;
+
+    virtual IWidgetAdaptor& handler() = 0;
+
+};
+
+class IInvisibleMedia : public IMedia
+{
 
 };

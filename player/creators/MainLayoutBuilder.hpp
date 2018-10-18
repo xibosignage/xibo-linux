@@ -9,7 +9,7 @@
 
 #include "adaptors/IOverlayAdaptor.hpp"
 
-struct MediaContainerStruct
+struct MediaContainerWithPos
 {
     std::unique_ptr<IMediaContainer> container;
     int x;
@@ -25,7 +25,7 @@ public:
     MainLayoutBuilder& width(int width);
     MainLayoutBuilder& height(int height);
     MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
-    MainLayoutBuilder& mediaContainers(std::vector<MediaContainerStruct>&& mediaContainers);
+    MainLayoutBuilder& mediaContainers(std::vector<MediaContainerWithPos>&& mediaContainers);
 
 protected:
     virtual std::unique_ptr<IMainLayout> createLayout();
@@ -40,6 +40,6 @@ private:
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;
-    std::vector<MediaContainerStruct> m_mediaContainers;
+    std::vector<MediaContainerWithPos> m_mediaContainers;
 
 };

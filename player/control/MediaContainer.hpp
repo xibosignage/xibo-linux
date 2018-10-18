@@ -26,7 +26,7 @@ public:
     IFixedLayoutAdaptor& handler() override;
 
 private:
-    IMedia& initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
+    void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
     void showCurrentMedia();
     void checkContainerSize(int width, int height);
     void onMediaTimeout();
@@ -37,6 +37,7 @@ private:
     int m_zorder;
     bool m_looped;
 
+    std::vector<IVisibleMedia*> m_visibleMedia;
     std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
 

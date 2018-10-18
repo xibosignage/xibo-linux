@@ -193,17 +193,17 @@ void Video::startTimer()
     }
 }
 
-void Video::setSize(int width_, int height_)
+void Video::scale(double, double)
 {
-    if(width_ != width() || height_ != height())
-    {
-//        Media::setSize(width_, height_);
-        spdlog::get(LOGGER)->debug("set size {} {}", width_, height_);
+//    if(width_ != width() || height_ != height())
+//    {
+////        Media::setSize(width_, height_);
+//        spdlog::get(LOGGER)->debug("set size {} {}", width_, height_);
 
-        m_capsfilter->setCaps(Gst::Caps::create((m_videoFmt % width_ % height_).str()));
+//        m_capsfilter->setCaps(Gst::Caps::create((m_videoFmt % width_ % height_).str()));
 
-        m_videoWindow.set_size_request(width_, height_);
-    }
+//        m_videoWindow.set_size_request(width_, height_);
+//    }
 }
 
 #include "adaptors/GtkImageAdaptor.hpp"
