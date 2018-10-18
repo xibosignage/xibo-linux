@@ -16,12 +16,11 @@ public:
 
     virtual void stop() = 0;
     virtual void start() = 0;
-    virtual void startTimer() = 0;
 
     virtual int duration() const = 0;
     virtual void setDuration(int duration) = 0;
 
-    virtual void attachAudio(std::unique_ptr<IMedia>&& audio) = 0;
+    virtual void attachMedia(std::unique_ptr<IMedia>&& media) = 0;
     virtual void connect(OnMediaTimeout callback) = 0;
 
     virtual void apply(MediaVisitor& visitor) = 0;

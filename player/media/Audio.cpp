@@ -124,14 +124,6 @@ void Audio::doStop()
     play();
 }
 
-void Audio::startTimer()
-{
-    if(duration())
-    {
-        Media::startTimer();
-    }
-}
-
 #include "media/MediaVisitor.hpp"
 void Audio::apply(MediaVisitor& visitor)
 {

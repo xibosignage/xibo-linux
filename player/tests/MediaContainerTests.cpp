@@ -1,44 +1,6 @@
-#include "test_utils.hpp"
-
-#include "creators/MediaContainerBuilder.hpp"
-
-#include "control/MediaContainer.hpp"
-#include "media/MediaVisitor.hpp"
-
-#include "mocks/MockFixedLayoutAdaptor.hpp"
-#include "mocks/MockMedia.hpp"
-#include "mocks/MockWidgetAdaptor.hpp"
+#include "MediaContainerTests.hpp"
 
 using namespace ::testing;
-
-NiceMock<MockVisibleMedia>* createMediaWithPos()
-{
-    auto handler = new NiceMock<MockWidgetAdaptor>;
-    auto media = new NiceMock<MockVisibleMedia>(unique(handler));
-
-    ON_CALL(*media, handler()).WillByDefault(ReturnRef(*handler));
-
-    return media;
-}
-
-NiceMock<MockInvisibleMedia>* createMedia()
-{
-    auto media = new NiceMock<MockInvisibleMedia>;
-
-    return media;
-}
-
-auto constructContainer()
-{
-    auto [container, handler] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER, DEFAULT_LOOP);
-    container->addMedia(unique(createMedia()));
-    return std::pair{container, handler};
-}
-
-auto constructContainerWithoutMedia()
-{
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER, DEFAULT_LOOP);
-}
 
 TEST(MediaContainerTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
@@ -137,6 +99,32 @@ TEST(MediaContainerTest, Show_Default_HandlerShowShouldBeCalled)
 
     EXPECT_CALL(*containerHandlerMock, show());
 
+    container->show();
+}
+
+TEST(MediaContainerTest, Show_DefaultMediaDuration_TimerStartOnceShouldBeCalled)
+{
+    auto timerMock = new NiceMock<MockTimerProvider>;
+    auto [container, containerHandlerStub] = constructContainerWithoutMedia(unique(timerMock));
+    auto stubMedia = createMedia();
+
+    ON_CALL(*stubMedia, duration()).WillByDefault(Return(DEFAULT_DURATION));
+    EXPECT_CALL(*timerMock, startOnce(DEFAULT_DURATION * MSECS, _));
+
+    container->addMedia(unique(stubMedia));
+    container->show();
+}
+
+TEST(MediaContainerTest, Show_MediaDurationEquals0_TimerStartOnceShouldNotBeCalled)
+{
+    auto timerMock = new NiceMock<MockTimerProvider>;
+    auto [container, containerHandlerStub] = constructContainerWithoutMedia(unique(timerMock));
+    auto stubMedia = createMedia();
+
+    ON_CALL(*stubMedia, duration()).WillByDefault(Return(0));
+    EXPECT_CALL(*timerMock, startOnce(_, _)).Times(0);
+
+    container->addMedia(unique(stubMedia));
     container->show();
 }
 

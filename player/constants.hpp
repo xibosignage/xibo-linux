@@ -8,7 +8,7 @@ using xlf_node = boost::property_tree::ptree;
 
 const std::string LOGGER = "logger";
 
-const uint MSECS = 1000;
+const unsigned int MSECS = 1000;
 const int MAX_VOLUME = 100;
 
 const int MIN_DISPLAY_WIDTH = 160;

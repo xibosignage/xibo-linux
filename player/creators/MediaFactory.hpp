@@ -22,7 +22,7 @@ protected:
     virtual std::unique_ptr<IMedia> doCreate() = 0;
 
 private:
-    std::unique_ptr<IMedia> createAudioNode(int parentDuration);
+    std::unique_ptr<IMedia> createAudioFromNode(int parentDuration);
 
 private:
     xlf_node m_parentNode;

@@ -1,54 +1,11 @@
 #pragma once
 
 #include <memory>
-#include <filesystem>
 #include <boost/optional/optional.hpp>
 
 #include "control/IBackground.hpp"
 #include "adaptors/IImageAdaptor.hpp"
-
-using FilePath = std::filesystem::path;
-
-class IFileSystemAdaptor
-{
-public:
-    virtual ~IFileSystemAdaptor() = default;
-    virtual void setResourcesDirectory(FilePath path) = 0;
-    virtual FilePath resourcesDirectory() const = 0;
-    virtual bool isRegularFile(FilePath path) const = 0;
-};
-
-class FileSystemAdaptor : public IFileSystemAdaptor
-{
-public:
-    void setResourcesDirectory(FilePath path) override
-    {
-        m_resourcesDirectory = path;
-    }
-
-    FilePath resourcesDirectory() const override
-    {
-        return m_resourcesDirectory;
-    }
-
-    bool isRegularFile(FilePath path) const override
-    {
-        return std::filesystem::is_regular_file(path);
-    }
-
-private:
-    FilePath m_resourcesDirectory;
-
-};
-
-#include <gmock/gmock.h>
-class MockFileSystemAdaptor : public IFileSystemAdaptor
-{
-public:
-    MOCK_METHOD1(setResourcesDirectory, void(FilePath path));
-    MOCK_CONST_METHOD0(resourcesDirectory, FilePath());
-    MOCK_CONST_METHOD1(isRegularFile, bool(FilePath path));
-};
+#include "utils/IFileSystemAdaptor.hpp"
 
 class BackgroundBuilder
 {

@@ -22,7 +22,7 @@ TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWith
 {
     auto layout = fake_construct<MockMainLayout, MockOverlayAdaptor>();
 
-    EXPECT_CALL(*layout, addMediaContainer(_, _, _)).Times(1);
+    EXPECT_CALL(*layout, addMediaContainer(_, _, _));
 
     MainLayoutBuilderTest().fakeLayout(std::move(layout)).defaultContainers().defaultBackground().defaultAdaptor().defaultSize().build();
 }
@@ -31,7 +31,7 @@ TEST(MainLayoutBuilderTest, Construct_WithBackground_HandlerSetBackground)
 {
     auto layout = fake_construct<MockMainLayout, MockOverlayAdaptor>();
 
-    EXPECT_CALL(*layout, setBackground(_)).Times(1);
+    EXPECT_CALL(*layout, setBackground(_));
 
     MainLayoutBuilderTest().fakeLayout(std::move(layout)).defaultContainers().defaultBackground().defaultAdaptor().defaultSize().build();
 }

@@ -1,13 +1,14 @@
 #pragma once
 
 #include "IMediaContainer.hpp"
+#include "utils/ITimerProvider.hpp"
 
 #include <vector>
 
 class MediaContainer : public IMediaContainer
 {
 public:
-    MediaContainer(int zorder, bool looped, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+    MediaContainer(int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~MediaContainer() override;
 
     MediaContainer(const MediaContainer& other) = delete;
@@ -27,11 +28,13 @@ public:
 private:
     void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
     void startCurrentMedia();
+    void startMedia(size_t mediaIndex);
     void onMediaTimeout();
     void scaleVisibleMedia(double scaleX, double scaleY);
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
+    std::unique_ptr<ITimerProvider> m_timer;
     int m_zorder;
     bool m_looped;
 

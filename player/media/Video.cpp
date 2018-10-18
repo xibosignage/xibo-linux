@@ -185,19 +185,11 @@ void Video::doStart()
     play();
 }
 
-void Video::startTimer()
-{
-    if(duration())
-    {
-        Media::startTimer();
-    }
-}
-
 void Video::scale(double, double)
 {
 //    if(width_ != width() || height_ != height())
 //    {
-////        Media::setSize(width_, height_);
+//        Media::setSize(width_, height_);
 //        spdlog::get(LOGGER)->debug("set size {} {}", width_, height_);
 
 //        m_capsfilter->setCaps(Gst::Caps::create((m_videoFmt % width_ % height_).str()));

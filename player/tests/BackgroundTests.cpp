@@ -1,25 +1,17 @@
-#include "test_utils.hpp"
-
-#include "control/Background.hpp"
-#include "mocks/MockImageAdaptor.hpp"
+#include "BackgroundTests.hpp"
 
 using namespace ::testing;
 
-auto construct_background()
-{
-    return construct<Background, MockImageAdaptor>();
-}
-
 TEST(BackgroundTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto [background, backgroundHandlerStub] = construct_background();
+    auto [background, backgroundHandlerStub] = constructBackground();
 
     ASSERT_EQ(&background->handler(), backgroundHandlerStub);
 }
 
 TEST(BackgroundTest, Width_HandlerReturnsDefaultWidth_BackgroundWidthEqualsDefault)
 {
-    auto [background, backgroundHandlerStub] = construct_background();
+    auto [background, backgroundHandlerStub] = constructBackground();
 
     ON_CALL(*backgroundHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
 
@@ -28,7 +20,7 @@ TEST(BackgroundTest, Width_HandlerReturnsDefaultWidth_BackgroundWidthEqualsDefau
 
 TEST(BackgroundTest, Height_HandlerReturnsDefaultHeight_BackgroundHeightEqualsDefault)
 {
-    auto [background, backgroundHandlerStub] = construct_background();
+    auto [background, backgroundHandlerStub] = constructBackground();
 
     ON_CALL(*backgroundHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
@@ -37,7 +29,7 @@ TEST(BackgroundTest, Height_HandlerReturnsDefaultHeight_BackgroundHeightEqualsDe
 
 TEST(BackgroundTest, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [background, backgroundHandlerMock] = construct_background();
+    auto [background, backgroundHandlerMock] = constructBackground();
 
     EXPECT_CALL(*backgroundHandlerMock, show());
 
@@ -46,7 +38,7 @@ TEST(BackgroundTest, Show_Default_HandlerShowShouldBeCalled)
 
 TEST(BackgroundTest, Scale_Default_HandlerScaleShouldBeCalled)
 {
-    auto [background, backgroundHandlerMock] = construct_background();
+    auto [background, backgroundHandlerMock] = constructBackground();
 
     EXPECT_CALL(*backgroundHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 

@@ -9,8 +9,6 @@ public:
     Audio(int duration, const std::string& uri, bool muted, bool looped, double volume);
     ~Audio() override;
 
-    void startTimer() override;
-
     bool muted() const;
     bool looped() const;
     double volume() const;

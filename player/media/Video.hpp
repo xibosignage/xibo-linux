@@ -15,7 +15,6 @@ public:
     Video(int width, int height, int duration, const std::string& uri, bool muted, bool looped);
     ~Video() override;
 
-    void startTimer() override;
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
 

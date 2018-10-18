@@ -8,12 +8,12 @@ TEST(MediaContainerBuilderTest, Construct_ValidSize_HandlerSetSizeShouldBeCalled
 
     EXPECT_CALL(*containerHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    MediaContainerBuilderTest().defaultVisibleMedia().defaultSize().adaptor(std::move(containerHandlerMock)).build();
+    MediaContainerBuilderTest().defaultVisibleMedia().defaultTimer().defaultSize().adaptor(std::move(containerHandlerMock)).build();
 }
 
 TEST_P(MediaContainerBuilderSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
-    ASSERT_THROW(MediaContainerBuilderTest().defaultVisibleMedia().defaultAdaptor().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
+    ASSERT_THROW(MediaContainerBuilderTest().defaultVisibleMedia().defaultTimer().defaultAdaptor().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MediaContainerBuilderSizeTest, ::testing::ValuesIn(invalidMediaContainerSizes));
@@ -22,9 +22,9 @@ TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPosSho
 {
     auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
 
-    EXPECT_CALL(*container, addMedia(_, _, _)).Times(1);
+    EXPECT_CALL(*container, addMedia(_, _, _));
 
-    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultAdaptor().defaultSize().build();
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultTimer().defaultAdaptor().defaultSize().build();
 }
 
 TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithoutPosShouldNotBeCalled)
@@ -33,16 +33,16 @@ TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithoutPos
 
     EXPECT_CALL(*container, addMedia(_)).Times(0);
 
-    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultAdaptor().defaultSize().build();
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultVisibleMedia().defaultTimer().defaultAdaptor().defaultSize().build();
 }
 
 TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithoutPosShouldBeCalled)
 {
     auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
 
-    EXPECT_CALL(*container, addMedia(_)).Times(1);
+    EXPECT_CALL(*container, addMedia(_));
 
-    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultAdaptor().defaultSize().build();
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultTimer().defaultAdaptor().defaultSize().build();
 }
 
 TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithPosShouldNotBeCalled)
@@ -51,12 +51,12 @@ TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithPosS
 
     EXPECT_CALL(*container, addMedia(_, _, _)).Times(0);
 
-    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultAdaptor().defaultSize().build();
+    MediaContainerBuilderTest().fakeContainer(std::move(container)).defaultInvisibleMedia().defaultTimer().defaultAdaptor().defaultSize().build();
 }
 
 TEST(MediaContainerBuilderTest, Construct_CustomZorder_MediaContainerWithCustomZorderCreated)
 {
-    auto container = MediaContainerBuilderTest().defaultVisibleMedia().defaultAdaptor().defaultSize().zorder(DEFAULT_ZORDER + 1).build();
+    auto container = MediaContainerBuilderTest().defaultVisibleMedia().defaultTimer().defaultAdaptor().defaultSize().zorder(DEFAULT_ZORDER + 1).build();
 
     ASSERT_EQ(container->zorder(), DEFAULT_ZORDER + 1);
 }

@@ -8,9 +8,10 @@
 
 const int FIRST_MEDIA_INDEX = 0;
 
-MediaContainer::MediaContainer(int zorder, bool looped, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
-    m_handler(std::move(handler)), m_zorder(zorder), m_looped(looped)
+MediaContainer::MediaContainer(int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+    m_handler(std::move(handler)), m_timer(std::move(timer)), m_zorder(zorder), m_looped(looped)
 {
+    assert(m_timer);
     assert(m_handler);
 }
 
@@ -64,7 +65,20 @@ void MediaContainer::show()
 
 void MediaContainer::startCurrentMedia()
 {
-    m_media[m_currentMediaIndex]->start();
+    startMedia(m_currentMediaIndex);
+}
+
+void MediaContainer::startMedia(size_t mediaIndex)
+{
+    auto&& media = m_media[mediaIndex];
+    auto mediaDuration = static_cast<unsigned int>(media->duration()) * MSECS;
+
+    if(mediaDuration > 0)
+    {
+        m_timer->startOnce(mediaDuration, std::bind(&MediaContainer::onMediaTimeout, this));
+    }
+
+    media->start();
 }
 
 void MediaContainer::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
@@ -86,7 +100,7 @@ void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
 {
     assert(media);
 
-    media->connect(std::bind(&MediaContainer::onMediaTimeout, this));
+    media->connect(std::bind(&MediaContainer::onMediaTimeout, this)); // TODO check that it could emit after media stopped
     m_media.push_back(std::move(media));
 }
 
@@ -97,14 +111,14 @@ void MediaContainer::onMediaTimeout()
     {
         m_media[m_currentMediaIndex]->stop();
         m_currentMediaIndex = m_currentMediaIndex + 1 >= m_media.size() ? FIRST_MEDIA_INDEX : m_currentMediaIndex + 1;
-        m_media[m_currentMediaIndex]->start();
+        startCurrentMedia();
     }
     else
     {
         if(m_looped)
         {
             m_media[m_currentMediaIndex]->stop();
-            m_media[m_currentMediaIndex]->start();
+            startCurrentMedia();
         }
     }
 }

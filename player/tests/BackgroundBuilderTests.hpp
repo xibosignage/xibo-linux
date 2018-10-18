@@ -6,6 +6,7 @@
 
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
+#include "mocks/MockFileSystemAdaptor.hpp"
 
 struct Color
 {

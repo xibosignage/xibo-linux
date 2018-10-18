@@ -1,3 +1,5 @@
+#pragma once
+
 #include "test_utils.hpp"
 
 #include "control/MainLayout.hpp"
@@ -8,7 +10,47 @@
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
-testing::NiceMock<MockMediaContainer>* createMediaContainer();
+inline testing::NiceMock<MockBackground>* createBackground()
+{
+    auto handler = new testing::NiceMock<MockImageAdaptor>;
+    auto background = new testing::NiceMock<MockBackground>(unique(handler));
+
+    ON_CALL(*background, handler()).WillByDefault(testing::ReturnRef(*handler));
+
+    return background;
+}
+
+inline testing::NiceMock<MockMediaContainer>* createMediaContainer()
+{
+    auto handler = new testing::NiceMock<MockFixedLayoutAdaptor>;
+    auto mediaContainer = new testing::NiceMock<MockMediaContainer>(unique(handler));
+
+    ON_CALL(*mediaContainer, handler()).WillByDefault(testing::ReturnRef(*handler));
+
+    return mediaContainer;
+}
+
+inline auto constructLayout()
+{
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->setBackground(unique(createBackground()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
+    return std::pair{layout, handler};
+}
+
+inline auto constructLayoutWithoutBackground()
+{
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
+    return std::pair{layout, handler};
+}
+
+inline auto constructLayoutWithoutContainer()
+{
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    layout->setBackground(unique(createBackground()));
+    return std::pair{layout, handler};
+}
 
 const std::vector<std::vector<int>> zorders = {
     {10,9,8},

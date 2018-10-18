@@ -6,6 +6,8 @@
 #include <glibmm/main.h>
 #include <sigc++/signal.h>
 
+using MediaTimeoutSignal = sigc::signal<void>;
+
 template<typename Interface>
 class Media : public Interface
 {
@@ -13,15 +15,13 @@ public:
     static_assert(std::is_base_of<IMedia, Interface>::value, "Interface should implement IMedia");
 
     Media() = default;
-
     Media(const Media& other) = delete;
     Media& operator=(const Media& other) = delete;
 
     void stop() final;
     void start() final;
-    void startTimer() override;
 
-    void attachAudio(std::unique_ptr<IMedia>&& audio) final;
+    void attachMedia(std::unique_ptr<IMedia>&& media) final;
     void connect(OnMediaTimeout callback) final;
 
     int duration() const final;
@@ -31,15 +31,15 @@ protected:
     virtual void doStop() = 0;
     virtual void doStart() = 0;
 
-    sigc::signal<void>& mediaTimeout();
+    MediaTimeoutSignal& mediaTimeout();
 
 private:
-    void startAudio();
-    void stopAudio();
+    void startAttachedMedia();
+    void stopAttachedMedia();
 
 private:
-    std::unique_ptr<IMedia> m_audio;
-    sigc::signal<void> m_mediaTimeout;
+    std::unique_ptr<IMedia> m_attachedMedia;
+    MediaTimeoutSignal m_mediaTimeout;
     int m_duration;
 
 };
@@ -47,49 +47,39 @@ private:
 template<typename Interface>
 void Media<Interface>::stop()
 {
-    stopAudio();
+    stopAttachedMedia();
     doStop();
 }
 
 template<typename Interface>
-void Media<Interface>::stopAudio()
+void Media<Interface>::stopAttachedMedia()
 {
-    if(m_audio)
+    if(m_attachedMedia)
     {
-        m_audio->stop();
+        m_attachedMedia->stop();
     }
 }
 
 template<typename Interface>
 void Media<Interface>::start()
 {
-    startTimer();
-    startAudio();
-
+    startAttachedMedia();
     doStart();
 }
 
 template<typename Interface>
-void Media<Interface>::startAudio()
+void Media<Interface>::startAttachedMedia()
 {
-    if(m_audio)
+    if(m_attachedMedia)
     {
-        m_audio->start();
+        m_attachedMedia->start();
     }
 }
 
 template<typename Interface>
-void Media<Interface>::startTimer()
+void Media<Interface>::attachMedia(std::unique_ptr<IMedia>&& media)
 {
-    Glib::signal_timeout().connect_once([=](){
-        m_mediaTimeout.emit();
-    }, duration() * MSECS);
-}
-
-template<typename Interface>
-void Media<Interface>::attachAudio(std::unique_ptr<IMedia>&& audio)
-{
-    m_audio = std::move(audio);
+    m_attachedMedia = std::move(media);
 }
 
 template<typename Interface>
@@ -111,7 +101,7 @@ void Media<Interface>::setDuration(int duration)
 }
 
 template<typename Interface>
-sigc::signal<void>& Media<Interface>::mediaTimeout()
+MediaTimeoutSignal& Media<Interface>::mediaTimeout()
 {
     return m_mediaTimeout;
 }

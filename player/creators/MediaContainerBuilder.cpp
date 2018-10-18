@@ -9,6 +9,7 @@ const int MIN_HEIGHT = 1;
 std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 {
     assert(m_adaptor);
+    assert(m_timer);
 
     m_adaptor->setSize(m_width, m_height);
 
@@ -19,12 +20,18 @@ std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 
 std::unique_ptr<IMediaContainer> MediaContainerBuilder::createContainer(int zorder, bool loop)
 {
-    return std::make_unique<MediaContainer>(zorder, loop, std::move(m_adaptor));
+    return std::make_unique<MediaContainer>(zorder, loop, std::move(m_timer), std::move(m_adaptor));
 }
 
 MediaContainerBuilder& MediaContainerBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
 {
     m_adaptor = std::move(adaptor);
+    return *this;
+}
+
+MediaContainerBuilder& MediaContainerBuilder::timer(std::unique_ptr<ITimerProvider>&& timer)
+{
+    m_timer = std::move(timer);
     return *this;
 }
 

@@ -15,6 +15,7 @@ BackgroundBuilder::BackgroundBuilder(std::unique_ptr<IFileSystemAdaptor>&& files
 std::unique_ptr<IBackground> BackgroundBuilder::build()
 {
     assert(m_adaptor);
+    assert(m_filesystem);
 
     m_adaptor->setSize(m_width, m_height);
 
@@ -79,7 +80,6 @@ BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& 
 
 BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
 {
-    assert(m_filesystem);
     auto fullPath = m_filesystem->resourcesDirectory() / path.value_or(std::string{});
 
     checkPath(fullPath);

@@ -14,6 +14,7 @@
 
 #include "media/GetMediaPosition.hpp"
 #include "parsers/Resources.hpp"
+#include "utils/FileSystemAdaptor.hpp"
 
 namespace LayoutXlf = ResourcesXlf::Layout;
 namespace RegionXlf = ResourcesXlf::Region;
@@ -80,7 +81,7 @@ std::vector<MediaWithPos> MainBuilder::collectVisibleMedia(const xlf_node& conta
     std::vector<MediaWithPos> media;
     for(auto [nodeName, mediaNode] : containerNode)
     {
-        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) != MediaXlf::AudioType)
+        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) != MediaXlf::AudioType) // FIXME condition
         {
             auto builtMedia = buildMedia(containerNode, mediaNode);
             int containerWidth = RegionXlf::width(containerNode);
@@ -100,7 +101,7 @@ std::vector<std::unique_ptr<IMedia>> MainBuilder::collectInvisibleMedia(const xl
     std::vector<std::unique_ptr<IMedia>> media;
     for(auto [nodeName, mediaNode] : containerNode)
     {
-        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) == MediaXlf::AudioType)
+        if(nodeName == MediaXlf::NodeName && MediaXlf::type(mediaNode) == MediaXlf::AudioType) // FIXME condition
         {
             media.emplace_back(buildMedia(containerNode, mediaNode));
         }

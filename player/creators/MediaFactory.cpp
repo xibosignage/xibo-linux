@@ -14,7 +14,7 @@ MediaFactory::MediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode
 std::unique_ptr<IMedia> MediaFactory::create()
 {
     auto media = doCreate();
-    media->attachAudio(createAudioNode(media->duration()));
+    media->attachMedia(createAudioFromNode(media->duration()));
     return media;
 }
 
@@ -33,7 +33,7 @@ const xlf_node& MediaFactory::options() const
     return m_options;
 }
 
-std::unique_ptr<IMedia> MediaFactory::createAudioNode(int parentDuration)
+std::unique_ptr<IMedia> MediaFactory::createAudioFromNode(int parentDuration)
 {
     if(m_audioNode)
     {

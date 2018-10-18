@@ -9,6 +9,7 @@
 Image::Image(Image::ScaleType type, Image::Align align, Image::Valign valign, std::unique_ptr<IImageAdaptor>&& handler) :
     m_handler(std::move(handler)), m_scaleType(type), m_align(align), m_valign(valign)
 {
+    assert(m_handler);
 }
 
 void Image::doStop()

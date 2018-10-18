@@ -50,7 +50,7 @@ const std::vector<Point> invalidPositions = {
 };
 
 template<typename Testee, typename MockAdaptor, typename... Args>
-auto construct(Args... args)
+auto construct(Args&&... args)
 {
     auto adaptor = std::make_unique<testing::NiceMock<MockAdaptor>>();
     auto adaptorRaw = adaptor.get();
@@ -59,7 +59,7 @@ auto construct(Args... args)
 }
 
 template<typename Testee, typename MockAdaptor, typename... Args>
-auto fake_construct(Args... args)
+auto fake_construct(Args&&... args)
 {
     return std::make_unique<testing::NiceMock<Testee>>(std::forward<Args>(args)..., std::make_unique<testing::NiceMock<MockAdaptor>>());
 }

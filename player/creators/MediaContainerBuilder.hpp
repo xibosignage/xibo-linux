@@ -7,6 +7,7 @@
 #include "control/IMediaContainer.hpp"
 #include "media/IMedia.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
+#include "utils/ITimerProvider.hpp"
 
 struct MediaWithPos
 {
@@ -24,6 +25,7 @@ public:
     std::unique_ptr<IMediaContainer> build();
 
     MediaContainerBuilder& adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor);
+    MediaContainerBuilder& timer(std::unique_ptr<ITimerProvider>&& timer);
     MediaContainerBuilder& width(int width);
     MediaContainerBuilder& height(int height);
     MediaContainerBuilder& zorder(const boost::optional<int>& zorder);
@@ -41,6 +43,7 @@ private:
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_adaptor;
+    std::unique_ptr<ITimerProvider> m_timer;
     int m_width;
     int m_height;
     int m_zorder;

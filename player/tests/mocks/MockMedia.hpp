@@ -10,8 +10,7 @@ class MockMedia : public Interface
 public:
     MOCK_METHOD0(stop, void());
     MOCK_METHOD0(start, void());
-    MOCK_METHOD0(startTimer, void());
-    MOCK_METHOD1(attachAudio, void(std::unique_ptr<IMedia>&& audio));
+    MOCK_METHOD1(attachMedia, void(std::unique_ptr<IMedia>&& media));
     MOCK_METHOD1(connect, void(OnMediaTimeout callback));
     MOCK_CONST_METHOD0(duration, int());
     MOCK_METHOD1(setDuration, void(int duration));

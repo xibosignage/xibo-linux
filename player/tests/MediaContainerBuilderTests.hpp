@@ -9,6 +9,7 @@
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "media/MediaVisitor.hpp"
+#include "mocks/MockTimerProvider.hpp"
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
@@ -29,6 +30,11 @@ public:
     MediaContainerBuilderTest& defaultAdaptor()
     {
         return static_cast<MediaContainerBuilderTest&>(adaptor(std::make_unique<testing::NiceMock<MockFixedLayoutAdaptor>>()));
+    }
+
+    MediaContainerBuilderTest& defaultTimer()
+    {
+        return static_cast<MediaContainerBuilderTest&>(timer(std::make_unique<testing::NiceMock<MockTimerProvider>>()));
     }
 
     MediaContainerBuilderTest& defaultVisibleMedia()

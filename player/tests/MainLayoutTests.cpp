@@ -2,48 +2,6 @@
 
 using namespace ::testing;
 
-NiceMock<MockBackground>* createBackground()
-{
-    auto handler = new NiceMock<MockImageAdaptor>;
-    auto background = new NiceMock<MockBackground>(unique(handler));
-
-    ON_CALL(*background, handler()).WillByDefault(ReturnRef(*handler));
-
-    return background;
-}
-
-NiceMock<MockMediaContainer>* createMediaContainer()
-{
-    auto handler = new NiceMock<MockFixedLayoutAdaptor>;
-    auto mediaContainer = new NiceMock<MockMediaContainer>(unique(handler));
-
-    ON_CALL(*mediaContainer, handler()).WillByDefault(ReturnRef(*handler));
-
-    return mediaContainer;
-}
-
-auto constructLayout()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
-    layout->setBackground(unique(createBackground()));
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
-    return std::pair{layout, handler};
-}
-
-auto constructLayoutWithoutBackground()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
-    return std::pair{layout, handler};
-}
-
-auto constructLayoutWithoutContainer()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
-    layout->setBackground(unique(createBackground()));
-    return std::pair{layout, handler};
-}
-
 TEST(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto [layout, layoutHandlerStub] = constructLayout();
