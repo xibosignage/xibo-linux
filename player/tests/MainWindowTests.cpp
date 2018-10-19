@@ -134,7 +134,7 @@ TEST(MainWindowTest, IsVisible_HandlerIsVisibleTrue_WindowIsVisibleShouldReturnT
 {
     auto [window, windowHandlerStub] = constructWindow();
 
-    ON_CALL(*windowHandlerStub, isVisible()).WillByDefault(Return(true));
+    ON_CALL(*windowHandlerStub, isShown()).WillByDefault(Return(true));
 
     ASSERT_EQ(window->isVisible(), true);
 }
@@ -143,7 +143,7 @@ TEST(MainWindowTest, IsVisible_HandlerIsVisibleFalse_WindowIsVisibleShouldReturn
 {
     auto [window, windowHandlerStub] = constructWindow();
 
-    ON_CALL(*windowHandlerStub, isVisible()).WillByDefault(Return(false));
+    ON_CALL(*windowHandlerStub, isShown()).WillByDefault(Return(false));
 
     ASSERT_EQ(window->isVisible(), false);
 }

@@ -1,20 +1,18 @@
 #pragma once
 
 #include "IWidgetAdaptor.hpp"
-#include "GetHandlerVisitor.hpp"
+#include <gtkmm/widget.h>
 
-template<typename Interface>
-class GtkBaseAdaptor : public Interface
+class GtkBaseAdaptor
 {
 public:
     virtual ~GtkBaseAdaptor() = default;
-    virtual Gtk::Widget* get() = 0;
+    virtual Gtk::Widget& get() = 0;
 
+protected:
     Gtk::Widget& getHandler(IWidgetAdaptor& child)
     {
-        GetHandlerVisitor visitor;
-        child.apply(visitor);
-        return visitor.getHandler();
+        return dynamic_cast<GtkBaseAdaptor&>(child).get();
     }
 
 };

@@ -1,7 +1,5 @@
 #include "WebKitWebViewAdaptor.hpp"
 
-#include "adaptors/AdaptorVisitor.hpp"
-
 WebKitWebViewAdaptor::WebKitWebViewAdaptor()
 {
     m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
@@ -17,6 +15,11 @@ void WebKitWebViewAdaptor::show()
 void WebKitWebViewAdaptor::hide()
 {
     m_handler.hide();
+}
+
+bool WebKitWebViewAdaptor::isShown() const
+{
+    return m_handler.is_visible();
 }
 
 void WebKitWebViewAdaptor::reload()
@@ -74,13 +77,7 @@ int WebKitWebViewAdaptor::height() const
     return height;
 }
 
-Gtk::Widget* WebKitWebViewAdaptor::get()
+Gtk::ScrolledWindow& WebKitWebViewAdaptor::get()
 {
-    return &m_handler;
+    return m_handler;
 }
-
-void WebKitWebViewAdaptor::apply(AdaptorVisitor& visitor)
-{
-    visitor.visit(*this);
-}
-

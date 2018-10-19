@@ -51,14 +51,14 @@ void GtkImageAdaptor::hide()
     m_handler.hide();
 }
 
-Gtk::Image* GtkImageAdaptor::get()
+bool GtkImageAdaptor::isShown() const
 {
-    return &m_handler;
+    return m_handler.is_visible();
 }
 
-void GtkImageAdaptor::apply(AdaptorVisitor& visitor)
+Gtk::Image& GtkImageAdaptor::get()
 {
-    visitor.visit(*this);
+    return m_handler;
 }
 
 Glib::RefPtr<const Gdk::Pixbuf> GtkImageAdaptor::pixbuf() const

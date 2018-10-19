@@ -58,7 +58,7 @@ int XiboApp::initPlayer()
     window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
     window->showLayout();
 
-    return Gtk::Application::run(*static_cast<GtkWindowAdaptor&>(window->handler()).get());
+    return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());
 }
 
 void XiboApp::runPlayer(MainWindow& window)

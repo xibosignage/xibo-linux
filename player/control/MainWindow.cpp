@@ -17,7 +17,7 @@ void MainWindow::setSize(int width, int height)
 {
     checkWindowNewSize(width, height);
 
-    m_handler->setDefaultSize(width, height);
+    m_handler->setSize(width, height);
 }
 
 // TODO specify after adding Monitor max width and height
@@ -61,7 +61,7 @@ void MainWindow::setCursorVisible(bool cursorVisible)
 
 bool MainWindow::isVisible() const
 {
-    return m_handler->isVisible();
+    return m_handler->isShown();
 }
 
 void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)

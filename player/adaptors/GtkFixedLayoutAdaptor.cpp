@@ -43,12 +43,17 @@ void GtkFixedLayoutAdaptor::show()
     m_handler.show();
 }
 
-Gtk::Fixed* GtkFixedLayoutAdaptor::get()
+void GtkFixedLayoutAdaptor::hide()
 {
-    return &m_handler;
+    m_handler.hide();
 }
 
-void GtkFixedLayoutAdaptor::apply(AdaptorVisitor& visitor)
+bool GtkFixedLayoutAdaptor::isShown() const
 {
-    visitor.visit(*this);
+    return m_handler.is_visible();
+}
+
+Gtk::Fixed& GtkFixedLayoutAdaptor::get()
+{
+    return m_handler;
 }

@@ -5,13 +5,21 @@
 
 #include <gtkmm/window.h>
 
-class GtkWindowAdaptor : public GtkBaseAdaptor<IWindowAdaptor>
+class GtkWindowAdaptor : public IWindowAdaptor, public GtkBaseAdaptor
 {
 public:
     GtkWindowAdaptor();
 
+    void show() override;
+    void hide() override;
+    bool isShown() const override;
+
+    void scale(double scaleX, double scaleY) override;
+    void setSize(int width, int height) override;
+    int width() const override;
+    int height() const override;
+
     void add(IWidgetAdaptor& child) override;
-    void setDefaultSize(int width, int height) override;
     void move(int x, int y) override;
     void disableWindowResize() override;
     void disableWindowDecoration() override;
@@ -19,9 +27,7 @@ public:
     void fullscreen() override;
     void unfullscreen() override;
     void setCursorVisible(bool cursorVisible) override;
-    bool isVisible() const override;
-    Gtk::Window* get() override;
-    void apply(AdaptorVisitor& visitor) override;
+    Gtk::Window& get() override;
 
 private:
     void onRealized();

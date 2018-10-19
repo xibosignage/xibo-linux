@@ -9,7 +9,6 @@ class IWindowAdaptor : public IWidgetAdaptor
 public:
     virtual ~IWindowAdaptor() = default;
     virtual void add(IWidgetAdaptor& child) = 0;
-    virtual void setDefaultSize(int width, int height) = 0;
     virtual void move(int x, int y) = 0;
     virtual void disableWindowResize() = 0;
     virtual void disableWindowDecoration() = 0;
@@ -17,5 +16,4 @@ public:
     virtual void fullscreen() = 0;
     virtual void unfullscreen() = 0;
     virtual void setCursorVisible(bool cursorVisible) = 0;
-    virtual bool isVisible() const = 0;
 };

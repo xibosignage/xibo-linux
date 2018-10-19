@@ -11,6 +11,11 @@ void GtkOverlayAdaptor::show()
     m_handler.show();
 }
 
+void GtkOverlayAdaptor::hide()
+{
+    m_handler.hide();
+}
+
 bool GtkOverlayAdaptor::isShown() const
 {
     return m_handler.is_visible();
@@ -74,14 +79,9 @@ void GtkOverlayAdaptor::reorderChild(IWidgetAdaptor& child, int position)
     m_handler.reorder_overlay(handler, position);
 }
 
-Gtk::Overlay* GtkOverlayAdaptor::get()
+Gtk::Overlay& GtkOverlayAdaptor::get()
 {
-    return &m_handler;
-}
-
-void GtkOverlayAdaptor::apply(AdaptorVisitor& visitor)
-{
-    visitor.visit(*this);
+    return m_handler;
 }
 
 bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
