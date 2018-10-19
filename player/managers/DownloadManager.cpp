@@ -1,13 +1,12 @@
 #include "DownloadManager.hpp"
 
 #include "constants.hpp"
-#include "utils/utilities.hpp"
 #include "xmds/XMDSManager.hpp"
+#include "utils/Resources.hpp"
+#include "utils/Utilities.hpp"
 
 #include <regex>
 #include <fstream>
-
-const std::string DEFAULT_FOLDER = "LayerTest";
 
 DownloadManager::DownloadManager() :
     m_work{m_ioc}
@@ -16,31 +15,12 @@ DownloadManager::DownloadManager() :
     m_workThread.reset(new std::thread([=](){
         m_ioc.run();
     }));
-
-    init();
 }
 
 DownloadManager::~DownloadManager()
 {
     m_ioc.stop();
     m_workThread->join();
-}
-
-void DownloadManager::init()
-{
-    m_resourcesDir = std::filesystem::current_path() / DEFAULT_FOLDER;
-    if(!std::filesystem::exists(m_resourcesDir))
-    {
-        bool result = std::filesystem::create_directory(m_resourcesDir);
-        if(!result)
-        {
-            throw std::runtime_error("Unable to create resources directory");
-        }
-        else
-        {
-            m_logger->info("Resource directory is {}", m_resourcesDir.string());
-        }
-    }
 }
 
 // FIXME GetFile should be used in case of XMDS download type
@@ -66,24 +46,19 @@ void DownloadManager::download(const std::string& filename, const std::string& p
 
 void DownloadManager::download(int layoutId, int regionId, int mediaId, DownloadCallback callback)
 {
-    utils::xmdsManager().getResource(layoutId, regionId, mediaId, [=](const GetResource::Response& response){
-        auto filename = resourcesDir() / (std::to_string(mediaId) + ".html");
+    Utils::xmdsManager().getResource(layoutId, regionId, mediaId, [=](const GetResource::Response& response){
+        auto filename = Resources::directory() / (std::to_string(mediaId) + ".html");
         std::ofstream out(filename.string());
         out << response.resource;
         callback(filename.string());
     });
 }
 
-std::filesystem::path DownloadManager::resourcesDir()
-{
-    return m_resourcesDir;
-}
-
 void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {
-        auto filename = resourcesDir() / session->filename;
+        auto filename = Resources::directory() / session->filename;
         std::ofstream out(filename.string());
         out << session->httpResponse.body();
         session->callback(filename.string());
@@ -95,7 +70,6 @@ void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t, s
     }
 }
 
-#include <limits>
 void DownloadManager::onWrite(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)

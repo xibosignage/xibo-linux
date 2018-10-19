@@ -13,8 +13,9 @@
 #include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include "media/GetMediaPosition.hpp"
-#include "parsers/Resources.hpp"
+#include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
+#include "utils/TimerProvider.hpp"
 
 namespace LayoutXlf = ResourcesXlf::Layout;
 namespace RegionXlf = ResourcesXlf::Region;
@@ -70,7 +71,7 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
     auto loop = RegionXlf::loop(containerNode);
 
     MediaContainerBuilder builder;
-    return builder.adaptor(std::make_unique<GtkFixedLayoutAdaptor>())
+    return builder.adaptor(std::make_unique<GtkFixedLayoutAdaptor>()).timer(std::make_unique<TimerProvider>())
                   .width(width).height(height).zorder(zorder).loop(loop)
                   .visibleMedia(collectVisibleMedia(containerNode))
                   .invisibleMedia(collectInvisibleMedia(containerNode)).build();

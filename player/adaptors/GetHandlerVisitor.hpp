@@ -11,6 +11,7 @@ public:
     void visit(GtkImageAdaptor& widget);
     void visit(GtkOverlayAdaptor& widget);
     void visit(GtkWindowAdaptor& widget);
+    void visit(WebKitWebViewAdaptor& widget);
 
     Gtk::Widget& getHandler();
 

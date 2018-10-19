@@ -1,12 +1,12 @@
 #include "xmds.hpp"
 #include "soap.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
 
 boost::property_tree::ptree xmds::parseXmlResponse(const std::string& soapResponse)
 {
     auto responseTree = soap::parseSoapResponse(soapResponse);
     auto [_, messageNode] = responseTree.front();
-    return utils::parseXmlFromString(messageNode.get_value<std::string>());
+    return Utils::parseXmlFromString(messageNode.get_value<std::string>());
 }
 
 bool xmds::parseSuccessResponse(const std::string& soapResponse)

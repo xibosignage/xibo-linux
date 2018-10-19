@@ -1,7 +1,7 @@
 #include "RegisterDisplay.hpp"
 
 #include "xmds.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
 #include "control/PlayerSettings.hpp"
 
 template<>

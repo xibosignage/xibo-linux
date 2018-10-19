@@ -3,7 +3,7 @@
 
 #include "constants.hpp"
 
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
 #include "control/PlayerSettings.hpp"
 
 #include <glibmm/main.h>
@@ -41,7 +41,7 @@ sigc::signal<void, PlayerSettings>&CollectionInterval::signalSettingsUpdated()
 void CollectionInterval::collectData()
 {
     auto clbk = std::bind(&CollectionInterval::onRegisterDisplay, this, std::placeholders::_1);
-    utils::xmdsManager().registerDisplay(121, "1.8", "Display", clbk);
+    Utils::xmdsManager().registerDisplay(121, "1.8", "Display", clbk);
 }
 
 void CollectionInterval::updateTimer(uint collectInterval)
@@ -67,7 +67,7 @@ void CollectionInterval::onRegisterDisplay(const RegisterDisplay::Response& resp
         m_logger->debug("Display is ready. Getting required files...");
         updateTimer(response.playerSettings.collectInterval);
         m_signalSettingsUpdated.emit(response.playerSettings);
-        utils::xmdsManager().requiredFiles(std::bind(&CollectionInterval::onRequiredFiles, this, std::placeholders::_1));
+        Utils::xmdsManager().requiredFiles(std::bind(&CollectionInterval::onRequiredFiles, this, std::placeholders::_1));
         break;
     case RegisterDisplay::Response::Status::Added:
         m_logger->debug("Display has been added and waiting for approval in CMS");
@@ -97,14 +97,14 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response
         m_logger->trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
         m_logger->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
 
-        utils::downloadManager().download(file.filename, file.path, clbk); // FIXME add download type
+        Utils::downloadManager().download(file.filename, file.path, clbk); // FIXME add download type
     }
 
     for(auto&& resource : response.requiredResources())
     {
         m_logger->trace("layout_id: {} region_id: {} media_id: {}", resource.layoutId, resource.regionId, resource.mediaId);
 
-        utils::downloadManager().download(resource.layoutId, resource.regionId, resource.mediaId, clbk);
+        Utils::downloadManager().download(resource.layoutId, resource.regionId, resource.mediaId, clbk);
     }
 }
 

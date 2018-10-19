@@ -6,7 +6,7 @@
 #include "adaptors/IImageAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
 
 #include <cassert>
 
@@ -108,7 +108,7 @@ void MainLayout::sortAndReorderContainers()
         int orderInParentWidget = static_cast<int>(i);
         m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
 
-        utils::logger()->trace("Zorder: {} Order in overlay: {}", m_containers[i]->zorder(), orderInParentWidget);
+        Utils::logger()->trace("Zorder: {} Order in overlay: {}", m_containers[i]->zorder(), orderInParentWidget);
     }
 }
 

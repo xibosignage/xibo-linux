@@ -1,6 +1,7 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
+#include "utils/Resources.hpp"
 
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
@@ -21,6 +22,8 @@ XiboApp& XiboApp::create(const std::string& name)
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
+
+    Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
@@ -50,7 +53,7 @@ int XiboApp::initPlayer()
 
 //    m_collection_interval.start();
 
-    auto parsedXlfTree = utils::parseXmlFromPath(findXlfFile());
+    auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
     MainBuilder controller;
     window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
     window->showLayout();
@@ -79,7 +82,7 @@ std::string XiboApp::findXlfFile()
 {
     namespace fs = std::filesystem;
 
-    fs::directory_iterator it(utils::resourcesDir());
+    fs::directory_iterator it(Resources::directory());
     fs::directory_iterator end;
 
     while(it != end)

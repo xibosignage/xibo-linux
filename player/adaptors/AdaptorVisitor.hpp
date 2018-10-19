@@ -4,6 +4,7 @@ class GtkFixedLayoutAdaptor;
 class GtkImageAdaptor;
 class GtkOverlayAdaptor;
 class GtkWindowAdaptor;
+class WebKitWebViewAdaptor;
 
 class AdaptorVisitor
 {
@@ -14,5 +15,6 @@ public:
     virtual void visit(GtkImageAdaptor& widget) = 0;
     virtual void visit(GtkOverlayAdaptor& widget) = 0;
     virtual void visit(GtkWindowAdaptor& widget) = 0;
+    virtual void visit(WebKitWebViewAdaptor& widget) = 0;
 
 };

@@ -5,12 +5,14 @@
 #include <spdlog/sinks/null_sink.h>
 
 #include "constants.hpp"
+#include "utils/Resources.hpp"
 
 class GlobalTestEnvironment : public ::testing::Environment
 {
 public:
     void SetUp() override
     {
+        Resources::setDirectory(DEFAULT_RESOURCES_DIR);
         m_logger = spdlog::create<spdlog::sinks::null_sink_st>(LOGGER);
     }
 

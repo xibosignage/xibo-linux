@@ -36,11 +36,8 @@ public:
 
     void download(const std::string& filename, const std::string& path, DownloadCallback callback);
     void download(int layoutId, int regionId, int mediaId, DownloadCallback callback);
-    std::filesystem::path resourcesDir();
 
 private:
-    void init();
-
     void onRead(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
     void onWrite(const boost::system::error_code& ec, std::size_t bytes_transferred, std::shared_ptr<DownloadSession> session);
     void onConnect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, std::shared_ptr<DownloadSession> session);
@@ -52,7 +49,6 @@ private:
     std::unique_ptr<std::thread> m_workThread;
     std::string m_host;
     std::shared_ptr<spdlog::logger> m_logger;
-    std::filesystem::path m_resourcesDir;
 };
 
 

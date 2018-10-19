@@ -3,7 +3,7 @@
 #include "media/IMedia.hpp"
 #include "adaptors/GtkImageAdaptor.hpp"
 
-#include "utils/utilities.hpp"
+#include "utils/Resources.hpp"
 #include "utils/Helpers.hpp"
 
 ImageFactory::ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
@@ -13,7 +13,7 @@ ImageFactory::ImageFactory(const xlf_node& parentNode, const xlf_node& mediaNode
 
 std::unique_ptr<IMedia> ImageFactory::doCreate()
 {
-    auto path = utils::resourcesDir() / options().get<std::string>("uri");
+    auto path = Resources::directory() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
     int width = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("width"));
     int height = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("height"));

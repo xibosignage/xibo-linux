@@ -84,10 +84,9 @@ TEST(BackgroundBuilderTest, Construct_ValidPath_HandlerSetImageShouldNotBeCalled
 {
     auto adaptor = std::make_unique<NiceMock<MockFileSystemAdaptor>>();
     auto backgroundHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
-    FilePath fullPath("resources/" + DEFAULT_PATH);
+    FilePath fullPath(DEFAULT_RESOURCES_DIR + "/" + DEFAULT_PATH);
 
     ON_CALL(*adaptor, isRegularFile(fullPath)).WillByDefault(Return(true));
-    ON_CALL(*adaptor, resourcesDirectory()).WillByDefault(Return("resources"));
     EXPECT_CALL(*backgroundHandlerMock, setImage(fullPath.string()));
 
     BackgroundBuilderTest builder(std::move(adaptor));

@@ -1,5 +1,10 @@
 *.autosave
 *.txt.user
-build-*
+*.snap*
+snap-build.sh
+gcov
+build*
+prime
+stage
+parts
 XiboExamples
-Makefile

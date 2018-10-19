@@ -1,7 +1,8 @@
 #include "MediaFactory.hpp"
+
 #include "media/Audio.hpp"
 #include "media/IMedia.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Resources.hpp"
 
 MediaFactory::MediaFactory(const xlf_node& parentNode, const xlf_node& mediaNode)
 {
@@ -41,7 +42,7 @@ std::unique_ptr<IMedia> MediaFactory::createAudioFromNode(int parentDuration)
         auto attrs = uriNode.get_child("<xmlattr>");
 
 //        int id = a ttrs.get<int>("mediaId");
-        auto uri = utils::resourcesDir() / uriNode.get_value<std::string>();
+        auto uri = Resources::directory() / uriNode.get_value<std::string>();
         bool mute = attrs.get<bool>("mute", false);
         bool loop = attrs.get<bool>("loop", false);
         double volume = attrs.get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);

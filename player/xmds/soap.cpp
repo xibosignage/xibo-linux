@@ -1,5 +1,5 @@
 #include "soap.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
 #include <iostream>
 
 // FIXME
@@ -7,7 +7,7 @@
 // or 2 versions (exceptions and error code passing)
 boost::property_tree::ptree soap::parseSoapResponse(const std::string& xmlResponse)
 {
-    auto parsedBody = utils::parseXmlFromString(xmlResponse).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
+    auto parsedBody = Utils::parseXmlFromString(xmlResponse).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
     if(auto faultNode = parsedBody.get_child_optional("SOAP-ENV:Fault"))
     {
         auto faultCode = faultNode->get<std::string>("faultcode");

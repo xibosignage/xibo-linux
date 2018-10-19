@@ -1,7 +1,7 @@
 #include "AudioFactory.hpp"
 #include "media/Audio.hpp"
 #include "media/IMedia.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Resources.hpp"
 
 AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
     MediaFactory(parentNode, mediaNode)
@@ -11,7 +11,7 @@ AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode
 std::unique_ptr<IMedia> AudioFactory::doCreate()
 {
 //    int id = attrs().template get<int>("id");
-    auto uri = utils::resourcesDir() / options().get<std::string>("uri");
+    auto uri = Resources::directory() / options().get<std::string>("uri");
     int duration = attrs().get<int>("duration");
 
     bool mute = options().get<bool>("mute", false);

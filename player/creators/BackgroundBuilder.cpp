@@ -3,19 +3,19 @@
 #include "control/Background.hpp"
 #include "adaptors/IImageAdaptor.hpp"
 
-#include "utils/utilities.hpp"
+#include "utils/Resources.hpp"
 #include "utils/Helpers.hpp"
 #include "utils/ColorToHexConverter.hpp"
 
 BackgroundBuilder::BackgroundBuilder(std::unique_ptr<IFileSystemAdaptor>&& filesystem) :
     m_filesystem(std::move(filesystem))
 {
+    assert(m_filesystem);
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::build()
 {
     assert(m_adaptor);
-    assert(m_filesystem);
 
     m_adaptor->setSize(m_width, m_height);
 
@@ -80,11 +80,14 @@ BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& 
 
 BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
 {
-    auto fullPath = m_filesystem->resourcesDirectory() / path.value_or(std::string{});
+    if(path)
+    {
+        auto fullPath = Resources::directory() / path.value();
 
-    checkPath(fullPath);
+        checkPath(fullPath);
 
-    m_path = fullPath;
+        m_path = fullPath;
+    }
     return *this;
 }
 
