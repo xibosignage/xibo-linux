@@ -1,28 +1,9 @@
 #include "GtkWindowAdaptor.hpp"
 
-GtkWindowAdaptor::GtkWindowAdaptor()
+GtkWindowAdaptor::GtkWindowAdaptor() :
+    GtkAdaptor<IWindowAdaptor>(m_handler)
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &GtkWindowAdaptor::onRealized));
-}
-
-void GtkWindowAdaptor::show()
-{
-    m_handler.show();
-}
-
-void GtkWindowAdaptor::hide()
-{
-    m_handler.hide();
-}
-
-bool GtkWindowAdaptor::isShown() const
-{
-    return m_handler.is_visible();
-}
-
-void GtkWindowAdaptor::scale(double scaleX, double scaleY)
-{
-
 }
 
 void GtkWindowAdaptor::setSize(int width, int height)

@@ -1,30 +1,25 @@
 #pragma once
 
 #include "IVideoHandler.hpp"
-#include "GtkBaseAdaptor.hpp"
+
+#include "adaptors/GtkDrawingAreaAdaptor.hpp"
 #include "wrapper/GstFwd.hpp"
 
 #include <sigc++/signal.h>
-#include <boost/format.hpp>
-#include <gtkmm/drawingarea.h>
 
 using SignalVideoFinished = sigc::signal<void()>;
 
-class VideoHandler : public IVideoHandler, public GtkBaseAdaptor
+class VideoHandler : public IVideoHandler
 {
 public:
     VideoHandler();
 
-    void show() override { }
-    void hide() override { }
-    bool isShown() const override { }
+    IWidgetAdaptor& videoWindow() override;
 
-    void scale(double, double) override { }
+    void scale(double, double) override;
     void setSize(int width, int height) override;
     int width() const override;
     int height() const override;
-
-    Gtk::Widget& get() override;
 
     void load(const FilePath& path) override;
     void play() override;
@@ -52,8 +47,7 @@ private:
     Gst::RefPtr<Gst::Queue> m_queue;
     Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
 
-    Gtk::DrawingArea m_videoWindow;
+    std::unique_ptr<GtkDrawingAreaAdaptor> m_videoWindow;
     SignalVideoFinished m_videoFinished;
-    boost::format m_videoFmt;
 
 };

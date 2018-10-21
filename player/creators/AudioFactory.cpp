@@ -2,8 +2,8 @@
 
 #include "media/Audio.hpp"
 #include "media/IMedia.hpp"
+#include "media/AudioHandler.hpp"
 
-#include "adaptors/AudioHandler.hpp"
 #include "utils/Resources.hpp"
 
 AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :

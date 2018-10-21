@@ -1,29 +1,10 @@
 #include "GtkOverlayAdaptor.hpp"
 
-GtkOverlayAdaptor::GtkOverlayAdaptor()
+GtkOverlayAdaptor::GtkOverlayAdaptor() :
+    GtkAdaptor<IOverlayAdaptor>(m_handler)
 {
     m_handler.signal_get_child_position().
             connect(sigc::mem_fun(*this, &GtkOverlayAdaptor::onGetChildPosition), false);
-}
-
-void GtkOverlayAdaptor::show()
-{
-    m_handler.show();
-}
-
-void GtkOverlayAdaptor::hide()
-{
-    m_handler.hide();
-}
-
-bool GtkOverlayAdaptor::isShown() const
-{
-    return m_handler.is_visible();
-}
-
-void GtkOverlayAdaptor::scale(double scaleX, double scaleY)
-{
-
 }
 
 void GtkOverlayAdaptor::addChild(IWidgetAdaptor& child, int width, int height, int x, int y)
@@ -52,25 +33,6 @@ void GtkOverlayAdaptor::addMainChild(IWidgetAdaptor& mainChild)
 void GtkOverlayAdaptor::removeMainChild()
 {
     m_handler.remove();
-}
-
-void GtkOverlayAdaptor::setSize(int width, int height)
-{
-    m_handler.set_size_request(width, height);
-}
-
-int GtkOverlayAdaptor::width() const
-{
-    int width, _;
-    m_handler.get_size_request(width, _);
-    return width;
-}
-
-int GtkOverlayAdaptor::height() const
-{
-    int _, height;
-    m_handler.get_size_request(_, height);
-    return height;
 }
 
 void GtkOverlayAdaptor::reorderChild(IWidgetAdaptor& child, int position)

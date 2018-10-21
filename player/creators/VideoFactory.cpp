@@ -2,7 +2,8 @@
 
 #include "media/Video.hpp"
 #include "media/IMedia.hpp"
-#include "adaptors/VideoHandler.hpp"
+#include "media/VideoHandler.hpp"
+
 #include "utils/Resources.hpp"
 
 VideoFactory::VideoFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :

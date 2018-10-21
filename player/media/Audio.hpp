@@ -1,6 +1,6 @@
 #include "Media.hpp"
 
-#include "adaptors/IAudioHandler.hpp"
+#include "IAudioHandler.hpp"
 
 class Audio : public Media<IInvisibleMedia>
 {

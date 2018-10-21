@@ -1,6 +1,7 @@
 #include "WebKitWebViewAdaptor.hpp"
 
-WebKitWebViewAdaptor::WebKitWebViewAdaptor()
+WebKitWebViewAdaptor::WebKitWebViewAdaptor() :
+    GtkAdaptor<IWebViewAdaptor>(m_handler)
 {
     m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
     auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView));
@@ -10,16 +11,6 @@ WebKitWebViewAdaptor::WebKitWebViewAdaptor()
 void WebKitWebViewAdaptor::show()
 {
     m_handler.show_all();
-}
-
-void WebKitWebViewAdaptor::hide()
-{
-    m_handler.hide();
-}
-
-bool WebKitWebViewAdaptor::isShown() const
-{
-    return m_handler.is_visible();
 }
 
 void WebKitWebViewAdaptor::reload()
@@ -51,30 +42,6 @@ void WebKitWebViewAdaptor::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen
             gtk_widget_set_visual(reinterpret_cast<GtkWidget*>(m_handler.gobj()), visual->gobj());
         }
     }
-}
-
-void WebKitWebViewAdaptor::scale(double scaleX, double scaleY)
-{
-
-}
-
-void WebKitWebViewAdaptor::setSize(int width, int height)
-{
-    m_handler.set_size_request(width, height);
-}
-
-int WebKitWebViewAdaptor::width() const
-{
-    int width, _;
-    m_handler.get_size_request(width, _);
-    return width;
-}
-
-int WebKitWebViewAdaptor::height() const
-{
-    int _, height;
-    m_handler.get_size_request(_, height);
-    return height;
 }
 
 Gtk::ScrolledWindow& WebKitWebViewAdaptor::get()

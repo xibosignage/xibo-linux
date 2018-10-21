@@ -7,6 +7,8 @@
 #include "constants.hpp"
 #include "utils/Resources.hpp"
 
+const std::string DEFAULT_RESOURCES_DIR = "fakedir";
+
 class GlobalTestEnvironment : public ::testing::Environment
 {
 public:

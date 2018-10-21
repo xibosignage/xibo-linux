@@ -1,14 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
-#include "adaptors/IVideoHandler.hpp"
-#include "wrapper/GstFwd.hpp"
-
-#include <gtkmm/drawingarea.h>
-#include <spdlog/spdlog.h>
-#include <boost/format.hpp>
-
-class XiboVideoSink;
+#include "IVideoHandler.hpp"
 
 class Video : public Media<IVisibleMedia>
 {

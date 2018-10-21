@@ -34,7 +34,7 @@ const xlf_node& MediaFactory::options() const
 }
 
 #include "media/Audio.hpp"
-#include "adaptors/AudioHandler.hpp"
+#include "media/AudioHandler.hpp"
 
 std::unique_ptr<IMedia> MediaFactory::createAudioFromNode(int parentDuration)
 {

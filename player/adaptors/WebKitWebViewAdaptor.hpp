@@ -1,24 +1,17 @@
 #pragma once
 
 #include "IWebViewAdaptor.hpp"
-#include "GtkBaseAdaptor.hpp"
+#include "GtkAdaptor.hpp"
 
 #include <gtkmm/scrolledwindow.h>
 #include <webkit/webkit.h>
 
-class WebKitWebViewAdaptor : public IWebViewAdaptor, public GtkBaseAdaptor
+class WebKitWebViewAdaptor : public GtkAdaptor<IWebViewAdaptor>
 {
 public:
     WebKitWebViewAdaptor();
 
     void show() override;
-    void hide() override;
-    bool isShown() const override;
-
-    void scale(double scaleX, double scaleY) override;
-    void setSize(int width, int height) override;
-    int width() const override;
-    int height() const override;
 
     void reload() override;
     void load(const FilePath& page) override;

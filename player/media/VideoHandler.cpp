@@ -16,13 +16,13 @@
 #include "customsink/XiboVideoSink.hpp"
 
 #include "utils/Utilities.hpp"
+#include <boost/format.hpp>
 
 namespace ph = std::placeholders;
 
 const int DEFAULT_VIDEO_BUFFER = 500;
 
-VideoHandler::VideoHandler() :
-    m_videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"}
+VideoHandler::VideoHandler()
 {
     if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
                                    pluginInit, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
@@ -30,6 +30,7 @@ VideoHandler::VideoHandler() :
         throw std::runtime_error("XiboVideoSink was not registered");
     }
 
+    m_videoWindow = std::make_unique<GtkDrawingAreaAdaptor>();
     m_pipeline = Gst::Pipeline::create("pipeline");
     m_source = Gst::FileSrc::create();
     m_decodebin = Gst::Decodebin::create();
@@ -47,29 +48,31 @@ VideoHandler::VideoHandler() :
     init();
 }
 
+IWidgetAdaptor& VideoHandler::videoWindow()
+{
+    return *m_videoWindow;
+}
+
+void VideoHandler::scale(double, double)
+{
+}
+
 void VideoHandler::setSize(int width, int height)
 {
-    m_capsfilter->setCaps(Gst::Caps::create((m_videoFmt % width % height).str()));
-    m_videoWindow.set_size_request(width, height);
+    boost::format videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"};
+
+    m_capsfilter->setCaps(Gst::Caps::create((videoFmt % width % height).str()));
+    m_videoWindow->setSize(width, height);
 }
 
 int VideoHandler::width() const
 {
-    int width, _;
-    m_videoWindow.get_size_request(width, _);
-    return width;
+    return m_videoWindow->width();
 }
 
 int VideoHandler::height() const
 {
-    int _, height;
-    m_videoWindow.get_size_request(_, height);
-    return height;
-}
-
-Gtk::Widget& VideoHandler::get()
-{
-    return m_videoWindow;
+    return m_videoWindow->height();
 }
 
 void VideoHandler::checkGstElements()
@@ -84,7 +87,7 @@ void VideoHandler::checkGstElements()
 void VideoHandler::init()
 {
     auto sink = GST_XIBOVIDEOSINK(m_videoSink->getHandler());
-    gst_xibovideosink_set_handler(sink, &m_videoWindow);
+    gst_xibovideosink_set_handler(sink, &m_videoWindow->get());
 
     m_queue->setMaxSizeBuffers(DEFAULT_VIDEO_BUFFER);
     m_pipeline->addBusWatch(sigc::mem_fun(*this, &VideoHandler::busMessageWatch));
@@ -176,13 +179,13 @@ void VideoHandler::load(const FilePath& path)
 void VideoHandler::play()
 {
     m_pipeline->setState(Gst::State::PLAYING);
-    m_videoWindow.show();
+    m_videoWindow->show();
 }
 
 void VideoHandler::stop()
 {
     m_pipeline->setState(Gst::State::NULL_STATE);
-    m_videoWindow.hide();
+    m_videoWindow->hide();
 }
 
 void VideoHandler::connect(OnVideoFinished callback)

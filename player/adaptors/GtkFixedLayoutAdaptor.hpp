@@ -1,21 +1,14 @@
 #pragma once
 
 #include "IFixedLayoutAdaptor.hpp"
-#include "GtkBaseAdaptor.hpp"
+#include "GtkAdaptor.hpp"
 
 #include <gtkmm/fixed.h>
 
-class GtkFixedLayoutAdaptor : public IFixedLayoutAdaptor, public GtkBaseAdaptor
+class GtkFixedLayoutAdaptor : public GtkAdaptor<IFixedLayoutAdaptor>
 {
 public:
-    int width() const override;
-    int height() const override;
-    void setSize(int width, int height) override;
-    void scale(double scaleX, double scaleY) override;
-
-    void show() override;
-    void hide() override;
-    bool isShown() const override;
+    GtkFixedLayoutAdaptor();
 
     void addChild(IWidgetAdaptor& child, int left, int top) override;
     void removeChildren() override;

@@ -15,6 +15,8 @@
 #include <gst/gst.h>
 #include <chrono>
 
+const std::string DEFAULT_RESOURCES_DIR = "TwitterMetro";
+
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)

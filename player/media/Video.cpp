@@ -47,7 +47,7 @@ int Video::height() const
 
 IWidgetAdaptor& Video::handler()
 {
-    return *m_handler;
+    return m_handler->videoWindow();
 }
 
 void Video::apply(MediaVisitor& visitor)

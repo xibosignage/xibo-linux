@@ -6,6 +6,8 @@
 #include "constants.hpp"
 #include "utils/Helpers.hpp"
 
+const std::string DEFAULT_RESOURCES_DIR = "fakedir";
+
 const int DEFAULT_WIDTH = 640;
 const int DEFAULT_HEIGHT = 480;
 
