@@ -25,8 +25,6 @@ std::unique_ptr<IMedia> WebViewFactory::doCreate()
     int duration = parseDuration(uri).value_or(attrs().get<int>("duration"));
     int width = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("width"));
     int height = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("height"));
-
-//    int modeId = options().get<int>("modeId", -1);
     bool transparency = options().get<bool>("transparency", true);
 
     auto adaptor = std::make_unique<WebKitWebViewAdaptor>();

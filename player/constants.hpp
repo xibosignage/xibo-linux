@@ -9,7 +9,7 @@ using xlf_node = boost::property_tree::ptree;
 using FilePath = std::filesystem::path;
 
 const std::string LOGGER = "logger";
-const std::string DEFAULT_RESOURCES_DIR = "LayerTest";
+const std::string DEFAULT_RESOURCES_DIR = "GoPro";
 
 const unsigned int MSECS = 1000;
 const int MAX_VOLUME = 100;

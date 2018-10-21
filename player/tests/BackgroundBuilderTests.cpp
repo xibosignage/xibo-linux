@@ -77,7 +77,7 @@ TEST(BackgroundBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
     ON_CALL(*adaptor, isRegularFile(_)).WillByDefault(Return(false));
 
     BackgroundBuilderTest builder(std::move(adaptor));
-    ASSERT_THROW(builder.defaultAdaptor().defaultSize().color({}).path({}).build(), std::runtime_error);
+    ASSERT_THROW(builder.defaultAdaptor().defaultSize().color({}).path(DEFAULT_PATH).build(), std::runtime_error);
 }
 
 TEST(BackgroundBuilderTest, Construct_ValidPath_HandlerSetImageShouldNotBeCalled)

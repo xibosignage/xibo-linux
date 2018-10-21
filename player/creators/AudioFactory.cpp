@@ -1,6 +1,9 @@
 #include "AudioFactory.hpp"
+
 #include "media/Audio.hpp"
 #include "media/IMedia.hpp"
+
+#include "adaptors/AudioHandler.hpp"
 #include "utils/Resources.hpp"
 
 AudioFactory::AudioFactory(const xlf_node& parentNode, const xlf_node& mediaNode) :
@@ -18,5 +21,11 @@ std::unique_ptr<IMedia> AudioFactory::doCreate()
     bool loop = options().get<bool>("loop", false);
     double volume = options().get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);
 
-    return std::make_unique<Audio>(duration, uri.string(), mute, loop, volume);
+    auto handler = std::make_unique<AudioHandler>();
+    handler->setVolume(mute ? 0 : volume);
+    handler->load(uri);
+
+    auto audio = std::make_unique<Audio>(loop, std::move(handler));
+    audio->setDuration(duration);
+    return audio;
 }
