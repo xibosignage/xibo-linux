@@ -2,6 +2,24 @@
 
 using namespace ::testing;
 
+TEST(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto webviewHandlerMock = std::make_unique<NiceMock<MockWebViewAdaptor>>();
+
+    EXPECT_CALL(*webviewHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructWebView(std::move(webviewHandlerMock));
+}
+
+TEST(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
+{
+    auto webviewHandlerMock = std::make_unique<NiceMock<MockWebViewAdaptor>>();
+
+    EXPECT_CALL(*webviewHandlerMock, load(DEFAULT_PATH));
+
+    constructWebView(std::move(webviewHandlerMock));
+}
+
 TEST(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto [webview, webviewHandlerStub] = constructWebView();
@@ -61,4 +79,22 @@ TEST(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
     EXPECT_CALL(*webviewHandlerMock, hide());
 
     webview->stop();
+}
+
+TEST(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
+{
+    auto [webview, webviewHandlerMock] = constructWebView();
+
+    EXPECT_CALL(*webviewHandlerMock, enableTransparency());
+
+    webview->setTransparent(true);
+}
+
+TEST(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCalled)
+{
+    auto [webview, webviewHandlerMock] = constructWebView();
+
+    EXPECT_CALL(*webviewHandlerMock, enableTransparency()).Times(0);
+
+    webview->setTransparent(false);
 }

@@ -18,3 +18,10 @@ inline auto constructImage()
     image->setDuration(DEFAULT_DURATION);
     return std::pair{image, handler};
 }
+
+inline auto constructImage(std::unique_ptr<MockImageAdaptor>&& adaptor)
+{
+    auto image = construct<Image>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, std::move(adaptor));
+    image->setDuration(DEFAULT_DURATION);
+    return image;
+}

@@ -2,6 +2,24 @@
 
 using namespace ::testing;
 
+TEST(ImageTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto imageHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
+
+    EXPECT_CALL(*imageHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructImage(std::move(imageHandlerMock));
+}
+
+TEST(ImageTest, Construct_Default_HandlerSetImageShouldBeCalled)
+{
+    auto imageHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
+
+    EXPECT_CALL(*imageHandlerMock, setImage(DEFAULT_PATH.string()));
+
+    constructImage(std::move(imageHandlerMock));
+}
+
 TEST(ImageTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto [image, imageHandlerStub] = constructImage();
