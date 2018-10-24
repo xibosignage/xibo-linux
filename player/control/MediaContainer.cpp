@@ -62,18 +62,14 @@ void MediaContainer::show()
     assert(m_media.size() > 0);
 
     m_handler->show();
-    startCurrentMedia();
-}
-
-void MediaContainer::startCurrentMedia()
-{
-    startMedia(m_currentMediaIndex);
+    startMedia(FIRST_MEDIA_INDEX);
 }
 
 void MediaContainer::startMedia(size_t mediaIndex)
 {
     auto&& media = m_media[mediaIndex];
     auto mediaDuration = static_cast<unsigned int>(media->duration()) * MSECS;
+    m_currentMediaIndex = mediaIndex;
 
     if(mediaDuration > 0)
     {
@@ -106,21 +102,22 @@ void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
     m_media.push_back(std::move(media));
 }
 
-// TODO Refactor after Media unit-tests
 void MediaContainer::onMediaTimeout()
 {
-    if(m_media.size() > 1)
+    m_media[m_currentMediaIndex]->stop();
+
+    if(m_media.size() > 1 || m_looped)
     {
-        m_media[m_currentMediaIndex]->stop();
-        m_currentMediaIndex = m_currentMediaIndex + 1 >= m_media.size() ? FIRST_MEDIA_INDEX : m_currentMediaIndex + 1;
-        startCurrentMedia();
+        startMedia(getNextMediaIndex());
     }
-    else
-    {
-        if(m_looped)
-        {
-            m_media[m_currentMediaIndex]->stop();
-            startCurrentMedia();
-        }
-    }
+}
+
+size_t MediaContainer::getNextMediaIndex()
+{
+    size_t nextMediaIndex = m_currentMediaIndex + 1;
+
+    if(nextMediaIndex >= m_media.size())
+        return FIRST_MEDIA_INDEX;
+
+    return nextMediaIndex;
 }

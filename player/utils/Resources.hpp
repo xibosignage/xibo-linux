@@ -18,7 +18,7 @@ public:
 namespace ResourcesXlf
 {
     const std::string Attrs = "<xmlattr>";
-    const std::string Options = "<options>";
+    const std::string Options = "options";
 
     std::string attr(const std::string& property);
     std::string option(const std::string& property);

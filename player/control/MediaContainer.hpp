@@ -27,10 +27,10 @@ public:
 
 private:
     void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
-    void startCurrentMedia();
+    void scaleVisibleMedia(double scaleX, double scaleY);
     void startMedia(size_t mediaIndex);
     void onMediaTimeout();
-    void scaleVisibleMedia(double scaleX, double scaleY);
+    size_t getNextMediaIndex();
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
