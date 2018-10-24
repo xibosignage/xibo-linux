@@ -2,6 +2,15 @@
 
 using namespace ::testing;
 
+TEST(MediaContainerTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto containerHandlerMock = std::make_unique<NiceMock<MockFixedLayoutAdaptor>>();
+
+    EXPECT_CALL(*containerHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructContainer(std::move(containerHandlerMock));
+}
+
 TEST(MediaContainerTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto [container, containerHandlerStub] = constructContainer();

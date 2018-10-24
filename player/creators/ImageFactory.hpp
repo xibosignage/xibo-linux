@@ -14,8 +14,8 @@ protected:
     std::unique_ptr<IMedia> doCreate() override;
 
 private:
-    Image::ScaleType toScaleType(const std::string& scaleType);
-    Image::Align toAlign(const std::string& align);
-    Image::Valign toValign(const std::string& valign);
+    ImageProperties::ScaleType toScaleType(const std::string& scaleType);
+    ImageProperties::Align toAlign(const std::string& align);
+    ImageProperties::Valign toValign(const std::string& valign);
 
 };

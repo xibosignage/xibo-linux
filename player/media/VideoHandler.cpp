@@ -193,7 +193,7 @@ void VideoHandler::connect(OnVideoFinished callback)
     m_videoFinished.connect(callback);
 }
 
-void VideoHandler::setVolume(double volume)
+void VideoHandler::setVolume(int volume)
 {
-    m_volume->setVolume(volume);
+    m_volume->setVolume(volume / static_cast<double>(MAX_VOLUME));
 }

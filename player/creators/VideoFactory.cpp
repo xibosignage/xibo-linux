@@ -18,15 +18,12 @@ std::unique_ptr<IMedia> VideoFactory::doCreate()
     int width = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("width"));
     int height = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("height"));
 
-    bool mute = options().get<bool>("mute", false);
-    bool loop = options().get<bool>("loop", false);
+    bool muted = options().get<bool>("mute", false);
+    bool looped = options().get<bool>("loop", false);
 
-    auto handler = std::make_unique<VideoHandler>();
-    handler->setSize(width, height);
-    handler->setVolume(mute ? 0 : 1.0);
-    handler->load(uri);
-
-    auto video = std::make_unique<Video>(loop, std::move(handler));
+    auto video = std::make_unique<Video>(width, height, uri, std::make_unique<VideoHandler>());
+    video->setMuted(muted);
+    video->setLooped(looped);
     video->setDuration(duration);
     return video;
 }

@@ -6,15 +6,27 @@
 
 namespace ph = std::placeholders;
 
-Audio::Audio(bool looped, std::unique_ptr<IAudioHandler>&& handler) :
-    m_handler(std::move(handler)), m_looped(looped)
+Audio::Audio(const FilePath& path, std::unique_ptr<IAudioHandler>&& handler) :
+    m_handler(std::move(handler))
 {
-    m_handler->connect(std::bind(&Audio::onAudioFinished, this));
+    assert(m_handler);
+
+    m_handler->load(path);
 }
 
 void Audio::doStart()
 {
     m_handler->play();
+}
+
+void Audio::doStop()
+{
+    m_handler->stop();
+}
+
+void Audio::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
 }
 
 void Audio::onAudioFinished()
@@ -28,13 +40,14 @@ void Audio::onAudioFinished()
     }
 }
 
-void Audio::doStop()
+void Audio::setVolume(int volume)
 {
-    m_handler->stop();
+    m_handler->setVolume(volume);
 }
 
-void Audio::apply(MediaVisitor& visitor)
+void Audio::setLooped(bool looped)
 {
-    visitor.visit(*this);
+    m_looped = looped;
 }
+
 

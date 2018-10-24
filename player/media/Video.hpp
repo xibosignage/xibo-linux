@@ -6,11 +6,14 @@
 class Video : public Media<IVisibleMedia>
 {
 public:
-    Video(bool looped, std::unique_ptr<IVideoHandler>&& handler);
+    Video(int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
 
     void scale(double, double) override;
     int width() const override;
     int height() const override;
+
+    void setLooped(bool looped);
+    void setMuted(bool muted);
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
@@ -24,6 +27,6 @@ private:
 
 private:
     std::unique_ptr<IVideoHandler> m_handler;
-    bool m_looped;
+    bool m_looped = false;
 
 };

@@ -12,6 +12,7 @@ const std::string LOGGER = "logger";
 
 const unsigned int MSECS = 1000;
 const int MAX_VOLUME = 100;
+const int MIN_VOLUME = 0;
 
 const int MIN_DISPLAY_WIDTH = 160;
 const int MAX_DISPLAY_WIDTH = 9999;

@@ -40,15 +40,15 @@ void GetMediaPosition::visit(WebView&)
     m_mediaY = DEFAULT_YPOS;
 }
 
-int GetMediaPosition::getImageX(Image::Align align, int imageWidth)
+int GetMediaPosition::getImageX(ImageProperties::Align align, int imageWidth)
 {
     switch(align)
     {
-    case Image::Align::Center:
+    case ImageProperties::Align::Center:
         return (m_containerWidth - imageWidth) / 2;
-    case Image::Align::Left:
+    case ImageProperties::Align::Left:
         return DEFAULT_XPOS;
-    case Image::Align::Right:
+    case ImageProperties::Align::Right:
         return m_containerWidth - imageWidth;
     default:
         break;
@@ -56,15 +56,15 @@ int GetMediaPosition::getImageX(Image::Align align, int imageWidth)
     return INVALID_POS;
 }
 
-int GetMediaPosition::getImageY(Image::Valign valign, int imageHeight)
+int GetMediaPosition::getImageY(ImageProperties::Valign valign, int imageHeight)
 {
     switch(valign)
     {
-    case Image::Valign::Middle:
+    case ImageProperties::Valign::Middle:
         return (m_containerHeight - imageHeight) / 2;
-    case Image::Valign::Top:
+    case ImageProperties::Valign::Top:
         return DEFAULT_YPOS;
-    case Image::Valign::Bottom:
+    case ImageProperties::Valign::Bottom:
         return m_containerHeight - imageHeight;
     default:
         break;

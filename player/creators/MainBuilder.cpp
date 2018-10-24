@@ -6,21 +6,15 @@
 #include "creators/WebViewFactory.hpp"
 
 #include "creators/BackgroundBuilder.hpp"
-#include "adaptors/GtkImageAdaptor.hpp"
 #include "creators/MainLayoutBuilder.hpp"
-#include "adaptors/GtkOverlayAdaptor.hpp"
 #include "creators/MediaContainerBuilder.hpp"
-#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include "media/GetMediaPosition.hpp"
 #include "utils/Resources.hpp"
-#include "utils/FileSystemAdaptor.hpp"
-#include "utils/TimerProvider.hpp"
 
 namespace LayoutXlf = ResourcesXlf::Layout;
 namespace RegionXlf = ResourcesXlf::Region;
 namespace MediaXlf = ResourcesXlf::Media;
-
 
 std::unique_ptr<IMainLayout> MainBuilder::buildLayoutWithChildren(const xlf_node& tree)
 {
@@ -33,8 +27,8 @@ std::unique_ptr<IMainLayout> MainBuilder::buildLayout(const xlf_node& layoutNode
     int height = LayoutXlf::height(layoutNode);
 
     MainLayoutBuilder builder;
-    return builder.adaptor(std::make_unique<GtkOverlayAdaptor>()).width(width).height(height)
-                  .background(buildBackground(layoutNode)).mediaContainers(collectContainers(layoutNode)).build();
+    return builder.width(width).height(height).background(buildBackground(layoutNode))
+                  .mediaContainers(collectContainers(layoutNode)).build();
 }
 
 std::unique_ptr<IBackground> MainBuilder::buildBackground(const xlf_node& layoutNode)
@@ -44,8 +38,7 @@ std::unique_ptr<IBackground> MainBuilder::buildBackground(const xlf_node& layout
     auto path = LayoutXlf::backgroundPath(layoutNode);
     auto color = LayoutXlf::backgroundColor(layoutNode);
 
-    BackgroundBuilder builder{std::make_unique<FileSystemAdaptor>()};
-    return builder.adaptor(std::make_unique<GtkImageAdaptor>()).width(width).height(height).path(path).color(color).build();
+    return BackgroundBuilder().width(width).height(height).path(path).color(color).build();
 }
 
 std::vector<MediaContainerWithPos> MainBuilder::collectContainers(const xlf_node& layoutNode)
@@ -71,8 +64,7 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
     auto loop = RegionXlf::loop(containerNode);
 
     MediaContainerBuilder builder;
-    return builder.adaptor(std::make_unique<GtkFixedLayoutAdaptor>()).timer(std::make_unique<TimerProvider>())
-                  .width(width).height(height).zorder(zorder).loop(loop)
+    return builder.width(width).height(height).zorder(zorder).loop(loop)
                   .visibleMedia(collectVisibleMedia(containerNode))
                   .invisibleMedia(collectInvisibleMedia(containerNode)).build();
 }

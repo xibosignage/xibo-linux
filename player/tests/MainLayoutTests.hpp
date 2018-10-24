@@ -30,9 +30,17 @@ inline testing::NiceMock<MockMediaContainer>* createMediaContainer()
     return mediaContainer;
 }
 
+inline auto constructLayout(std::unique_ptr<MockOverlayAdaptor>&& adaptor)
+{
+    auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(adaptor));
+    layout->setBackground(unique(createBackground()));
+    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
+    return layout;
+}
+
 inline auto constructLayout()
 {
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     layout->setBackground(unique(createBackground()));
     layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
     return std::pair{layout, handler};
@@ -40,14 +48,14 @@ inline auto constructLayout()
 
 inline auto constructLayoutWithoutBackground()
 {
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
     return std::pair{layout, handler};
 }
 
 inline auto constructLayoutWithoutContainer()
 {
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>();
+    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     layout->setBackground(unique(createBackground()));
     return std::pair{layout, handler};
 }

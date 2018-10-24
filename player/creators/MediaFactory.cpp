@@ -43,16 +43,14 @@ std::unique_ptr<IMedia> MediaFactory::createAudioFromNode(int parentDuration)
         auto uriNode = m_audioNode.value().get_child("uri");
         auto attrs = uriNode.get_child("<xmlattr>");
 
-        auto uri = Resources::directory() / uriNode.get_value<std::string>();
+        auto path = Resources::directory() / uriNode.get_value<std::string>();
         bool mute = attrs.get<bool>("mute", false);
-        bool loop = attrs.get<bool>("loop", false);
-        double volume = attrs.get<int>("volume", MAX_VOLUME) / static_cast<double>(MAX_VOLUME);
+        bool looped = attrs.get<bool>("loop", false);
+        int volume = attrs.get<int>("volume", MAX_VOLUME);
 
-        auto handler = std::make_unique<AudioHandler>();
-        handler->setVolume(mute ? 0 : volume);
-        handler->load(uri);
-
-        auto audio = std::make_unique<Audio>(loop, std::move(handler));
+        auto audio = std::make_unique<Audio>(path, std::make_unique<AudioHandler>());
+        audio->setVolume(mute ? MIN_VOLUME : volume);
+        audio->setLooped(looped);
         audio->setDuration(parentDuration);
         return audio;
     }

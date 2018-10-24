@@ -1,12 +1,13 @@
 #include "Background.hpp"
-#include "adaptors/IImageAdaptor.hpp"
 
 #include <cassert>
 
-Background::Background(std::unique_ptr<IImageAdaptor>&& handler) :
+Background::Background(int width, int height, std::unique_ptr<IImageAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
     assert(m_handler);
+
+    m_handler->setSize(width, height);
 }
 
 int Background::width() const

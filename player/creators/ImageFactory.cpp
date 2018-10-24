@@ -21,46 +21,43 @@ std::unique_ptr<IMedia> ImageFactory::doCreate()
     auto scaleType = toScaleType(options().get<std::string>("scaleType", "center"));
     auto align = toAlign(options().get<std::string>("align", "center"));
     auto valign = toValign(options().get<std::string>("valign", "middle"));
+    ImageProperties props{scaleType, align, valign};
 
-    auto adaptor = std::make_unique<GtkImageAdaptor>();
-    adaptor->setSize(width, height);
-    adaptor->setImage(path.string());
-
-    auto image = std::make_unique<Image>(scaleType, align, valign, std::move(adaptor));
+    auto image = std::make_unique<Image>(width, height, path, props, std::make_unique<GtkImageAdaptor>());
     image->setDuration(duration);
     return image;
 }
 
-Image::ScaleType ImageFactory::toScaleType(const std::string& scale_type)
+ImageProperties::ScaleType ImageFactory::toScaleType(const std::string& scale_type)
 {
     if(scale_type == "center")
-        return Image::ScaleType::Scaled;
+        return ImageProperties::ScaleType::Scaled;
     else if(scale_type == "stretch")
-        return Image::ScaleType::Stretch;
+        return ImageProperties::ScaleType::Stretch;
     else
-        return Image::ScaleType::Invalid;
+        return ImageProperties::ScaleType::Invalid;
 }
 
-Image::Align ImageFactory::toAlign(const std::string& align)
+ImageProperties::Align ImageFactory::toAlign(const std::string& align)
 {
     if(align == "left")
-        return Image::Align::Left;
+        return ImageProperties::Align::Left;
     else if(align == "center")
-        return Image::Align::Center;
+        return ImageProperties::Align::Center;
     else if(align == "right")
-        return Image::Align::Right;
+        return ImageProperties::Align::Right;
     else
-        return Image::Align::Invalid;
+        return ImageProperties::Align::Invalid;
 }
 
-Image::Valign ImageFactory::toValign(const std::string& valign)
+ImageProperties::Valign ImageFactory::toValign(const std::string& valign)
 {
     if(valign == "top")
-        return Image::Valign::Top;
+        return ImageProperties::Valign::Top;
     else if(valign == "middle")
-        return Image::Valign::Middle;
+        return ImageProperties::Valign::Middle;
     else if(valign == "bottom")
-        return Image::Valign::Bottom;
+        return ImageProperties::Valign::Bottom;
     else
-        return Image::Valign::Invalid;
+        return ImageProperties::Valign::Invalid;
 }

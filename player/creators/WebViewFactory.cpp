@@ -21,21 +21,15 @@ std::unique_ptr<IMedia> WebViewFactory::doCreate()
 {
     int id = attrs().template get<int>("id");
     auto filename = std::to_string(id) + DEFAULT_EXTENSION;
-    auto uri = Resources::directory() / filename;
-    int duration = parseDuration(uri).value_or(attrs().get<int>("duration"));
+    auto path = Resources::directory() / filename;
+
+    int duration = parseDuration(path).value_or(attrs().get<int>("duration"));
     int width = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("width"));
     int height = static_cast<int>(parentNode().get_child("<xmlattr>").get<double>("height"));
-    bool transparency = options().get<bool>("transparency", true);
+    bool transparent = options().get<bool>("transparency", true);
 
-    auto adaptor = std::make_unique<WebKitWebViewAdaptor>();
-    adaptor->setSize(width, height);
-    if(transparency)
-    {
-        adaptor->enableTransparency();
-    }
-    adaptor->load(uri);
-
-    auto webview = std::make_unique<WebView>(std::move(adaptor));
+    auto webview = std::make_unique<WebView>(width, height, path, std::make_unique<WebKitWebViewAdaptor>());
+    webview->setTransparent(transparent);
     webview->setDuration(duration);
     return webview;
 }

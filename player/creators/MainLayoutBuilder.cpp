@@ -2,15 +2,12 @@
 #include "constants.hpp"
 
 #include "control/MainLayout.hpp"
+#include "adaptors/GtkOverlayAdaptor.hpp"
 
 #include <cassert>
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::build()
 {
-    assert(m_adaptor);
-
-    m_adaptor->setSize(m_width, m_height);
-
     auto layout = createLayout();
     prepareLayout(*layout);
     return layout;
@@ -18,13 +15,12 @@ std::unique_ptr<IMainLayout> MainLayoutBuilder::build()
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::createLayout()
 {
-    return std::make_unique<MainLayout>(std::move(m_adaptor));
+    return std::make_unique<MainLayout>(m_width, m_height, createAdaptor());
 }
 
-MainLayoutBuilder& MainLayoutBuilder::adaptor(std::unique_ptr<IOverlayAdaptor>&& adaptor)
+std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createAdaptor()
 {
-    m_adaptor = std::move(adaptor);
-    return *this;
+    return std::make_unique<GtkOverlayAdaptor>();
 }
 
 MainLayoutBuilder& MainLayoutBuilder::width(int width)

@@ -21,7 +21,6 @@ class MainLayoutBuilder
 public:
     std::unique_ptr<IMainLayout> build();
 
-    MainLayoutBuilder& adaptor(std::unique_ptr<IOverlayAdaptor>&& adaptor);
     MainLayoutBuilder& width(int width);
     MainLayoutBuilder& height(int height);
     MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
@@ -29,6 +28,7 @@ public:
 
 protected:
     virtual std::unique_ptr<IMainLayout> createLayout();
+    virtual std::unique_ptr<IOverlayAdaptor> createAdaptor();
 
 private:
     void prepareLayout(IMainLayout& layout);
@@ -36,7 +36,6 @@ private:
     void checkHeight(int height);
 
 private:
-    std::unique_ptr<IOverlayAdaptor> m_adaptor;
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;

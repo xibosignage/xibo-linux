@@ -7,6 +7,8 @@
 #include "utils/Helpers.hpp"
 
 const std::string DEFAULT_RESOURCES_DIR = "fakedir";
+const FilePath DEFAULT_PATH = "fakepath";
+const int DEFAULT_DURATION = 10;
 
 const int DEFAULT_WIDTH = 640;
 const int DEFAULT_HEIGHT = 480;
@@ -58,6 +60,12 @@ auto construct(Args&&... args)
     auto adaptorRaw = adaptor.get();
     auto testee = std::make_shared<Testee>(std::forward<Args>(args)..., std::move(adaptor));
     return std::pair{testee, adaptorRaw};
+}
+
+template<typename Testee, typename... Args>
+auto construct(Args&&... args)
+{
+    return std::make_shared<Testee>(std::forward<Args>(args)...);
 }
 
 template<typename Testee, typename MockAdaptor, typename... Args>

@@ -3,9 +3,13 @@
 #include "media/MediaVisitor.hpp"
 #include "utils/Utilities.hpp"
 
-Video::Video(bool looped, std::unique_ptr<IVideoHandler>&& handler) :
-    m_handler(std::move(handler)), m_looped(looped)
+Video::Video(int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
+    m_handler(std::move(handler))
 {
+    assert(m_handler);
+
+    m_handler->setSize(width, height);
+    m_handler->load(path);
     m_handler->connect(std::bind(&Video::onVideoFinished, this));
 }
 
@@ -43,6 +47,16 @@ int Video::width() const
 int Video::height() const
 {
     return m_handler->height();
+}
+
+void Video::setLooped(bool looped)
+{
+    m_looped = looped;
+}
+
+void Video::setMuted(bool muted)
+{
+    m_handler->setVolume(muted ? MIN_VOLUME : MAX_VOLUME);
 }
 
 IWidgetAdaptor& Video::handler()

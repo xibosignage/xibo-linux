@@ -27,16 +27,6 @@ public:
         return static_cast<MediaContainerBuilderTest&>(*this);
     }
 
-    MediaContainerBuilderTest& defaultAdaptor()
-    {
-        return static_cast<MediaContainerBuilderTest&>(adaptor(std::make_unique<testing::NiceMock<MockFixedLayoutAdaptor>>()));
-    }
-
-    MediaContainerBuilderTest& defaultTimer()
-    {
-        return static_cast<MediaContainerBuilderTest&>(timer(std::make_unique<testing::NiceMock<MockTimerProvider>>()));
-    }
-
     MediaContainerBuilderTest& defaultVisibleMedia()
     {
         std::vector<MediaWithPos> media;
@@ -65,6 +55,16 @@ protected:
         auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
         ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
         return container;
+    }
+
+    std::unique_ptr<IFixedLayoutAdaptor> createAdaptor() override
+    {
+        return std::make_unique<testing::NiceMock<MockFixedLayoutAdaptor>>();
+    }
+
+    std::unique_ptr<ITimerProvider> createTimer() override
+    {
+        return std::make_unique<testing::NiceMock<MockTimerProvider>>();
     }
 
 private:

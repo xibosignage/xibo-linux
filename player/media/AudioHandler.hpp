@@ -16,7 +16,7 @@ public:
     void play() override;
     void stop() override;
     void connect(OnAudioFinished callback) override;
-    void setVolume(double volume) override;
+    void setVolume(int volume) override;
 
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);

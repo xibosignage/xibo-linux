@@ -13,5 +13,5 @@ public:
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void connect(OnAudioFinished callback) = 0;
-    virtual void setVolume(double volume) = 0;
+    virtual void setVolume(int volume) = 0;
 };

@@ -5,8 +5,11 @@
 class Audio : public Media<IInvisibleMedia>
 {
 public:
-    Audio(bool looped, std::unique_ptr<IAudioHandler>&& handler);
+    Audio(const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
     void apply(MediaVisitor& visitor) override;
+
+    void setVolume(int volume);
+    void setLooped(bool looped);
 
 protected:
     void doStop() override;
@@ -17,6 +20,6 @@ private:
 
 private:
     std::unique_ptr<IAudioHandler> m_handler;
-    bool m_looped;
+    bool m_looped = false;
 
 };

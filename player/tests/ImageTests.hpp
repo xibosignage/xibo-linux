@@ -6,23 +6,15 @@
 #include "media/MediaVisitor.hpp"
 
 #include "mocks/MockImageAdaptor.hpp"
-#include "mocks/MockMedia.hpp"
 
-const Image::ScaleType DEFAULT_SCALE_TYPE = Image::ScaleType::Scaled;
-const Image::Align DEFAULT_ALIGN = Image::Align::Center;
-const Image::Valign DEFAULT_VALIGN = Image::Valign::Middle;
-const int DEFAULT_DURATION = 10;
+const ImageProperties::ScaleType DEFAULT_SCALE_TYPE = ImageProperties::ScaleType::Scaled;
+const ImageProperties::Align DEFAULT_ALIGN = ImageProperties::Align::Center;
+const ImageProperties::Valign DEFAULT_VALIGN = ImageProperties::Valign::Middle;
+const ImageProperties DEFAULT_PROPS{DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN};
 
 inline auto constructImage()
 {
-    auto [image, handler] = construct<Image, MockImageAdaptor>(DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN);
+    auto [image, handler] = construct<Image, MockImageAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS);
     image->setDuration(DEFAULT_DURATION);
     return std::pair{image, handler};
-}
-
-inline testing::NiceMock<MockInvisibleMedia>* createMedia()
-{
-    auto media = new testing::NiceMock<MockInvisibleMedia>;
-
-    return media;
 }

@@ -3,19 +3,16 @@
 #include "Media.hpp"
 #include "utils/Helpers.hpp"
 
-#include <filesystem>
-
 class IImageAdaptor;
 
-class Image : public Media<IVisibleMedia>
+struct ImageProperties
 {
-public:
     enum class ScaleType
     {
         Scaled,
         Stretch,
         Invalid
-    };
+    } scaleType;
 
     enum class Align
     {
@@ -23,7 +20,7 @@ public:
         Center,
         Right,
         Invalid
-    };
+    } align;
 
     enum class Valign
     {
@@ -31,13 +28,17 @@ public:
         Middle,
         Bottom,
         Invalid
-    };
+    } valign;
+};
 
-    Image(ScaleType type, Align align, Valign valign, std::unique_ptr<IImageAdaptor>&& handler);
+class Image : public Media<IVisibleMedia>
+{
+public:
+    Image(int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
 
-    ScaleType scaleType() const;
-    Align align() const;
-    Valign valign() const;
+    ImageProperties::ScaleType scaleType() const;
+    ImageProperties::Align align() const;
+    ImageProperties::Valign valign() const;
 
     int width() const override;
     int height() const override;
@@ -52,8 +53,8 @@ protected:
 
 private:
     std::unique_ptr<IImageAdaptor> m_handler;
-    ScaleType m_scaleType;
-    Align m_align;
-    Valign m_valign;
+    ImageProperties::ScaleType m_scaleType;
+    ImageProperties::Align m_align;
+    ImageProperties::Valign m_valign;
 
 };

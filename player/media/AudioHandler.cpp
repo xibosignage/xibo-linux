@@ -103,7 +103,7 @@ void AudioHandler::connect(OnAudioFinished callback)
     m_audioFinished.connect(callback);
 }
 
-void AudioHandler::setVolume(double volume)
+void AudioHandler::setVolume(int volume)
 {
-    m_volume->setVolume(volume);
+    m_volume->setVolume(volume / static_cast<double>(MAX_VOLUME));
 }

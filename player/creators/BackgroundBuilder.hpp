@@ -10,18 +10,19 @@
 class BackgroundBuilder
 {
 public:
-    BackgroundBuilder(std::unique_ptr<IFileSystemAdaptor>&& filesystem);
-
+    BackgroundBuilder();
     std::unique_ptr<IBackground> build();
 
-    BackgroundBuilder& adaptor(std::unique_ptr<IImageAdaptor>&& adaptor);
     BackgroundBuilder& width(int width);
     BackgroundBuilder& height(int height);
     BackgroundBuilder& color(const boost::optional<std::string>& color);
     BackgroundBuilder& path(const boost::optional<std::string>& path);
 
 protected:
-    virtual std::unique_ptr<IBackground> createBackground();
+    virtual std::unique_ptr<IBackground> createBackground(uint32_t color);
+    virtual std::unique_ptr<IBackground> createBackground(const FilePath& path);
+    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
+    virtual IFileSystemAdaptor& filesystem();
 
 private:
     void checkWidth(int width);
@@ -30,7 +31,6 @@ private:
 
 private:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    std::unique_ptr<IImageAdaptor> m_adaptor;
     int m_width;
     int m_height;
     boost::optional<uint32_t> m_hexColor;

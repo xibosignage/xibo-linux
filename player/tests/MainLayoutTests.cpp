@@ -2,6 +2,15 @@
 
 using namespace ::testing;
 
+TEST(MainLayoutTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto layoutHandlerMock = std::make_unique<NiceMock<MockOverlayAdaptor>>();
+
+    EXPECT_CALL(*layoutHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructLayout(std::move(layoutHandlerMock));
+}
+
 TEST(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto [layout, layoutHandlerStub] = constructLayout();
@@ -128,7 +137,7 @@ TEST(MainLayoutTest, Scale_WithContainer_ContainerScaleShouldBeCalled)
 
 TEST(MainLayoutTest, Scale_WithBackground_BackgroundScaleShouldBeCalled)
 {
-    auto [layout, layoutHandlerMock] = constructLayoutWithoutBackground();
+    auto [layout, layoutHandlerStub] = constructLayoutWithoutBackground();
     auto mockBackground = createBackground();
     layout->setBackground(unique(mockBackground));
 

@@ -10,10 +10,12 @@
 
 #include <cassert>
 
-MainLayout::MainLayout(std::unique_ptr<IOverlayAdaptor>&& handler) :
+MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
     assert(m_handler);
+
+    m_handler->setSize(width, height);
 }
 
 MainLayout::~MainLayout()

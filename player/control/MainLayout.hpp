@@ -7,7 +7,7 @@
 class MainLayout : public IMainLayout
 {
 public:
-    MainLayout(std::unique_ptr<IOverlayAdaptor>&& handler);
+    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
     ~MainLayout() override;
 
     MainLayout(const MainLayout& other) = delete;

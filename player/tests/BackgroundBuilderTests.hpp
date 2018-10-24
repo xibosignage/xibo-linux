@@ -7,6 +7,7 @@
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 #include "mocks/MockFileSystemAdaptor.hpp"
+#include "utils/FileSystemAdaptor.hpp"
 
 struct Color
 {
@@ -32,25 +33,14 @@ const std::vector<std::string> invalidColors =
     "#111111111", "zzzzzz", "test me", "invalid",
     "#dfdfd1s", "#1111d", "", " ", "   "};
 
-const std::string DEFAULT_PATH = "test";
 const std::string DEFAULT_COLOR = "#000";
 
 class BackgroundBuilderTest : public BackgroundBuilder
 {
 public:
     BackgroundBuilderTest() :
-        BackgroundBuilder(std::make_unique<MockFileSystemAdaptor>())
+        m_fakeFilesystem(std::make_unique<testing::NiceMock<MockFileSystemAdaptor>>())
     {
-    }
-
-    BackgroundBuilderTest(std::unique_ptr<MockFileSystemAdaptor>&& filesystem) :
-        BackgroundBuilder(std::move(filesystem))
-    {
-    }
-
-    BackgroundBuilderTest& defaultAdaptor()
-    {
-        return static_cast<BackgroundBuilderTest&>(adaptor(std::make_unique<testing::NiceMock<MockImageAdaptor>>()));
     }
 
     BackgroundBuilderTest& defaultSize()
@@ -58,10 +48,30 @@ public:
         return static_cast<BackgroundBuilderTest&>(width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT));
     }
 
-protected:
-    std::unique_ptr<IBackground> createBackground() override
+    MockFileSystemAdaptor& filesystem() override
     {
-        return fake_construct<MockBackground, MockImageAdaptor>();
+        return *m_fakeFilesystem;
     }
+
+protected:
+    std::unique_ptr<IBackground> createBackground(uint32_t color) override
+    {
+        return fake_construct<MockOneColorBackground, MockImageAdaptor>(color);
+    }
+
+    std::unique_ptr<IBackground> createBackground(const FilePath& path) override
+    {
+        return fake_construct<MockImageBackground, MockImageAdaptor>(path);
+    }
+
+    std::unique_ptr<IImageAdaptor> createAdaptor() override
+    {
+        return std::make_unique<testing::NiceMock<MockImageAdaptor>>();
+    }
+
+
+
+private:
+    std::unique_ptr<MockFileSystemAdaptor> m_fakeFilesystem;
 
 };

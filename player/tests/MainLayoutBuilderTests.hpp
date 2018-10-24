@@ -21,27 +21,15 @@ class MainLayoutBuilderSizeTest : public testing::TestWithParam<Size> { };
 class MainLayoutBuilderTest : public MainLayoutBuilder
 {
 public:
+    MainLayoutBuilderTest()
+    {
+        defaultBackground().defaultContainers();
+    }
+
     MainLayoutBuilderTest& fakeLayout(std::unique_ptr<IMainLayout>&& layout)
     {
         m_layout = std::move(layout);
         return static_cast<MainLayoutBuilderTest&>(*this);
-    }
-
-    MainLayoutBuilderTest& defaultAdaptor()
-    {
-        return static_cast<MainLayoutBuilderTest&>(adaptor(std::make_unique<testing::NiceMock<MockOverlayAdaptor>>()));
-    }
-
-    MainLayoutBuilderTest& defaultBackground()
-    {
-        return static_cast<MainLayoutBuilderTest&>(background(fake_construct<MockBackground, MockImageAdaptor>()));
-    }
-
-    MainLayoutBuilderTest& defaultContainers()
-    {
-        std::vector<MediaContainerWithPos> containers;
-        containers.push_back(MediaContainerWithPos{fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
-        return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
     }
 
     MainLayoutBuilder& defaultSize()
@@ -56,6 +44,24 @@ protected:
             return std::move(m_layout);
 
         return fake_construct<MockMainLayout, MockOverlayAdaptor>();
+    }
+
+    std::unique_ptr<IOverlayAdaptor> createAdaptor() override
+    {
+        return std::make_unique<testing::NiceMock<MockOverlayAdaptor>>();
+    }
+
+private:
+    MainLayoutBuilderTest& defaultBackground()
+    {
+        return static_cast<MainLayoutBuilderTest&>(background(fake_construct<MockBackground, MockImageAdaptor>()));
+    }
+
+    MainLayoutBuilderTest& defaultContainers()
+    {
+        std::vector<MediaContainerWithPos> containers;
+        containers.push_back(MediaContainerWithPos{fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
     }
 
 private:

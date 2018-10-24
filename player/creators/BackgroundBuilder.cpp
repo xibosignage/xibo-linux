@@ -1,42 +1,47 @@
 #include "BackgroundBuilder.hpp"
 
 #include "control/Background.hpp"
-#include "adaptors/IImageAdaptor.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
 
 #include "utils/Resources.hpp"
 #include "utils/Helpers.hpp"
 #include "utils/ColorToHexConverter.hpp"
+#include "utils/FileSystemAdaptor.hpp"
 
-BackgroundBuilder::BackgroundBuilder(std::unique_ptr<IFileSystemAdaptor>&& filesystem) :
-    m_filesystem(std::move(filesystem))
+BackgroundBuilder::BackgroundBuilder()
 {
-    assert(m_filesystem);
+    m_filesystem = std::make_unique<FileSystemAdaptor>();
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::build()
 {
-    assert(m_adaptor);
-
-    m_adaptor->setSize(m_width, m_height);
-
     if(m_hexColor && m_path.empty())
-        m_adaptor->setColor(m_hexColor.value());
+        return createBackground(m_hexColor.value());
 
     if(!m_path.empty())
-        m_adaptor->setImage(m_path.string());
+        return createBackground(m_path);
 
-    return createBackground();
+    throw std::runtime_error("Background can't be created");
 }
 
-std::unique_ptr<IBackground> BackgroundBuilder::createBackground()
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
 {
-    return std::make_unique<Background>(std::move(m_adaptor));
+    return std::make_unique<OneColorBackground>(m_width, m_height, color, createAdaptor());
 }
 
-BackgroundBuilder& BackgroundBuilder::adaptor(std::unique_ptr<IImageAdaptor>&& adaptor)
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
 {
-    m_adaptor = std::move(adaptor);
-    return *this;
+    return std::make_unique<ImageBackground>(m_width, m_height, path, createAdaptor());
+}
+
+std::unique_ptr<IImageAdaptor> BackgroundBuilder::createAdaptor()
+{
+    return std::make_unique<GtkImageAdaptor>();
+}
+
+IFileSystemAdaptor& BackgroundBuilder::filesystem()
+{
+    return *m_filesystem;
 }
 
 BackgroundBuilder& BackgroundBuilder::width(int width)
@@ -93,6 +98,6 @@ BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& p
 
 void BackgroundBuilder::checkPath(FilePath path)
 {
-    if(!m_filesystem->isRegularFile(path))
+    if(!filesystem().isRegularFile(path))
         throw std::runtime_error("Not valid path");
 }

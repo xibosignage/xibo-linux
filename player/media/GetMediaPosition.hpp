@@ -17,8 +17,8 @@ public:
     void visit(WebView&) override;
 
 private:
-    int getImageX(Image::Align align, int imageWidth);
-    int getImageY(Image::Valign valign, int imageHeight);
+    int getImageX(ImageProperties::Align align, int imageWidth);
+    int getImageY(ImageProperties::Valign valign, int imageHeight);
 
 private:
     int m_mediaX;

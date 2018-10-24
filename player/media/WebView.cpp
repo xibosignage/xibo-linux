@@ -5,10 +5,13 @@
 
 #include <cassert>
 
-WebView::WebView(std::unique_ptr<IWebViewAdaptor>&& handler) :
+WebView::WebView(int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
     assert(m_handler);
+
+    m_handler->setSize(width, height);
+    m_handler->load(path);
 }
 
 void WebView::doStop()
@@ -40,6 +43,14 @@ int WebView::height() const
 void WebView::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
+}
+
+void WebView::setTransparent(bool transparent)
+{
+    if(transparent)
+    {
+        m_handler->enableTransparency();
+    }
 }
 
 IWidgetAdaptor& WebView::handler()

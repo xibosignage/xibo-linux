@@ -11,8 +11,6 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
-const unsigned int DEFAULT_DURATION = 10;
-
 inline testing::NiceMock<MockVisibleMedia>* createMediaWithPos()
 {
     auto handler = new testing::NiceMock<MockWidgetAdaptor>;
@@ -31,17 +29,24 @@ inline testing::NiceMock<MockInvisibleMedia>* createMedia()
 
 inline auto constructContainer()
 {
-    auto [container, handler] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER, DEFAULT_LOOP, std::make_unique<MockTimerProvider>());
+    auto [container, handler] = construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, std::make_unique<MockTimerProvider>());
     container->addMedia(unique(createMedia()));
     return std::pair{container, handler};
 }
 
+inline auto constructContainer(std::unique_ptr<MockFixedLayoutAdaptor>&& adaptor)
+{
+    auto container = construct<MediaContainer>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, std::make_unique<MockTimerProvider>(), std::move(adaptor));
+    container->addMedia(unique(createMedia()));
+    return container;
+}
+
 inline auto constructContainerWithoutMedia()
 {
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER, DEFAULT_LOOP, std::make_unique<MockTimerProvider>());
+    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, std::make_unique<MockTimerProvider>());
 }
 
 inline auto constructContainerWithoutMedia(std::unique_ptr<ITimerProvider>&& timer)
 {
-    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_ZORDER, DEFAULT_LOOP, std::move(timer));
+    return construct<MediaContainer, MockFixedLayoutAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, std::move(timer));
 }

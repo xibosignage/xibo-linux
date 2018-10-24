@@ -2,17 +2,14 @@
 #include "constants.hpp"
 
 #include "control/MediaContainer.hpp"
+#include "utils/TimerProvider.hpp"
+#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
 std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 {
-    assert(m_adaptor);
-    assert(m_timer);
-
-    m_adaptor->setSize(m_width, m_height);
-
     auto container = createContainer(m_zorder, m_loop);
     addAllMedia(*container);
     return container;
@@ -20,19 +17,17 @@ std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 
 std::unique_ptr<IMediaContainer> MediaContainerBuilder::createContainer(int zorder, bool loop)
 {
-    return std::make_unique<MediaContainer>(zorder, loop, std::move(m_timer), std::move(m_adaptor));
+    return std::make_unique<MediaContainer>(m_width, m_height, zorder, loop, createTimer(), createAdaptor());
 }
 
-MediaContainerBuilder& MediaContainerBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
+std::unique_ptr<IFixedLayoutAdaptor> MediaContainerBuilder::createAdaptor()
 {
-    m_adaptor = std::move(adaptor);
-    return *this;
+    return std::make_unique<GtkFixedLayoutAdaptor>();
 }
 
-MediaContainerBuilder& MediaContainerBuilder::timer(std::unique_ptr<ITimerProvider>&& timer)
+std::unique_ptr<ITimerProvider> MediaContainerBuilder::createTimer()
 {
-    m_timer = std::move(timer);
-    return *this;
+    return std::make_unique<TimerProvider>();
 }
 
 MediaContainerBuilder& MediaContainerBuilder::width(int width)

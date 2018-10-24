@@ -8,11 +8,13 @@
 
 const int FIRST_MEDIA_INDEX = 0;
 
-MediaContainer::MediaContainer(int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+MediaContainer::MediaContainer(int width, int height, int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
     m_handler(std::move(handler)), m_timer(std::move(timer)), m_zorder(zorder), m_looped(looped)
 {
     assert(m_timer);
     assert(m_handler);
+
+    m_handler->setSize(width, height);
 }
 
 MediaContainer::~MediaContainer()
