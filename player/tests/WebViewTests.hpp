@@ -7,16 +7,32 @@
 
 #include "mocks/MockWebViewAdaptor.hpp"
 
-inline auto constructWebView()
+class WebViewTest : public testing::Test
 {
-    auto [webview, handler] = construct<WebView, MockWebViewAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH);
-    webview->setDuration(DEFAULT_DURATION);
-    return std::pair{webview, handler};
-}
+public:
+    auto constructWebView()
+    {
+        auto webview = construct<WebView>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(m_adaptor));
+        webview->setDuration(DEFAULT_DURATION);
+        return webview;
+    }
 
-inline auto constructWebView(std::unique_ptr<MockWebViewAdaptor>&& adaptor)
-{
-    auto webview = construct<WebView>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::move(adaptor));
-    webview->setDuration(DEFAULT_DURATION);
-    return webview;
-}
+protected:
+    void SetUp() override
+    {
+        m_adaptor = new testing::NiceMock<MockWebViewAdaptor>;
+    }
+
+    void TearDown() override
+    {
+        m_adaptor = nullptr;
+    }
+
+    MockWebViewAdaptor& adaptor()
+    {
+        return *m_adaptor;
+    }
+
+private:
+    MockWebViewAdaptor* m_adaptor = nullptr;
+};

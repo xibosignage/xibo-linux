@@ -2,99 +2,95 @@
 
 using namespace ::testing;
 
-TEST(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto webviewHandlerMock = std::make_unique<NiceMock<MockWebViewAdaptor>>();
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*webviewHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructWebView(std::move(webviewHandlerMock));
+    constructWebView();
 }
 
-TEST(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
+TEST_F(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
 {
-    auto webviewHandlerMock = std::make_unique<NiceMock<MockWebViewAdaptor>>();
+    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-    EXPECT_CALL(*webviewHandlerMock, load(DEFAULT_PATH));
-
-    constructWebView(std::move(webviewHandlerMock));
+    constructWebView();
 }
 
-TEST(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
+TEST_F(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto [webview, webviewHandlerStub] = constructWebView();
+    auto webview = constructWebView();
 
-    ASSERT_EQ(&webview->handler(), webviewHandlerStub);
+    ASSERT_EQ(&webview->handler(), &adaptor());
 }
 
-TEST(WebViewTest, Width_HandlerReturnsDefaultWidth_WebViewWidthEqualsDefault)
+TEST_F(WebViewTest, Width_HandlerReturnsDefaultWidth_WebViewWidthEqualsDefault)
 {
-    auto [webview, webviewHandlerStub] = constructWebView();
+    auto webview = constructWebView();
 
-    ON_CALL(*webviewHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(webview->width(), DEFAULT_WIDTH);
 }
 
-TEST(WebViewTest, Height_HandlerReturnsDefaultHeight_WebViewHeightEqualsDefault)
+TEST_F(WebViewTest, Height_HandlerReturnsDefaultHeight_WebViewHeightEqualsDefault)
 {
-    auto [webview, webviewHandlerStub] = constructWebView();
+    auto webview = constructWebView();
 
-    ON_CALL(*webviewHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(webview->height(), DEFAULT_HEIGHT);
 }
 
-TEST(WebViewTest, Scale_Default_WebViewScaleShouldBeCalled)
+TEST_F(WebViewTest, Scale_Default_WebViewScaleShouldBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     webview->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST(WebViewTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(WebViewTest, Start_Default_HandlerShowShouldBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, show());
+    EXPECT_CALL(adaptor(), show());
 
     webview->start();
 }
 
-TEST(WebViewTest, Start_Default_HandlerReloadShouldBeCalled)
+TEST_F(WebViewTest, Start_Default_HandlerReloadShouldBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, reload());
+    EXPECT_CALL(adaptor(), reload());
 
     webview->start();
 }
 
-TEST(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, hide());
+    EXPECT_CALL(adaptor(), hide());
 
     webview->stop();
 }
 
-TEST(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
+TEST_F(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, enableTransparency());
+    EXPECT_CALL(adaptor(), enableTransparency());
 
     webview->setTransparent(true);
 }
 
-TEST(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCalled)
+TEST_F(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCalled)
 {
-    auto [webview, webviewHandlerMock] = constructWebView();
+    auto webview = constructWebView();
 
-    EXPECT_CALL(*webviewHandlerMock, enableTransparency()).Times(0);
+    EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
 
     webview->setTransparent(false);
 }

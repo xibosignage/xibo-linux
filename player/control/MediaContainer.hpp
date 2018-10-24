@@ -8,7 +8,7 @@
 class MediaContainer : public IMediaContainer
 {
 public:
-    MediaContainer(int width, int height, int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+    MediaContainer(int width, int height, int zorder, bool mediaLooped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~MediaContainer() override;
 
     MediaContainer(const MediaContainer& other) = delete;
@@ -30,13 +30,14 @@ private:
     void scaleVisibleMedia(double scaleX, double scaleY);
     void startMedia(size_t mediaIndex);
     void onMediaTimeout();
+    bool shouldNextMediaStart();
     size_t getNextMediaIndex();
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     std::unique_ptr<ITimerProvider> m_timer;
     int m_zorder;
-    bool m_looped = false;
+    bool m_mediaLooped = false;
 
     std::vector<IVisibleMedia*> m_visibleMedia;
     std::vector<std::unique_ptr<IMedia>> m_media;

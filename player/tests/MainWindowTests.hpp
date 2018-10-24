@@ -14,18 +14,9 @@
 #include "mocks/MockMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
 
-inline auto constructWindow()
-{
-    auto [window, adaptor] = construct<MainWindow, MockWindowAdaptor>();
-    window->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    return std::pair{window, adaptor};
-}
+const int DEFAULT_WINDOW_POS = 100;
 
-inline auto constructWindowWithoutSize()
-{
-    auto [window, adaptor] = construct<MainWindow, MockWindowAdaptor>();
-    return std::pair{window, adaptor};
-}
+const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
 
 inline auto constructMockLayout()
 {
@@ -34,11 +25,53 @@ inline auto constructMockLayout()
 
     ON_CALL(*layout, handler()).WillByDefault(testing::ReturnRef(*handler));
 
-    return std::pair{layout, handler};
+    return layout;
 }
 
-const int DEFAULT_WINDOW_POS = 100;
+class MainWindowTest : public testing::Test
+{
+public:
+    auto constructWindow()
+    {
+        auto window = construct<MainWindow>(unique(m_adaptor));
+        addLayout(window);
+        return window;
+    }
 
-const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+protected:
+    void SetUp() override
+    {
+        m_adaptor = new testing::NiceMock<MockWindowAdaptor>;
+    }
 
-class MainWindowTestSize : public testing::TestWithParam<Size> { };
+    void TearDown() override
+    {
+        m_layout = nullptr;
+        m_adaptor = nullptr;
+    }
+
+    MockWindowAdaptor& adaptor()
+    {
+        return *m_adaptor;
+    }
+
+    MockMainLayout& layout()
+    {
+        return *m_layout;
+    }
+
+private:
+    void addLayout(std::shared_ptr<MainWindow> window)
+    {
+        m_layout = constructMockLayout();
+
+        window->addLayout(unique(m_layout));
+    }
+
+private:
+    MockWindowAdaptor* m_adaptor = nullptr;
+    MockMainLayout* m_layout = nullptr;
+
+};
+
+class MainWindowTestSize : public MainWindowTest, public testing::WithParamInterface<Size> { };

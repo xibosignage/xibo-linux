@@ -2,93 +2,89 @@
 
 using namespace ::testing;
 
-TEST(ImageTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+TEST_F(ImageTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto imageHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*imageHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructImage(std::move(imageHandlerMock));
+    constructImage();
 }
 
-TEST(ImageTest, Construct_Default_HandlerSetImageShouldBeCalled)
+TEST_F(ImageTest, Construct_Default_HandlerSetImageShouldBeCalled)
 {
-    auto imageHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
+    EXPECT_CALL(adaptor(), setImage(DEFAULT_PATH.string()));
 
-    EXPECT_CALL(*imageHandlerMock, setImage(DEFAULT_PATH.string()));
-
-    constructImage(std::move(imageHandlerMock));
+    constructImage();
 }
 
-TEST(ImageTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
+TEST_F(ImageTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
-    ASSERT_EQ(&image->handler(), imageHandlerStub);
+    ASSERT_EQ(&image->handler(), &adaptor());
 }
 
-TEST(ImageTest, Width_HandlerReturnsDefaultWidth_ImageWidthEqualsDefault)
+TEST_F(ImageTest, Width_HandlerReturnsDefaultWidth_ImageWidthEqualsDefault)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
-    ON_CALL(*imageHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(image->width(), DEFAULT_WIDTH);
 }
 
-TEST(ImageTest, Height_HandlerReturnsDefaultHeight_ImageHeightEqualsDefault)
+TEST_F(ImageTest, Height_HandlerReturnsDefaultHeight_ImageHeightEqualsDefault)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
-    ON_CALL(*imageHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(image->height(), DEFAULT_HEIGHT);
 }
 
-TEST(ImageTest, Scale_Default_ImageScaleShouldBeCalled)
+TEST_F(ImageTest, Scale_Default_ImageScaleShouldBeCalled)
 {
-    auto [image, imageHandlerMock] = constructImage();
+    auto image = constructImage();
 
-    EXPECT_CALL(*imageHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     image->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST(ImageTest, ScaleType_Default_EqualsDefault)
+TEST_F(ImageTest, ScaleType_Default_EqualsDefault)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
     ASSERT_EQ(image->scaleType(), DEFAULT_SCALE_TYPE);
 }
 
-TEST(ImageTest, Align_Default_EqualsDefault)
+TEST_F(ImageTest, Align_Default_EqualsDefault)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
     ASSERT_EQ(image->align(), DEFAULT_ALIGN);
 }
 
-TEST(ImageTest, Valign_Default_EqualsDefault)
+TEST_F(ImageTest, Valign_Default_EqualsDefault)
 {
-    auto [image, imageHandlerStub] = constructImage();
+    auto image = constructImage();
 
     ASSERT_EQ(image->valign(), DEFAULT_VALIGN);
 }
 
-TEST(ImageTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(ImageTest, Start_Default_HandlerShowShouldBeCalled)
 {
-    auto [image, imageHandlerMock] = constructImage();
+    auto image = constructImage();
 
-    EXPECT_CALL(*imageHandlerMock, show());
+    EXPECT_CALL(adaptor(), show());
 
     image->start();
 }
 
-TEST(ImageTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(ImageTest, Stop_Default_HandlerHideShouldBeCalled)
 {
-    auto [image, imageHandlerMock] = constructImage();
+    auto image = constructImage();
 
-    EXPECT_CALL(*imageHandlerMock, hide());
+    EXPECT_CALL(adaptor(), hide());
 
     image->stop();
 }

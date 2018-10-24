@@ -25,52 +25,50 @@ TEST(ImageBackgroundTest, Construct_ValidPath_HandlerSetImageShouldBeCalled)
 
 TYPED_TEST(BackgroundTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto backgroundHandlerMock = std::make_unique<NiceMock<MockImageAdaptor>>();
+    EXPECT_CALL(this->adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*backgroundHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructBackground<TypeParam>(std::move(backgroundHandlerMock));
+    this->constructBackground();
 }
 
 TYPED_TEST(BackgroundTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
-    auto [background, backgroundHandlerStub] = constructBackground<TypeParam>();
+    auto background = this->constructBackground();
 
-    ASSERT_EQ(&background->handler(), backgroundHandlerStub);
+    ASSERT_EQ(&background->handler(), &this->adaptor());
 }
 
 TYPED_TEST(BackgroundTest, Width_HandlerReturnsDefaultWidth_BackgroundWidthEqualsDefault)
 {
-    auto [background, backgroundHandlerStub] = constructBackground<TypeParam>();
+    auto background = this->constructBackground();
 
-    ON_CALL(*backgroundHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(this->adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(background->width(), DEFAULT_WIDTH);
 }
 
 TYPED_TEST(BackgroundTest, Height_HandlerReturnsDefaultHeight_BackgroundHeightEqualsDefault)
 {
-    auto [background, backgroundHandlerStub] = constructBackground<TypeParam>();
+    auto background = this->constructBackground();
 
-    ON_CALL(*backgroundHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(this->adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(background->height(), DEFAULT_HEIGHT);
 }
 
 TYPED_TEST(BackgroundTest, Show_Default_HandlerShowShouldBeCalled)
 {
-    auto [background, backgroundHandlerMock] = constructBackground<TypeParam>();
+    auto background = this->constructBackground();
 
-    EXPECT_CALL(*backgroundHandlerMock, show());
+    EXPECT_CALL(this->adaptor(), show());
 
     background->show();
 }
 
 TYPED_TEST(BackgroundTest, Scale_Default_HandlerScaleShouldBeCalled)
 {
-    auto [background, backgroundHandlerMock] = constructBackground<TypeParam>();
+    auto background = this->constructBackground();
 
-    EXPECT_CALL(*backgroundHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+    EXPECT_CALL(this->adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     background->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }

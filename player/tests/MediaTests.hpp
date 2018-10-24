@@ -16,23 +16,33 @@ auto constructMedia();
 template<>
 auto constructMedia<WebView>()
 {
-    return constructWebView();
+    auto webview = construct<WebView>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockWebViewAdaptor>>());
+    webview->setDuration(DEFAULT_DURATION);
+    return webview;
 }
 
 template<>
 auto constructMedia<Image>()
 {
-    return constructImage();
+    auto image = construct<Image>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, std::make_unique<testing::NiceMock<MockImageAdaptor>>());
+    image->setDuration(DEFAULT_DURATION);
+    return image;
 }
 
 template<>
 auto constructMedia<Audio>()
 {
+    auto audio = construct<Audio>(DEFAULT_PATH, std::make_unique<testing::NiceMock<MockAudioHandler>>());
+    audio->setDuration(DEFAULT_DURATION);
+    return audio;
 }
 
 template<>
 auto constructMedia<Video>()
 {
+    auto video = construct<Video>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockVideoHandler>>());
+    video->setDuration(DEFAULT_DURATION);
+    return video;
 }
 
 inline testing::NiceMock<MockInvisibleMedia>* createMedia()

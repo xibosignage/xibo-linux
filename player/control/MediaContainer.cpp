@@ -8,8 +8,8 @@
 
 const int FIRST_MEDIA_INDEX = 0;
 
-MediaContainer::MediaContainer(int width, int height, int zorder, bool looped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
-    m_handler(std::move(handler)), m_timer(std::move(timer)), m_zorder(zorder), m_looped(looped)
+MediaContainer::MediaContainer(int width, int height, int zorder, bool mediaLooped, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+    m_handler(std::move(handler)), m_timer(std::move(timer)), m_zorder(zorder), m_mediaLooped(mediaLooped)
 {
     assert(m_timer);
     assert(m_handler);
@@ -106,10 +106,15 @@ void MediaContainer::onMediaTimeout()
 {
     m_media[m_currentMediaIndex]->stop();
 
-    if(m_media.size() > 1 || m_looped)
+    if(shouldNextMediaStart())
     {
         startMedia(getNextMediaIndex());
     }
+}
+
+bool MediaContainer::shouldNextMediaStart()
+{
+    return m_media.size() > 1 || m_mediaLooped;
 }
 
 size_t MediaContainer::getNextMediaIndex()

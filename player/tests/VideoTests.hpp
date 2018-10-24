@@ -7,16 +7,33 @@
 
 #include "mocks/MockVideoHandler.hpp"
 
-inline auto constructVideo()
+class VideoTest : public testing::Test
 {
-    auto [video, handler] = construct<Video, MockVideoHandler>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH);
-    video->setDuration(DEFAULT_DURATION);
-    return std::pair{video, handler};
-}
+public:
+    auto constructVideo()
+    {
+        auto video = construct<Video>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(m_adaptor));
+        video->setDuration(DEFAULT_DURATION);
+        return video;
+    }
 
-inline auto constructVideo(std::unique_ptr<MockVideoHandler>&& adaptor)
-{
-    auto video = construct<Video>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::move(adaptor));
-    video->setDuration(DEFAULT_DURATION);
-    return video;
-}
+protected:
+    void SetUp() override
+    {
+        m_adaptor = new testing::NiceMock<MockVideoHandler>;
+    }
+
+    void TearDown() override
+    {
+        m_adaptor = nullptr;
+    }
+
+    MockVideoHandler& adaptor()
+    {
+        return *m_adaptor;
+    }
+
+private:
+    MockVideoHandler* m_adaptor = nullptr;
+
+};

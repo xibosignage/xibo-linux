@@ -53,15 +53,6 @@ const std::vector<Point> invalidPositions = {
     {DEFAULT_XPOS, std::numeric_limits<int>::min()}
 };
 
-template<typename Testee, typename MockAdaptor, typename... Args>
-auto construct(Args&&... args)
-{
-    auto adaptor = std::make_unique<testing::NiceMock<MockAdaptor>>();
-    auto adaptorRaw = adaptor.get();
-    auto testee = std::make_shared<Testee>(std::forward<Args>(args)..., std::move(adaptor));
-    return std::pair{testee, adaptorRaw};
-}
-
 template<typename Testee, typename... Args>
 auto construct(Args&&... args)
 {

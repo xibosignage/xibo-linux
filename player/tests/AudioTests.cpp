@@ -4,38 +4,36 @@ using namespace testing;
 
 const int DEFAULT_VOLUME = 100;
 
-TEST(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
+TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    auto audioHandlerMock = std::make_unique<NiceMock<MockAudioHandler>>();
+    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-    EXPECT_CALL(*audioHandlerMock, load(DEFAULT_PATH));
-
-    constructAudio(std::move(audioHandlerMock));
+    constructAudio();
 }
 
-TEST(AudioTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(AudioTest, Start_Default_HandlerShowShouldBeCalled)
 {
-    auto [audio, audioHandlerMock] = constructAudio();
+    auto audio = constructAudio();
 
-    EXPECT_CALL(*audioHandlerMock, play());
+    EXPECT_CALL(adaptor(), play());
 
     audio->start();
 }
 
-TEST(AudioTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(AudioTest, Stop_Default_HandlerHideShouldBeCalled)
 {
-    auto [audio, audioHandlerMock] = constructAudio();
+    auto audio = constructAudio();
 
-    EXPECT_CALL(*audioHandlerMock, stop());
+    EXPECT_CALL(adaptor(), stop());
 
     audio->stop();
 }
 
-TEST(AudioTest, SetVolume_Default_HandlerSetVolumeShouldBeCalled)
+TEST_F(AudioTest, SetVolume_Default_HandlerSetVolumeShouldBeCalled)
 {
-    auto [audio, audioHandlerMock] = constructAudio();
+    auto audio = constructAudio();
 
-    EXPECT_CALL(*audioHandlerMock, setVolume(DEFAULT_VOLUME));
+    EXPECT_CALL(adaptor(), setVolume(DEFAULT_VOLUME));
 
     audio->setVolume(DEFAULT_VOLUME);
 }

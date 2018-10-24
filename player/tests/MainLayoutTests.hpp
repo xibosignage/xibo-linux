@@ -30,35 +30,7 @@ inline testing::NiceMock<MockMediaContainer>* createMediaContainer()
     return mediaContainer;
 }
 
-inline auto constructLayout(std::unique_ptr<MockOverlayAdaptor>&& adaptor)
-{
-    auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, std::move(adaptor));
-    layout->setBackground(unique(createBackground()));
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
-    return layout;
-}
-
-inline auto constructLayout()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    layout->setBackground(unique(createBackground()));
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
-    return std::pair{layout, handler};
-}
-
-inline auto constructLayoutWithoutBackground()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_XPOS);
-    return std::pair{layout, handler};
-}
-
-inline auto constructLayoutWithoutContainer()
-{
-    auto [layout, handler] = construct<MainLayout, MockOverlayAdaptor>(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    layout->setBackground(unique(createBackground()));
-    return std::pair{layout, handler};
-}
+const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_X_POS, DEFAULT_HEIGHT, MIN_Y_POS>;
 
 const std::vector<std::vector<int>> zorders = {
     {10,9,8},
@@ -70,21 +42,82 @@ const std::vector<std::vector<int>> zorders = {
     {4,3,2,1,0}
 };
 
-const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_X_POS, DEFAULT_HEIGHT, MIN_Y_POS>;
-
-class MainLayoutTestPos : public testing::TestWithParam<Point> { };
-
-class MainLayoutReorderTest : public testing::TestWithParam<std::vector<int>>
+class MainLayoutTest : public testing::Test
 {
 public:
-    void addContainer(IMainLayout& layout, int zorder)
+    auto constructLayout()
     {
-        auto container = createMediaContainer();
+        auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, unique(m_adaptor));
+        addBackgroundAndContainer(layout);
+        return layout;
+    }
 
-        ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
-        layout.addMediaContainer(unique(container), DEFAULT_XPOS, DEFAULT_YPOS);
+protected:
+    void SetUp() override
+    {
+        m_adaptor = new testing::NiceMock<MockOverlayAdaptor>;
+    }
 
-        pushContainerAndSort(container);
+    void TearDown() override
+    {
+        m_background = nullptr;
+        m_container = nullptr;
+        m_adaptor = nullptr;
+    }
+
+    MockOverlayAdaptor& adaptor()
+    {
+        return *m_adaptor;
+    }
+
+    MockBackground& background()
+    {
+        return *m_background;
+    }
+
+    MockMediaContainer& container()
+    {
+        return *m_container;
+    }
+
+    virtual void addContainers(std::shared_ptr<MainLayout> layout)
+    {
+        m_container = createMediaContainer();
+        layout->addMediaContainer(unique(m_container), DEFAULT_XPOS, DEFAULT_XPOS);
+    }
+
+private:
+    void addBackgroundAndContainer(std::shared_ptr<MainLayout> layout)
+    {
+        m_background = createBackground();
+        layout->setBackground(unique(m_background));
+
+        addContainers(layout);
+    }
+
+private:
+    MockOverlayAdaptor* m_adaptor = nullptr;
+    MockBackground* m_background = nullptr;
+    MockMediaContainer* m_container = nullptr;
+
+};
+
+class MainLayoutTestPos : public MainLayoutTest, public testing::WithParamInterface<Point> { };
+
+class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
+{
+protected:
+    void addContainers(std::shared_ptr<MainLayout> layout) override
+    {
+        for(int zorder : GetParam())
+        {
+            auto container = createMediaContainer();
+
+            ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
+            layout->addMediaContainer(unique(container), DEFAULT_XPOS, DEFAULT_YPOS);
+
+            pushContainerAndSort(container);
+        }
     }
 
     testing::NiceMock<MockMediaContainer>* container(size_t index)

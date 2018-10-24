@@ -7,16 +7,34 @@
 
 #include "mocks/MockAudioHandler.hpp"
 
-inline auto constructAudio()
+class AudioTest : public testing::Test
 {
-    auto [audio, handler] = construct<Audio, MockAudioHandler>(DEFAULT_PATH);
-    audio->setDuration(DEFAULT_DURATION);
-    return std::pair{audio, handler};
-}
+public:
+    auto constructAudio()
+    {
+        auto audio = construct<Audio>(DEFAULT_PATH, unique(m_adaptor));
+        audio->setDuration(DEFAULT_DURATION);
+        return audio;
+    }
 
-inline auto constructAudio(std::unique_ptr<MockAudioHandler>&& adaptor)
-{
-    auto audio = construct<Audio>(DEFAULT_PATH, std::move(adaptor));
-    audio->setDuration(DEFAULT_DURATION);
-    return audio;
-}
+protected:
+    void SetUp() override
+    {
+        m_adaptor = new testing::NiceMock<MockAudioHandler>;
+    }
+
+    void TearDown() override
+    {
+        m_adaptor = nullptr;
+    }
+
+    MockAudioHandler& adaptor()
+    {
+        return *m_adaptor;
+    }
+
+private:
+    MockAudioHandler* m_adaptor = nullptr;
+
+};
+

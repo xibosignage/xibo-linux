@@ -3,83 +3,79 @@
 
 using namespace testing;
 
-TEST(VideoTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+TEST_F(VideoTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
-    auto videoHandlerMock = std::make_unique<NiceMock<MockVideoHandler>>();
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    EXPECT_CALL(*videoHandlerMock, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructVideo(std::move(videoHandlerMock));
+    constructVideo();
 }
 
-TEST(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
+TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    auto videoHandlerMock = std::make_unique<NiceMock<MockVideoHandler>>();
+    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-    EXPECT_CALL(*videoHandlerMock, load(DEFAULT_PATH));
-
-    constructVideo(std::move(videoHandlerMock));
+    constructVideo();
 }
 
-TEST(VideoTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(VideoTest, Start_Default_HandlerShowShouldBeCalled)
 {
-    auto [video, videoHandlerMock] = constructVideo();
+    auto video = constructVideo();
 
-    EXPECT_CALL(*videoHandlerMock, play());
+    EXPECT_CALL(adaptor(), play());
 
     video->start();
 }
 
-TEST(VideoTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(VideoTest, Stop_Default_HandlerHideShouldBeCalled)
 {
-    auto [video, videoHandlerMock] = constructVideo();
+    auto video = constructVideo();
 
-    EXPECT_CALL(*videoHandlerMock, stop());
+    EXPECT_CALL(adaptor(), stop());
 
     video->stop();
 }
 
-TEST(VideoTest, SetMuted_True_HandlerSetVolume0ShouldBeCalled)
+TEST_F(VideoTest, SetMuted_True_HandlerSetVolume0ShouldBeCalled)
 {
-    auto [video, videoHandlerMock] = constructVideo();
+    auto video = constructVideo();
 
-    EXPECT_CALL(*videoHandlerMock, setVolume(MIN_VOLUME));
+    EXPECT_CALL(adaptor(), setVolume(MIN_VOLUME));
 
     video->setMuted(true);
 }
 
-TEST(VideoTest, SetMuted_False_HandlerSetVolume100ShouldBeCalled)
+TEST_F(VideoTest, SetMuted_False_HandlerSetVolume100ShouldBeCalled)
 {
-    auto [video, videoHandlerMock] = constructVideo();
+    auto video = constructVideo();
 
-    EXPECT_CALL(*videoHandlerMock, setVolume(MAX_VOLUME));
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
 
     video->setMuted(false);
 }
 
-TEST(VideoTest, Width_HandlerReturnsDefaultWidth_VideoWidthEqualsDefault)
+TEST_F(VideoTest, Width_HandlerReturnsDefaultWidth_VideoWidthEqualsDefault)
 {
-    auto [video, videoHandlerStub] = constructVideo();
+    auto video = constructVideo();
 
-    ON_CALL(*videoHandlerStub, width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
 
     ASSERT_EQ(video->width(), DEFAULT_WIDTH);
 }
 
-TEST(VideoTest, Height_HandlerReturnsDefaultHeight_VideoHeightEqualsDefault)
+TEST_F(VideoTest, Height_HandlerReturnsDefaultHeight_VideoHeightEqualsDefault)
 {
-    auto [video, videoHandlerStub] = constructVideo();
+    auto video = constructVideo();
 
-    ON_CALL(*videoHandlerStub, height()).WillByDefault(Return(DEFAULT_HEIGHT));
+    ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(video->height(), DEFAULT_HEIGHT);
 }
 
-TEST(VideoTest, Scale_Default_VideoScaleShouldBeCalled)
+TEST_F(VideoTest, Scale_Default_VideoScaleShouldBeCalled)
 {
-    auto [video, videoHandlerMock] = constructVideo();
+    auto video = constructVideo();
 
-    EXPECT_CALL(*videoHandlerMock, scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     video->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }

@@ -74,10 +74,9 @@ void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
 
 void MainWindow::showLayout()
 {
-    if(m_layout)
-    {
-        m_layout->show();
-    }
+    assert(m_layout);
+
+    m_layout->show();
 }
 
 IWindowAdaptor& MainWindow::handler()
