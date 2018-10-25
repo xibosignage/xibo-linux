@@ -26,10 +26,14 @@ public:
     {
     }
 
+    IWidgetAdaptor& handler()
+    {
+        return *m_handler;
+    }
+
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
-    MOCK_METHOD0(handler, IWidgetAdaptor&());
 
 private:
     std::unique_ptr<IWidgetAdaptor> m_handler;

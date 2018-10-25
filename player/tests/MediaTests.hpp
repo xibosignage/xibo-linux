@@ -7,7 +7,6 @@
 #include "AudioTests.hpp"
 #include "VideoTests.hpp"
 
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockMedia.hpp"
 
 template<typename T>
@@ -47,9 +46,7 @@ auto constructMedia<Video>()
 
 inline testing::NiceMock<MockInvisibleMedia>* createMedia()
 {
-    auto media = new testing::NiceMock<MockInvisibleMedia>;
-
-    return media;
+    return new testing::NiceMock<MockInvisibleMedia>;
 }
 
 

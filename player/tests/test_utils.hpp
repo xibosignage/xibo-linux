@@ -56,13 +56,19 @@ const std::vector<Point> invalidPositions = {
 template<typename Testee, typename... Args>
 auto construct(Args&&... args)
 {
-    return std::make_shared<Testee>(std::forward<Args>(args)...);
+    return std::make_unique<Testee>(std::forward<Args>(args)...);
 }
 
-template<typename Testee, typename MockAdaptor, typename... Args>
-auto fake_construct(Args&&... args)
+template<typename Testee, typename MockHandler, typename... Args>
+auto constructMock(Args&&... args)
 {
-    return std::make_unique<testing::NiceMock<Testee>>(std::forward<Args>(args)..., std::make_unique<testing::NiceMock<MockAdaptor>>());
+    return std::make_unique<testing::NiceMock<Testee>>(std::forward<Args>(args)..., std::make_unique<testing::NiceMock<MockHandler>>());
+}
+
+template<typename Testee, typename... Args>
+auto constructMock(Args&&... args)
+{
+    return std::make_unique<testing::NiceMock<Testee>>(std::forward<Args>(args)...);
 }
 
 template<typename T>

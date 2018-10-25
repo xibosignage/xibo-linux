@@ -1,37 +1,17 @@
 #pragma once
 
-#include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
 #include "control/MainLayout.hpp"
-
 #include "mocks/MockOverlayAdaptor.hpp"
+
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
+
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
-inline testing::NiceMock<MockBackground>* createBackground()
-{
-    auto handler = new testing::NiceMock<MockImageAdaptor>;
-    auto background = new testing::NiceMock<MockBackground>(unique(handler));
-
-    ON_CALL(*background, handler()).WillByDefault(testing::ReturnRef(*handler));
-
-    return background;
-}
-
-inline testing::NiceMock<MockMediaContainer>* createMediaContainer()
-{
-    auto handler = new testing::NiceMock<MockFixedLayoutAdaptor>;
-    auto mediaContainer = new testing::NiceMock<MockMediaContainer>(unique(handler));
-
-    ON_CALL(*mediaContainer, handler()).WillByDefault(testing::ReturnRef(*handler));
-
-    return mediaContainer;
-}
-
 const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_X_POS, DEFAULT_HEIGHT, MIN_Y_POS>;
-
 const std::vector<std::vector<int>> zorders = {
     {10,9,8},
     {1,2,4,10},
@@ -42,34 +22,22 @@ const std::vector<std::vector<int>> zorders = {
     {4,3,2,1,0}
 };
 
-class MainLayoutTest : public testing::Test
+class MainLayoutTest : public BaseTestWithHandler<MockOverlayAdaptor>
 {
 public:
     auto constructLayout()
     {
-        auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, unique(m_adaptor));
-        addBackgroundAndContainer(layout);
+        auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, unique(&adaptor()));
+
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+
+        addBackgroundAndContainer(*layout);
+
         return layout;
     }
 
 protected:
-    void SetUp() override
-    {
-        m_adaptor = new testing::NiceMock<MockOverlayAdaptor>;
-    }
-
-    void TearDown() override
-    {
-        m_background = nullptr;
-        m_container = nullptr;
-        m_adaptor = nullptr;
-    }
-
-    MockOverlayAdaptor& adaptor()
-    {
-        return *m_adaptor;
-    }
-
     MockBackground& background()
     {
         return *m_background;
@@ -80,23 +48,50 @@ protected:
         return *m_container;
     }
 
-    virtual void addContainers(std::shared_ptr<MainLayout> layout)
+    auto createBackground()
     {
-        m_container = createMediaContainer();
-        layout->addMediaContainer(unique(m_container), DEFAULT_XPOS, DEFAULT_XPOS);
+        auto background = constructMock<MockBackground, MockImageAdaptor>();
+
+        ON_CALL(*background, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(*background, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+
+        return background;
+    }
+
+    auto createMediaContainer()
+    {
+        auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
+
+        ON_CALL(*container, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(*container, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+
+        return container;
+    }
+
+    virtual void addBackground(MainLayout& layout)
+    {
+        auto background = createBackground();
+        m_background = background.get();
+
+        layout.setBackground(std::move(background));
+    }
+
+    virtual void addContainers(MainLayout& layout)
+    {
+        auto container = createMediaContainer();
+        m_container = container.get();
+
+        layout.addMediaContainer(std::move(container), DEFAULT_XPOS, DEFAULT_XPOS);
     }
 
 private:
-    void addBackgroundAndContainer(std::shared_ptr<MainLayout> layout)
+    void addBackgroundAndContainer(MainLayout& layout)
     {
-        m_background = createBackground();
-        layout->setBackground(unique(m_background));
-
+        addBackground(layout);
         addContainers(layout);
     }
 
 private:
-    MockOverlayAdaptor* m_adaptor = nullptr;
     MockBackground* m_background = nullptr;
     MockMediaContainer* m_container = nullptr;
 
@@ -107,16 +102,16 @@ class MainLayoutTestPos : public MainLayoutTest, public testing::WithParamInterf
 class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
 {
 protected:
-    void addContainers(std::shared_ptr<MainLayout> layout) override
+    void addContainers(MainLayout& layout) override
     {
         for(int zorder : GetParam())
         {
             auto container = createMediaContainer();
 
             ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
-            layout->addMediaContainer(unique(container), DEFAULT_XPOS, DEFAULT_YPOS);
+            pushContainerAndSort(container.get());
 
-            pushContainerAndSort(container);
+            layout.addMediaContainer(std::move(container), DEFAULT_XPOS, DEFAULT_YPOS);
         }
     }
 

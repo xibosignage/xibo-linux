@@ -122,7 +122,7 @@ TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
 
     EXPECT_CALL(adaptor(), add(_));
 
-    window->addLayout(unique(constructMockLayout()));
+    window->addLayout(constructLayout());
 }
 
 TEST_F(MainWindowTest, IsVisible_HandlerIsVisibleTrue_WindowIsVisibleShouldReturnTrue)

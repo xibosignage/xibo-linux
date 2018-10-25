@@ -1,58 +1,29 @@
 #pragma once
 
-#include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
 #include "control/MainWindow.hpp"
-#include "control/IBackground.hpp"
-#include "control/IMediaContainer.hpp"
-
-#include "adaptors/IOverlayAdaptor.hpp"
-#include "adaptors/IFixedLayoutAdaptor.hpp"
-#include "adaptors/IImageAdaptor.hpp"
-
 #include "mocks/MockWindowAdaptor.hpp"
+
 #include "mocks/MockMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
 
 const int DEFAULT_WINDOW_POS = 100;
-
 const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
 
-inline auto constructMockLayout()
-{
-    auto handler = new testing::NiceMock<MockOverlayAdaptor>;
-    auto layout = new testing::NiceMock<MockMainLayout>(unique(handler));
-
-    ON_CALL(*layout, handler()).WillByDefault(testing::ReturnRef(*handler));
-
-    return layout;
-}
-
-class MainWindowTest : public testing::Test
+class MainWindowTest : public BaseTestWithHandler<MockWindowAdaptor>
 {
 public:
     auto constructWindow()
     {
-        auto window = construct<MainWindow>(unique(m_adaptor));
-        addLayout(window);
+        auto window = construct<MainWindow>(unique(&adaptor()));
+        addLayout(*window);
         return window;
     }
 
-protected:
-    void SetUp() override
+    auto constructLayout()
     {
-        m_adaptor = new testing::NiceMock<MockWindowAdaptor>;
-    }
-
-    void TearDown() override
-    {
-        m_layout = nullptr;
-        m_adaptor = nullptr;
-    }
-
-    MockWindowAdaptor& adaptor()
-    {
-        return *m_adaptor;
+        return constructMock<MockMainLayout, MockOverlayAdaptor>();
     }
 
     MockMainLayout& layout()
@@ -61,15 +32,15 @@ protected:
     }
 
 private:
-    void addLayout(std::shared_ptr<MainWindow> window)
+    void addLayout(MainWindow& window)
     {
-        m_layout = constructMockLayout();
+        auto layout = constructLayout();
+        m_layout = layout.get();
 
-        window->addLayout(unique(m_layout));
+        window.addLayout(std::move(layout));
     }
 
 private:
-    MockWindowAdaptor* m_adaptor = nullptr;
     MockMainLayout* m_layout = nullptr;
 
 };

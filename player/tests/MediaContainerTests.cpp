@@ -47,7 +47,7 @@ TEST_F(MediaContainerTest, AddMediaWithCoords_Valid_HandlerAddChildShouldBeCalle
 
     EXPECT_CALL(adaptor(), addChild(_, DEFAULT_XPOS, DEFAULT_YPOS));
 
-    container->addMedia(unique(createMediaWithPos()), DEFAULT_XPOS, DEFAULT_YPOS);
+    container->addMedia(createMediaWithPos(), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST_F(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
@@ -57,7 +57,7 @@ TEST_F(MediaContainerTest, AddMediaWithCoords_Valid_MediaConnectShouldBeCalled)
 
     EXPECT_CALL(*mockMedia, connect(_));
 
-    container->addMedia(unique(mockMedia), DEFAULT_XPOS, DEFAULT_YPOS);
+    container->addMedia(std::move(mockMedia), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST_F(MediaContainerTest, AddMediaWithoutCoords_Valid_HandlerAddChildShouldNotBeCalled)
@@ -66,7 +66,7 @@ TEST_F(MediaContainerTest, AddMediaWithoutCoords_Valid_HandlerAddChildShouldNotB
 
     EXPECT_CALL(adaptor(), addChild(_, _, _)).Times(0);
 
-    container->addMedia(unique(createMedia()));
+    container->addMedia(createMedia());
 }
 
 TEST_F(MediaContainerTest, AddMediaWithoutCoords_Valid_MediaConnectShouldBeCalled)
@@ -76,7 +76,7 @@ TEST_F(MediaContainerTest, AddMediaWithoutCoords_Valid_MediaConnectShouldBeCalle
 
     EXPECT_CALL(*mockMedia, connect(_));
 
-    container->addMedia(unique(mockMedia));
+    container->addMedia(std::move(mockMedia));
 }
 
 TEST_F(MediaContainerTest, Scale_Default_HandlerScaleShouldBeCalled)

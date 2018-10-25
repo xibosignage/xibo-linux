@@ -1,40 +1,21 @@
 #pragma once
 
-#include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
 #include "media/Audio.hpp"
 #include "media/MediaVisitor.hpp"
 
 #include "mocks/MockAudioHandler.hpp"
 
-class AudioTest : public testing::Test
+class AudioTest : public BaseTestWithHandler<MockAudioHandler>
 {
 public:
     auto constructAudio()
     {
-        auto audio = construct<Audio>(DEFAULT_PATH, unique(m_adaptor));
+        auto audio = construct<Audio>(DEFAULT_PATH, unique(&adaptor()));
         audio->setDuration(DEFAULT_DURATION);
         return audio;
     }
-
-protected:
-    void SetUp() override
-    {
-        m_adaptor = new testing::NiceMock<MockAudioHandler>;
-    }
-
-    void TearDown() override
-    {
-        m_adaptor = nullptr;
-    }
-
-    MockAudioHandler& adaptor()
-    {
-        return *m_adaptor;
-    }
-
-private:
-    MockAudioHandler* m_adaptor = nullptr;
 
 };
 

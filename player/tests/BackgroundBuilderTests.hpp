@@ -7,7 +7,6 @@
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 #include "mocks/MockFileSystemAdaptor.hpp"
-#include "utils/FileSystemAdaptor.hpp"
 
 struct Color
 {
@@ -56,20 +55,18 @@ public:
 protected:
     std::unique_ptr<IBackground> createBackground(uint32_t color) override
     {
-        return fake_construct<MockOneColorBackground, MockImageAdaptor>(color);
+        return constructMock<MockOneColorBackground, MockImageAdaptor>(color);
     }
 
     std::unique_ptr<IBackground> createBackground(const FilePath& path) override
     {
-        return fake_construct<MockImageBackground, MockImageAdaptor>(path);
+        return constructMock<MockImageBackground, MockImageAdaptor>(path);
     }
 
     std::unique_ptr<IImageAdaptor> createAdaptor() override
     {
         return std::make_unique<testing::NiceMock<MockImageAdaptor>>();
     }
-
-
 
 private:
     std::unique_ptr<MockFileSystemAdaptor> m_fakeFilesystem;

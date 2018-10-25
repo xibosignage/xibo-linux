@@ -1,38 +1,20 @@
 #pragma once
 
-#include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
 #include "media/WebView.hpp"
 #include "media/MediaVisitor.hpp"
 
 #include "mocks/MockWebViewAdaptor.hpp"
 
-class WebViewTest : public testing::Test
+class WebViewTest : public BaseTestWithHandler<MockWebViewAdaptor>
 {
 public:
     auto constructWebView()
     {
-        auto webview = construct<WebView>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(m_adaptor));
+        auto webview = construct<WebView>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(&adaptor()));
         webview->setDuration(DEFAULT_DURATION);
         return webview;
     }
 
-protected:
-    void SetUp() override
-    {
-        m_adaptor = new testing::NiceMock<MockWebViewAdaptor>;
-    }
-
-    void TearDown() override
-    {
-        m_adaptor = nullptr;
-    }
-
-    MockWebViewAdaptor& adaptor()
-    {
-        return *m_adaptor;
-    }
-
-private:
-    MockWebViewAdaptor* m_adaptor = nullptr;
 };

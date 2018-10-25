@@ -11,7 +11,7 @@ INSTANTIATE_TEST_CASE_P(Suite, MediaContainerBuilderSizeTest, ::testing::ValuesI
 
 TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPosShouldBeCalled)
 {
-    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+    auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
 
     EXPECT_CALL(*container, addMedia(_, _, _));
 
@@ -20,7 +20,7 @@ TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithPosSho
 
 TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithoutPosShouldNotBeCalled)
 {
-    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+    auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
 
     EXPECT_CALL(*container, addMedia(_)).Times(0);
 
@@ -29,7 +29,7 @@ TEST(MediaContainerBuilderTest, Construct_VisibleMedia_HandlerAddMediaWithoutPos
 
 TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithoutPosShouldBeCalled)
 {
-    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+    auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
 
     EXPECT_CALL(*container, addMedia(_));
 
@@ -38,7 +38,7 @@ TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithoutP
 
 TEST(MediaContainerBuilderTest, Construct_InvisibleMedia_HandlerAddMediaWithPosShouldNotBeCalled)
 {
-    auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+    auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
 
     EXPECT_CALL(*container, addMedia(_, _, _)).Times(0);
 

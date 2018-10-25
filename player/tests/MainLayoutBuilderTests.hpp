@@ -6,8 +6,10 @@
 
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
+
 #include "mocks/MockMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
+
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
@@ -43,7 +45,7 @@ protected:
         if(m_layout)
             return std::move(m_layout);
 
-        return fake_construct<MockMainLayout, MockOverlayAdaptor>();
+        return constructMock<MockMainLayout, MockOverlayAdaptor>();
     }
 
     std::unique_ptr<IOverlayAdaptor> createAdaptor() override
@@ -54,13 +56,13 @@ protected:
 private:
     MainLayoutBuilderTest& defaultBackground()
     {
-        return static_cast<MainLayoutBuilderTest&>(background(fake_construct<MockBackground, MockImageAdaptor>()));
+        return static_cast<MainLayoutBuilderTest&>(background(constructMock<MockBackground, MockImageAdaptor>()));
     }
 
     MainLayoutBuilderTest& defaultContainers()
     {
         std::vector<MediaContainerWithPos> containers;
-        containers.push_back(MediaContainerWithPos{fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        containers.push_back(MediaContainerWithPos{constructMock<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
         return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
     }
 

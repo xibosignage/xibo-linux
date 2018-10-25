@@ -5,10 +5,11 @@
 #include "creators/MediaContainerBuilder.hpp"
 
 #include "mocks/MockMedia.hpp"
-#include "mocks/MockFixedLayoutAdaptor.hpp"
-#include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "media/MediaVisitor.hpp"
+
+#include "mocks/MockMediaContainer.hpp"
+#include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
 const int MIN_WIDTH = 1;
@@ -30,7 +31,7 @@ public:
     MediaContainerBuilderTest& defaultVisibleMedia()
     {
         std::vector<MediaWithPos> media;
-        media.push_back(MediaWithPos{fake_construct<MockVisibleMedia, MockWidgetAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        media.push_back(MediaWithPos{constructMock<MockVisibleMedia, MockWidgetAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
         return static_cast<MediaContainerBuilderTest&>(visibleMedia(std::move(media)));
     }
 
@@ -52,7 +53,7 @@ protected:
         if(m_container)
             return std::move(m_container);
 
-        auto container = fake_construct<MockMediaContainer, MockFixedLayoutAdaptor>();
+        auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
         ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
         return container;
     }

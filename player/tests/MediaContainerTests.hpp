@@ -1,55 +1,30 @@
 #pragma once
 
-#include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
-#include "creators/MediaContainerBuilder.hpp"
+#include "MediaContainerBuilderTests.hpp"
 #include "control/MediaContainer.hpp"
-#include "media/MediaVisitor.hpp"
-
 #include "mocks/MockFixedLayoutAdaptor.hpp"
-#include "mocks/MockMedia.hpp"
-#include "mocks/MockWidgetAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
-inline testing::NiceMock<MockVisibleMedia>* createMediaWithPos()
-{
-    auto handler = new testing::NiceMock<MockWidgetAdaptor>;
-    auto media = new testing::NiceMock<MockVisibleMedia>(unique(handler));
+#include "mocks/MockMedia.hpp"
+#include "mocks/MockWidgetAdaptor.hpp"
+#include "media/MediaVisitor.hpp"
 
-    ON_CALL(*media, handler()).WillByDefault(testing::ReturnRef(*handler));
-
-    return media;
-}
-
-inline testing::NiceMock<MockInvisibleMedia>* createMedia()
-{
-    auto media = new testing::NiceMock<MockInvisibleMedia>;
-    return media;
-}
-
-class MediaContainerTest : public testing::Test
+class MediaContainerTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:
     auto constructContainer()
     {
-        auto container = construct<MediaContainer>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, unique(m_timer), unique(m_adaptor));
-        addMediaToContainer(container);
+        auto container = construct<MediaContainer>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, unique(m_timer), unique(&adaptor()));
+        addMediaToContainer(*container);
         return container;
     }
 
 protected:
-    void SetUp() override
+    void doSetUp() override
     {
-        m_adaptor = new testing::NiceMock<MockFixedLayoutAdaptor>;
         m_timer = new testing::NiceMock<MockTimerProvider>;
-    }
-
-    void TearDown() override
-    {
-        m_adaptor = nullptr;
-        m_timer = nullptr;
-        m_invisibleMedia = nullptr;
-        m_visibleMedia = nullptr;
     }
 
     MockInvisibleMedia& firstInvisibleMedia()
@@ -61,29 +36,35 @@ protected:
     {
         return *m_visibleMedia;
     }
-
-    MockFixedLayoutAdaptor& adaptor()
-    {
-        return *m_adaptor;
-    }
-
     MockTimerProvider& timer()
     {
         return *m_timer;
     }
 
-private:
-    void addMediaToContainer(std::shared_ptr<MediaContainer> container)
+    auto createMediaWithPos()
     {
-        m_invisibleMedia = createMedia();
-        m_visibleMedia = createMediaWithPos();
+        return constructMock<MockVisibleMedia, MockWidgetAdaptor>();
+    }
 
-        container->addMedia(unique(m_invisibleMedia));
-        container->addMedia(unique(m_visibleMedia), DEFAULT_XPOS, DEFAULT_YPOS);
+    auto createMedia()
+    {
+        return constructMock<MockInvisibleMedia>();
     }
 
 private:
-    MockFixedLayoutAdaptor* m_adaptor = nullptr;
+    void addMediaToContainer(MediaContainer& container)
+    {
+        auto visibleMedia = createMediaWithPos();
+        auto invisibleMedia = createMedia();
+
+        m_visibleMedia = visibleMedia.get();
+        m_invisibleMedia = invisibleMedia.get();
+
+        container.addMedia(std::move(invisibleMedia));
+        container.addMedia(std::move(visibleMedia), DEFAULT_XPOS, DEFAULT_YPOS);
+    }
+
+private:
     MockTimerProvider* m_timer = nullptr;
     MockInvisibleMedia* m_invisibleMedia = nullptr;
     MockVisibleMedia* m_visibleMedia = nullptr;

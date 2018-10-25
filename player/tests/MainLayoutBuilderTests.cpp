@@ -11,7 +11,7 @@ INSTANTIATE_TEST_CASE_P(Suite, MainLayoutBuilderSizeTest, ::testing::ValuesIn(in
 
 TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWithPos)
 {
-    auto layout = fake_construct<MockMainLayout, MockOverlayAdaptor>();
+    auto layout = constructMock<MockMainLayout, MockOverlayAdaptor>();
 
     EXPECT_CALL(*layout, addMediaContainer(_, _, _));
 
@@ -20,7 +20,7 @@ TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWith
 
 TEST(MainLayoutBuilderTest, Construct_WithBackground_HandlerSetBackground)
 {
-    auto layout = fake_construct<MockMainLayout, MockOverlayAdaptor>();
+    auto layout = constructMock<MockMainLayout, MockOverlayAdaptor>();
 
     EXPECT_CALL(*layout, setBackground(_));
 

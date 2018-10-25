@@ -40,7 +40,7 @@ TEST_F(MainLayoutTest, SetBackground_Valid_HandlerAddMainChildShouldBeCalled)
 
     EXPECT_CALL(adaptor(), addMainChild(_));
 
-    layout->setBackground(unique(createBackground()));
+    layout->setBackground(createBackground());
 }
 
 TEST_F(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidArgErrorShouldBeCalled)
@@ -50,7 +50,7 @@ TEST_F(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidA
 
     ON_CALL(*stubBackground, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    ASSERT_THROW(layout->setBackground(unique(stubBackground)), std::invalid_argument);
+    ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::invalid_argument);
 }
 
 TEST_F(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_InvalidArgErrorShouldBeCalled)
@@ -60,7 +60,7 @@ TEST_F(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_Invali
 
     ON_CALL(*stubBackground, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    ASSERT_THROW(layout->setBackground(unique(stubBackground)), std::invalid_argument);
+    ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::invalid_argument);
 }
 
 TEST_F(MainLayoutTest, SetBackground_AlreadySetBefore_HandlerAddMainChild1TimeCalledRemoveMainChild1TimeCalled)
@@ -70,7 +70,7 @@ TEST_F(MainLayoutTest, SetBackground_AlreadySetBefore_HandlerAddMainChild1TimeCa
     EXPECT_CALL(adaptor(), addMainChild(_)).Times(1);
     EXPECT_CALL(adaptor(), removeMainChild()).Times(1);
 
-    layout->setBackground(unique(createBackground()));
+    layout->setBackground(createBackground());
 }
 
 TEST_F(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
@@ -79,14 +79,14 @@ TEST_F(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
 
     EXPECT_CALL(adaptor(), addChild(_, _, _ ,_ , _));
 
-    layout->addMediaContainer(unique(createMediaContainer()), DEFAULT_XPOS, DEFAULT_YPOS);
+    layout->addMediaContainer(createMediaContainer(), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
 TEST_P(MainLayoutTestPos, AddMediaContainer_InvalidPos_ShouldThrowInvalidArgError)
 {
     auto layout = constructLayout();
 
-    ASSERT_THROW(layout->addMediaContainer(unique(createMediaContainer()), GetParam().x, GetParam().y), std::invalid_argument);
+    ASSERT_THROW(layout->addMediaContainer(createMediaContainer(), GetParam().x, GetParam().y), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestPos, ::testing::ValuesIn(invalidMainLayoutPos));
@@ -98,7 +98,7 @@ TEST_F(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_In
 
     ON_CALL(*stubContainer, width()).WillByDefault(Return(DEFAULT_WIDTH + 1));
 
-    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
+    ASSERT_THROW(layout->addMediaContainer(std::move(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
 TEST_F(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
@@ -108,7 +108,7 @@ TEST_F(MainLayoutTest, AddMediaContainer_ContainerHeightGreaterThanLayoutWidth_I
 
     ON_CALL(*stubContainer, height()).WillByDefault(Return(DEFAULT_HEIGHT + 1));
 
-    ASSERT_THROW(layout->addMediaContainer(unique(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
+    ASSERT_THROW(layout->addMediaContainer(std::move(stubContainer), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
 TEST_F(MainLayoutTest, Scale_Default_HandlerScaleShouldBeCalled)
