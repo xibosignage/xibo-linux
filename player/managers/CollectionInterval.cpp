@@ -18,7 +18,7 @@ CollectionInterval::CollectionInterval()
 
 void CollectionInterval::start()
 {
-    // NOTE: doesn't actually run 20 seconds
+    // FIXME: doesn't actually run 20 seconds
 //    m_logger->debug("CollectionInterval timer started with DEFAULT {} interval", DEFAULT_INTERVAL);
     m_intervalConnection = Glib::signal_timeout().connect_seconds([=]{
         collectData();

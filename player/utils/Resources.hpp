@@ -23,48 +23,77 @@ namespace ResourcesXlf
     std::string attr(const std::string& property);
     std::string option(const std::string& property);
 
-    namespace Layout
+    const std::string LayoutNode = "layout";
+    const std::string RegionNode = "region";
+    const std::string MediaNode = "media";
+
+    const std::string AudioType = "audio";
+    const std::string VideoType = "video";
+    const std::string ImageType = "image";
+
+    struct LayoutOptions
     {
-        const std::string NodeName = "layout";
-        const std::string Width = "width";
-        const std::string Height = "height";
-        const std::string BackgroundPath = "background";
-        const std::string BackgroundColor = "bgcolor";
+        LayoutOptions(const xlf_node& node);
 
-        int width(const xlf_node& node);
-        int height(const xlf_node& node);
-        boost::optional<std::string> backgroundPath(const xlf_node& node);
-        boost::optional<std::string> backgroundColor(const xlf_node& node);
-    }
+        int width;
+        int height;
+        boost::optional<std::string> backgroundPath;
+        boost::optional<std::string> backgroundColor;
+    };
 
-    namespace Region
+    struct RegionOptions
     {
-        const std::string NodeName = "region";
-        const std::string Width = "width";
-        const std::string Height = "height";
-        const std::string Left = "left";
-        const std::string Top = "top";
-        const std::string Zindex = "zindex";
-        const std::string Loop = "loop";
+        RegionOptions(const xlf_node& node);
 
-        int width(const xlf_node& node);
-        int height(const xlf_node& node);
-        int left(const xlf_node& node);
-        int top(const xlf_node& node);
-        boost::optional<int> zindex(const xlf_node& node);
-        boost::optional<bool> loop(const xlf_node& node);
-    }
+        int width;
+        int height;
+        int left;
+        int top;
+        boost::optional<int> zindex;
+        boost::optional<bool> loop;
+    };
 
-    namespace Media
+    struct MediaOptions
     {
-        const std::string NodeName = "media";
-        const std::string Type = "type";
+        MediaOptions(const xlf_node& node);
+        static std::string getType(const xlf_node& node);
 
-        const std::string AudioType = "audio";
-        const std::string VideoType = "video";
-        const std::string ImageType = "image";
+        int id;
+        boost::optional<std::string> uri;
+        int duration;
+    };
 
-        std::string type(const xlf_node& node);
-    }
+    struct ImageOptions : MediaOptions
+    {
+        ImageOptions(const xlf_node& node);
+
+        boost::optional<std::string> scaleType;
+        boost::optional<std::string> align;
+        boost::optional<std::string> valign;
+    };
+
+    struct VideoOptions : MediaOptions
+    {
+        VideoOptions(const xlf_node& node);
+
+        boost::optional<bool> muted;
+        boost::optional<bool> looped;
+    };
+
+    struct AudioOptions : MediaOptions
+    {
+        AudioOptions(const xlf_node& node);
+
+        boost::optional<bool> muted;
+        boost::optional<bool> looped;
+        boost::optional<int> volume;
+    };
+
+    struct WebViewOptions : MediaOptions
+    {
+        WebViewOptions(const xlf_node& node);
+
+        boost::optional<bool> transparent;
+    };
 }
 

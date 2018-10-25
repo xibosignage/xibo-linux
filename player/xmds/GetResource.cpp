@@ -12,6 +12,6 @@ template<>
 GetResource::Response soap::createResponse(const std::string& soapResponse)
 {
     GetResource::Response result;
-    result.resource = xmds::parseFileResponse(soapResponse); // NOTE check in Postman
+    result.resource = xmds::parseFileResponse(soapResponse); // TODO check in Postman
     return result;
 }

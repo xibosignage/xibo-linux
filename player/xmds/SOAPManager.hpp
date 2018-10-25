@@ -25,7 +25,7 @@ struct Session
     beast::flat_buffer buffer;
     http::response<http::string_body> httpResponse;
     request soapRequest;
-    callback responseCallback; // NOTE: check if it should be move/copyable
+    callback responseCallback; // TODO: check if it should be move/copyable
 };
 
 class SOAPManager
