@@ -1,5 +1,8 @@
 #include "MediaBuilder.hpp"
 
+class IAudioHandler;
+class Audio;
+
 class AudioBuilder : public MediaBuilder
 {
 public:
@@ -8,7 +11,10 @@ public:
     AudioBuilder& volume(const boost::optional<int>& volume);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() override;
+    std::unique_ptr<IMedia> doBuild() final;
+
+    virtual std::unique_ptr<Audio> createAudio();
+    virtual std::unique_ptr<IAudioHandler> createHandler();
 
 private:
     int m_volume;

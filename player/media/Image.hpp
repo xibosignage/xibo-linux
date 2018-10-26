@@ -1,35 +1,10 @@
 #pragma once
 
 #include "Media.hpp"
+#include "ImageProperties.hpp"
 #include "utils/Helpers.hpp"
 
 class IImageAdaptor;
-
-struct ImageProperties
-{
-    enum class ScaleType
-    {
-        Scaled,
-        Stretch,
-        Invalid
-    } scaleType;
-
-    enum class Align
-    {
-        Left,
-        Center,
-        Right,
-        Invalid
-    } align;
-
-    enum class Valign
-    {
-        Top,
-        Middle,
-        Bottom,
-        Invalid
-    } valign;
-};
 
 class Image : public Media<IVisibleMedia>
 {

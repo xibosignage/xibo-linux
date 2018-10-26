@@ -15,7 +15,7 @@
 #include <gst/gst.h>
 #include <chrono>
 
-const std::string DEFAULT_RESOURCES_DIR = "GoPro";
+const std::string DEFAULT_RESOURCES_DIR = "UnicodeTextTest1";
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 

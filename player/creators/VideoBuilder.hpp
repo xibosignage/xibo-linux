@@ -1,5 +1,8 @@
 #include "MediaBuilder.hpp"
 
+class Video;
+class IVideoHandler;
+
 class VideoBuilder : public MediaBuilder
 {
 public:
@@ -9,7 +12,10 @@ public:
     VideoBuilder& looped(const boost::optional<bool>& looped);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() override;
+    std::unique_ptr<IMedia> doBuild() final;
+
+    virtual std::unique_ptr<Video> createVideo();
+    virtual std::unique_ptr<IVideoHandler> createHandler();
 
 private:
     int m_width;

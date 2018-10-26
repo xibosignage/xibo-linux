@@ -2,7 +2,7 @@
 
 #include "BaseTestWithHandler.hpp"
 
-#include "MediaContainerBuilderTests.hpp"
+#include "creators/MediaContainerBuilderTests.hpp"
 #include "control/MediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"

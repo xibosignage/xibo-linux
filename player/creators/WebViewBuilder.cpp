@@ -9,12 +9,23 @@
 #include <regex>
 
 const std::string DEFAULT_EXTENSION = ".htm";
+const bool DEFAULT_TRANSPARENT = true;
 
 std::unique_ptr<IMedia> WebViewBuilder::doBuild()
 {
-    auto webview = std::make_unique<WebView>(m_width, m_height, m_path, std::make_unique<WebKitWebViewAdaptor>());
+    auto webview = createWebView();
     webview->setTransparent(m_transparent);
     return webview;
+}
+
+std::unique_ptr<WebView> WebViewBuilder::createWebView()
+{
+    return std::make_unique<WebView>(m_width, m_height, m_path, createAdaptor());
+}
+
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
+{
+    return std::make_unique<WebKitWebViewAdaptor>();
 }
 
 WebViewBuilder& WebViewBuilder::path(const boost::optional<std::string>&)
@@ -44,7 +55,7 @@ WebViewBuilder& WebViewBuilder::height(int height)
 
 WebViewBuilder& WebViewBuilder::transparent(const boost::optional<bool>& transparent)
 {
-    m_transparent = transparent.value_or(true);
+    m_transparent = transparent.value_or(DEFAULT_TRANSPARENT);
     return *this;
 }
 

@@ -1,5 +1,9 @@
 #include "MediaBuilder.hpp"
-#include "media/Image.hpp"
+
+#include "media/ImageProperties.hpp"
+
+class Image;
+class IImageAdaptor;
 
 class ImageBuilder : public MediaBuilder
 {
@@ -11,7 +15,10 @@ public:
     ImageBuilder& valign(const boost::optional<std::string>& valign);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() override;
+    std::unique_ptr<IMedia> doBuild() final;
+
+    virtual std::unique_ptr<Image> createImage();
+    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
 
 private:
     ImageProperties::ScaleType toScaleType(const std::string& scaleType);

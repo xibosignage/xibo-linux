@@ -13,6 +13,8 @@ public:
     std::unique_ptr<IMedia> build();
 
     MediaBuilder& id(int id);
+    MediaBuilder& audio(std::unique_ptr<IMedia>&& audio);
+
     virtual MediaBuilder& path(const boost::optional<std::string>& path);
     virtual MediaBuilder& duration(int duration);
 
@@ -20,8 +22,9 @@ protected:
     virtual std::unique_ptr<IMedia> doBuild() = 0;
 
 protected:
-    FilePath m_path;
     int m_id;
+    std::unique_ptr<IMedia> m_audio;
+    FilePath m_path;
     int m_duration;
 
 };

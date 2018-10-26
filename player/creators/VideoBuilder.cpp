@@ -3,12 +3,25 @@
 #include "media/Video.hpp"
 #include "media/VideoHandler.hpp"
 
+const bool DEFAULT_LOOPED = false;
+const bool DEFAULT_MUTED = false;
+
 std::unique_ptr<IMedia> VideoBuilder::doBuild()
 {
-    auto video = std::make_unique<Video>(m_width, m_height, m_path, std::make_unique<VideoHandler>());
+    auto video = createVideo();
     video->setMuted(m_muted);
     video->setLooped(m_looped);
     return video;
+}
+
+std::unique_ptr<Video> VideoBuilder::createVideo()
+{
+    return std::make_unique<Video>(m_width, m_height, m_path, createHandler());
+}
+
+std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()
+{
+    return std::make_unique<VideoHandler>();
 }
 
 VideoBuilder& VideoBuilder::width(int width)
