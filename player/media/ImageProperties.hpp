@@ -5,23 +5,20 @@ struct ImageProperties
     enum class ScaleType
     {
         Scaled,
-        Stretch,
-        Invalid
+        Stretch
     } scaleType;
 
     enum class Align
     {
         Left,
         Center,
-        Right,
-        Invalid
+        Right
     } align;
 
     enum class Valign
     {
         Top,
         Middle,
-        Bottom,
-        Invalid
+        Bottom
     } valign;
 };

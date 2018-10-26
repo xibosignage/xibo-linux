@@ -2,6 +2,15 @@
 
 using namespace testing;
 
+TEST(MainLayoutBuilderSizeTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto adaptor = std::make_unique<NiceMock<MockOverlayAdaptor>>();
+
+    EXPECT_CALL(*adaptor, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
+}
+
 TEST_P(MainLayoutBuilderSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     ASSERT_THROW(MainLayoutBuilderTest().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
@@ -11,18 +20,18 @@ INSTANTIATE_TEST_CASE_P(Suite, MainLayoutBuilderSizeTest, ::testing::ValuesIn(in
 
 TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWithPos)
 {
-    auto layout = constructMock<MockMainLayout, MockOverlayAdaptor>();
+    auto adaptor = std::make_unique<NiceMock<MockOverlayAdaptor>>();
 
-    EXPECT_CALL(*layout, addMediaContainer(_, _, _));
+    EXPECT_CALL(*adaptor, addChild(_, _, _, _, _));
 
-    MainLayoutBuilderTest().fakeLayout(std::move(layout)).defaultSize().build();
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
 }
 
 TEST(MainLayoutBuilderTest, Construct_WithBackground_HandlerSetBackground)
 {
-    auto layout = constructMock<MockMainLayout, MockOverlayAdaptor>();
+    auto adaptor = std::make_unique<NiceMock<MockOverlayAdaptor>>();
 
-    EXPECT_CALL(*layout, setBackground(_));
+    EXPECT_CALL(*adaptor, addMainChild(_));
 
-    MainLayoutBuilderTest().fakeLayout(std::move(layout)).defaultSize().build();
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
 }

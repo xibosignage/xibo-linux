@@ -2,13 +2,6 @@
 
 using namespace ::testing;
 
-TEST_F(MainLayoutTest, Construct_Default_HandlerSetSizeShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructLayout();
-}
-
 TEST_F(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto layout = constructLayout();

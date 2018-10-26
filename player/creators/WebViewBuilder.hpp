@@ -15,11 +15,10 @@ public:
 
 protected:
     std::unique_ptr<IMedia> doBuild() final;
-
-    virtual std::unique_ptr<WebView> createWebView();
     virtual std::unique_ptr<IWebViewAdaptor> createAdaptor();
 
 private:
+    std::unique_ptr<WebView> createWebView();
     boost::optional<int> parseDuration(const FilePath& path);
 
 private:

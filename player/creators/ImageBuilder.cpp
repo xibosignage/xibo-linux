@@ -3,16 +3,7 @@
 #include "media/Image.hpp"
 #include "adaptors/GtkImageAdaptor.hpp"
 
-const std::string DEFAULT_SCALE_TYPE = "center";
-const std::string DEFAULT_ALIGN = "center";
-const std::string DEFAULT_VALIGN = "middle";
-
 std::unique_ptr<IMedia> ImageBuilder::doBuild()
-{
-    return createImage();
-}
-
-std::unique_ptr<Image> ImageBuilder::createImage()
 {
     ImageProperties props{m_scaleType, m_align, m_valign};
     return std::make_unique<Image>(m_width, m_height, m_path, props, createAdaptor());
@@ -59,8 +50,8 @@ ImageProperties::ScaleType ImageBuilder::toScaleType(const std::string& scaleTyp
         return ImageProperties::ScaleType::Scaled;
     else if(scaleType == "stretch")
         return ImageProperties::ScaleType::Stretch;
-    else
-        return ImageProperties::ScaleType::Invalid;
+
+    throw std::invalid_argument("ScaleType is not valid");
 }
 
 ImageProperties::Align ImageBuilder::toAlign(const std::string& align)
@@ -71,8 +62,8 @@ ImageProperties::Align ImageBuilder::toAlign(const std::string& align)
         return ImageProperties::Align::Center;
     else if(align == "right")
         return ImageProperties::Align::Right;
-    else
-        return ImageProperties::Align::Invalid;
+
+    throw std::invalid_argument("Align is not valid");
 }
 
 ImageProperties::Valign ImageBuilder::toValign(const std::string& valign)
@@ -83,6 +74,6 @@ ImageProperties::Valign ImageBuilder::toValign(const std::string& valign)
         return ImageProperties::Valign::Middle;
     else if(valign == "bottom")
         return ImageProperties::Valign::Bottom;
-    else
-        return ImageProperties::Valign::Invalid;
+
+    throw std::invalid_argument("Valign is not valid");
 }

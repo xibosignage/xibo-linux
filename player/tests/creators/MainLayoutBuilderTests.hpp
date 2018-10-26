@@ -3,12 +3,10 @@
 #include "test_utils.hpp"
 
 #include "creators/MainLayoutBuilder.hpp"
+#include "mocks/MockOverlayAdaptor.hpp"
 
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
-
-#include "mocks/MockMainLayout.hpp"
-#include "mocks/MockOverlayAdaptor.hpp"
 
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
@@ -28,10 +26,10 @@ public:
         defaultBackground().defaultContainers();
     }
 
-    MainLayoutBuilderTest& fakeLayout(std::unique_ptr<IMainLayout>&& layout)
+    MainLayoutBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockOverlayAdaptor>>&& adaptor)
     {
-        m_layout = std::move(layout);
-        return static_cast<MainLayoutBuilderTest&>(*this);
+        m_adaptor = std::move(adaptor);
+        return *this;
     }
 
     MainLayoutBuilder& defaultSize()
@@ -40,16 +38,11 @@ public:
     }
 
 protected:
-    std::unique_ptr<IMainLayout> createLayout() override
-    {
-        if(m_layout)
-            return std::move(m_layout);
-
-        return constructMock<MockMainLayout, MockOverlayAdaptor>();
-    }
-
     std::unique_ptr<IOverlayAdaptor> createAdaptor() override
     {
+        if(m_adaptor)
+            return std::move(m_adaptor);
+
         return std::make_unique<testing::NiceMock<MockOverlayAdaptor>>();
     }
 
@@ -67,6 +60,6 @@ private:
     }
 
 private:
-    std::unique_ptr<IMainLayout> m_layout;
+    std::unique_ptr<testing::NiceMock<MockOverlayAdaptor>> m_adaptor;
 
 };

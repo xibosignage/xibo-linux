@@ -27,10 +27,11 @@ public:
     MainLayoutBuilder& mediaContainers(std::vector<MediaContainerWithPos>&& mediaContainers);
 
 protected:
-    virtual std::unique_ptr<IMainLayout> createLayout();
     virtual std::unique_ptr<IOverlayAdaptor> createAdaptor();
 
 private:
+    std::unique_ptr<IMainLayout> createLayout();
+
     void prepareLayout(IMainLayout& layout);
     void checkWidth(int width);
     void checkHeight(int height);

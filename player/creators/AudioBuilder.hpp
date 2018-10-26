@@ -12,9 +12,10 @@ public:
 
 protected:
     std::unique_ptr<IMedia> doBuild() final;
-
-    virtual std::unique_ptr<Audio> createAudio();
     virtual std::unique_ptr<IAudioHandler> createHandler();
+
+private:
+    std::unique_ptr<Audio> createAudio();
 
 private:
     int m_volume;

@@ -32,11 +32,12 @@ public:
     MediaContainerBuilder& invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& visibleMedia);
 
 protected:
-    virtual std::unique_ptr<IMediaContainer> createContainer(int zorder, bool loop);
     virtual std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
     virtual std::unique_ptr<ITimerProvider> createTimer();
 
 private:
+    std::unique_ptr<IMediaContainer> createContainer(int zorder, bool loop);
+
     void addAllMedia(IMediaContainer& container);
     void checkWidth(int width);
     void checkHeight(int height);

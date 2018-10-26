@@ -8,7 +8,6 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "media/MediaVisitor.hpp"
 
-#include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
@@ -22,9 +21,9 @@ class MediaContainerBuilderSizeTest : public testing::TestWithParam<Size> { };
 class MediaContainerBuilderTest : public MediaContainerBuilder
 {
 public:
-    MediaContainerBuilderTest& fakeContainer(std::unique_ptr<IMediaContainer>&& container)
+    MediaContainerBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockFixedLayoutAdaptor>>&& adaptor)
     {
-        m_container = std::move(container);
+        m_adaptor = std::move(adaptor);
         return static_cast<MediaContainerBuilderTest&>(*this);
     }
 
@@ -48,18 +47,11 @@ public:
     }
 
 protected:
-    std::unique_ptr<IMediaContainer> createContainer(int zorder, bool) override
-    {
-        if(m_container)
-            return std::move(m_container);
-
-        auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
-        ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
-        return container;
-    }
-
     std::unique_ptr<IFixedLayoutAdaptor> createAdaptor() override
     {
+        if(m_adaptor)
+            return std::move(m_adaptor);
+
         return std::make_unique<testing::NiceMock<MockFixedLayoutAdaptor>>();
     }
 
@@ -69,6 +61,6 @@ protected:
     }
 
 private:
-    std::unique_ptr<IMediaContainer> m_container;
+    std::unique_ptr<testing::NiceMock<MockFixedLayoutAdaptor>> m_adaptor;
 
 };

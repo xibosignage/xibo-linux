@@ -38,13 +38,13 @@ VideoBuilder& VideoBuilder::height(int height)
 
 VideoBuilder& VideoBuilder::muted(const boost::optional<bool>& muted)
 {
-    m_muted = muted.value_or(false);
+    m_muted = muted.value_or(DEFAULT_MUTED);
     return *this;
 }
 
 VideoBuilder& VideoBuilder::looped(const boost::optional<bool>& looped)
 {
-    m_looped = looped.value_or(false);
+    m_looped = looped.value_or(DEFAULT_LOOPED);
     return *this;
 }
 

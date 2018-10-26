@@ -4,7 +4,6 @@
 
 #include "creators/BackgroundBuilder.hpp"
 
-#include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 #include "mocks/MockFileSystemAdaptor.hpp"
 
@@ -42,6 +41,12 @@ public:
     {
     }
 
+    BackgroundBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockImageAdaptor>>&& adaptor)
+    {
+        m_adaptor = std::move(adaptor);
+        return static_cast<BackgroundBuilderTest&>(*this);
+    }
+
     BackgroundBuilderTest& defaultSize()
     {
         return static_cast<BackgroundBuilderTest&>(width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT));
@@ -53,22 +58,16 @@ public:
     }
 
 protected:
-    std::unique_ptr<IBackground> createBackground(uint32_t color) override
-    {
-        return constructMock<MockOneColorBackground, MockImageAdaptor>(color);
-    }
-
-    std::unique_ptr<IBackground> createBackground(const FilePath& path) override
-    {
-        return constructMock<MockImageBackground, MockImageAdaptor>(path);
-    }
-
     std::unique_ptr<IImageAdaptor> createAdaptor() override
     {
+        if(m_adaptor)
+            return std::move(m_adaptor);
+
         return std::make_unique<testing::NiceMock<MockImageAdaptor>>();
     }
 
 private:
+    std::unique_ptr<testing::NiceMock<MockImageAdaptor>> m_adaptor;
     std::unique_ptr<MockFileSystemAdaptor> m_fakeFilesystem;
 
 };

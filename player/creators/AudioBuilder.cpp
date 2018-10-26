@@ -24,13 +24,13 @@ std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
     return std::make_unique<AudioHandler>();
 }
 
-AudioBuilder& AudioBuilder::muted(const boost::optional<bool>&  muted)
+AudioBuilder& AudioBuilder::muted(const boost::optional<bool>& muted)
 {
     m_muted = muted.value_or(DEFAULT_MUTED);
     return *this;
 }
 
-AudioBuilder& AudioBuilder::looped(const boost::optional<bool>&  looped)
+AudioBuilder& AudioBuilder::looped(const boost::optional<bool>& looped)
 {
     m_looped = looped.value_or(DEFAULT_LOOPED);
     return *this;

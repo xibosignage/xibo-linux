@@ -5,6 +5,10 @@
 class Image;
 class IImageAdaptor;
 
+const std::string DEFAULT_SCALE_TYPE = "center";
+const std::string DEFAULT_ALIGN = "center";
+const std::string DEFAULT_VALIGN = "middle";
+
 class ImageBuilder : public MediaBuilder
 {
 public:
@@ -16,8 +20,6 @@ public:
 
 protected:
     std::unique_ptr<IMedia> doBuild() final;
-
-    virtual std::unique_ptr<Image> createImage();
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
 
 private:

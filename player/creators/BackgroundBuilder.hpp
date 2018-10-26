@@ -19,12 +19,13 @@ public:
     BackgroundBuilder& path(const boost::optional<std::string>& path);
 
 protected:
-    virtual std::unique_ptr<IBackground> createBackground(uint32_t color);
-    virtual std::unique_ptr<IBackground> createBackground(const FilePath& path);
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
     virtual IFileSystemAdaptor& filesystem();
 
 private:
+    std::unique_ptr<IBackground> createBackground(uint32_t color);
+    std::unique_ptr<IBackground> createBackground(const FilePath& path);
+
     void checkWidth(int width);
     void checkHeight(int height);
     void checkPath(FilePath path);

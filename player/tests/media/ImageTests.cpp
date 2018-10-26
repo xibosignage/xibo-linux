@@ -2,20 +2,6 @@
 
 using namespace ::testing;
 
-TEST_F(ImageTest, Construct_Default_HandlerSetSizeShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructImage();
-}
-
-TEST_F(ImageTest, Construct_Default_HandlerSetImageShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), setImage(DEFAULT_PATH.string()));
-
-    constructImage();
-}
-
 TEST_F(ImageTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto image = constructImage();

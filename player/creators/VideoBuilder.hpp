@@ -13,9 +13,10 @@ public:
 
 protected:
     std::unique_ptr<IMedia> doBuild() final;
-
-    virtual std::unique_ptr<Video> createVideo();
     virtual std::unique_ptr<IVideoHandler> createHandler();
+
+private:
+    std::unique_ptr<Video> createVideo();
 
 private:
     int m_width;

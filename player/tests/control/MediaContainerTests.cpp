@@ -2,13 +2,6 @@
 
 using namespace ::testing;
 
-TEST_F(MediaContainerTest, Construct_Default_HandlerSetSizeShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-
-    constructContainer();
-}
-
 TEST_F(MediaContainerTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto container = constructContainer();

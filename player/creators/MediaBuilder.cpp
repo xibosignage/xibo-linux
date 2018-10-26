@@ -2,6 +2,12 @@
 
 #include "media/IMedia.hpp"
 #include "utils/Resources.hpp"
+#include "utils/FileSystemAdaptor.hpp"
+
+MediaBuilder::MediaBuilder()
+{
+    m_filesystem = std::make_unique<FileSystemAdaptor>();
+}
 
 std::unique_ptr<IMedia> MediaBuilder::build()
 {
@@ -29,12 +35,30 @@ MediaBuilder&MediaBuilder::audio(std::unique_ptr<IMedia>&& audio)
 
 MediaBuilder& MediaBuilder::path(const boost::optional<std::string>& path)
 {
-    m_path = Resources::directory() / path.value();
+    if(path)
+    {
+        auto fullPath = Resources::directory() / path.value();
+
+        checkPath(fullPath);
+
+        m_path = fullPath;
+    }
     return *this;
+}
+
+void MediaBuilder::checkPath(FilePath path)
+{
+    if(!filesystem().isRegularFile(path))
+        throw std::runtime_error("Not valid path");
 }
 
 MediaBuilder& MediaBuilder::duration(int duration)
 {
     m_duration = duration;
     return *this;
+}
+
+IFileSystemAdaptor& MediaBuilder::filesystem()
+{
+    return *m_filesystem;
 }

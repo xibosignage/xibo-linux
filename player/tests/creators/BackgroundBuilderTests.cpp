@@ -1,6 +1,27 @@
 #include "BackgroundBuilderTests.hpp"
+#include "control/Background.hpp"
 
 using namespace testing;
+
+TEST(BackgroundBuilderTest, ConstructWithColor_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto adaptor = std::make_unique<NiceMock<MockImageAdaptor>>();
+
+    EXPECT_CALL(*adaptor, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    BackgroundBuilderTest().defaultSize().adaptor(std::move(adaptor)).color(DEFAULT_COLOR).build();
+}
+
+TEST(BackgroundBuilderTest, ConstructWithPath_Default_HandlerSetSizeShouldBeCalled)
+{
+    BackgroundBuilderTest builder;
+    auto adaptor = std::make_unique<NiceMock<MockImageAdaptor>>();
+
+    ON_CALL(builder.filesystem(), isRegularFile(_)).WillByDefault(Return(true));
+    EXPECT_CALL(*adaptor, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    builder.defaultSize().adaptor(std::move(adaptor)).path(DEFAULT_PATH.string()).build();
+}
 
 TEST(BackgroundBuilderTest, Construct_WithoutPathAndColor_ShouldThrowRunTimeError)
 {
@@ -16,8 +37,11 @@ INSTANTIATE_TEST_CASE_P(Suite, BackgroundBuilderSizeTest, ::testing::ValuesIn(in
 
 TEST_P(BackgroundBuilderValidColorTest, Construct_ValidColor_HandlerSetColorWithConvertedStringShouldBeCalled)
 {
-    auto background = BackgroundBuilderTest().defaultSize().color(GetParam().strColor).build();
-    ASSERT_EQ(static_cast<MockOneColorBackground*>(background.get())->color(), GetParam().numberColor);
+    auto adaptor = std::make_unique<NiceMock<MockImageAdaptor>>();
+
+    EXPECT_CALL(*adaptor, setColor(GetParam().numberColor));
+
+    BackgroundBuilderTest().defaultSize().adaptor(std::move(adaptor)).color(GetParam().strColor).build();
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, BackgroundBuilderValidColorTest, ::testing::ValuesIn(validColors));
@@ -36,7 +60,7 @@ TEST(BackgroundBuilderTest, Construct_DefaultColorPath_ColorShouldNotBeSetPathSh
     ON_CALL(builder.filesystem(), isRegularFile(_)).WillByDefault(Return(true));
 
     auto background = builder.defaultSize().color(DEFAULT_COLOR).path(DEFAULT_PATH.string()).build();
-    EXPECT_TRUE(dynamic_cast<MockImageBackground*>(background.get()));
+    EXPECT_TRUE(dynamic_cast<ImageBackground*>(background.get()));
 }
 
 TEST(BackgroundBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
@@ -52,10 +76,11 @@ TEST(BackgroundBuilderTest, Construct_ValidPath_PathShouldBeSetCorrectly)
 {
     BackgroundBuilderTest builder;
     FilePath fullPath(DEFAULT_RESOURCES_DIR / DEFAULT_PATH);
+    auto adaptor = std::make_unique<NiceMock<MockImageAdaptor>>();
 
-    ON_CALL(builder.filesystem(), isRegularFile(fullPath)).WillByDefault(Return(true));
+    ON_CALL(builder.filesystem(), isRegularFile(_)).WillByDefault(Return(true));
+    EXPECT_CALL(*adaptor, setImage(fullPath.string()));
 
-    auto background = builder.defaultSize().path(DEFAULT_PATH.string()).build();
-    ASSERT_EQ(static_cast<MockImageBackground*>(background.get())->path(), fullPath);
+    builder.defaultSize().adaptor(std::move(adaptor)).path(DEFAULT_PATH.string()).build();
 }
 
