@@ -1,6 +1,8 @@
 #include "ImageBuilderTests.hpp"
+#include "media/Image.hpp"
 
 using namespace std::string_literals;
+using namespace testing;
 
 TEST(ImageBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
@@ -8,43 +10,41 @@ TEST(ImageBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 
     EXPECT_CALL(builder.adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    builder.defaultSize().defaultImageProps().defaultBaseProps().build();
+    builder.defaultImageProps().build();
 }
 
 TEST(ImageBuilderTest, Construct_Default_HandlerSetImageShouldBeCalled)
 {
     ImageBuilderTest builder;
-    FilePath fullPath(DEFAULT_RESOURCES_DIR / DEFAULT_PATH);
 
-    EXPECT_CALL(builder.adaptor(), setImage(fullPath.string()));
+    EXPECT_CALL(builder.adaptor(), setImage(DEFAULT_FULL_PATH.string()));
 
-    builder.defaultSize().defaultImageProps().defaultBaseProps().build();
+    builder.defaultImageProps().build();
 }
 
 TEST(ImageBuilderTest, Construct_InvalidScaleType_InvaldiArgShouldBeThrown)
 {
     ImageBuilderTest builder;
-    ASSERT_THROW(builder.defaultSize().defaultBaseProps().scaleType("invalid"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build(), std::invalid_argument);
+    ASSERT_THROW(builder.scaleType("invalid"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build(), std::invalid_argument);
 }
 
 TEST(ImageBuilderTest, Construct_InvalidAlign_InvaldiArgShouldBeThrown)
 {
     ImageBuilderTest builder;
-    ASSERT_THROW(builder.defaultSize().defaultBaseProps().scaleType(DEFAULT_SCALE_TYPE).align("invalid"s).valign(DEFAULT_VALIGN).build(), std::invalid_argument);
+    ASSERT_THROW(builder.scaleType(DEFAULT_SCALE_TYPE).align("invalid"s).valign(DEFAULT_VALIGN).build(), std::invalid_argument);
 }
 
 TEST(ImageBuilderTest, Construct_InvalidValign_InvaldiArgShouldBeThrown)
 {
     ImageBuilderTest builder;
-    ASSERT_THROW(builder.defaultSize().defaultBaseProps().scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("invalid"s).build(), std::invalid_argument);
+    ASSERT_THROW(builder.scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("invalid"s).build(), std::invalid_argument);
 }
 
-TEST(ImageBuilderTest, Construct_NoProps_DefaultPropsShouldBeSet)
+TEST(ImageBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
 {
     ImageBuilderTest builder;
-    auto image = builder.defaultSize().defaultBaseProps().build();
 
-//    ASSERT_EQ(image->scaleType(), ImageProperties::ScaleType::Center);
-//    ASSERT_EQ(image->align(), ImageProperties::Align::Center);
-//    ASSERT_EQ(image->valign(), ImageProperties::Valign::Middle);
+    ON_CALL(builder.filesystem(), isRegularFile(_)).WillByDefault(Return(false));
+
+    ASSERT_THROW(builder.defaultImageProps().path(DEFAULT_PATH.string()).build(), std::runtime_error);
 }

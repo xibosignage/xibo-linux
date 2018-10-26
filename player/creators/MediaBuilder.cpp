@@ -27,7 +27,7 @@ MediaBuilder& MediaBuilder::id(int id)
     return *this;
 }
 
-MediaBuilder&MediaBuilder::audio(std::unique_ptr<IMedia>&& audio)
+MediaBuilder& MediaBuilder::audio(std::unique_ptr<IMedia>&& audio)
 {
     m_audio = std::move(audio);
     return *this;

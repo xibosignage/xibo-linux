@@ -39,6 +39,7 @@ public:
     BackgroundBuilderTest() :
         m_fakeFilesystem(std::make_unique<testing::NiceMock<MockFileSystemAdaptor>>())
     {
+        ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
     }
 
     BackgroundBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockImageAdaptor>>&& adaptor)

@@ -9,7 +9,7 @@ const bool DEFAULT_MUTED = false;
 std::unique_ptr<IMedia> AudioBuilder::doBuild()
 {
     auto audio = createAudio();
-    audio->setVolume(m_volume);
+    audio->setVolume(m_muted ? MIN_VOLUME : m_volume);
     audio->setLooped(m_looped);
     return audio;
 }
