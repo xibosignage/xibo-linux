@@ -37,7 +37,7 @@ private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     std::unique_ptr<ITimerProvider> m_timer;
     int m_zorder;
-    bool m_mediaLooped = false;
+    bool m_mediaLooped;
 
     std::vector<IVisibleMedia*> m_visibleMedia;
     std::vector<std::unique_ptr<IMedia>> m_media;

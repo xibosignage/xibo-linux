@@ -6,6 +6,8 @@
 
 #include <memory>
 
+const bool DEFAULT_BACKGROUND_SCALED = true;
+
 class Background : public IBackground
 {
 public:
@@ -44,7 +46,7 @@ public:
     ImageBackground(int width, int height, const FilePath& path, std::unique_ptr<IImageAdaptor>&& handler) :
         Background(width, height, std::move(handler))
     {
-        this->handler().setImage(path);
+        this->handler().loadImage(path, DEFAULT_BACKGROUND_SCALED);
     }
 
 };

@@ -27,9 +27,12 @@ public:
 
 private:
     void onRealized();
+    Gdk::Rectangle getCurrentMonitorGeometry() const;
 
 private:
     Gtk::Window m_handler;
+    int m_originalWidth;
+    int m_originalHeight;
     bool m_cursorVisible = true;
 
 };

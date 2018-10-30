@@ -20,20 +20,13 @@ const double DEFAULT_YSCALE = 0.5;
 const int NEW_DEFAULT_WIDTH = 200;
 const int NEW_DEFAULT_HEIGHT = 200;
 
-template<int MaxWidth, int MinWidth, int MaxHeight, int MinHeight>
+template<int MinWidth, int MinHeight>
 const std::vector<Size> invalidSizes = {
     {-1, DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, -1},
-    {MaxWidth + 1, DEFAULT_HEIGHT},
-    {DEFAULT_WIDTH, MaxHeight + 1},
     {MinWidth - 1, DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, MinHeight - 1},
-    {MinWidth - 1, MaxHeight + 1},
-    {MaxWidth + 1, MinHeight - 1},
-    {MaxWidth + 1, MaxHeight + 1},
     {MinWidth - 1, MinHeight - 1},
-    {std::numeric_limits<int>::max(), DEFAULT_HEIGHT},
-    {DEFAULT_WIDTH, std::numeric_limits<int>::max()},
     {std::numeric_limits<int>::min(), DEFAULT_HEIGHT},
     {DEFAULT_WIDTH, std::numeric_limits<int>::min()}
 };

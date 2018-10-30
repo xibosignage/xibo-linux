@@ -53,8 +53,10 @@ IWidgetAdaptor& VideoHandler::videoWindow()
     return *m_videoWindow;
 }
 
-void VideoHandler::scale(double, double)
+void VideoHandler::scale(double scaleX, double scaleY)
 {
+    setSize(static_cast<int>(width() * scaleX),
+            static_cast<int>(height() * scaleY));
 }
 
 void VideoHandler::setSize(int width, int height)

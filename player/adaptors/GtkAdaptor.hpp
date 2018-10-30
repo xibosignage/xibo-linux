@@ -59,8 +59,9 @@ bool GtkAdaptor<Interface>::isShown() const
 }
 
 template<typename Interface>
-void GtkAdaptor<Interface>::scale(double, double)
+void GtkAdaptor<Interface>::scale(double scaleX, double scaleY)
 {
+    setSize(width() * scaleX, height() * scaleY);
 }
 
 template<typename Interface>

@@ -9,7 +9,7 @@
 #include "mocks/MockOverlayAdaptor.hpp"
 
 const int DEFAULT_WINDOW_POS = 100;
-const auto invalidMainWindowSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+const auto invalidMainWindowSizes = invalidSizes<MIN_DISPLAY_WIDTH, MIN_DISPLAY_HEIGHT>;
 
 class MainWindowTest : public BaseTestWithHandler<MockWindowAdaptor>
 {

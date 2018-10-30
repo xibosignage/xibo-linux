@@ -63,8 +63,8 @@ namespace ResourcesXlf
         namespace Image
         {
             const std::string ScaleType = "scaleType";
-            const std::string Align = "scaleType";
-            const std::string Valign = "scaleType";
+            const std::string Align = "align";
+            const std::string Valign = "valign";
         }
     }
 

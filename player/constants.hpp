@@ -19,8 +19,8 @@ const int MAX_DISPLAY_WIDTH = 9999;
 const int MIN_DISPLAY_HEIGHT = 120;
 const int MAX_DISPLAY_HEIGHT = 9999;
 
-const int MIN_X_POS = 0;
-const int MIN_Y_POS = 0;
+const int MIN_XPOS = 0;
+const int MIN_YPOS = 0;
 const int DEFAULT_XPOS = 0;
 const int DEFAULT_YPOS = 0;
 const int INVALID_POS = -1;

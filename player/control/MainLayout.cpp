@@ -69,7 +69,7 @@ void MainLayout::checkContainerSize(int containerWidth, int containerHeight)
 
 void MainLayout::checkContainerCoordinates(int x, int y)
 {
-    if(x > width() || x < MIN_X_POS || y > height() || y < MIN_Y_POS)
+    if(x > width() || x < MIN_XPOS || y > height() || y < MIN_YPOS)
         throw std::invalid_argument("Container x/y pos should not be greater than layout's width and height");
 }
 
@@ -116,7 +116,7 @@ void MainLayout::sortAndReorderContainers()
 
 void MainLayout::sortContainersByZorder()
 {
-    std::sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
+    std::stable_sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
         return first->zorder() < second->zorder();
     });
 }

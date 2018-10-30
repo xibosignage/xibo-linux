@@ -27,6 +27,9 @@ protected:
     void doStart() override;
 
 private:
+    void loadImage(const FilePath& path);
+
+private:
     std::unique_ptr<IImageAdaptor> m_handler;
     ImageProperties::ScaleType m_scaleType;
     ImageProperties::Align m_align;

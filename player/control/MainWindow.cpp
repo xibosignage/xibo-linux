@@ -23,7 +23,7 @@ void MainWindow::setSize(int width, int height)
 // TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowNewSize(int width, int height)
 {
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+    if(width < MIN_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT)
         throw std::invalid_argument("Width or height is too small/large");
 }
 
@@ -37,7 +37,7 @@ void MainWindow::setPos(int x, int y)
 // TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowCoordinates(int x, int y)
 {
-    if(x < MIN_X_POS || y < MIN_Y_POS)
+    if(x < MIN_XPOS || y < MIN_YPOS)
         throw std::invalid_argument("x or y position should be greater than 0");
 }
 
@@ -68,8 +68,16 @@ void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
 {
     assert(layout);
 
+    scaleLayout(*layout);
+    m_handler->add(layout->handler());
     m_layout = std::move(layout);
-    m_handler->add(m_layout->handler());
+}
+
+void MainWindow::scaleLayout(IMainLayout& layout)
+{
+    double scaleX = static_cast<double>(m_handler->width()) / layout.width();
+    double scaleY = static_cast<double>(m_handler->height()) / layout.height();
+    layout.scale(scaleX, scaleY);
 }
 
 void MainWindow::showLayout()

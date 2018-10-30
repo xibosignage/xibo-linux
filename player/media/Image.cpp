@@ -12,7 +12,7 @@ Image::Image(int width, int height, const FilePath& path, ImageProperties props,
     assert(m_handler);
 
     m_handler->setSize(width, height);
-    m_handler->setImage(path.string());
+    loadImage(path);
 }
 
 void Image::doStop()
@@ -23,6 +23,12 @@ void Image::doStop()
 void Image::doStart()
 {
     m_handler->show();
+}
+
+void Image::loadImage(const FilePath& path)
+{
+    bool preserveAspectRatio = (m_scaleType == ImageProperties::ScaleType::Scaled) ? true : false;
+    m_handler->loadImage(path, preserveAspectRatio);
 }
 
 int Image::width() const

@@ -13,13 +13,22 @@ TEST(ImageBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
     builder.defaultImageProps().build();
 }
 
-TEST(ImageBuilderTest, Construct_Default_HandlerSetImageShouldBeCalled)
+TEST(ImageBuilderTest, Construct_Scaled_HandlerLoadImageWithPreserveAspectRatioShouldBeCalled)
 {
     ImageBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), setImage(DEFAULT_FULL_PATH.string()));
+    EXPECT_CALL(builder.adaptor(), loadImage(DEFAULT_FULL_PATH, true));
 
-    builder.defaultImageProps().build();
+    builder.scaleType("center"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build();
+}
+
+TEST(ImageBuilderTest, Construct_Scaled_HandlerLoadImageWithoutPreserveAspectRatioShouldBeCalled)
+{
+    ImageBuilderTest builder;
+
+    EXPECT_CALL(builder.adaptor(), loadImage(DEFAULT_FULL_PATH, false));
+
+    builder.scaleType("stretch"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build();
 }
 
 TEST(ImageBuilderTest, Construct_InvalidScaleType_InvaldiArgShouldBeThrown)

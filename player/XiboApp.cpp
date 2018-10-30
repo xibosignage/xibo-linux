@@ -15,7 +15,7 @@
 #include <gst/gst.h>
 #include <chrono>
 
-const std::string DEFAULT_RESOURCES_DIR = "UnicodeTextTest1";
+const std::string DEFAULT_RESOURCES_DIR = "LayerTest";
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -40,7 +40,7 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 int XiboApp::initPlayer()
 {
     auto window = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
-    window->setSize(640, 480);
+    window->setSize(1366, 768);
 
 //    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 
@@ -58,6 +58,7 @@ int XiboApp::initPlayer()
 
     auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
     MainBuilder controller;
+//    window->setFullscreen(true);
     window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
     window->showLayout();
 

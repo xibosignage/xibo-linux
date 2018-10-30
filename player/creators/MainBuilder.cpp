@@ -41,7 +41,7 @@ std::vector<MediaContainerWithPos> MainBuilder::collectContainers(const xlf_node
         if(nodeName == ResourcesXlf::RegionNode)
         {
             RegionOptions opts{containerNode};
-            containers.emplace_back(MediaContainerWithPos{buildContainer(containerNode), opts.top(), opts.left()});
+            containers.emplace_back(MediaContainerWithPos{buildContainer(containerNode), opts.left(), opts.top()});
         }
     }
     return containers;
@@ -63,7 +63,7 @@ std::vector<MediaWithPos> MainBuilder::collectVisibleMedia(int containerWidth, i
     std::vector<MediaWithPos> media;
     for(auto [nodeName, mediaNode] : containerNode)
     {
-        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) != ResourcesXlf::AudioType) // FIXME condition
+        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) != ResourcesXlf::AudioType)
         {
             auto builtMedia = buildMedia(containerWidth, containerHeight, mediaNode);
 
@@ -81,7 +81,7 @@ std::vector<std::unique_ptr<IMedia>> MainBuilder::collectInvisibleMedia(const xl
     std::vector<std::unique_ptr<IMedia>> media;
     for(auto [nodeName, mediaNode] : containerNode)
     {
-        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) == ResourcesXlf::AudioType) // FIXME condition
+        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) == ResourcesXlf::AudioType)
         {
             media.emplace_back(buildMedia(mediaNode));
         }

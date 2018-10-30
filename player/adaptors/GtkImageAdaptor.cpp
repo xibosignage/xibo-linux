@@ -32,9 +32,9 @@ void GtkImageAdaptor::setColor(uint32_t hex_color_number)
     pixbuf()->fill(hex_color_number);
 }
 
-void GtkImageAdaptor::setImage(const std::string& path)
+void GtkImageAdaptor::loadImage(const FilePath& path, bool preserveAspectRatio)
 {
-    m_handler.set(Gdk::Pixbuf::create_from_file(path, width(), height()));
+    m_handler.set(Gdk::Pixbuf::create_from_file(path.string(), width(), height(), preserveAspectRatio));
 }
 
 Gtk::Image& GtkImageAdaptor::get()

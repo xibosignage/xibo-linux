@@ -33,8 +33,8 @@ MainLayoutBuilder& MainLayoutBuilder::width(int width)
 
 void MainLayoutBuilder::checkWidth(int width)
 {
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH)
-        throw std::invalid_argument("Width or height is too small/large");
+    if(width < MIN_DISPLAY_WIDTH)
+        throw std::invalid_argument("Width or height is too small");
 }
 
 MainLayoutBuilder& MainLayoutBuilder::height(int height)
@@ -47,8 +47,8 @@ MainLayoutBuilder& MainLayoutBuilder::height(int height)
 
 void MainLayoutBuilder::checkHeight(int height)
 {
-    if(height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
-        throw std::invalid_argument("Width or height is too small/large");
+    if(height < MIN_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width or height is too small");
 }
 
 MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& background)

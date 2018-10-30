@@ -8,6 +8,8 @@ GtkWindowAdaptor::GtkWindowAdaptor() :
 
 void GtkWindowAdaptor::setSize(int width, int height)
 {
+    m_originalWidth = width;
+    m_originalHeight = height;
     m_handler.set_default_size(width, height);
 }
 
@@ -49,11 +51,27 @@ void GtkWindowAdaptor::disableWindowDecoration()
 void GtkWindowAdaptor::fullscreen()
 {
     m_handler.fullscreen();
+
+    auto area = getCurrentMonitorGeometry();
+
+    m_handler.set_default_size(area.get_width(), area.get_height());
+}
+
+Gdk::Rectangle GtkWindowAdaptor::getCurrentMonitorGeometry() const
+{
+    Gdk::Rectangle area;
+    auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(m_handler.get_screen());
+    auto monitor = screen->get_monitor_at_window(screen->get_active_window());
+
+    screen->get_monitor_geometry(monitor, area);
+
+    return area;
 }
 
 void GtkWindowAdaptor::unfullscreen()
 {
     m_handler.unfullscreen();
+    m_handler.set_default_size(m_originalWidth, m_originalHeight);
 }
 
 void GtkWindowAdaptor::setCursorVisible(bool cursorVisible)

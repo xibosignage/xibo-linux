@@ -16,7 +16,7 @@ TEST_P(MainLayoutBuilderSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError
     ASSERT_THROW(MainLayoutBuilderTest().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainLayoutBuilderSizeTest, ::testing::ValuesIn(invalidMediaContainerSizes));
+INSTANTIATE_TEST_CASE_P(Suite, MainLayoutBuilderSizeTest, ::testing::ValuesIn(invalidMainLayoutSizes));
 
 TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWithPos)
 {

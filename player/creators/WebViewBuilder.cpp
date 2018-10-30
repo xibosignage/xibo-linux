@@ -69,7 +69,7 @@ boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)
         std::smatch match;
         if(std::regex_search(line, match, re) && match.size() > 1)
         {
-            spdlog::get(LOGGER)->debug("DURATION parsed");
+            spdlog::get(LOGGER)->debug("DURATION parsed from .html {}", match[1].str());
             // NOTE: 0 for full match, 1 for the first group match
             return std::stoi(match[1].str());
         }

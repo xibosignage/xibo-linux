@@ -2,9 +2,7 @@
 #include "utils/Utilities.hpp"
 #include <iostream>
 
-// FIXME
-// return error code
-// or 2 versions (exceptions and error code passing)
+// FIXME: return error code or 2 versions (exceptions and error code passing)
 boost::property_tree::ptree soap::parseSoapResponse(const std::string& xmlResponse)
 {
     auto parsedBody = Utils::parseXmlFromString(xmlResponse).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");

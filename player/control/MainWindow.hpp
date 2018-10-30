@@ -23,6 +23,7 @@ public:
     IWindowAdaptor& handler() override;
 
 private:
+    void scaleLayout(IMainLayout& layout);
     void checkWindowNewSize(int width, int height);
     void checkWindowCoordinates(int x, int y);
 

@@ -8,6 +8,8 @@
 #include "utils/ColorToHexConverter.hpp"
 #include "utils/FileSystemAdaptor.hpp"
 
+const std::string DEFAULT_COLOR = "#000";
+
 BackgroundBuilder::BackgroundBuilder()
 {
     m_filesystem = std::make_unique<FileSystemAdaptor>();
@@ -54,7 +56,7 @@ BackgroundBuilder& BackgroundBuilder::width(int width)
 
 void BackgroundBuilder::checkWidth(int width)
 {
-    if(width < MIN_DISPLAY_WIDTH || width > MAX_DISPLAY_WIDTH)
+    if(width < MIN_DISPLAY_WIDTH)
         throw std::invalid_argument("Width is too small/large");
 }
 
@@ -68,18 +70,14 @@ BackgroundBuilder& BackgroundBuilder::height(int height)
 
 void BackgroundBuilder::checkHeight(int height)
 {
-    if(height < MIN_DISPLAY_HEIGHT || height > MAX_DISPLAY_HEIGHT)
+    if(height < MIN_DISPLAY_HEIGHT)
         throw std::invalid_argument("Height is too small/large");
 }
 
-// TODO specify always provided or not
 BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& color)
 {
-    if(color)
-    {
-        ColorToHexConverter converter;
-        m_hexColor = converter.colorToHex(color.value());
-    }
+    ColorToHexConverter converter;
+    m_hexColor = converter.colorToHex(color.value_or(DEFAULT_COLOR));
     return *this;
 }
 

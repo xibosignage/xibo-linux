@@ -20,7 +20,6 @@ int Background::height() const
     return m_handler->height();
 }
 
-// TODO specify about background behaviour (stretch or scaled)
 void Background::scale(double scaleX, double scaleY)
 {
     m_handler->scale(scaleX, scaleY);

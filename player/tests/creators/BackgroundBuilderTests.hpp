@@ -13,7 +13,7 @@ struct Color
     uint numberColor;
 };
 
-const auto invalidBackgroundSizes = invalidSizes<MAX_DISPLAY_WIDTH, MIN_DISPLAY_WIDTH, MAX_DISPLAY_HEIGHT, MIN_DISPLAY_HEIGHT>;
+const auto invalidBackgroundSizes = invalidSizes<MIN_DISPLAY_WIDTH, MIN_DISPLAY_HEIGHT>;
 
 class BackgroundBuilderSizeTest : public testing::TestWithParam<Size> { };
 class BackgroundBuilderValidColorTest : public testing::TestWithParam<Color> { };

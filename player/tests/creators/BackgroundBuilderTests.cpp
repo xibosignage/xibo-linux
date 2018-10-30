@@ -12,12 +12,12 @@ TEST(BackgroundBuilderTest, ConstructWithColor_Default_HandlerSetSizeShouldBeCal
     BackgroundBuilderTest().defaultSize().adaptor(std::move(adaptor)).color(DEFAULT_COLOR).build();
 }
 
-TEST(BackgroundBuilderTest, ConstructWithPath_Default_HandlerSetSizeShouldBeCalled)
+TEST(BackgroundBuilderTest, ConstructWithPath_Default_HandlerLoadImageWithPreserveAspectRatioShouldBeCalled)
 {
     BackgroundBuilderTest builder;
     auto adaptor = std::make_unique<NiceMock<MockImageAdaptor>>();
 
-    EXPECT_CALL(*adaptor, setImage(DEFAULT_FULL_PATH.string()));
+    EXPECT_CALL(*adaptor, loadImage(DEFAULT_FULL_PATH, true));
 
     builder.defaultSize().adaptor(std::move(adaptor)).path(DEFAULT_PATH.string()).build();
 }

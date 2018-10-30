@@ -7,7 +7,7 @@ ResourcesXlf::LayoutOptions::LayoutOptions(const xlf_node& node)
 {
     m_width = node.get<int>(attr(Layout::Width));
     m_height = node.get<int>(attr(Layout::Height));
-    m_backgroundPath = node.get_optional<std::string>(option(Layout::BackgroundPath));
+    m_backgroundPath = node.get_optional<std::string>(attr(Layout::BackgroundPath));
     m_backgroundColor = node.get_optional<std::string>(attr(Layout::BackgroundColor));
 }
 

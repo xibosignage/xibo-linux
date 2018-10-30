@@ -23,11 +23,13 @@ public:
     void addMainChild(IWidgetAdaptor& mainChild) override;
     void removeMainChild() override;
     void reorderChild(IWidgetAdaptor& child, int position) override;
+    void scale(double scaleX, double scaleY) override;
 
     Gtk::Overlay& get() override;
 
 private:
     bool onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc);
+    void scaleChildren(double scaleX, double scaleY);
 
 private:
     Gtk::Overlay m_handler;

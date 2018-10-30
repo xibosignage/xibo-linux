@@ -41,6 +41,23 @@ void GtkOverlayAdaptor::reorderChild(IWidgetAdaptor& child, int position)
     m_handler.reorder_overlay(handler, position);
 }
 
+void GtkOverlayAdaptor::scale(double scaleX, double scaleY)
+{
+    scaleChildren(scaleX, scaleY);
+    GtkAdaptor::scale(scaleX, scaleY);
+}
+
+void GtkOverlayAdaptor::scaleChildren(double scaleX, double scaleY)
+{
+    for(auto&& [child, childInfo] : m_children)
+    {
+        childInfo.x *= scaleX;
+        childInfo.y *= scaleY;
+        childInfo.width *= scaleX;
+        childInfo.height *= scaleY;
+    }
+}
+
 Gtk::Overlay& GtkOverlayAdaptor::get()
 {
     return m_handler;
@@ -53,8 +70,8 @@ bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& 
     {
         ChildInfo info = it->second;
 
-        alloc.set_x(info.x); // scale
-        alloc.set_y(info.y); // scale
+        alloc.set_x(info.x);
+        alloc.set_y(info.y);
         alloc.set_width(info.width);
         alloc.set_height(info.height);
         return true;

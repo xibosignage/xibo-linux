@@ -40,7 +40,7 @@ MediaContainerBuilder& MediaContainerBuilder::width(int width)
 
 void MediaContainerBuilder::checkWidth(int width)
 {
-    if(width <= MIN_WIDTH || width >= MAX_DISPLAY_WIDTH)
+    if(width <= MIN_WIDTH)
         throw std::invalid_argument("Width is too large/small");
 }
 
@@ -54,11 +54,10 @@ MediaContainerBuilder& MediaContainerBuilder::height(int height)
 
 void MediaContainerBuilder::checkHeight(int height)
 {
-    if(height < MIN_HEIGHT || height >= MAX_DISPLAY_HEIGHT)
+    if(height < MIN_HEIGHT)
         throw std::invalid_argument("Height is too large/small");
 }
 
-// FIXME it should not be default zorder
 MediaContainerBuilder& MediaContainerBuilder::zorder(const boost::optional<int>& zorder)
 {
     m_zorder = zorder.value_or(DEFAULT_ZORDER);

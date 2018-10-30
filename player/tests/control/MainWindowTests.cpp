@@ -116,6 +116,16 @@ TEST_F(MainWindowTest, SetPos_ValidPos_HandlerMoveWithValidPosShouldBeCalled)
     window->setPos(DEFAULT_WINDOW_POS, DEFAULT_WINDOW_POS);
 }
 
+TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
+{
+    auto window = constructWindow();
+    auto layout = constructLayout();
+
+    EXPECT_CALL(*layout, scale(_, _)); // TEST multiple scale factors
+
+    window->addLayout(std::move(layout));
+}
+
 TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
 {
     auto window = constructWindow();
