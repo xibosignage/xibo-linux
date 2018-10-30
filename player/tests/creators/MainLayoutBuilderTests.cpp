@@ -8,12 +8,17 @@ TEST(MainLayoutBuilderSizeTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 
     EXPECT_CALL(*adaptor, setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultContainers().defaultSize().build();
+}
+
+TEST(MainLayoutBuilderSizeTest, Construct_WithoutRegions_ShouldThrowRunTimeError)
+{
+    ASSERT_THROW(MainLayoutBuilderTest().defaultSize().build(), std::runtime_error);
 }
 
 TEST_P(MainLayoutBuilderSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
-    ASSERT_THROW(MainLayoutBuilderTest().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
+    ASSERT_THROW(MainLayoutBuilderTest().defaultContainers().width(GetParam().width).height(GetParam().height).build(), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MainLayoutBuilderSizeTest, ::testing::ValuesIn(invalidMainLayoutSizes));
@@ -24,7 +29,7 @@ TEST(MainLayoutBuilderTest, Construct_WithContinaer_HandlerAddMediaContainerWith
 
     EXPECT_CALL(*adaptor, addChild(_, _, _, _, _));
 
-    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultContainers().defaultSize().build();
 }
 
 TEST(MainLayoutBuilderTest, Construct_WithBackground_HandlerSetBackground)
@@ -33,5 +38,5 @@ TEST(MainLayoutBuilderTest, Construct_WithBackground_HandlerSetBackground)
 
     EXPECT_CALL(*adaptor, addMainChild(_));
 
-    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultSize().build();
+    MainLayoutBuilderTest().adaptor(std::move(adaptor)).defaultContainers().defaultSize().build();
 }

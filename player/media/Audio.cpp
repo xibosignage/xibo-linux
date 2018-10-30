@@ -6,8 +6,8 @@
 
 namespace ph = std::placeholders;
 
-Audio::Audio(const FilePath& path, std::unique_ptr<IAudioHandler>&& handler) :
-    m_handler(std::move(handler))
+Audio::Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler) :
+    Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 

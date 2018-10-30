@@ -24,6 +24,7 @@ class MediaContainerBuilder
 public:
     std::unique_ptr<IMediaContainer> build();
 
+    MediaContainerBuilder& id(int id);
     MediaContainerBuilder& width(int width);
     MediaContainerBuilder& height(int height);
     MediaContainerBuilder& zorder(const boost::optional<int>& zorder);
@@ -36,13 +37,15 @@ protected:
     virtual std::unique_ptr<ITimerProvider> createTimer();
 
 private:
-    std::unique_ptr<IMediaContainer> createContainer(int zorder, bool loop);
+    std::unique_ptr<IMediaContainer> createContainer();
 
+    void loopMedia(IMediaContainer& container);
     void addAllMedia(IMediaContainer& container);
     void checkWidth(int width);
     void checkHeight(int height);
 
 private:
+    int m_id;
     int m_width;
     int m_height;
     int m_zorder;

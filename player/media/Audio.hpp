@@ -5,7 +5,7 @@
 class Audio : public Media<IInvisibleMedia>
 {
 public:
-    Audio(const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
+    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
     void apply(MediaVisitor& visitor) override;
 
     void setVolume(int volume);

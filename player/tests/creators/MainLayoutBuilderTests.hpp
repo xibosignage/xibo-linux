@@ -23,7 +23,7 @@ class MainLayoutBuilderTest : public MainLayoutBuilder
 public:
     MainLayoutBuilderTest()
     {
-        defaultBackground().defaultContainers();
+        defaultBackground();
     }
 
     MainLayoutBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockOverlayAdaptor>>&& adaptor)
@@ -35,6 +35,13 @@ public:
     MainLayoutBuilder& defaultSize()
     {
         return width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT);
+    }
+
+    MainLayoutBuilderTest& defaultContainers()
+    {
+        std::vector<MediaContainerWithPos> containers;
+        containers.push_back(MediaContainerWithPos{constructMock<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
     }
 
 protected:
@@ -52,12 +59,6 @@ private:
         return static_cast<MainLayoutBuilderTest&>(background(constructMock<MockBackground, MockImageAdaptor>()));
     }
 
-    MainLayoutBuilderTest& defaultContainers()
-    {
-        std::vector<MediaContainerWithPos> containers;
-        containers.push_back(MediaContainerWithPos{constructMock<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
-        return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
-    }
 
 private:
     std::unique_ptr<testing::NiceMock<MockOverlayAdaptor>> m_adaptor;

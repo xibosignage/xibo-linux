@@ -23,6 +23,7 @@ public:
     virtual void attachMedia(std::unique_ptr<IMedia>&& media) = 0;
     virtual void connect(OnMediaTimeout callback) = 0;
 
+    virtual int id() const = 0;
     virtual void apply(MediaVisitor& visitor) = 0;
 
 };

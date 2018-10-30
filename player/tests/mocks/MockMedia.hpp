@@ -14,6 +14,7 @@ public:
     MOCK_METHOD1(connect, void(OnMediaTimeout callback));
     MOCK_CONST_METHOD0(duration, int());
     MOCK_METHOD1(setDuration, void(int duration));
+    MOCK_CONST_METHOD0(id, int());
     MOCK_METHOD1(apply, void(MediaVisitor& visitor));
 
 };

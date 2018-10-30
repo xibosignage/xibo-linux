@@ -16,7 +16,7 @@ std::unique_ptr<IMedia> VideoBuilder::doBuild()
 
 std::unique_ptr<Video> VideoBuilder::createVideo()
 {
-    return std::make_unique<Video>(m_width, m_height, m_path, createHandler());
+    return std::make_unique<Video>(m_id, m_width, m_height, m_path, createHandler());
 }
 
 std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()

@@ -6,7 +6,7 @@
 class Video : public Media<IVisibleMedia>
 {
 public:
-    Video(int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
+    Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
 
     void scale(double, double) override;
     int width() const override;

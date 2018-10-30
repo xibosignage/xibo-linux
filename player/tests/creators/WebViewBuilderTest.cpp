@@ -7,7 +7,7 @@ using namespace testing;
 TEST(WebViewBuilderTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
     WebViewBuilderTest builder;
-    FilePath fullPath = DEFAULT_RESOURCES_DIR / FilePath("1.htm");
+    FilePath fullPath = DEFAULT_RESOURCES_DIR / FilePath("0.htm");
 
     EXPECT_CALL(builder.adaptor(), load(fullPath));
 

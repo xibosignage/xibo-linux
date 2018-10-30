@@ -6,7 +6,7 @@
 std::unique_ptr<IMedia> ImageBuilder::doBuild()
 {
     ImageProperties props{m_scaleType, m_align, m_valign};
-    return std::make_unique<Image>(m_width, m_height, m_path, props, createAdaptor());
+    return std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
 }
 
 std::unique_ptr<IImageAdaptor> ImageBuilder::createAdaptor()

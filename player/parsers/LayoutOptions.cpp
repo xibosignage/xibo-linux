@@ -5,10 +5,16 @@
 
 ResourcesXlf::LayoutOptions::LayoutOptions(const xlf_node& node)
 {
+    m_schemaVersion = node.get<int>(attr(Layout::SchemaVersion));
     m_width = node.get<int>(attr(Layout::Width));
     m_height = node.get<int>(attr(Layout::Height));
     m_backgroundPath = node.get_optional<std::string>(attr(Layout::BackgroundPath));
     m_backgroundColor = node.get_optional<std::string>(attr(Layout::BackgroundColor));
+}
+
+int ResourcesXlf::LayoutOptions::schemaVersion() const
+{
+    return m_schemaVersion;
 }
 
 int ResourcesXlf::LayoutOptions::width() const

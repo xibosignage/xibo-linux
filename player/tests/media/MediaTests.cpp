@@ -10,6 +10,13 @@ TYPED_TEST(MediaTest, Duration_Default_DurationEqualsDefault)
     ASSERT_EQ(media->duration(), DEFAULT_DURATION);
 }
 
+TYPED_TEST(MediaTest, Id_Default_IdEqualsDefault)
+{
+    auto media = constructMedia<TypeParam>();
+
+    ASSERT_EQ(media->id(), DEFAULT_ID);
+}
+
 TYPED_TEST(MediaTest, SetDuration_NewValue_DurationEqualsNewValue)
 {
     auto media = constructMedia<TypeParam>();

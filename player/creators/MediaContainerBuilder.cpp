@@ -10,14 +10,15 @@ const int MIN_HEIGHT = 1;
 
 std::unique_ptr<IMediaContainer> MediaContainerBuilder::build()
 {
-    auto container = createContainer(m_zorder, m_loop);
+    auto container = createContainer();
+    loopMedia(*container);
     addAllMedia(*container);
     return container;
 }
 
-std::unique_ptr<IMediaContainer> MediaContainerBuilder::createContainer(int zorder, bool loop)
+std::unique_ptr<IMediaContainer> MediaContainerBuilder::createContainer()
 {
-    return std::make_unique<MediaContainer>(m_width, m_height, zorder, loop, createTimer(), createAdaptor());
+    return std::make_unique<MediaContainer>(m_id, m_width, m_height, m_zorder, createTimer(), createAdaptor());
 }
 
 std::unique_ptr<IFixedLayoutAdaptor> MediaContainerBuilder::createAdaptor()
@@ -28,6 +29,36 @@ std::unique_ptr<IFixedLayoutAdaptor> MediaContainerBuilder::createAdaptor()
 std::unique_ptr<ITimerProvider> MediaContainerBuilder::createTimer()
 {
     return std::make_unique<TimerProvider>();
+}
+
+void MediaContainerBuilder::loopMedia(IMediaContainer& container)
+{
+    size_t mediaCount = m_visibleMedia.size() + m_invisibleMedia.size();
+    if(mediaCount > 1)
+    {
+        container.loopMedia();
+    }
+}
+
+void MediaContainerBuilder::addAllMedia(IMediaContainer& container)
+{
+    assert(m_visibleMedia.size() > 0 || m_invisibleMedia.size() > 0);
+
+    for(auto&& ct : m_visibleMedia)
+    {
+        container.addMedia(std::move(ct.media), ct.x, ct.y);
+    }
+
+    for(auto&& media : m_invisibleMedia)
+    {
+        container.addMedia(std::move(media));
+    }
+}
+
+MediaContainerBuilder& MediaContainerBuilder::id(int id)
+{
+    m_id = id;
+    return *this;
 }
 
 MediaContainerBuilder& MediaContainerBuilder::width(int width)
@@ -80,19 +111,4 @@ MediaContainerBuilder& MediaContainerBuilder::invisibleMedia(std::vector<std::un
 {
     m_invisibleMedia = std::move(invisibleMedia);
     return *this;
-}
-
-void MediaContainerBuilder::addAllMedia(IMediaContainer& container)
-{
-    assert(m_visibleMedia.size() > 0 || m_invisibleMedia.size() > 0);
-
-    for(auto&& ct : m_visibleMedia)
-    {
-        container.addMedia(std::move(ct.media), ct.x, ct.y);
-    }
-
-    for(auto&& media : m_invisibleMedia)
-    {
-        container.addMedia(std::move(media));
-    }
 }

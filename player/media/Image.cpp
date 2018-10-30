@@ -6,8 +6,8 @@
 
 #include <cassert>
 
-Image::Image(int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler) :
-    m_handler(std::move(handler)), m_scaleType(props.scaleType), m_align(props.align), m_valign(props.valign)
+Image::Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler)), m_scaleType(props.scaleType), m_align(props.align), m_valign(props.valign)
 {
     assert(m_handler);
 

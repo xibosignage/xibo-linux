@@ -10,6 +10,7 @@ namespace ResourcesXlf
     public:
         RegionOptions(const xlf_node& node);
 
+        int id() const;
         int width() const;
         int height() const;
         int left() const;
@@ -18,6 +19,7 @@ namespace ResourcesXlf
         boost::optional<bool> loop() const;
 
     private:
+        int m_id;
         int m_width;
         int m_height;
         int m_left;

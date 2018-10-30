@@ -5,12 +5,18 @@
 
 ResourcesXlf::RegionOptions::RegionOptions(const xlf_node& node)
 {
+    m_id = node.get<int>(attr(Region::Id));
     m_width = static_cast<int>(node.get<float>(attr(Region::Width)));
     m_height = static_cast<int>(node.get<float>(attr(Region::Height)));
     m_left = static_cast<int>(node.get<float>(attr(Region::Left)));
     m_top = static_cast<int>(node.get<float>(attr(Region::Top)));
     m_zindex = node.get_optional<int>(attr(Region::Zindex));
     m_loop = node.get_optional<bool>(option(Region::Loop));
+}
+
+int ResourcesXlf::RegionOptions::id() const
+{
+    return m_id;
 }
 
 int ResourcesXlf::RegionOptions::width() const

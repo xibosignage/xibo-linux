@@ -9,6 +9,13 @@ TEST_F(MediaContainerTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
     ASSERT_EQ(&container->handler(), &adaptor());
 }
 
+TEST_F(MediaContainerTest, Id_Default_IdEqualsDefault)
+{
+    auto container = constructContainer();
+
+    ASSERT_EQ(container->id(), DEFAULT_ID);
+}
+
 TEST_F(MediaContainerTest, Width_HandlerReturnsDefaultWidth_ContainerWidthEqualsDefault)
 {
     auto container = constructContainer();

@@ -16,7 +16,7 @@ std::unique_ptr<IMedia> AudioBuilder::doBuild()
 
 std::unique_ptr<Audio> AudioBuilder::createAudio()
 {
-    return std::make_unique<Audio>(m_path, createHandler());
+    return std::make_unique<Audio>(m_id, m_path, createHandler());
 }
 
 std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()

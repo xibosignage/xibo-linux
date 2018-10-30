@@ -14,9 +14,11 @@ class Media : public Interface
 public:
     static_assert(std::is_base_of<IMedia, Interface>::value, "Interface should implement IMedia");
 
-    Media() = default;
+    Media(int id);
     Media(const Media& other) = delete;
     Media& operator=(const Media& other) = delete;
+
+    int id() const final;
 
     void stop() final;
     void start() final;
@@ -38,11 +40,23 @@ private:
     void stopAttachedMedia();
 
 private:
+    int m_id;
     std::unique_ptr<IMedia> m_attachedMedia;
     MediaTimeoutSignal m_mediaTimeout;
     int m_duration;
 
 };
+
+template<typename Interface>
+Media<Interface>::Media(int id) : m_id(id)
+{
+}
+
+template<typename Interface>
+int Media<Interface>::id() const
+{
+    return m_id;
+}
 
 template<typename Interface>
 void Media<Interface>::stop()

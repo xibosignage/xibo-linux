@@ -54,7 +54,7 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
     auto visibleMedia = collectVisibleMedia(opts.width(), opts.height(), containerNode);
     auto invisibleMedia = collectInvisibleMedia(containerNode);
 
-    return MediaContainerBuilder().width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop())
+    return MediaContainerBuilder().id(opts.id()).width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop())
                                   .visibleMedia(std::move(visibleMedia)).invisibleMedia(std::move(invisibleMedia)).build();
 }
 

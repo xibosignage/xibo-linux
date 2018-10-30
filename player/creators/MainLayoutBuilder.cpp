@@ -66,7 +66,7 @@ MainLayoutBuilder& MainLayoutBuilder::mediaContainers(std::vector<MediaContainer
 void MainLayoutBuilder::prepareLayout(IMainLayout& layout)
 {
     assert(m_background);
-    assert(m_mediaContainers.size() > 0);
+    checkRegionsCount(m_mediaContainers.size());
 
     layout.setBackground(std::move(m_background));
 
@@ -74,4 +74,10 @@ void MainLayoutBuilder::prepareLayout(IMainLayout& layout)
     {
         layout.addMediaContainer(std::move(ct.container), ct.x, ct.y);
     }
+}
+
+void MainLayoutBuilder::checkRegionsCount(size_t regionsCount)
+{
+    if(regionsCount == 0)
+        throw std::runtime_error("You should add at least 1 region");
 }

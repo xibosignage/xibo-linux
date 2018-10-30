@@ -12,7 +12,7 @@ class AudioTest : public BaseTestWithHandler<MockAudioHandler>
 public:
     auto constructAudio()
     {
-        auto audio = construct<Audio>(DEFAULT_PATH, unique(&adaptor()));
+        auto audio = construct<Audio>(DEFAULT_ID, DEFAULT_PATH, unique(&adaptor()));
         audio->setDuration(DEFAULT_DURATION);
         return audio;
     }

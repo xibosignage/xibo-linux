@@ -17,7 +17,7 @@ class ImageTest : public BaseTestWithHandler<MockImageAdaptor>
 public:
     auto constructImage()
     {
-        auto image = construct<Image>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, unique(&adaptor()));
+        auto image = construct<Image>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, unique(&adaptor()));
         image->setDuration(DEFAULT_DURATION);
         return image;
     }

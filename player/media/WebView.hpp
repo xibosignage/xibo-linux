@@ -6,7 +6,7 @@
 class WebView : public Media<IVisibleMedia>
 {
 public:
-    WebView(int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
+    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
 
     void scale(double, double) override;
     int width() const override;

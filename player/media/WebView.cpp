@@ -5,8 +5,8 @@
 
 #include <cassert>
 
-WebView::WebView(int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
-    m_handler(std::move(handler))
+WebView::WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 

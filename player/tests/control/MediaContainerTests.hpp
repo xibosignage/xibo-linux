@@ -16,7 +16,7 @@ class MediaContainerTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 public:
     auto constructContainer()
     {
-        auto container = construct<MediaContainer>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, DEFAULT_LOOP, unique(m_timer), unique(&adaptor()));
+        auto container = construct<MediaContainer>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, unique(m_timer), unique(&adaptor()));
         addMediaToContainer(*container);
         return container;
     }

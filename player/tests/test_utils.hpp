@@ -10,6 +10,7 @@ const std::string DEFAULT_RESOURCES_DIR = "fakedir";
 const FilePath DEFAULT_PATH = "fakepath";
 const FilePath DEFAULT_FULL_PATH = DEFAULT_RESOURCES_DIR / DEFAULT_PATH;
 const int DEFAULT_DURATION = 10;
+const int DEFAULT_ID = 0;
 
 const int DEFAULT_WIDTH = 640;
 const int DEFAULT_HEIGHT = 480;

@@ -35,6 +35,7 @@ private:
     void prepareLayout(IMainLayout& layout);
     void checkWidth(int width);
     void checkHeight(int height);
+    void checkRegionsCount(size_t regionsCount);
 
 private:
     int m_width;

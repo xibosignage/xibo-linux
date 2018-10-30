@@ -3,8 +3,8 @@
 #include "media/MediaVisitor.hpp"
 #include "utils/Utilities.hpp"
 
-Video::Video(int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
-    m_handler(std::move(handler))
+Video::Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
+    Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 

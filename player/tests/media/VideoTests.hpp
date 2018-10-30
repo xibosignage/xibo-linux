@@ -12,7 +12,7 @@ class VideoTest : public BaseTestWithHandler<MockVideoHandler>
 public:
     auto constructVideo()
     {
-        auto video = construct<Video>(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(&adaptor()));
+        auto video = construct<Video>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(&adaptor()));
         video->setDuration(DEFAULT_DURATION);
         return video;
     }

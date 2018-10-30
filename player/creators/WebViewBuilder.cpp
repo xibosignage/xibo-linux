@@ -20,7 +20,7 @@ std::unique_ptr<IMedia> WebViewBuilder::doBuild()
 
 std::unique_ptr<WebView> WebViewBuilder::createWebView()
 {
-    return std::make_unique<WebView>(m_width, m_height, m_path, createAdaptor());
+    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createAdaptor());
 }
 
 std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()

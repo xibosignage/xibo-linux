@@ -1,10 +1,9 @@
 #pragma once
+
 #include "creators/MediaBuilderTest.hpp"
 #include "creators/WebViewBuilder.hpp"
 #include "media/MediaVisitor.hpp"
 #include "mocks/MockWebViewAdaptor.hpp"
-
-const int DEFAULT_ID = 1;
 
 class WebViewBuilderTest : public MediaBuilderTest<WebViewBuilder>
 {

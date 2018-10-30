@@ -17,6 +17,8 @@ public:
     virtual int height() const = 0;
     virtual void scale(double scaleX, double scaleY) = 0;
 
+    virtual void loopMedia() = 0;
+    virtual int id() const = 0;
     virtual int zorder() const = 0;
     virtual void show() = 0;
 

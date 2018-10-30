@@ -9,7 +9,7 @@ class IImageAdaptor;
 class Image : public Media<IVisibleMedia>
 {
 public:
-    Image(int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
+    Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
 
     ImageProperties::ScaleType scaleType() const;
     ImageProperties::Align align() const;
