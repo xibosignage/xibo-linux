@@ -27,6 +27,7 @@ public:
 
 private:
     void onRealized();
+    void loadDefaultStyle();
     Gdk::Rectangle getCurrentMonitorGeometry() const;
 
 private:

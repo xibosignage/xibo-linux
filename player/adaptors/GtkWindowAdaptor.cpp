@@ -1,9 +1,36 @@
 #include "GtkWindowAdaptor.hpp"
 
+#include <gtkmm/cssprovider.h>
+
+const std::string DEFAULT_STYLE = "window { background-color: black; }";
+
 GtkWindowAdaptor::GtkWindowAdaptor() :
     GtkAdaptor<IWindowAdaptor>(m_handler)
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &GtkWindowAdaptor::onRealized));
+    loadDefaultStyle();
+}
+
+void GtkWindowAdaptor::onRealized()
+{
+    if(!m_cursorVisible)
+    {
+        auto window = m_handler.get_window();
+        auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
+        window->set_cursor(cursor);
+    }
+}
+
+void GtkWindowAdaptor::loadDefaultStyle()
+{
+    Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
+    Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
+
+    if(css_provider->load_from_data(DEFAULT_STYLE))
+    {
+        Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
+        style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+    }
 }
 
 void GtkWindowAdaptor::setSize(int width, int height)
@@ -87,14 +114,4 @@ void GtkWindowAdaptor::setKeepAbove(bool keep_above)
 Gtk::Window& GtkWindowAdaptor::get()
 {
     return m_handler;
-}
-
-void GtkWindowAdaptor::onRealized()
-{
-    if(!m_cursorVisible)
-    {
-        auto window = m_handler.get_window();
-        auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
-        window->set_cursor(cursor);
-    }
 }

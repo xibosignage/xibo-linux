@@ -40,7 +40,7 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 int XiboApp::initPlayer()
 {
     auto window = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
-    window->setSize(600, 600);
+    window->setSize(1366, 768);
 
 //    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 

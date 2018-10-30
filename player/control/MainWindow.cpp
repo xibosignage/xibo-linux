@@ -68,8 +68,8 @@ void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
 {
     assert(layout);
 
-    scaleLayout(*layout);
     m_handler->add(layout->handler());
+    scaleLayout(*layout);
     m_layout = std::move(layout);
 }
 
@@ -77,7 +77,8 @@ void MainWindow::scaleLayout(IMainLayout& layout)
 {
     double scaleX = static_cast<double>(m_handler->width()) / layout.width();
     double scaleY = static_cast<double>(m_handler->height()) / layout.height();
-    layout.scale(scaleX, scaleY);
+    double scaleFactor = std::min(scaleX, scaleY);
+    layout.scale(scaleFactor, scaleFactor);
 }
 
 void MainWindow::showLayout()

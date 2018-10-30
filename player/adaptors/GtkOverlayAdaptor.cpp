@@ -1,5 +1,7 @@
 #include "GtkOverlayAdaptor.hpp"
 
+#include <gtkmm/window.h>
+
 GtkOverlayAdaptor::GtkOverlayAdaptor() :
     GtkAdaptor<IOverlayAdaptor>(m_handler)
 {
@@ -41,10 +43,30 @@ void GtkOverlayAdaptor::reorderChild(IWidgetAdaptor& child, int position)
     m_handler.reorder_overlay(handler, position);
 }
 
+void GtkOverlayAdaptor::setSize(int width, int height)
+{
+    m_handler.set_size_request(width, height);
+    updateOffsets();
+}
+
 void GtkOverlayAdaptor::scale(double scaleX, double scaleY)
 {
-    scaleChildren(scaleX, scaleY);
     GtkAdaptor::scale(scaleX, scaleY);
+    updateOffsets();
+    scaleChildren(scaleX, scaleY);
+}
+
+void GtkOverlayAdaptor::updateOffsets()
+{
+    Gtk::Window* parent = static_cast<Gtk::Window*>(m_handler.get_toplevel());
+    if(parent->get_is_toplevel())
+    {
+        int width, height;
+        parent->get_default_size(width, height);
+
+        m_xOffset = (width - this->width())/2;
+        m_yOffset = (height - this->height())/2;
+    }
 }
 
 void GtkOverlayAdaptor::scaleChildren(double scaleX, double scaleY)
@@ -70,8 +92,8 @@ bool GtkOverlayAdaptor::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& 
     {
         ChildInfo info = it->second;
 
-        alloc.set_x(info.x);
-        alloc.set_y(info.y);
+        alloc.set_x(m_xOffset + info.x);
+        alloc.set_y(m_yOffset + info.y);
         alloc.set_width(info.width);
         alloc.set_height(info.height);
         return true;
