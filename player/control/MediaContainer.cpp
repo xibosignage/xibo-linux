@@ -114,10 +114,9 @@ void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
 
 void MediaContainer::onMediaTimeout()
 {
-    m_media[m_currentMediaIndex]->stop();
-
     if(shouldNextMediaStart())
     {
+        m_media[m_currentMediaIndex]->stop();
         startMedia(getNextMediaIndex());
     }
 }

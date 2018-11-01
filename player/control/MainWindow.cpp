@@ -11,6 +11,13 @@ MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
 {
     m_handler->disableWindowDecoration();
     m_handler->disableWindowResize();
+
+    m_handler->connectToHandlerResize([=](){
+        if(m_layout)
+        {
+            scaleLayout(*m_layout);
+        }
+    });
 }
 
 void MainWindow::setSize(int width, int height)

@@ -8,6 +8,7 @@
 class MockWindowAdaptor : public WidgetAdaptor<IWindowAdaptor>
 {
 public:
+    MOCK_METHOD1(connectToHandlerResize, void(std::function<void()> handler));
     MOCK_METHOD1(add, void(IWidgetAdaptor& child));
     MOCK_METHOD2(move, void(int x, int y));
     MOCK_METHOD0(disableWindowResize, void());

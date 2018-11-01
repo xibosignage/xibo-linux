@@ -37,7 +37,9 @@ void GtkWindowAdaptor::setSize(int width, int height)
 {
     m_originalWidth = width;
     m_originalHeight = height;
-    m_handler.set_default_size(width, height);
+
+    setWindowSize(width, height);
+    m_handler.resize(width, height);
 }
 
 int GtkWindowAdaptor::width() const
@@ -52,6 +54,11 @@ int GtkWindowAdaptor::height() const
     int _, height;
     m_handler.get_default_size(_, height);
     return height;
+}
+
+void GtkWindowAdaptor::connectToHandlerResize(std::function<void ()> handler)
+{
+    m_resizeSignal.connect(handler);
 }
 
 void GtkWindowAdaptor::add(IWidgetAdaptor& child)
@@ -81,7 +88,7 @@ void GtkWindowAdaptor::fullscreen()
 
     auto area = getCurrentMonitorGeometry();
 
-    m_handler.set_default_size(area.get_width(), area.get_height());
+    setWindowSize(area.get_width(), area.get_height());
 }
 
 Gdk::Rectangle GtkWindowAdaptor::getCurrentMonitorGeometry() const
@@ -98,7 +105,7 @@ Gdk::Rectangle GtkWindowAdaptor::getCurrentMonitorGeometry() const
 void GtkWindowAdaptor::unfullscreen()
 {
     m_handler.unfullscreen();
-    m_handler.set_default_size(m_originalWidth, m_originalHeight);
+    setWindowSize(m_originalWidth, m_originalHeight);
 }
 
 void GtkWindowAdaptor::setCursorVisible(bool cursorVisible)
@@ -114,4 +121,10 @@ void GtkWindowAdaptor::setKeepAbove(bool keep_above)
 Gtk::Window& GtkWindowAdaptor::get()
 {
     return m_handler;
+}
+
+void GtkWindowAdaptor::setWindowSize(int width, int height)
+{
+    m_handler.set_default_size(width, height);
+    m_resizeSignal.emit();
 }

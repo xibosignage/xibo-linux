@@ -14,6 +14,8 @@ public:
     int width() const override;
     int height() const override;
 
+    void connectToHandlerResize(std::function<void()> handler) override;
+
     void add(IWidgetAdaptor& child) override;
     void move(int x, int y) override;
     void disableWindowResize() override;
@@ -26,12 +28,14 @@ public:
     Gtk::Window& get() override;
 
 private:
+    void setWindowSize(int width, int height);
     void onRealized();
     void loadDefaultStyle();
     Gdk::Rectangle getCurrentMonitorGeometry() const;
 
 private:
     Gtk::Window m_handler;
+    sigc::signal<void()> m_resizeSignal;
     int m_originalWidth;
     int m_originalHeight;
     bool m_cursorVisible = true;
