@@ -33,8 +33,7 @@ std::unique_ptr<ITimerProvider> MediaContainerBuilder::createTimer()
 
 void MediaContainerBuilder::loopMedia(IMediaContainer& container)
 {
-    size_t mediaCount = m_visibleMedia.size() + m_invisibleMedia.size();
-    if(mediaCount > 1)
+    if(m_loop)
     {
         container.loopMedia();
     }

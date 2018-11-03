@@ -15,8 +15,7 @@
 #include <gst/gst.h>
 #include <chrono>
 
-const std::string DEFAULT_RESOURCES_DIR = "ImageTest";
-
+const std::string DEFAULT_RESOURCES_DIR = "resources";
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
@@ -138,7 +137,11 @@ int XiboApp::run(int argc, char** argv)
             {
                 m_logger->info("Project version: {}", getVersion());
             }
-            if(m_options.credentials())
+            if(m_options.exampleDir())
+            {
+                Resources::setDirectory(m_options.getExampleDir());
+            }
+            if(m_options.credentials() || m_options.exampleDir())
             {
                 return initPlayer();
             }
