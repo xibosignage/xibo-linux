@@ -116,15 +116,26 @@ TEST_F(MainWindowTest, SetPos_ValidPos_HandlerMoveWithValidPosShouldBeCalled)
     window->setPos(DEFAULT_WINDOW_POS, DEFAULT_WINDOW_POS);
 }
 
-TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
+TEST_P(MainWindowTestScale, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
 {
     auto window = constructWindow();
     auto layout = constructLayout();
 
-    EXPECT_CALL(*layout, scale(_, _)); // TEST multiple scale factors
+    Size playerResolution = GetParam().playerResolution;
+    Size windowSize = GetParam().windowSize;
+    double scaleFactor = GetParam().scaleFactor;
+
+    ON_CALL(*layout, width()).WillByDefault(Return(playerResolution.width));
+    ON_CALL(*layout, height()).WillByDefault(Return(playerResolution.height));
+    ON_CALL(adaptor(), width()).WillByDefault(Return(windowSize.width));
+    ON_CALL(adaptor(), height()).WillByDefault(Return(windowSize.height));
+
+    EXPECT_CALL(*layout, scale(scaleFactor, scaleFactor));
 
     window->addLayout(std::move(layout));
 }
+
+INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestScale, ::testing::ValuesIn(scalesForResolutions));
 
 TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
 {
