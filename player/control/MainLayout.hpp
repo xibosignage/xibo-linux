@@ -1,63 +1,41 @@
 #pragma once
 
-#include <gtkmm/overlay.h>
-#include <spdlog/spdlog.h>
+#include "IMainLayout.hpp"
 
 #include <vector>
-#include <memory>
 
-class BaseRegion;
-class IMonitor;
-class IBackground;
-
-class MainLayout : public Gtk::Overlay
+class MainLayout : public IMainLayout
 {
 public:
-    MainLayout(int schema_version,
-               int width,
-               int height);
-    ~MainLayout();
+    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
+    ~MainLayout() override;
 
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    static std::unique_ptr<MainLayout> create(int schemaVersion,
-                                              int width,
-                                              int height,
-                                              const std::string& bgimage,
-                                              const std::string& bgcolor);
+    void scale(double scaleX, double scaleY) override;
+    int width() const override;
+    int height() const override;
 
-    int schema_version() const;
+    void setBackground(std::unique_ptr<IBackground>&& background) override;
+    void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) override;
 
-    void set_size(int width, int height);
-    int width() const;
-    int height() const;
-
-    void set_background(std::unique_ptr<IBackground> background);
-    IBackground& background();
-
-    void add_region(std::unique_ptr<BaseRegion> region);
-    BaseRegion& region(size_t index);
-    size_t regions_count() const;
-
-    void scale_to_monitor_size(const std::shared_ptr<IMonitor>& monitor);
-    double width_scale_factor() const;
-    double height_scale_factor() const;
+    IOverlayAdaptor& handler() override;
+    void show() override;
 
 private:
-    void reorder_regions();
-    void on_layout_shown();
-    bool on_get_child_position(Gtk::Widget* widget, Gdk::Rectangle& alloc) override;
+    void sortReorderAndShowContainers();
+    void sortAndReorderContainers();
+    void sortContainersByZorder();
+    void removePreviousBackgroundIfSet();
+    void scaleContainers(double scaleX, double scaleY);
+    void checkContainerSize(int containerWidth, int containerHeight);
+    void checkContainerCoordinates(int x, int y);
+    void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
 
 private:
-    int m_schema_version;
-    int m_width = 0;
-    int m_height = 0;
+    std::unique_ptr<IOverlayAdaptor> m_handler;
     std::unique_ptr<IBackground> m_background;
-
-    double m_width_scale_factor = 1.0;
-    double m_height_scale_factor = 1.0;
-    std::vector<std::unique_ptr<BaseRegion>> m_regions;
-    std::shared_ptr<spdlog::logger> m_logger;
+    std::vector<std::unique_ptr<IMediaContainer>> m_containers;
 
 };

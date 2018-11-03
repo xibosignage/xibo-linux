@@ -28,50 +28,50 @@ void CommandLineParser::parse(int argc, char** argv)
     po::notify(m_vm);
 }
 
-bool CommandLineParser::version_option() const
+bool CommandLineParser::versionOption() const
 {
     return m_vm.count(VERSION);
 }
 
-bool CommandLineParser::help_option() const
+bool CommandLineParser::helpOption() const
 {
     return m_vm.empty() || m_vm.count(HELP);
 }
 
-bool CommandLineParser::host_option() const
+bool CommandLineParser::hostOption() const
 {
     return m_vm.count(HOST);
 }
 
 std::string CommandLineParser::host() const
 {
-    if(!host_option())
+    if(!hostOption())
         throw std::runtime_error("Host option was not parsed");
 
     return m_vm[HOST].as<std::string>();
 }
 
-bool CommandLineParser::server_key_option() const
+bool CommandLineParser::serverKeyOption() const
 {
     return m_vm.count(SERVER_KEY);
 }
 
-std::string CommandLineParser::server_key() const
+std::string CommandLineParser::serverKey() const
 {
-    if(!server_key_option())
+    if(!serverKeyOption())
         throw std::runtime_error("Server Key option was not parsed");
 
     return m_vm[SERVER_KEY].as<std::string>();
 }
 
-bool CommandLineParser::hardware_key_option() const
+bool CommandLineParser::hardwareKeyOption() const
 {
     return m_vm.count(HARDWARE_KEY);
 }
 
-std::string CommandLineParser::hardware_key() const
+std::string CommandLineParser::hardwareKey() const
 {
-    if(!hardware_key_option())
+    if(!hardwareKeyOption())
         throw std::runtime_error("Hardware Key option was not parsed");
 
     return m_vm[HARDWARE_KEY].as<std::string>();
@@ -79,10 +79,10 @@ std::string CommandLineParser::hardware_key() const
 
 bool CommandLineParser::credentials() const
 {
-    return host_option() && server_key_option() && hardware_key_option();
+    return hostOption() && serverKeyOption() && hardwareKeyOption();
 }
 
-const po::options_description& CommandLineParser::available_options() const
+const po::options_description& CommandLineParser::availableOptions() const
 {
     return m_options;
 }

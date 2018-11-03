@@ -2,29 +2,28 @@
 
 #include <string>
 #include <iostream>
+#include <filesystem>
 #include <boost/property_tree/ptree_fwd.hpp>
 
 using xlf_node = boost::property_tree::ptree;
-
-struct Point
-{
-    int left;
-    int top;
-};
-
-struct Size
-{
-    int width;
-    int height;
-};
+using FilePath = std::filesystem::path;
 
 const std::string LOGGER = "logger";
-const int DEFAULT_LEFT_POS = 0;
-const int DEFAULT_TOP_POS = 0;
-const Point DEFAULT_POINT{DEFAULT_LEFT_POS, DEFAULT_TOP_POS};
-const int INVALID_POS = -1;
-const uint MSECS = 1000;
+
+const unsigned int MSECS = 1000;
 const int MAX_VOLUME = 100;
+const int MIN_VOLUME = 0;
+
+const int MIN_DISPLAY_WIDTH = 160;
+const int MAX_DISPLAY_WIDTH = 9999;
+const int MIN_DISPLAY_HEIGHT = 120;
+const int MAX_DISPLAY_HEIGHT = 9999;
+
+const int MIN_XPOS = 0;
+const int MIN_YPOS = 0;
+const int DEFAULT_XPOS = 0;
+const int DEFAULT_YPOS = 0;
+const int INVALID_POS = -1;
 
 enum class MediaType
 {

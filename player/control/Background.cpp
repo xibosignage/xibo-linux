@@ -1,65 +1,36 @@
 #include "Background.hpp"
-#include "constants.hpp"
 
-#include <boost/filesystem/operations.hpp>
-#include <spdlog/spdlog.h>
+#include <cassert>
 
-Background::Background(int width, int height) :
-    m_width(width),
-    m_height(height)
+Background::Background(int width, int height, std::unique_ptr<IImageAdaptor>&& handler) :
+    m_handler(std::move(handler))
 {
+    assert(m_handler);
+
+    m_handler->setSize(width, height);
 }
 
-void Background::set_color(uint32_t hex_color)
+int Background::width() const
 {
-    try
-    {
-        auto pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, m_width, m_height);
-        pixbuf->fill(hex_color);
-        m_handler.set(pixbuf);
-    }
-    catch(const Gdk::PixbufError& error)
-    {
-        spdlog::get(LOGGER)->error("Could set background color: {}", std::string{error.what()});
-    }
+    return m_handler->width();
 }
 
-void Background::set_image(const boost::filesystem::path& image_path)
+int Background::height() const
 {
-    if(boost::filesystem::exists(image_path))
-    {
-        spdlog::get(LOGGER)->debug(image_path.string());
-        try
-        {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(image_path.string(), m_width, m_height);
-            m_handler.set(pixbuf);
-        }
-        catch(const Gdk::PixbufError& error)
-        {
-            spdlog::get(LOGGER)->error("Could set background image: {}", std::string{error.what()});
-        }
-    }
-    else
-    {
-        spdlog::get(LOGGER)->warn("Background image doesn't exists");
-    }
+    return m_handler->height();
 }
 
-void Background::set_size(int width, int height)
+void Background::scale(double scaleX, double scaleY)
 {
-    if(width != m_width || height != m_height)
-    {
-        auto pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-        m_handler.set(pixbuf);
-    }
+    m_handler->scale(scaleX, scaleY);
 }
 
 void Background::show()
 {
-    m_handler.show();
+    m_handler->show();
 }
 
-Background::operator Gtk::Image&()
+IImageAdaptor& Background::handler()
 {
-    return m_handler;
+    return *m_handler;
 }

@@ -33,32 +33,32 @@ namespace RequiredFiles
             std::string md5;
             std::string path;
             std::string filename;
-            DownloadType download_type;
-            FileType file_type;
+            DownloadType downloadType;
+            FileType fileType;
         };
 
         struct required_resource
         {
-            int layout_id;
-            int region_id;
-            int media_id;
+            int layoutId;
+            int regionId;
+            int mediaId;
         };
 
-        const std::vector<required_file>& required_files() const;
-        const std::vector<required_resource>& required_resources() const;
+        const std::vector<required_file>& requiredFiles() const;
+        const std::vector<required_resource>& requiredResources() const;
 
-        void add_file(const boost::property_tree::ptree& attrs);
+        void addFile(const boost::property_tree::ptree& attrs);
 
     private:
-        std::vector<required_file> m_required_media;
-        std::vector<required_resource> m_required_resources;
+        std::vector<required_file> m_requiredMedia;
+        std::vector<required_resource> m_requiredResources;
 
     };
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
     };
 }
 

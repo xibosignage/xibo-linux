@@ -2,7 +2,7 @@
 
 Gst::AudioConvert::AudioConvert()
 {
-    m_element = gst_element_factory_make("audioconvert", nullptr);
+    setElement(gst_element_factory_make("audioconvert", nullptr));
 }
 
 Gst::RefPtr<Gst::AudioConvert> Gst::AudioConvert::create()

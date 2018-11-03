@@ -1,56 +1,38 @@
 #pragma once
 
 #include "Media.hpp"
-#include <gtkmm/image.h>
+#include "ImageProperties.hpp"
+#include "utils/Helpers.hpp"
 
-class Image : public Media
+class IImageAdaptor;
+
+class Image : public Media<IVisibleMedia>
 {
 public:
-    enum class ScaleType
-    {
-        Scaled,
-        Stretch,
-        Invalid
-    };
+    Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
 
-    enum class Align
-    {
-        Left,
-        Center,
-        Right,
-        Invalid
-    };
+    ImageProperties::ScaleType scaleType() const;
+    ImageProperties::Align align() const;
+    ImageProperties::Valign valign() const;
 
-    enum class Valign
-    {
-        Top,
-        Middle,
-        Bottom,
-        Invalid
-    };
+    int width() const override;
+    int height() const override;
+    void scale(double, double) override;
 
-    Image(int id, const Size& size, int duration, const std::string& uri,
-          ScaleType scale_type, Align align, Valign valign);
+    IWidgetAdaptor& handler() override;
+    void apply(MediaVisitor& visitor) override;
 
-    void stop() override;
-    void start() override;
-    void set_size(int width, int height) override;
-    void request_handler() override;
-
-    ScaleType scale_type() const;
-    Align align() const;
-    Valign valign() const;
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    bool is_scaled() const;
-    int get_left_pos() const;
-    int get_top_pos() const;
+    void loadImage(const FilePath& path);
 
 private:
-    Gtk::Image m_handler;
-    Size m_actual_size;
-    ScaleType m_scale_type;
-    Align m_align;
-    Valign m_valign;
+    std::unique_ptr<IImageAdaptor> m_handler;
+    ImageProperties::ScaleType m_scaleType;
+    ImageProperties::Align m_align;
+    ImageProperties::Valign m_valign;
 
 };

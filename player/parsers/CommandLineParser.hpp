@@ -9,18 +9,18 @@ public:
     CommandLineParser();
     void parse(int argc, char** argv);
 
-    bool version_option() const;
-    bool help_option() const;
-    bool host_option() const;
+    bool versionOption() const;
+    bool helpOption() const;
+    bool hostOption() const;
     std::string host() const;
-    bool server_key_option() const;
-    std::string server_key() const;
-    bool hardware_key_option() const;
-    std::string hardware_key() const;
+    bool serverKeyOption() const;
+    std::string serverKey() const;
+    bool hardwareKeyOption() const;
+    std::string hardwareKey() const;
 
     bool credentials() const;
 
-    const boost::program_options::options_description& available_options() const;
+    const boost::program_options::options_description& availableOptions() const;
 
 private:
     boost::program_options::variables_map m_vm;

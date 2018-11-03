@@ -86,7 +86,7 @@ bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<:
     return true;
 }
 
-gboolean plugin_init(GstPlugin* plugin)
+gboolean pluginInit(GstPlugin* plugin)
 {
     return gst_element_register(plugin, "xibovideosink", 10, GST_TYPE_XIBOVIDEOSINK);
 }

@@ -1,40 +1,25 @@
 #include "Media.hpp"
 
-#include "wrapper/GstFwd.hpp"
-#include <spdlog/spdlog.h>
+#include "IAudioHandler.hpp"
 
-class Audio : public Media
+class Audio : public Media<IInvisibleMedia>
 {
 public:
-    Audio(int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
-    ~Audio() override;
+    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
+    void apply(MediaVisitor& visitor) override;
 
-    void stop() override;
-    void start() override;
-    void start_timer() override;
+    void setVolume(int volume);
+    void setLooped(bool looped);
 
-    bool muted() const;
-    bool looped() const;
-    double volume() const;
-
-private:
-    bool bus_message_watch(const Gst::RefPtr<Gst::Message>& message);
-    void no_more_pads();
-    void on_pad_added(const Gst::RefPtr<Gst::Pad>& pad);
-    void set_volume(double volume);
-    void play();
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    bool m_muted;
-    bool m_looped;
+    void onAudioFinished();
 
-    bool m_audio_ended = false;
-    std::shared_ptr<spdlog::logger> m_logger;
+private:
+    std::unique_ptr<IAudioHandler> m_handler;
+    bool m_looped = false;
 
-    Gst::RefPtr<Gst::Pipeline> m_pipeline;
-    Gst::RefPtr<Gst::FileSrc> m_source;
-    Gst::RefPtr<Gst::Decodebin> m_decodebin;
-    Gst::RefPtr<Gst::Volume> m_volume;
-    Gst::RefPtr<Gst::AudioConvert> m_audio_converter;
-    Gst::RefPtr<Gst::AutoAudioSink> m_audio_sink;
 };

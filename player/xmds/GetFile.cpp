@@ -2,16 +2,16 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const GetFile::Request& request)
+std::string soap::requestString(const GetFile::Request& request)
 {
-    return create_request<GetFile::Request>(request.server_key, request.hardware_key, request.file_id,
-                                            request.file_type, request.chunk_offset, request.chunk_size);
+    return createRequest<GetFile::Request>(request.serverKey, request.hardwareKey, request.fileId,
+                                           request.fileType, request.chunkOffset, request.chunkSize);
 }
 
 template<>
-GetFile::Response soap::create_response(const std::string& soap_response)
+GetFile::Response soap::createResponse(const std::string& soapResponse)
 {
     GetFile::Response result;
-    result.base64chunk = xmds::parse_file_response(soap_response);
+    result.base64chunk = xmds::parseFileResponse(soapResponse);
     return result;
 }

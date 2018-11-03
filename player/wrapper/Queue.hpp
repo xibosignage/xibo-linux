@@ -8,7 +8,7 @@ namespace Gst
     {
     public:
         static Gst::RefPtr<Gst::Queue> create();
-        void set_max_size_buffers(int max_size_buffers);
+        void setMaxSizeBuffers(int maxSizeBuffers);
 
     private:
         Queue();

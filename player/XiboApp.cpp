@@ -1,18 +1,21 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
-#include "utils/utilities.hpp"
+#include "utils/Utilities.hpp"
+#include "utils/Resources.hpp"
 
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "tests/test.hpp"
+#include "creators/MainBuilder.hpp"
+#include "adaptors/GtkWindowAdaptor.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <glibmm/main.h>
 #include <gst/gst.h>
-#include <boost/filesystem/operations.hpp>
 #include <chrono>
+
+const std::string DEFAULT_RESOURCES_DIR = "ImageTest";
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -21,6 +24,9 @@ XiboApp& XiboApp::create(const std::string& name)
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
+
+    gst_init(nullptr, nullptr);
+    Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
@@ -31,49 +37,56 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
     m_logger = spdlog::get(LOGGER);
 }
 
-int XiboApp::init_player()
+int XiboApp::initPlayer()
 {
-    MainWindow window(500, 500, false, false, true, true);
+    auto window = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
+    window->setSize(1366, 768);
 
-    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
+//    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
 
-    signal_startup().connect([this, &window](){
-        Gtk::Application::add_window(window);
-    });
+//    signal_startup().connect([this, &window](){
+//        Gtk::Application::add_window(window);
+//    });
 
-    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
-    m_collection_interval.signal_finished().connect(run_player);
+//    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
+//    m_collection_interval.signal_finished().connect(run_player);
 
-    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
-    m_collection_interval.signal_settings_updated().connect(update_settings);
+//    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
+//    m_collection_interval.signal_settings_updated().connect(update_settings);
 
-    m_collection_interval.start();
+//    m_collection_interval.start();
 
-    return Gtk::Application::run();
+    auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
+    MainBuilder controller;
+//    window->setFullscreen(true);
+    window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
+    window->showLayout();
+
+    return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());
 }
 
-void XiboApp::run_player(MainWindow& window)
+void XiboApp::runPlayer(MainWindow& window)
 {
-    if(!window.is_visible())
-    {
-        m_logger->info("Player started");
-        m_layout = utils::parse_xlf_layout(find_xlf_file());
-        window.add(*m_layout);
-        window.show_all();
-    }
+//    if(!window.isVisible())
+//    {
+//        m_logger->info("Player started");
+//        m_layout = utils::parseAndCreateXlfLayout(findXlfFile());
+//        window.addLayout(*m_layout);
+//        window.showLayout();
+//    }
 }
 
-void XiboApp::update_settings(const PlayerSettings& )
+void XiboApp::updateSettings(const PlayerSettings& )
 {
-    //    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
+//    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
 }
 
 // FIXME temporary workaround
-std::string XiboApp::find_xlf_file()
+std::string XiboApp::findXlfFile()
 {
-    namespace fs = boost::filesystem;
+    namespace fs = std::filesystem;
 
-    fs::directory_iterator it(utils::resources_dir());
+    fs::directory_iterator it(Resources::directory());
     fs::directory_iterator end;
 
     while(it != end)
@@ -99,14 +112,14 @@ XiboApp& XiboApp::app()
     return *m_app;
 }
 
-XMDSManager& XiboApp::xmds_manager()
+XMDSManager& XiboApp::xmdsManager()
 {
-    return *m_xmds_manager;
+    return *m_xmdsManager;
 }
 
-DownloadManager& XiboApp::download_manager()
+DownloadManager& XiboApp::downloadManager()
 {
-    return m_download_manager;
+    return m_downloadManager;
 }
 
 int XiboApp::run(int argc, char** argv)
@@ -115,19 +128,19 @@ int XiboApp::run(int argc, char** argv)
     {
         m_options.parse(argc, argv);
 
-        if(m_options.help_option())
+        if(m_options.helpOption())
         {
-            m_logger->info("{}", m_options.available_options());
+            m_logger->info("{}", m_options.availableOptions());
         }
         else
         {
-            if(m_options.version_option())
+            if(m_options.versionOption())
             {
-                m_logger->info("Project version: {}", get_version());
+                m_logger->info("Project version: {}", getVersion());
             }
             if(m_options.credentials())
             {
-                return init_player();
+                return initPlayer();
             }
         }
     }

@@ -2,15 +2,15 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const SubmitLog::Request& request)
+std::string soap::requestString(const SubmitLog::Request& request)
 {
-    return create_request<SubmitLog::Request>(request.server_key, request.hardware_key, request.log_xml);
+    return createRequest<SubmitLog::Request>(request.serverKey, request.hardwareKey, request.logXml);
 }
 
 template<>
-SubmitLog::Response soap::create_response(const std::string& soap_response)
+SubmitLog::Response soap::createResponse(const std::string& soapResponse)
 {
     SubmitLog::Response result;
-    result.success = xmds::parse_success_response(soap_response);
+    result.success = xmds::parseSuccessResponse(soapResponse);
     return result;
 }

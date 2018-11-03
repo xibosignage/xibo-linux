@@ -8,13 +8,13 @@ namespace Schedule
 {
     struct response
     {
-        std::string schedule_xml;
+        std::string scheduleXml;
     };
 
     struct request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
     };
 }
 

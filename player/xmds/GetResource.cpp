@@ -2,16 +2,16 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const GetResource::Request& request)
+std::string soap::requestString(const GetResource::Request& request)
 {
-    return create_request<GetResource::Request>(request.server_key, request.hardware_key, request.layout_id,
-                                                request.region_id, request.media_id);
+    return createRequest<GetResource::Request>(request.serverKey, request.hardwareKey, request.layoutId,
+                                               request.regionId, request.mediaId);
 }
 
 template<>
-GetResource::Response soap::create_response(const std::string& soap_response)
+GetResource::Response soap::createResponse(const std::string& soapResponse)
 {
     GetResource::Response result;
-    result.resource = xmds::parse_file_response(soap_response); // NOTE check in Postman
+    result.resource = xmds::parseFileResponse(soapResponse); // TODO check in Postman
     return result;
 }

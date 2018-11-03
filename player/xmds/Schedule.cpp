@@ -2,15 +2,15 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const Schedule::request& request)
+std::string soap::requestString(const Schedule::request& request)
 {
-    return create_request<Schedule::request>(request.server_key, request.hardware_key);
+    return createRequest<Schedule::request>(request.serverKey, request.hardwareKey);
 }
 
 template<>
-Schedule::response soap::create_response(const std::string& soap_response)
+Schedule::response soap::createResponse(const std::string& soapResponse)
 {
     Schedule::response result;
-    result.schedule_xml = soap_response; // FIXME parse schedule
+    result.scheduleXml = soapResponse; // FIXME parse schedule
     return result;
 }

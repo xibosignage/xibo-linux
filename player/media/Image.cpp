@@ -1,111 +1,72 @@
 #include "Image.hpp"
 
-#include <spdlog/spdlog.h>
-#include <boost/filesystem/operations.hpp>
+#include "constants.hpp"
+#include "adaptors/IImageAdaptor.hpp"
+#include "media/MediaVisitor.hpp"
 
-Image::Image(int id, const Size& size, int duration, const std::string& uri,
-             ScaleType scale_type, Align align, Valign valign) :
-    Media(id, size, duration, Render::Native, uri),
-    m_scale_type(scale_type), m_align(align), m_valign(valign)
+#include <cassert>
+
+Image::Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler)), m_scaleType(props.scaleType), m_align(props.align), m_valign(props.valign)
 {
-    try
-    {
-        if(boost::filesystem::exists(uri))
-        {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(uri, size.width, size.height, is_scaled());
-            m_actual_size.width = pixbuf->get_width();
-            m_actual_size.height = pixbuf->get_height();
-            m_handler.set(pixbuf);
-        }
-        else
-        {
-            spdlog::get(LOGGER)->error("Could not find image: {}", uri);
-        }
-    }
-    catch(const Gdk::PixbufError& error)
-    {
-        spdlog::get(LOGGER)->error("Image creation error: {}", std::string{error.what()});
-    }
+    assert(m_handler);
+
+    m_handler->setSize(width, height);
+    loadImage(path);
 }
 
-void Image::stop()
+void Image::doStop()
 {
-    m_handler.hide();
-    Media::stop();
+    m_handler->hide();
 }
 
-void Image::start()
+void Image::doStart()
 {
-    m_handler.show();
-    Media::start();
+    m_handler->show();
 }
 
-void Image::set_size(int width, int height)
+void Image::loadImage(const FilePath& path)
 {
-    Media::set_size(width, height);
-
-    auto new_pixbuf = m_handler.get_pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-    m_actual_size.width = new_pixbuf->get_width();
-    m_actual_size.height = new_pixbuf->get_height();
-    m_handler.set(new_pixbuf);
+    bool preserveAspectRatio = (m_scaleType == ImageProperties::ScaleType::Scaled) ? true : false;
+    m_handler->loadImage(path, preserveAspectRatio);
 }
 
-void Image::request_handler()
+int Image::width() const
 {
-    Point pos{get_left_pos(), get_top_pos()};
-    handler_requested().emit(m_handler, pos);
+    return m_handler->width();
 }
 
-Image::ScaleType Image::scale_type() const
+int Image::height() const
 {
-    return m_scale_type;
+    return m_handler->height();
 }
 
-Image::Align Image::align() const
+void Image::scale(double scaleX, double scaleY)
+{
+    m_handler->scale(scaleX, scaleY);
+}
+
+IWidgetAdaptor& Image::handler()
+{
+    return *m_handler;
+}
+
+void Image::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
+}
+
+ImageProperties::ScaleType Image::scaleType() const
+{
+    return m_scaleType;
+}
+
+ImageProperties::Align Image::align() const
 {
     return m_align;
 }
 
-Image::Valign Image::valign() const
+ImageProperties::Valign Image::valign() const
 {
     return m_valign;
-}
-
-bool Image::is_scaled() const
-{
-    if(m_scale_type == ScaleType::Scaled)
-        return true;
-    return false;
-}
-
-int Image::get_left_pos() const
-{
-    switch(m_align)
-    {
-        case Align::Center:
-            return (size().width - m_actual_size.width) / 2;
-        case Align::Left:
-            return DEFAULT_LEFT_POS;
-        case Align::Right:
-            return size().width - m_actual_size.width;
-        default:
-            break;
-    }
-    return INVALID_POS;
-}
-
-int Image::get_top_pos() const
-{
-    switch(m_valign)
-    {
-        case Valign::Middle:
-            return (size().height - m_actual_size.height) / 2;
-        case Valign::Top:
-            return DEFAULT_TOP_POS;
-        case Valign::Bottom:
-            return size().height - m_actual_size.height;
-        default:
-            break;
-    }
-    return INVALID_POS;
 }

@@ -5,16 +5,16 @@
 
 namespace soap
 {
-    boost::property_tree::ptree parse_soap_response(const std::string& xml_response);
+    boost::property_tree::ptree parseSoapResponse(const std::string& xmlResponse);
 
     template<typename request>
     struct request_traits;
 
     template<typename response>
-    response create_response(const std::string& soap_response);
+    response createResponse(const std::string& soapResponse);
 
     template<typename request, typename... Args>
-    std::string create_request(Args... fields)
+    std::string createRequest(Args... fields)
     {
         std::stringstream stream;
         stream << R"(<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns="urn:xmds" xmlns:types="urn:xmds/encodedTypes" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">)";
@@ -29,7 +29,7 @@ namespace soap
     }
 
     template<typename request>
-    std::string request_string(const request& soap_request);
+    std::string requestString(const request& soap_request);
 }
 
 #endif // SOAP_HPP

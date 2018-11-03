@@ -13,11 +13,11 @@ namespace GetResource
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
-        Field<int> layout_id{"layoutId"};
-        Field<std::string> region_id{"regionId"};
-        Field<std::string> media_id{"mediaId"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<int> layoutId{"layoutId"};
+        Field<std::string> regionId{"regionId"};
+        Field<std::string> mediaId{"mediaId"};
     };
 }
 

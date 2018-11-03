@@ -20,14 +20,14 @@ namespace Gst
     class Pad
     {
     public:
-        Pad(GstPad* handler, bool take_ownership = true);
+        Pad(GstPad* handler, bool takeOwnership = true);
         ~Pad();
         Gst::PadLinkReturn link(const Gst::RefPtr<Gst::Pad>& other);
-        Gst::RefPtr<Gst::Caps> get_current_caps() const;
+        Gst::RefPtr<Gst::Caps> getCurrentCaps() const;
 
     private:
         GstPad* m_handler;
-        bool m_take_ownership;
+        bool m_takeOwnership;
 
     };
 }

@@ -2,7 +2,7 @@
 
 Gst::VideoScale::VideoScale()
 {
-    m_element = gst_element_factory_make("videoscale", nullptr);
+    setElement(gst_element_factory_make("videoscale", nullptr));
 }
 
 Gst::RefPtr<Gst::VideoScale> Gst::VideoScale::create()

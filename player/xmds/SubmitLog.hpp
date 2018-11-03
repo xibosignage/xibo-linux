@@ -13,9 +13,9 @@ namespace SubmitLog
 
     struct Request
     {
-        Field<std::string> server_key{"serverKey"};
-        Field<std::string> hardware_key{"hardwareKey"};
-        Field<std::string> log_xml{"logXml"};
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> logXml{"logXml"};
     };
 }
 

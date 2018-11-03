@@ -5,9 +5,9 @@
 
 namespace xmds
 {
-    boost::property_tree::ptree parse_xml_response(const std::string& soap_response);
-    bool parse_success_response(const std::string& soap_response);
-    std::string parse_file_response(const std::string& soap_response);
+    boost::property_tree::ptree parseXmlResponse(const std::string& soapResponse);
+    bool parseSuccessResponse(const std::string& soapResponse);
+    std::string parseFileResponse(const std::string& soapResponse);
 
 }
 

@@ -2,15 +2,15 @@
 #include "xmds.hpp"
 
 template<>
-std::string soap::request_string(const MediaInventory::Request& request)
+std::string soap::requestString(const MediaInventory::Request& request)
 {
-    return create_request<MediaInventory::Request>(request.server_key, request.hardware_key, request.media_inventory);
+    return createRequest<MediaInventory::Request>(request.serverKey, request.hardwareKey, request.mediaInventory);
 }
 
 template<>
-MediaInventory::Response soap::create_response(const std::string& soap_response)
+MediaInventory::Response soap::createResponse(const std::string& soapResponse)
 {
     MediaInventory::Response result;
-    result.success = xmds::parse_success_response(soap_response);
+    result.success = xmds::parseSuccessResponse(soapResponse);
     return result;
 }

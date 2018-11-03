@@ -1,39 +1,101 @@
 #include "MainWindow.hpp"
-#include "MainLayout.hpp"
-#include "Monitor.hpp"
-
 #include "constants.hpp"
 
-MainWindow::MainWindow(int x, int y, bool resizable, bool decorated, bool fullscreen, bool keep_above)
+#include "adaptors/IWindowAdaptor.hpp"
+#include "adaptors/IOverlayAdaptor.hpp"
+
+#include <cassert>
+
+MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
+    m_handler(std::move(handler))
 {
-    set_default_size(640, 480);
-//    move(x, y);
-//    set_resizable(resizable);
-//    set_decorated(decorated);
-//    if(fullscreen)
-//    {
-//        fullscreen();
-//    }
-//    if(keep_above)
-//    {
-//        set_keep_above();
-//    }
-    signal_realize().connect(sigc::mem_fun(*this, &MainWindow::on_window_realize));
+    m_handler->disableWindowDecoration();
+    m_handler->disableWindowResize();
+
+    m_handler->connectToHandlerResize([=](){
+        if(m_layout)
+        {
+            scaleLayout(*m_layout);
+        }
+    });
 }
 
-void MainWindow::add(MainLayout& layout)
+void MainWindow::setSize(int width, int height)
 {
-    std::shared_ptr<IMonitor> monitor = std::make_shared<Monitor>(*this);
-    layout.scale_to_monitor_size(monitor);
-    Gtk::Window::add(layout);
+    checkWindowNewSize(width, height);
+
+    m_handler->setSize(width, height);
 }
 
-// FIXME: add unit test
-void MainWindow::on_window_realize()
+// TODO specify after adding Monitor max width and height
+void MainWindow::checkWindowNewSize(int width, int height)
 {
-    Gtk::Window::on_realize();
+    if(width < MIN_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width or height is too small/large");
+}
 
-//    auto window = get_window();
-//    auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
-//    window->set_cursor(cursor);
+void MainWindow::setPos(int x, int y)
+{
+    checkWindowCoordinates(x, y);
+
+    m_handler->move(x, y);
+}
+
+// TODO specify after adding Monitor max width and height
+void MainWindow::checkWindowCoordinates(int x, int y)
+{
+    if(x < MIN_XPOS || y < MIN_YPOS)
+        throw std::invalid_argument("x or y position should be greater than 0");
+}
+
+void MainWindow::setKeepAbove(bool keepAbove)
+{
+    m_handler->setKeepAbove(keepAbove);
+}
+
+void MainWindow::setFullscreen(bool fullscreen)
+{
+    if(fullscreen)
+        m_handler->fullscreen();
+    else
+        m_handler->unfullscreen();
+}
+
+void MainWindow::setCursorVisible(bool cursorVisible)
+{
+    m_handler->setCursorVisible(cursorVisible);
+}
+
+bool MainWindow::isVisible() const
+{
+    return m_handler->isShown();
+}
+
+void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
+{
+    assert(layout);
+
+    m_handler->add(layout->handler());
+    scaleLayout(*layout);
+    m_layout = std::move(layout);
+}
+
+void MainWindow::scaleLayout(IMainLayout& layout)
+{
+    double scaleX = static_cast<double>(m_handler->width()) / layout.width();
+    double scaleY = static_cast<double>(m_handler->height()) / layout.height();
+    double scaleFactor = std::min(scaleX, scaleY);
+    layout.scale(scaleFactor, scaleFactor);
+}
+
+void MainWindow::showLayout()
+{
+    assert(m_layout);
+
+    m_layout->show();
+}
+
+IWindowAdaptor& MainWindow::handler()
+{
+    return *m_handler;
 }

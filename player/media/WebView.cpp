@@ -1,75 +1,59 @@
 #include "WebView.hpp"
 
-#include <spdlog/spdlog.h>
-#include <boost/filesystem/operations.hpp>
+#include "constants.hpp"
+#include "media/MediaVisitor.hpp"
 
-WebView::WebView(int id, const Size& size, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(id, size, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
-    m_transparent(transparent)
+#include <cassert>
+
+WebView::WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler))
 {
-    if(boost::filesystem::exists(uri))
+    assert(m_handler);
+
+    m_handler->setSize(width, height);
+    m_handler->load(path);
+}
+
+void WebView::doStop()
+{
+    m_handler->hide();
+}
+
+void WebView::doStart()
+{
+    m_handler->show();
+    m_handler->reload();
+}
+
+void WebView::scale(double scaleX, double scaleY)
+{
+    m_handler->scale(scaleX, scaleY);
+}
+
+int WebView::width() const
+{
+    return m_handler->width();
+}
+
+int WebView::height() const
+{
+    return m_handler->height();
+}
+
+void WebView::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
+}
+
+void WebView::setTransparent(bool transparent)
+{
+    if(transparent)
     {
-        auto path = "file://" + uri;
-        spdlog::get(LOGGER)->trace("WebView file {}", path);
-
-        m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
-        webkit_web_view_load_uri(m_web_view, path.c_str());
-
-        if(m_transparent)
-        {
-            m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
-            screen_changed(m_handler.get_screen());
-
-            webkit_web_view_set_transparent(m_web_view, true);
-        }
-
-        auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
-        m_handler.add(*widget);
-        m_handler.set_size_request(size.width, size.height);
-    }
-    else
-    {
-        spdlog::get(LOGGER)->error("Could not find webview: {}", uri);
+        m_handler->enableTransparency();
     }
 }
 
-void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
+IWidgetAdaptor& WebView::handler()
 {
-    if(screen)
-    {
-        auto visual = screen->get_rgba_visual();
-        if(visual)
-        {
-            gtk_widget_set_visual(reinterpret_cast<GtkWidget*>(m_handler.gobj()), visual->gobj());
-        }
-    }
-}
-
-void WebView::stop()
-{
-    Media::stop();
-    m_handler.hide();
-}
-
-void WebView::start()
-{
-    Media::start();
-    m_handler.show_all();
-    webkit_web_view_reload(m_web_view);
-}
-
-void WebView::set_size(int width, int height)
-{
-    Media::set_size(width, height);
-    m_handler.set_size_request(width, height);
-}
-
-void WebView::request_handler()
-{
-    handler_requested().emit(m_handler, DEFAULT_POINT);
-}
-
-bool WebView::transparent() const
-{
-    return m_transparent;
+    return *m_handler;
 }
