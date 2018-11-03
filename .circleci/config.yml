@@ -19,7 +19,7 @@ jobs:
       - attach_workspace:
           at: /home/circleci/
       - checkout
-      - run: docker run -v $(pwd):/my-snap snapcore/snapcraft sh -c "cd /my-snap && snapcraft"
+      - run: docker run -v $(pwd):/my-snap snapcore/snapcraft sh -c "apt update; cd /my-snap && snapcraft"
       - persist_to_workspace:
           root: /home/circleci/
           paths:
