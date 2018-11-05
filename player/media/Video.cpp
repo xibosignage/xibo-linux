@@ -15,7 +15,11 @@ Video::Video(int id, int width, int height, const FilePath& path, std::unique_pt
 
 void Video::onVideoFinished()
 {
-    Utils::logger()->debug("Playback finished");
+    if(duration() == 0)
+    {
+        mediaTimeout().emit();
+        return;
+    }
 
     if(m_looped)
     {

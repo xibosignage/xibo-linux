@@ -12,6 +12,7 @@ Audio::Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& hand
     assert(m_handler);
 
     m_handler->load(path);
+    m_handler->connect(std::bind(&Audio::onAudioFinished, this));
 }
 
 void Audio::doStart()
@@ -31,8 +32,6 @@ void Audio::apply(MediaVisitor& visitor)
 
 void Audio::onAudioFinished()
 {
-    Utils::logger()->debug("Playback finished");
-
     if(m_looped)
     {
         Utils::logger()->debug("Looping enabled. Restarting...");

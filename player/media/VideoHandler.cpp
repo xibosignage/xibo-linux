@@ -117,6 +117,7 @@ bool VideoHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         case Gst::MessageType::EOS:
         {
             Utils::logger()->debug("[VideoHandler] End of stream");
+            m_pipeline->setState(Gst::State::NULL_STATE);
             m_videoFinished.emit();
             break;
         }

@@ -60,6 +60,7 @@ bool AudioHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         case Gst::MessageType::EOS:
         {
             Utils::logger()->debug("[AudioHandler] End of stream");
+            m_pipeline->setState(Gst::State::NULL_STATE);
             m_audioFinished.emit();
             break;
         }

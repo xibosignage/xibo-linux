@@ -29,7 +29,7 @@ void GtkWindowAdaptor::loadDefaultStyle()
     if(css_provider->load_from_data(DEFAULT_STYLE))
     {
         Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
-        style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_USER);
+        style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
 }
 
