@@ -14,7 +14,7 @@ slots:
 apps:
   xibo-player-test:
     command: desktop-launch $SNAP/player/player
-    plugs: [gsettings, network, home, unity7, x11]
+    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
     slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/player/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
@@ -36,5 +36,7 @@ parts:
       - gstreamer1.0-plugins-good
       - libcanberra-gtk3-module
       - gstreamer1.0-libav
+      - gstreamer1.0-alsa
+      - gstreamer1.0-pulseaudio
       - libwebkitgtk-3.0-0
     after: [desktop-gtk3] 
