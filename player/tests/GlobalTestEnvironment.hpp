@@ -14,8 +14,8 @@ class GlobalTestEnvironment : public ::testing::Environment
 public:
     void SetUp() override
     {
-        Resources::setDirectory(DEFAULT_RESOURCES_DIR);
         m_logger = spdlog::create<spdlog::sinks::null_sink_st>(LOGGER);
+        Resources::setDirectory(DEFAULT_RESOURCES_DIR);
     }
 
 private:

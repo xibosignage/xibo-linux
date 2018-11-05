@@ -55,7 +55,6 @@ void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaConta
     assert(mediaContainer);
 
     checkContainerSize(mediaContainer->width(), mediaContainer->height());
-    checkContainerCoordinates(x, y);
 
     m_handler->addChild(mediaContainer->handler(), mediaContainer->width(), mediaContainer->height(), x, y);
     m_containers.push_back(std::move(mediaContainer));
@@ -65,12 +64,6 @@ void MainLayout::checkContainerSize(int containerWidth, int containerHeight)
 {
     if(containerWidth > width() || containerHeight > height())
         throw std::invalid_argument("Container width/height should not be greater than in layout");
-}
-
-void MainLayout::checkContainerCoordinates(int x, int y)
-{
-    if(x > width() || x < MIN_XPOS || y > height() || y < MIN_YPOS)
-        throw std::invalid_argument("Container x/y pos should not be greater than layout's width and height");
 }
 
 IOverlayAdaptor& MainLayout::handler()

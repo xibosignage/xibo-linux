@@ -164,11 +164,20 @@ TEST_F(MainWindowTest, IsVisible_HandlerIsVisibleFalse_WindowIsVisibleShouldRetu
     ASSERT_EQ(window->isVisible(), false);
 }
 
-TEST_F(MainWindowTest, ShowLayout_WithLayout_LayoutShowShouldNotBeCalled)
+TEST_F(MainWindowTest, ShowLayout_WithLayout_LayoutShowShouldBeCalled)
 {
     auto window = constructWindow();
 
     EXPECT_CALL(layout(), show());
+
+    window->showLayout();
+}
+
+TEST_F(MainWindowTest, ShowLayout_WithLayout_HandlerShowShouldBeCalled)
+{
+    auto window = constructWindow();
+
+    EXPECT_CALL(adaptor(), show());
 
     window->showLayout();
 }

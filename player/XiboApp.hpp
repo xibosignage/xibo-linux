@@ -34,7 +34,6 @@ private:
     std::string findXlfFile();
 
 private:
-    std::shared_ptr<spdlog::logger> m_logger;
     std::unique_ptr<IMainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmdsManager;
     DownloadManager m_downloadManager;

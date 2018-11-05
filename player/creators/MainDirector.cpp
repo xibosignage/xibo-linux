@@ -1,4 +1,4 @@
-#include "MainBuilder.hpp"
+#include "MainDirector.hpp"
 
 #include "creators/ImageBuilder.hpp"
 #include "creators/VideoBuilder.hpp"
@@ -14,12 +14,12 @@
 
 using namespace ResourcesXlf;
 
-std::unique_ptr<IMainLayout> MainBuilder::buildLayoutWithChildren(const xlf_node& tree)
+std::unique_ptr<IMainLayout> MainDirector::buildLayoutWithChildren(const xlf_node& tree)
 {
     return buildLayout(tree.get_child(ResourcesXlf::LayoutNode));
 }
 
-std::unique_ptr<IMainLayout> MainBuilder::buildLayout(const xlf_node& layoutNode)
+std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xlf_node& layoutNode)
 {
     LayoutOptions opts{layoutNode};
 
@@ -27,13 +27,13 @@ std::unique_ptr<IMainLayout> MainBuilder::buildLayout(const xlf_node& layoutNode
                               .mediaContainers(collectContainers(layoutNode)).build();
 }
 
-std::unique_ptr<IBackground> MainBuilder::buildBackground(const ResourcesXlf::LayoutOptions& opts)
+std::unique_ptr<IBackground> MainDirector::buildBackground(const ResourcesXlf::LayoutOptions& opts)
 {
     return BackgroundBuilder().width(opts.width()).height(opts.height())
                               .path(opts.backgroundPath()).color(opts.backgroundColor()).build();
 }
 
-std::vector<MediaContainerWithPos> MainBuilder::collectContainers(const xlf_node& layoutNode)
+std::vector<MediaContainerWithPos> MainDirector::collectContainers(const xlf_node& layoutNode)
 {
     std::vector<MediaContainerWithPos> containers;
     for(auto [nodeName, containerNode] : layoutNode)
@@ -47,7 +47,7 @@ std::vector<MediaContainerWithPos> MainBuilder::collectContainers(const xlf_node
     return containers;
 }
 
-std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& containerNode)
+std::unique_ptr<IMediaContainer> MainDirector::buildContainer(const xlf_node& containerNode)
 {
     RegionOptions opts{containerNode};
 
@@ -58,7 +58,7 @@ std::unique_ptr<IMediaContainer> MainBuilder::buildContainer(const xlf_node& con
                                   .visibleMedia(std::move(visibleMedia)).invisibleMedia(std::move(invisibleMedia)).build();
 }
 
-std::vector<MediaWithPos> MainBuilder::collectVisibleMedia(int containerWidth, int containerHeight, const xlf_node& containerNode)
+std::vector<MediaWithPos> MainDirector::collectVisibleMedia(int containerWidth, int containerHeight, const xlf_node& containerNode)
 {
     std::vector<MediaWithPos> media;
     for(auto [nodeName, mediaNode] : containerNode)
@@ -76,7 +76,7 @@ std::vector<MediaWithPos> MainBuilder::collectVisibleMedia(int containerWidth, i
     return media;
 }
 
-std::vector<std::unique_ptr<IMedia>> MainBuilder::collectInvisibleMedia(const xlf_node& containerNode)
+std::vector<std::unique_ptr<IMedia>> MainDirector::collectInvisibleMedia(const xlf_node& containerNode)
 {
     std::vector<std::unique_ptr<IMedia>> media;
     for(auto [nodeName, mediaNode] : containerNode)
@@ -89,7 +89,7 @@ std::vector<std::unique_ptr<IMedia>> MainBuilder::collectInvisibleMedia(const xl
     return media;
 }
 
-std::unique_ptr<IMedia> MainBuilder::buildMedia(int containerWidth, int containerHeight, const xlf_node& mediaNode)
+std::unique_ptr<IMedia> MainDirector::buildMedia(int containerWidth, int containerHeight, const xlf_node& mediaNode)
 {
     auto type = MediaOptions::getType(mediaNode);
 
@@ -108,28 +108,28 @@ std::unique_ptr<IMedia> MainBuilder::buildMedia(int containerWidth, int containe
     return builder->build();
 }
 
-std::unique_ptr<MediaBuilder> MainBuilder::prepareImageBuilder(int containerWidth, int containerHeight, const ImageOptions& opts)
+std::unique_ptr<MediaBuilder> MainDirector::prepareImageBuilder(int containerWidth, int containerHeight, const ImageOptions& opts)
 {
     auto builder = std::make_unique<ImageBuilder>();
     builder->width(containerWidth).height(containerHeight).scaleType(opts.scaleType()).align(opts.align()).valign(opts.valign());
     return builder;
 }
 
-std::unique_ptr<MediaBuilder> MainBuilder::prepareVideoBuilder(int containerWidth, int containerHeight, const VideoOptions& opts)
+std::unique_ptr<MediaBuilder> MainDirector::prepareVideoBuilder(int containerWidth, int containerHeight, const VideoOptions& opts)
 {
     auto builder = std::make_unique<VideoBuilder>();
     builder->width(containerWidth).height(containerHeight).muted(opts.muted()).looped(opts.looped());
     return builder;
 }
 
-std::unique_ptr<MediaBuilder> MainBuilder::prepareWebViewBuilder(int containerWidth, int containerHeight, const WebViewOptions& opts)
+std::unique_ptr<MediaBuilder> MainDirector::prepareWebViewBuilder(int containerWidth, int containerHeight, const WebViewOptions& opts)
 {
     auto builder = std::make_unique<WebViewBuilder>();
     builder->width(containerWidth).height(containerHeight).transparent(opts.transparent());
     return builder;
 }
 
-void MainBuilder::attachAdditionalMedia(const xlf_node& mediaNode, MediaBuilder& builder)
+void MainDirector::attachAdditionalMedia(const xlf_node& mediaNode, MediaBuilder& builder)
 {
     for(auto [nodeName, additionalMediaNode] : mediaNode)
     {
@@ -140,7 +140,7 @@ void MainBuilder::attachAdditionalMedia(const xlf_node& mediaNode, MediaBuilder&
     }
 }
 
-std::unique_ptr<IMedia> MainBuilder::buildMedia(const xlf_node& mediaNode)
+std::unique_ptr<IMedia> MainDirector::buildMedia(const xlf_node& mediaNode)
 {
     auto type = MediaOptions::getType(mediaNode);
 
@@ -150,7 +150,7 @@ std::unique_ptr<IMedia> MainBuilder::buildMedia(const xlf_node& mediaNode)
     return nullptr;
 }
 
-std::unique_ptr<IMedia> MainBuilder::buildAudio(const AudioOptions& opts)
+std::unique_ptr<IMedia> MainDirector::buildAudio(const AudioOptions& opts)
 {
     return AudioBuilder().muted(opts.muted()).looped(opts.looped()).volume(opts.volume()).path(opts.uri()).duration(opts.duration()).build();
 }

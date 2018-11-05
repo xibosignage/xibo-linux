@@ -18,11 +18,11 @@ struct MediaContainerWithPos;
 struct MediaWithPos;
 class MediaBuilder;
 
-class MainBuilder
+class MainDirector
 {
 
 public:
-    MainBuilder() = default;
+    MainDirector() = default;
     std::unique_ptr<IMainLayout> buildLayoutWithChildren(const xlf_node& tree);
 
 private:

@@ -11,7 +11,6 @@
 #include "mocks/MockMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
-const auto invalidMainLayoutPos = invalidPositions<DEFAULT_WIDTH, MIN_XPOS, DEFAULT_HEIGHT, MIN_YPOS>;
 const std::vector<std::vector<int>> zorders = {
     {10,9,8},
     {1,2,4,10},
@@ -96,8 +95,6 @@ private:
     MockMediaContainer* m_container = nullptr;
 
 };
-
-class MainLayoutTestPos : public MainLayoutTest, public testing::WithParamInterface<Point> { };
 
 class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
 {

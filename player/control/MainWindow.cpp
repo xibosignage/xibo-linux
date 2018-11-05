@@ -92,6 +92,7 @@ void MainWindow::showLayout()
 {
     assert(m_layout);
 
+    m_handler->show();
     m_layout->show();
 }
 

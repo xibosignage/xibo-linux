@@ -6,7 +6,7 @@
 #include "xmds/XMDSManager.hpp"
 #include "control/MainLayout.hpp"
 #include "control/MainWindow.hpp"
-#include "creators/MainBuilder.hpp"
+#include "creators/MainDirector.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
 
 #include <spdlog/fmt/ostr.h>
@@ -33,46 +33,50 @@ XiboApp& XiboApp::create(const std::string& name)
 
 XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
 {
-    m_logger = spdlog::get(LOGGER);
 }
 
 int XiboApp::initPlayer()
 {
     auto window = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
-    window->setSize(1366, 768);
+    auto&& windowHandler = static_cast<GtkWindowAdaptor&>(window->handler()).get();
 
-//    m_xmds_manager.reset(new XMDSManager{m_options.host(), m_options.server_key(), m_options.hardware_key()});
+    signal_startup().connect([this, &windowHandler](){
+        Gtk::Application::add_window(windowHandler);
+    });
 
-//    signal_startup().connect([this, &window](){
-//        Gtk::Application::add_window(window);
-//    });
+    if(m_options.credentials())
+    {
+        m_xmdsManager.reset(new XMDSManager{m_options.host(), m_options.serverKey(), m_options.hardwareKey()});
 
-//    auto run_player = std::bind(&XiboApp::run_player, this, std::ref(window));
-//    m_collection_interval.signal_finished().connect(run_player);
+        auto runPlayer = std::bind(&XiboApp::runPlayer, this, std::ref(*window));
+        m_collectionInterval.signalFinished().connect(runPlayer);
 
-//    auto update_settings = std::bind(&XiboApp::update_settings, this, std::placeholders::_1);
-//    m_collection_interval.signal_settings_updated().connect(update_settings);
+        auto updateSettings = std::bind(&XiboApp::updateSettings, this, std::placeholders::_1);
+        m_collectionInterval.signalSettingsUpdated().connect(updateSettings);
 
-//    m_collection_interval.start();
+        m_collectionInterval.start();
+    }
+    else
+    {
+        runPlayer(*window);
+    }
 
-    auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
-    MainBuilder controller;
-//    window->setFullscreen(true);
-    window->addLayout(controller.buildLayoutWithChildren(parsedXlfTree));
-    window->showLayout();
-
-    return Gtk::Application::run(static_cast<GtkWindowAdaptor&>(window->handler()).get());
+    return Gtk::Application::run();
 }
 
 void XiboApp::runPlayer(MainWindow& window)
 {
-//    if(!window.isVisible())
-//    {
-//        m_logger->info("Player started");
-//        m_layout = utils::parseAndCreateXlfLayout(findXlfFile());
-//        window.addLayout(*m_layout);
-//        window.showLayout();
-//    }
+    if(!window.isVisible())
+    {
+        Utils::logger()->info("Player started");
+        MainDirector director;
+        auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
+
+        window.setSize(1366, 768);
+        window.setFullscreen(true);
+        window.addLayout(director.buildLayoutWithChildren(parsedXlfTree));
+        window.showLayout();
+    }
 }
 
 void XiboApp::updateSettings(const PlayerSettings& )
@@ -129,13 +133,13 @@ int XiboApp::run(int argc, char** argv)
 
         if(m_options.helpOption())
         {
-            m_logger->info("{}", m_options.availableOptions());
+            Utils::logger()->info("{}", m_options.availableOptions());
         }
         else
         {
             if(m_options.versionOption())
             {
-                m_logger->info("Project version: {}", getVersion());
+                Utils::logger()->info("Project version: {}", getVersion());
             }
             if(m_options.exampleDir())
             {
@@ -149,7 +153,7 @@ int XiboApp::run(int argc, char** argv)
     }
     catch(std::exception& ex)
     {
-        m_logger->error(ex.what());
+        Utils::logger()->error(ex.what());
         return -1;
     }
     return 0;

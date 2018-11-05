@@ -75,15 +75,6 @@ TEST_F(MainLayoutTest, AddMediaContainer_Add1_HandlerAddChildShouldBeCalled)
     layout->addMediaContainer(createMediaContainer(), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
-TEST_P(MainLayoutTestPos, AddMediaContainer_InvalidPos_ShouldThrowInvalidArgError)
-{
-    auto layout = constructLayout();
-
-    ASSERT_THROW(layout->addMediaContainer(createMediaContainer(), GetParam().x, GetParam().y), std::invalid_argument);
-}
-
-INSTANTIATE_TEST_CASE_P(Suite, MainLayoutTestPos, ::testing::ValuesIn(invalidMainLayoutPos));
-
 TEST_F(MainLayoutTest, AddMediaContainer_ContainerWidthGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
 {
     auto layout = constructLayout();

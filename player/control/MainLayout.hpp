@@ -30,7 +30,6 @@ private:
     void removePreviousBackgroundIfSet();
     void scaleContainers(double scaleX, double scaleY);
     void checkContainerSize(int containerWidth, int containerHeight);
-    void checkContainerCoordinates(int x, int y);
     void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
 
 private:

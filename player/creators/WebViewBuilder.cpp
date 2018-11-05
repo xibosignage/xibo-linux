@@ -8,7 +8,7 @@
 #include <fstream>
 #include <regex>
 
-const std::string DEFAULT_EXTENSION = ".htm";
+const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
 
 std::unique_ptr<IMedia> WebViewBuilder::doBuild()
