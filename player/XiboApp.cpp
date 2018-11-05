@@ -25,7 +25,10 @@ XiboApp& XiboApp::create(const std::string& name)
     spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
 
     gst_init(nullptr, nullptr);
-    Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
+
+    auto path = std::filesystem::current_path() / DEFAULT_RESOURCES_DIR;
+    Resources::removeDirectoryContents(path);
+    Resources::setDirectory(path);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
