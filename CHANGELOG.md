@@ -1,3 +1,31 @@
+### 0.3.1-alpha Maroon
+
+**05.11.2018 - `(unstable)`**
+
+- **User Part**
+  - `--example-dir` added again to simplify testing
+  - Added layout scaling support from scratch (old system contained a lot of bugs)
+  - Added snap package: users can easily download and update player from snapstore
+  - Size setting unified and less error-prone now
+  - Region looping fixed
+  - Region ordering fixed
+  - Fixed window resize during runtime
+  - Fixed bug with image size
+  - Background color is checked and parsed properly now
+  
+- **Developer Part**
+  - A lot of new unit-tests that covers main player classes (Layout, MediaContainer, all media, some utils)
+  - Tests moved to subproject and splitted into folders
+  - Classes depends on interfaces instead of real objects now to simplify future changes in the project
+  - All interaction with GTK+ moved to adaptors
+  - A lot of minor improvements and refactoring
+  - Media splitted into visible and invisible media to simplify handling
+  - Parsing and creation (using Builder) logic was splitted
+  - Libs updated to the newer ones
+  - Added code coverage report
+  - camelCase is used everywhere now
+  - std::filesystem is used instead of boost::filesystem
+
 ### 0.3-alpha Maroon
 
 **27.08.2018 - `(unstable)`**
