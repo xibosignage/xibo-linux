@@ -2,7 +2,11 @@
 
 #include <gtkmm/cssprovider.h>
 
-const std::string DEFAULT_STYLE = "window { background-color: black; }";
+#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
+    const std::string DEFAULT_STYLE = "window { background-color: black; }";
+#else
+    const std::string DEFAULT_STYLE = "GtkWindow { background-color: black; }";
+#endif
 
 GtkWindowAdaptor::GtkWindowAdaptor() :
     GtkAdaptor<IWindowAdaptor>(m_handler)
