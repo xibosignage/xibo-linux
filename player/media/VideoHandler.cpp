@@ -146,6 +146,25 @@ void VideoHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
     Gst::RefPtr<Gst::Pad> sinkpad;
     Utils::logger()->debug("[VideoHandler] Pad added");
 
+    auto caps = pad->getCurrentCaps()->m_handler;
+
+    if (gst_caps_is_any (caps)) {
+        Utils::logger()->debug("ANY");
+        return;
+    }
+    if (gst_caps_is_empty (caps)) {
+        Utils::logger()->debug("EMPTY");
+        return;
+    }
+
+    for (uint i = 0; i < gst_caps_get_size (caps); i++) {
+        GstStructure *structure = gst_caps_get_structure (caps, i);
+
+        Utils::logger()->debug("{}", gst_structure_get_name(structure));
+
+//        gst_structure_foreach (structure, print_field, (gpointer) pfx);
+    }
+
     // src_0 for video stream
     auto video_pad = m_decodebin->getStaticPad("src_0");
     // src1 for audio stream

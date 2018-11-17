@@ -30,7 +30,7 @@ namespace Gst
         Gst::RefPtr<Gst::Structure> getStructure(guint index) const;
         GstCaps* getHandler();
 
-    private:
+//    private:
         std::string m_stringCaps;
         GstCaps* m_handler = nullptr;
     };
