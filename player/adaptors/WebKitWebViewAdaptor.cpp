@@ -4,8 +4,14 @@ WebKitWebViewAdaptor::WebKitWebViewAdaptor() :
     GtkAdaptor<IWebViewAdaptor>(m_handler)
 {
     m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
-    auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView));
+    auto widget = Gtk::manage(Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView)));
     m_handler.add(*widget);
+
+    m_sizeAllocateConnection = widget->signal_size_allocate().connect([=](Gtk::Allocation&){
+       webkit_web_view_reload(m_webView);
+       m_sizeAllocateConnection.disconnect();
+    });
+
 }
 
 void WebKitWebViewAdaptor::show()

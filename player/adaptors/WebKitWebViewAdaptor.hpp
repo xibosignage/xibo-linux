@@ -25,5 +25,5 @@ private:
 private:
     Gtk::ScrolledWindow m_handler;
     WebKitWebView* m_webView = nullptr;
-
+    sigc::connection m_sizeAllocateConnection;
 };
