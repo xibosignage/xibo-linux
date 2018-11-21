@@ -60,3 +60,8 @@ int Gst::Structure::getWidth() const
     gst_structure_get_int(m_handler, "width", &width);
     return width;
 }
+
+std::string Gst::Structure::getName() const
+{
+    return gst_structure_get_name(m_handler);
+}

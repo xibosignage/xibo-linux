@@ -13,6 +13,7 @@
 #include "wrapper/Pad.hpp"
 #include "wrapper/Caps.hpp"
 #include "wrapper/Capsfilter.hpp"
+#include "wrapper/Inspector.hpp"
 #include "customsink/XiboVideoSink.hpp"
 
 #include "utils/Utilities.hpp"
@@ -21,8 +22,10 @@
 namespace ph = std::placeholders;
 
 const int DEFAULT_VIDEO_BUFFER = 500;
+const unsigned int INSPECTOR_TIMEOUT = 5;
 
-VideoHandler::VideoHandler()
+VideoHandler::VideoHandler() :
+    m_videoWindow(std::make_unique<GtkDrawingAreaAdaptor>())
 {
     if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "xibovideosink", "Video Sink Plugin for gstreamer",
                                    pluginInit, "0.1", "GPL", "source", "package", "http://github.com/Stivius"))
@@ -30,20 +33,23 @@ VideoHandler::VideoHandler()
         throw std::runtime_error("XiboVideoSink was not registered");
     }
 
-    m_videoWindow = std::make_unique<GtkDrawingAreaAdaptor>();
     m_pipeline = Gst::Pipeline::create("pipeline");
     m_source = Gst::FileSrc::create();
     m_decodebin = Gst::Decodebin::create();
+    m_inspector = Gst::Inspector::create(INSPECTOR_TIMEOUT);
+
     m_videoConverter = Gst::VideoConvert::create();
-    m_audioConverter = Gst::AudioConvert::create();
-    m_volume = Gst::Volume::create();
-    m_videoScale = Gst::VideoScale::create();
-    m_audioSink = Gst::AutoAudioSink::create();
     m_queue = Gst::Queue::create();
+    m_videoScale = Gst::VideoScale::create();
     m_videoSink = Gst::Element::create("xibovideosink");
     m_capsfilter = Gst::Capsfilter::create();
 
+    m_audioConverter = Gst::AudioConvert::create();
+    m_volume = Gst::Volume::create();
+    m_audioSink = Gst::AutoAudioSink::create();
+
     checkGstElements();
+
 
     init();
 }
@@ -80,9 +86,27 @@ int VideoHandler::height() const
 void VideoHandler::checkGstElements()
 {
     if(!m_pipeline || !m_source || !m_decodebin || !m_videoConverter || !m_videoScale ||
-        !m_videoSink || !m_audioConverter || !m_volume || !m_audioSink || !m_queue || !m_capsfilter)
+       !m_videoSink || !m_queue || !m_capsfilter || !m_audioConverter || !m_volume || !m_audioSink)
     {
         throw std::runtime_error("[VideoHandler] One element could not be created");
+    }
+}
+
+void VideoHandler::inspectVideo(const FilePath& path)
+{
+    auto result = m_inspector->discover("file://" + path.string());
+
+    if(result.hasVideoStream())
+    {
+        m_pipeline->add(m_source)->add(m_decodebin)->add(m_videoConverter)->add(m_queue)->add(m_videoScale)->add(m_videoSink)->add(m_capsfilter);
+        m_source->link(m_decodebin);
+        m_videoConverter->link(m_queue)->link(m_videoScale)->link(m_capsfilter)->link(m_videoSink);
+    }
+
+    if(result.hasAudioStream())
+    {
+        m_pipeline->add(m_audioConverter)->add(m_volume)->add(m_audioSink);
+        m_audioConverter->link(m_volume)->link(m_audioSink);
     }
 }
 
@@ -93,11 +117,6 @@ void VideoHandler::init()
 
     m_queue->setMaxSizeBuffers(DEFAULT_VIDEO_BUFFER);
     m_pipeline->addBusWatch(sigc::mem_fun(*this, &VideoHandler::busMessageWatch));
-
-    m_pipeline->add(m_source)->add(m_decodebin)->add(m_videoConverter)->add(m_queue)->add(m_videoScale)->add(m_videoSink)->add(m_capsfilter)->add(m_audioConverter)->add(m_volume)->add(m_audioSink);
-    m_source->link(m_decodebin);
-    m_videoConverter->link(m_queue)->link(m_videoScale)->link(m_capsfilter)->link(m_videoSink);
-    m_audioConverter->link(m_volume)->link(m_audioSink);
 
     m_decodebin->signalPadAdded().connect(sigc::mem_fun(*this, &VideoHandler::onPadAdded));
     m_decodebin->signalNoMorePads().connect(sigc::mem_fun(*this, &VideoHandler::noMorePads));
@@ -129,16 +148,7 @@ bool VideoHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
 
 void VideoHandler::noMorePads()
 {
-    auto pad = m_decodebin->getStaticPad("src_1");
     Utils::logger()->debug("[VideoHandler] No more pads");
-
-    if(!pad)
-    {
-        m_audioConverter->setState(Gst::State::NULL_STATE);
-        m_volume->setState(Gst::State::NULL_STATE);
-        m_audioSink->setState(Gst::State::NULL_STATE);
-        m_pipeline->remove(m_audioConverter)->remove(m_volume)->remove(m_audioSink);
-    }
 }
 
 void VideoHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
@@ -146,55 +156,28 @@ void VideoHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
     Gst::RefPtr<Gst::Pad> sinkpad;
     Utils::logger()->debug("[VideoHandler] Pad added");
 
-    auto caps = pad->getCurrentCaps()->m_handler;
-
-    if (gst_caps_is_any (caps)) {
-        Utils::logger()->debug("ANY");
-        return;
-    }
-    if (gst_caps_is_empty (caps)) {
-        Utils::logger()->debug("EMPTY");
-        return;
-    }
-
-    for (uint i = 0; i < gst_caps_get_size (caps); i++) {
-        GstStructure *structure = gst_caps_get_structure (caps, i);
-
-        Utils::logger()->debug("{}", gst_structure_get_name(structure));
-
-//        gst_structure_foreach (structure, print_field, (gpointer) pfx);
-    }
-
-    // src_0 for video stream
-    auto video_pad = m_decodebin->getStaticPad("src_0");
-    // src1 for audio stream
-    auto audio_pad = m_decodebin->getStaticPad("src_1");
-
-    if(video_pad && !audio_pad)
+    auto mediaType = pad->mediaType();
+    if(mediaType == Gst::MediaType::Video)
     {
-       Utils::logger()->debug("[VideoHandler] Video pad");
+        Utils::logger()->debug("[VideoHandler] Video pad");
 
-       auto caps = video_pad->getCurrentCaps();
-       if(caps)
-       {
-           auto strct = caps->getStructure(0);
-           Utils::logger()->info("[VideoHandler] width: {} height: {}", strct->getWidth(), strct->getHeight());
-       }
-
-       sinkpad = m_videoConverter->getStaticPad("sink");
-       pad->link(sinkpad);
+        sinkpad = m_videoConverter->getStaticPad("sink");
+        pad->link(sinkpad);
     }
-    else if(audio_pad)
+    else if(mediaType == Gst::MediaType::Audio)
     {
-       Utils::logger()->debug("[VideoHandler] Audio pad");
-       sinkpad = m_audioConverter->getStaticPad("sink");
-       pad->link(sinkpad);
+        Utils::logger()->debug("[VideoHandler] Audio pad");
+
+        sinkpad = m_audioConverter->getStaticPad("sink");
+        pad->link(sinkpad);
     }
 }
 
 void VideoHandler::load(const FilePath& path)
 {
     m_source->setLocation(path.string());
+
+    inspectVideo(path);
 }
 
 void VideoHandler::play()

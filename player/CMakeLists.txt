@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 
 project(player)
 
-pkg_check_modules(GStreamer REQUIRED gstreamer-1.0>=1.8.0 gstreamer-video-1.0>=1.8.0 gstreamer-plugins-base-1.0>=1.8.0)
+pkg_check_modules(GStreamer REQUIRED gstreamer-1.0>=1.8.0 gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.8.0 gstreamer-plugins-base-1.0>=1.8.0)
 pkg_check_modules(WebKit REQUIRED webkitgtk-3.0>=2.4.10)
 pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.18.0)
 

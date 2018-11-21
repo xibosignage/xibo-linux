@@ -12,6 +12,7 @@ namespace Gst
         Structure(GstStructure* handler);
         int getHeight() const;
         int getWidth() const;
+        std::string getName() const;
 
     private:
         GstStructure* m_handler = nullptr;

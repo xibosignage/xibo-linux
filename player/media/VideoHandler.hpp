@@ -33,6 +33,7 @@ private:
     void onPadAdded(const Gst::RefPtr<Gst::Pad>& pad);
     void init();
     void checkGstElements();
+    void inspectVideo(const FilePath& path);
 
 private:
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
@@ -46,6 +47,7 @@ private:
     Gst::RefPtr<Gst::AutoAudioSink> m_audioSink;
     Gst::RefPtr<Gst::Queue> m_queue;
     Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
+    Gst::RefPtr<Gst::Inspector> m_inspector;
 
     std::unique_ptr<GtkDrawingAreaAdaptor> m_videoWindow;
     SignalVideoFinished m_videoFinished;

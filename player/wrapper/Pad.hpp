@@ -17,13 +17,24 @@ namespace Gst
       REFUSED = GST_PAD_LINK_REFUSED
     };
 
+    enum class MediaType
+    {
+        Audio,
+        Video,
+        Invalid
+    };
+
     class Pad
     {
     public:
         Pad(GstPad* handler, bool takeOwnership = true);
         ~Pad();
         Gst::PadLinkReturn link(const Gst::RefPtr<Gst::Pad>& other);
+        bool isLinked() const;
         Gst::RefPtr<Gst::Caps> getCurrentCaps() const;
+
+        MediaType mediaType() const;
+
 
     private:
         GstPad* m_handler;

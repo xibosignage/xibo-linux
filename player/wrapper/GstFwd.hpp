@@ -17,6 +17,7 @@ namespace Gst {
     class VideoConvert;
     class VideoScale;
     class Volume;
+    class Inspector;
 
     template<typename T>
     using RefPtr = std::shared_ptr<T>;
