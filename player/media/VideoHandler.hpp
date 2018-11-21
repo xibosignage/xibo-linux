@@ -13,6 +13,7 @@ class VideoHandler : public IVideoHandler
 {
 public:
     VideoHandler();
+    ~VideoHandler() override;
 
     IWidgetAdaptor& videoWindow() override;
 

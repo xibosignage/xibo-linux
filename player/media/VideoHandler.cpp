@@ -49,9 +49,12 @@ VideoHandler::VideoHandler() :
     m_audioSink = Gst::AutoAudioSink::create();
 
     checkGstElements();
-
-
     init();
+}
+
+VideoHandler::~VideoHandler()
+{
+    m_pipeline->setState(Gst::State::NULL_STATE);
 }
 
 IWidgetAdaptor& VideoHandler::videoWindow()
