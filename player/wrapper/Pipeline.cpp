@@ -1,16 +1,18 @@
 #include "Pipeline.hpp"
-#include "utils/BindWrapper.hpp"
-
-namespace ph = std::placeholders;
 
 Gst::Pipeline::Pipeline(const std::string& name)
 {
     setElement(gst_pipeline_new(name.c_str()));
 }
 
-gboolean Gst::Pipeline::onBusWatch(GstBus*, GstMessage* message, gpointer)
+gboolean Gst::Pipeline::onBusWatchMem(GstBus*, GstMessage* message, gpointer)
 {
     return m_watchHandler(std::make_shared<Gst::Message>(message, false));
+}
+
+gboolean Gst::Pipeline::onBusWatch(GstBus* bus, GstMessage* message, gpointer data)
+{
+    return reinterpret_cast<Pipeline*>(data)->onBusWatchMem(bus, message, data);
 }
 
 Gst::Pipeline::~Pipeline()
@@ -46,8 +48,7 @@ void Gst::Pipeline::addBusWatch(std::function<bool(const Gst::RefPtr<Gst::Messag
     m_watchHandler = handler;
 
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(element()));
-    auto onBusWatch = get_wrapper<2, gboolean, GstBus*, GstMessage*, gpointer>(std::bind(&Pipeline::onBusWatch, this, ph::_1, ph::_2, ph::_3));
 
-    m_watchId = gst_bus_add_watch(bus, onBusWatch, nullptr);
+    m_watchId = gst_bus_add_watch(bus, onBusWatch, this);
     g_object_unref(bus);
 }

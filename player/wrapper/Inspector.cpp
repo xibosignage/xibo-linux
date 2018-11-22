@@ -1,6 +1,5 @@
 #include "Inspector.hpp"
 #include "utils/Utilities.hpp"
-#include "utils/BindWrapper.hpp"
 
 #include <cassert>
 

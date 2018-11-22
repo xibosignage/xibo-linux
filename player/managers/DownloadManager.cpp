@@ -29,6 +29,7 @@ void DownloadManager::download(const std::string& filename, const std::string& p
     auto session = std::make_shared<DownloadSession>(m_ioc);
     session->filename = filename;
     session->callback = callback;
+    session->httpResponse.body_limit(std::numeric_limits<std::uint64_t>::max());
 
     const int GROUPS_COUNT = 3;
     std::regex urlRegex("([A-Za-z]*://)(.*)(/.*)");
@@ -54,19 +55,19 @@ void DownloadManager::download(int layoutId, int regionId, int mediaId, Download
     });
 }
 
-void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t, std::shared_ptr<DownloadSession> session)
+void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t bytes, std::shared_ptr<DownloadSession> session)
 {
     if(!ec)
     {
         auto filename = Resources::directory() / session->filename;
         std::ofstream out(filename.string());
-        out << session->httpResponse.body();
+        out << session->httpResponse.get().body();
         session->callback(filename.string());
+        m_logger->debug("[{}] Downloaded {} bytes", session->filename, bytes);
     }
     else
     {
         m_logger->error("[{}] Download error: {}", session->filename, ec.message());
-        m_logger->warn("Current the player doesn't support VERY big files like video/audio (will be fixed in the next release)");
     }
 }
 

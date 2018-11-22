@@ -19,7 +19,7 @@ struct DownloadSession
     ip::tcp::socket socket;
     ip::tcp::resolver resolver;
     http::request<http::string_body> httpRequest;
-    http::response<http::string_body> httpResponse;
+    http::response_parser<http::string_body> httpResponse;
     beast::flat_buffer buffer;
     std::string filename;
     std::string target;

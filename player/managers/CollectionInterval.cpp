@@ -110,7 +110,7 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response
 
 void CollectionInterval::downloadCallback(const std::string& filename, RequiredFilesSessionPtr session)
 {
-    m_logger->debug("{} downloaded", filename);
+//    m_logger->debug("{} downloaded", filename);
     if(++session->downloadCount == session->downloadOverall)
     {
         Glib::MainContext::get_default()->invoke([=](){

@@ -21,7 +21,8 @@ namespace Gst
 
     private:
         Pipeline(const std::string& name);
-        gboolean onBusWatch(GstBus*, GstMessage* message, gpointer);
+        gboolean onBusWatchMem(GstBus*, GstMessage* message, gpointer);
+        static gboolean onBusWatch(GstBus*, GstMessage* message, gpointer);
 
     private:
         std::function<bool(const Gst::RefPtr<Gst::Message>&)> m_watchHandler;

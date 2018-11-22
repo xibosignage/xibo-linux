@@ -14,8 +14,11 @@ namespace Gst
 
     private:
         Decodebin();
-        void onPadAdded(GstElement* el, GstPad* pad, gpointer data);
-        void noMorePads(GstElement* el, gpointer data);
+        static void onPadAdded(GstElement* el, GstPad* pad, gpointer data);
+        static void noMorePads(GstElement* el, gpointer data);
+
+        void onPadAddedMem(GstElement* el, GstPad* pad, gpointer data);
+        void noMorePadsMem(GstElement* el, gpointer data);
 
     private:
         sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)> m_signalPadAdded;
