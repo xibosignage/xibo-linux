@@ -1,3 +1,17 @@
+### 0.3.2-alpha Maroon
+
+**23.11.2018 - `(unstable)`**
+
+- **User Part**
+  - Fixed issue with downloading big files
+  - Fixed bug with video looping
+  - Fixed bug with black bars that should appear during proportional scaling
+  - Fixed issue when audio and video in the same region led to the crash
+
+- **Developer Part**
+  - Fixed bug with Gtk-CRITICAL for drawing area
+
+
 ### 0.3.1-alpha Maroon
 
 **05.11.2018 - `(unstable)`**
