@@ -130,7 +130,7 @@ ADD . /app
 RUN cd /app && \
     cmake -H. -B_build && \
     cd _build && \
-    make && \
+    make -j4 && \
     make install
 
 VOLUME /build
