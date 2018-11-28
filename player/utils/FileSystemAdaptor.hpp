@@ -5,6 +5,6 @@
 class FileSystemAdaptor : public IFileSystemAdaptor
 {
 public:
-    bool isRegularFile(FilePath path) const override;
+    bool isRegularFile(const FilePath& path) const override;
 
 };

@@ -15,3 +15,10 @@ add_test(${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 target_link_libraries(${PROJECT_NAME} player_lib ${GMOCK} ${GTEST_LIBRARIES} gst_wrapper xibovideosink ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+
+#find_program(iwyu_path NAMES include-what-you-use iwyu)
+#if(NOT iwyu_path)
+#  message(FATAL_ERROR "Could not find the program include-what-you-use")
+#endif()
+
+#set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})

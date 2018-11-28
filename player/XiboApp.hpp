@@ -1,16 +1,14 @@
 #pragma once
 
 #include <gtkmm/application.h>
-#include <spdlog/spdlog.h>
-
-#include "parsers/CommandLineParser.hpp"
-#include "managers/DownloadManager.hpp"
-#include "managers/CollectionInterval.hpp"
-#include "control/PlayerSettings.hpp"
 
 class XMDSManager;
 class IMainLayout;
 class MainWindow;
+class DownloadManager;
+class CollectionInterval;
+class CommandLineParser;
+struct PlayerSettings;
 
 class XiboApp : public Gtk::Application
 {
@@ -36,9 +34,9 @@ private:
 private:
     std::unique_ptr<IMainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmdsManager;
-    DownloadManager m_downloadManager;
-    CollectionInterval m_collectionInterval;
-    CommandLineParser m_options;
+    std::unique_ptr<DownloadManager> m_downloadManager;
+    std::unique_ptr<CollectionInterval> m_collectionInterval;
+    std::unique_ptr<CommandLineParser> m_options;
 
     static std::unique_ptr<XiboApp> m_app;
 };

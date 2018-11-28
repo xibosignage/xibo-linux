@@ -1,7 +1,7 @@
 #ifndef XMDS_HPP
 #define XMDS_HPP
 
-#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ptree_fwd.hpp>
 
 namespace xmds
 {

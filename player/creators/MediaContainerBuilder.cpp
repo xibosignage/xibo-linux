@@ -1,9 +1,11 @@
 #include "MediaContainerBuilder.hpp"
-#include "constants.hpp"
 
 #include "control/MediaContainer.hpp"
 #include "utils/TimerProvider.hpp"
+#include "media/IMedia.hpp"
 #include "adaptors/GtkFixedLayoutAdaptor.hpp"
+
+#include <boost/optional/optional.hpp>
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;

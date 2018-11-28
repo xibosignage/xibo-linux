@@ -3,11 +3,10 @@
 #include <memory>
 #include <vector>
 
-#include "control/IMainLayout.hpp"
-#include "control/IBackground.hpp"
-#include "control/IMediaContainer.hpp"
-
-#include "adaptors/IOverlayAdaptor.hpp"
+class IOverlayAdaptor;
+class IMainLayout;
+class IBackground;
+class IMediaContainer;
 
 struct MediaContainerWithPos
 {

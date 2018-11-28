@@ -1,6 +1,8 @@
 #include "WebViewOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::WebViewOptions::WebViewOptions(const xlf_node& node) :
     MediaOptions(node)
 {

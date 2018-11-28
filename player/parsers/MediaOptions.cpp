@@ -1,6 +1,8 @@
 #include "MediaOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::MediaOptions::MediaOptions(const xlf_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));

@@ -1,6 +1,5 @@
 #include "WebViewBuilderTest.hpp"
-
-#include "media/WebView.hpp"
+#include "media/IMedia.hpp"
 
 using namespace testing;
 
@@ -8,7 +7,8 @@ TEST(WebViewBuilderTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
     WebViewBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), load(DEFAULT_RESOURCES_DIR / FilePath("0.html")));
+    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
+    EXPECT_CALL(builder.adaptor(), load(path));
 
     builder.build();
 }

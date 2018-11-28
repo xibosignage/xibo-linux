@@ -2,6 +2,8 @@
 #include "constants.hpp"
 
 #include "control/MainLayout.hpp"
+#include "control/IBackground.hpp"
+#include "control/IMediaContainer.hpp"
 #include "adaptors/GtkOverlayAdaptor.hpp"
 
 #include <cassert>

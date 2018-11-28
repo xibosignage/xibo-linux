@@ -1,6 +1,8 @@
 #include "VideoOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::VideoOptions::VideoOptions(const xlf_node& node) :
     MediaOptions(node)
 {

@@ -3,6 +3,8 @@
 #include "media/Audio.hpp"
 #include "media/AudioHandler.hpp"
 
+#include <boost/optional/optional.hpp>
+
 const bool DEFAULT_LOOPED = false;
 const bool DEFAULT_MUTED = false;
 

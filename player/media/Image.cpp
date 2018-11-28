@@ -1,8 +1,7 @@
 #include "Image.hpp"
 
-#include "constants.hpp"
+#include "MediaVisitor.hpp"
 #include "adaptors/IImageAdaptor.hpp"
-#include "media/MediaVisitor.hpp"
 
 #include <cassert>
 

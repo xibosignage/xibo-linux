@@ -4,6 +4,8 @@
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
 
+#include <boost/optional/optional.hpp>
+
 MediaBuilder::MediaBuilder()
 {
     m_filesystem = std::make_unique<FileSystemAdaptor>();

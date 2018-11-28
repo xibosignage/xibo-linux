@@ -4,7 +4,9 @@
 #include "GtkAdaptor.hpp"
 
 #include <gtkmm/scrolledwindow.h>
-#include <webkit/webkit.h>
+
+struct _WebKitWebView;
+using WebKitWebView = _WebKitWebView;
 
 class WebKitWebViewAdaptor : public GtkAdaptor<IWebViewAdaptor>
 {

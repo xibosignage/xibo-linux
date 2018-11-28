@@ -1,7 +1,7 @@
 #include "WebView.hpp"
 
-#include "constants.hpp"
-#include "media/MediaVisitor.hpp"
+#include "MediaVisitor.hpp"
+#include "adaptors/IWebViewAdaptor.hpp"
 
 #include <cassert>
 

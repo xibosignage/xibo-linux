@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constants.hpp"
+class FilePath;
 
 class Resources
 {

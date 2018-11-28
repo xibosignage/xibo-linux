@@ -1,7 +1,8 @@
 #include "Utilities.hpp"
-#include "constants.hpp"
 #include "XiboApp.hpp"
+#include "FilePath.hpp"
 
+#include <spdlog/spdlog.h>
 #include <boost/property_tree/xml_parser.hpp>
 
 std::shared_ptr<spdlog::logger> Utils::logger()
@@ -20,7 +21,7 @@ XMDSManager& Utils::xmdsManager()
     return XiboApp::app().xmdsManager();
 }
 
-boost::property_tree::ptree Utils::parseXmlFromPath(const std::filesystem::path& xlfPath)
+boost::property_tree::ptree Utils::parseXmlFromPath(const FilePath& xlfPath)
 {
     boost::property_tree::ptree tree;
     boost::property_tree::read_xml(xlfPath.string(), tree);

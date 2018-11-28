@@ -1,5 +1,5 @@
 #include "AudioBuilderTest.hpp"
-#include "media/Audio.hpp"
+#include "media/IMedia.hpp"
 
 TEST(AudioBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {

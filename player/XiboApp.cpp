@@ -1,19 +1,24 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
+
 #include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
+#include "utils/FilePath.hpp"
 
 #include "xmds/XMDSManager.hpp"
-#include "control/MainLayout.hpp"
-#include "control/MainWindow.hpp"
+#include "xmds/SOAPManager.hpp"
 #include "creators/MainDirector.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
+#include "control/MainWindow.hpp"
+#include "control/IMainLayout.hpp"
+
+#include "parsers/CommandLineParser.hpp"
+#include "managers/DownloadManager.hpp"
+#include "managers/CollectionInterval.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
-#include <glibmm/main.h>
 #include <gst/gst.h>
-#include <chrono>
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 std::unique_ptr<XiboApp> XiboApp::m_app;
@@ -34,8 +39,11 @@ XiboApp& XiboApp::create(const std::string& name)
     return *m_app;
 }
 
-XiboApp::XiboApp(const std::string& name) : Gtk::Application(name)
-{
+XiboApp::XiboApp(const std::string& name) : Gtk::Application(name),
+    m_downloadManager(std::make_unique<DownloadManager>()),
+    m_collectionInterval(std::make_unique<CollectionInterval>()),
+    m_options(std::make_unique<CommandLineParser>())
+{      
 }
 
 int XiboApp::initPlayer()
@@ -47,17 +55,17 @@ int XiboApp::initPlayer()
         Gtk::Application::add_window(windowHandler);
     });
 
-    if(m_options.credentials())
+    if(m_options->credentials())
     {
-        m_xmdsManager.reset(new XMDSManager{m_options.host(), m_options.serverKey(), m_options.hardwareKey()});
+        m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
 
         auto runPlayer = std::bind(&XiboApp::runPlayer, this, std::ref(*window));
-        m_collectionInterval.signalFinished().connect(runPlayer);
+        m_collectionInterval->signalFinished().connect(runPlayer);
 
         auto updateSettings = std::bind(&XiboApp::updateSettings, this, std::placeholders::_1);
-        m_collectionInterval.signalSettingsUpdated().connect(updateSettings);
+        m_collectionInterval->signalSettingsUpdated().connect(updateSettings);
 
-        m_collectionInterval.start();
+        m_collectionInterval->start();
     }
     else
     {
@@ -125,30 +133,30 @@ XMDSManager& XiboApp::xmdsManager()
 
 DownloadManager& XiboApp::downloadManager()
 {
-    return m_downloadManager;
+    return *m_downloadManager;
 }
 
 int XiboApp::run(int argc, char** argv)
 {
     try
     {
-        m_options.parse(argc, argv);
+        m_options->parse(argc, argv);
 
-        if(m_options.helpOption())
+        if(m_options->helpOption())
         {
-            Utils::logger()->info("{}", m_options.availableOptions());
+            Utils::logger()->info("{}", m_options->availableOptions());
         }
         else
         {
-            if(m_options.versionOption())
+            if(m_options->versionOption())
             {
                 Utils::logger()->info("Project version: {}", getVersion());
             }
-            if(m_options.exampleDir())
+            if(m_options->exampleDir())
             {
-                Resources::setDirectory(m_options.getExampleDir());
+                Resources::setDirectory(m_options->getExampleDir());
             }
-            if(m_options.credentials() || m_options.exampleDir())
+            if(m_options->credentials() || m_options->exampleDir())
             {
                 return initPlayer();
             }

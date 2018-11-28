@@ -3,6 +3,8 @@
 #include "media/Video.hpp"
 #include "media/VideoHandler.hpp"
 
+#include <boost/optional/optional.hpp>
+
 const bool DEFAULT_LOOPED = false;
 const bool DEFAULT_MUTED = false;
 

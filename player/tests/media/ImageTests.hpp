@@ -4,7 +4,6 @@
 
 #include "media/Image.hpp"
 #include "media/MediaVisitor.hpp"
-
 #include "mocks/MockImageAdaptor.hpp"
 
 const ImageProperties::ScaleType DEFAULT_SCALE_TYPE = ImageProperties::ScaleType::Scaled;

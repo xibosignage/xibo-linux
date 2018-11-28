@@ -1,9 +1,9 @@
 #pragma once
 
 #include "IMediaContainer.hpp"
-#include "utils/ITimerProvider.hpp"
-
 #include <vector>
+
+class ITimerProvider;
 
 class MediaContainer : public IMediaContainer
 {

@@ -3,6 +3,7 @@
 #include "test_utils.hpp"
 
 #include "creators/MainLayoutBuilder.hpp"
+#include "control/IMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
 
 #include "mocks/MockBackground.hpp"

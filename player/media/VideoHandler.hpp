@@ -1,13 +1,12 @@
 #pragma once
 
 #include "IVideoHandler.hpp"
-
-#include "adaptors/GtkDrawingAreaAdaptor.hpp"
 #include "wrapper/GstFwd.hpp"
 
 #include <sigc++/signal.h>
 
 using SignalVideoFinished = sigc::signal<void()>;
+class GtkDrawingAreaAdaptor;
 
 class VideoHandler : public IVideoHandler
 {

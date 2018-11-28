@@ -1,7 +1,7 @@
 #pragma once
 
-#include "media/MediaVisitor.hpp"
-#include "media/Image.hpp"
+#include "MediaVisitor.hpp"
+#include "ImageProperties.hpp"
 
 class GetMediaPosition : public MediaVisitor
 {

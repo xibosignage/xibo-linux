@@ -1,13 +1,19 @@
 #ifndef SOAPMANAGER_HPP
 #define SOAPMANAGER_HPP
 
-#include <functional>
-#include <spdlog/spdlog.h>
-#include <boost/beast.hpp>
-#include <boost/asio.hpp>
+#include <boost/beast/http/message.hpp>
+#include <boost/beast/http/parser.hpp>
+#include <boost/beast/http/string_body.hpp>
+#include <boost/beast/core/flat_buffer.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/write.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/connect.hpp>
+#include <thread>
 
+#include "utils/Utilities.hpp"
 #include "soap.hpp"
-#include "constants.hpp"
 
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -63,12 +69,12 @@ private:
             }
             else
             {
-                m_logger->error("Receive SOAP request with HTTP error: {}", session->httpResponse.result_int());
+                Utils::logger()->error("Receive SOAP request with HTTP error: {}", session->httpResponse.result_int());
             }
         }
         else
         {
-            m_logger->error("Receive SOAP request with error: {}", ec.message());
+            Utils::logger()->error("Receive SOAP request with error: {}", ec.message());
         }
     }
 
@@ -78,11 +84,11 @@ private:
         if(!ec)
         {
             auto read = std::bind(&SOAPManager::onReadSoap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-            http::async_read(session->socket, session->buffer, session->httpResponse, read);
+            boost::beast::http::async_read(session->socket, session->buffer, session->httpResponse, read);
         }
         else
         {
-            m_logger->error("Send SOAP request with error: {}", ec.message());
+            Utils::logger()->error("Send SOAP request with error: {}", ec.message());
         }
     }
 
@@ -98,14 +104,14 @@ private:
             session->httpRequest.body() = soap::requestString(session->soapRequest);
             session->httpRequest.prepare_payload();
 
-            m_logger->trace("SOAP Request string: {}", soap::requestString(session->soapRequest));
+            Utils::logger()->trace("SOAP Request string: {}", soap::requestString(session->soapRequest));
 
             auto write = std::bind(&SOAPManager::onWriteSoap<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-            http::async_write(session->socket, session->httpRequest, write);
+            boost::beast::http::async_write(session->socket, session->httpRequest, write);
         }
         else
         {
-            m_logger->error("SOAP Connected to host with error: {}", ec.message());
+            Utils::logger()->error("SOAP Connected to host with error: {}", ec.message());
         }
     }
 
@@ -115,11 +121,11 @@ private:
         if(!ec)
         {
             auto connect = std::bind(&SOAPManager::onConnect<request>, this, std::placeholders::_1, std::placeholders::_2, session);
-            asio::async_connect(session->socket, results.begin(), results.end(), connect);
+            boost::asio::async_connect(session->socket, results.begin(), results.end(), connect);
         }
         else
         {
-            m_logger->error("SOAP Resolved host with error: {}", ec.message());
+            Utils::logger()->error("SOAP Resolved host with error: {}", ec.message());
         }
     }
 
@@ -128,7 +134,6 @@ private:
     asio::io_context::work m_work;
     std::unique_ptr<std::thread> m_workThread;
     std::string m_host;
-    std::shared_ptr<spdlog::logger> m_logger;
     int m_port;
 };
 

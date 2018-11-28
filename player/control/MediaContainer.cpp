@@ -3,6 +3,7 @@
 
 #include "media/IMedia.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
+#include "utils/ITimerProvider.hpp"
 
 #include <cassert>
 

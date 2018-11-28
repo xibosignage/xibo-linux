@@ -2,7 +2,6 @@
 
 #include "media/ImageProperties.hpp"
 
-class Image;
 class IImageAdaptor;
 
 const std::string DEFAULT_SCALE_TYPE = "center";

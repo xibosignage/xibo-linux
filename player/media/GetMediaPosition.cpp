@@ -1,5 +1,7 @@
 #include "GetMediaPosition.hpp"
+
 #include "constants.hpp"
+#include "Image.hpp"
 
 GetMediaPosition::GetMediaPosition(int containerWidth, int containerHeight) :
     m_containerWidth(containerWidth), m_containerHeight(containerHeight)
@@ -50,8 +52,6 @@ int GetMediaPosition::getImageX(ImageProperties::Align align, int imageWidth)
         return DEFAULT_XPOS;
     case ImageProperties::Align::Right:
         return m_containerWidth - imageWidth;
-    default:
-        break;
     }
     return INVALID_POS;
 }
@@ -66,8 +66,6 @@ int GetMediaPosition::getImageY(ImageProperties::Valign valign, int imageHeight)
         return DEFAULT_YPOS;
     case ImageProperties::Valign::Bottom:
         return m_containerHeight - imageHeight;
-    default:
-        break;
     }
     return INVALID_POS;
 }

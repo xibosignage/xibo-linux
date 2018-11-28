@@ -1,5 +1,7 @@
 #include "Resources.hpp"
-#include "utils/Utilities.hpp"
+#include "FilePath.hpp"
+
+#include <filesystem>
 
 FilePath Resources::directory_;
 

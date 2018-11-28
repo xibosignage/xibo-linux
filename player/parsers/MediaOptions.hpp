@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 #include <boost/optional/optional.hpp>
-#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ptree_fwd.hpp>
 
 namespace ResourcesXlf
 {
@@ -19,7 +19,7 @@ namespace ResourcesXlf
     protected:
         MediaOptions() = default;
 
-    //    private:
+    //    private: FIXME
         int m_id;
         boost::optional<std::string> m_uri;
         int m_duration;

@@ -4,6 +4,8 @@
 
 using OnAudioFinished = std::function<void()>;
 
+class FilePath;
+
 class IAudioHandler
 {
 public:

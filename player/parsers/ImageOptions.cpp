@@ -1,6 +1,8 @@
 #include "ImageOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::ImageOptions::ImageOptions(const xlf_node& node) :
     MediaOptions(node)
 {

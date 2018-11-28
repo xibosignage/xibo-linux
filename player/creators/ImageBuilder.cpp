@@ -3,6 +3,8 @@
 #include "media/Image.hpp"
 #include "adaptors/GtkImageAdaptor.hpp"
 
+#include <boost/optional/optional.hpp>
+
 std::unique_ptr<IMedia> ImageBuilder::doBuild()
 {
     ImageProperties props{m_scaleType, m_align, m_valign};

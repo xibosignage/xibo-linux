@@ -1,6 +1,6 @@
 #include "VideoBuilderTest.hpp"
 
-#include "media/Video.hpp"
+#include "media/IMedia.hpp"
 #include "adaptors/IWidgetAdaptor.hpp"
 
 using namespace testing;

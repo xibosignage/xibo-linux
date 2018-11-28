@@ -3,6 +3,8 @@
 #include "IWidgetAdaptor.hpp"
 #include "constants.hpp"
 
+class FilePath;
+
 class IWebViewAdaptor : public IWidgetAdaptor
 {
 public:

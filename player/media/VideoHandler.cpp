@@ -17,6 +17,9 @@
 #include "customsink/XiboVideoSink.hpp"
 
 #include "utils/Utilities.hpp"
+#include "utils/FilePath.hpp"
+#include "adaptors/GtkDrawingAreaAdaptor.hpp"
+
 #include <boost/format.hpp>
 
 namespace ph = std::placeholders;

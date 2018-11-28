@@ -1,6 +1,8 @@
 #include "AudioOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node) :
     MediaOptions(node)
 {

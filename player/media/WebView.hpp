@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Media.hpp"
-#include "adaptors/IWebViewAdaptor.hpp"
+
+class IWebViewAdaptor;
+class FilePath;
 
 class WebView : public Media<IVisibleMedia>
 {

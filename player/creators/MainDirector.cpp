@@ -9,8 +9,14 @@
 #include "creators/MainLayoutBuilder.hpp"
 #include "creators/MediaContainerBuilder.hpp"
 
+#include "control/IMediaContainer.hpp"
+#include "control/IBackground.hpp"
+#include "control/IMainLayout.hpp"
+#include "media/IMedia.hpp"
 #include "media/GetMediaPosition.hpp"
 #include "parsers/XlfResources.hpp"
+
+#include <boost/property_tree/ptree.hpp>
 
 using namespace ResourcesXlf;
 

@@ -47,6 +47,7 @@ add_subdirectory(tests)
 add_executable(${PROJECT_NAME} main.cpp)
 target_link_libraries(${PROJECT_NAME} player_lib gst_wrapper xibovideosink ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
 
+
 # install
 install(DIRECTORY DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs/)
 copy_libs("${Gtkmm_SONAME_LIBRARIES}")

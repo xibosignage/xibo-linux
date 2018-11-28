@@ -1,4 +1,7 @@
 #include "WebKitWebViewAdaptor.hpp"
+#include "utils/FilePath.hpp"
+
+#include <webkit/webkit.h>
 
 WebKitWebViewAdaptor::WebKitWebViewAdaptor() :
     GtkAdaptor<IWebViewAdaptor>(m_handler)

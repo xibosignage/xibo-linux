@@ -8,8 +8,11 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "media/MediaVisitor.hpp"
 
+#include "control/IMediaContainer.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
+
+#include <boost/optional/optional.hpp>
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;

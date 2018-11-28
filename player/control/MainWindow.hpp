@@ -1,7 +1,8 @@
 #pragma once
 
 #include "IMainWindow.hpp"
-#include "IMainLayout.hpp"
+
+class IMainLayout;
 
 class MainWindow : public IMainWindow
 {

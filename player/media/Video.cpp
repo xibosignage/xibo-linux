@@ -1,6 +1,7 @@
 #include "Video.hpp"
 
-#include "media/MediaVisitor.hpp"
+#include "MediaVisitor.hpp"
+#include "IVideoHandler.hpp"
 #include "utils/Utilities.hpp"
 
 Video::Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :

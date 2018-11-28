@@ -3,6 +3,8 @@
 #include "test_utils.hpp"
 #include "mocks/MockFileSystemAdaptor.hpp"
 
+#include <boost/optional/optional.hpp>
+
 template<typename T>
 class MediaBuilderTest : public T
 {

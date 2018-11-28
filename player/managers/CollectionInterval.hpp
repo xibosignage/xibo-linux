@@ -1,11 +1,11 @@
 #ifndef COLLECTIONINTERVAL_HPP
 #define COLLECTIONINTERVAL_HPP
 
-#include "xmds/XMDSManager.hpp"
+#include "xmds/RegisterDisplay.hpp"
+#include "xmds/RequiredFiles.hpp"
 
 #include <sigc++/signal.h>
 #include <sigc++/connection.h>
-#include <spdlog/spdlog.h>
 
 struct RequiredFilesSession
 {
@@ -34,7 +34,6 @@ private:
     void downloadCallback(const std::string& filename, RequiredFilesSessionPtr session);
 
 private:
-    std::shared_ptr<spdlog::logger> m_logger;
     sigc::signal<void> m_signalFinished;
     sigc::signal<void, PlayerSettings> m_signalSettingsUpdated;
     sigc::connection m_intervalConnection;

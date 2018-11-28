@@ -3,7 +3,6 @@
 #include "wrapper/Pipeline.hpp"
 #include "wrapper/AudioConvert.hpp"
 #include "wrapper/Volume.hpp"
-#include "wrapper/Queue.hpp"
 #include "wrapper/Decodebin.hpp"
 #include "wrapper/FileSrc.hpp"
 #include "wrapper/AutoAudioSink.hpp"
@@ -11,6 +10,7 @@
 #include "wrapper/Pad.hpp"
 
 #include "utils/Utilities.hpp"
+#include "utils/FilePath.hpp"
 
 namespace ph = std::placeholders;
 

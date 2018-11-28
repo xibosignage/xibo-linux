@@ -1,9 +1,9 @@
 #pragma once
 
-#include "constants.hpp"
-#include "utils/IFileSystemAdaptor.hpp"
+#include "utils/FilePath.hpp"
+#include "utils/IFileSystemAdaptor.hpp" // FIXME change to forward declaration
 
-#include <boost/optional/optional.hpp>
+#include <boost/optional/optional_fwd.hpp>
 
 class IMedia;
 
@@ -30,9 +30,9 @@ private:
 
 protected:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    int m_id;
     std::unique_ptr<IMedia> m_audio;
     FilePath m_path;
+    int m_id;
     int m_duration;
 
 

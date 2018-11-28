@@ -1,8 +1,9 @@
 #include "MainWindow.hpp"
-#include "constants.hpp"
 
 #include "adaptors/IWindowAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
+#include "IMainLayout.hpp"
+#include "constants.hpp"
 
 #include <cassert>
 

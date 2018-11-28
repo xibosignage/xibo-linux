@@ -2,9 +2,9 @@
 
 #include "Media.hpp"
 #include "ImageProperties.hpp"
-#include "utils/Helpers.hpp"
 
 class IImageAdaptor;
+class FilePath;
 
 class Image : public Media<IVisibleMedia>
 {

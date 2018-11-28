@@ -2,12 +2,12 @@
 
 #include <memory>
 #include <vector>
-#include <boost/optional/optional.hpp>
+#include <boost/optional/optional_fwd.hpp>
 
-#include "control/IMediaContainer.hpp"
-#include "media/IMedia.hpp"
-#include "adaptors/IFixedLayoutAdaptor.hpp"
-#include "utils/ITimerProvider.hpp"
+class IMediaContainer;
+class IMedia;
+class IFixedLayoutAdaptor;
+class ITimerProvider;
 
 struct MediaWithPos
 {

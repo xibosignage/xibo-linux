@@ -5,6 +5,7 @@
 using OnVideoFinished = std::function<void()>;
 
 class IWidgetAdaptor;
+class FilePath;
 
 class IVideoHandler
 {

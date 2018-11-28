@@ -1,17 +1,25 @@
 #include "DownloadManager.hpp"
 
-#include "constants.hpp"
 #include "xmds/XMDSManager.hpp"
+
 #include "utils/Resources.hpp"
 #include "utils/Utilities.hpp"
+#include "utils/FilePath.hpp"
 
 #include <regex>
 #include <fstream>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/write.hpp>
+#include <boost/asio/connect.hpp>
+
+namespace beast = boost::beast;
+namespace http = boost::beast::http;
+namespace asio = boost::asio;
+namespace ip = boost::asio::ip;
 
 DownloadManager::DownloadManager() :
     m_work{m_ioc}
 {
-    m_logger = spdlog::get(LOGGER);
     m_workThread.reset(new std::thread([=](){
         m_ioc.run();
     }));
@@ -38,7 +46,7 @@ void DownloadManager::download(const std::string& filename, const std::string& p
     {
         m_host = baseMatch[2].str();
         session->target = baseMatch[3].str();
-        m_logger->trace("Host: {} Target: {}", m_host, session->target);
+        Utils::logger()->trace("Host: {} Target: {}", m_host, session->target);
     }
 
     auto resolve = std::bind(&DownloadManager::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
@@ -63,11 +71,11 @@ void DownloadManager::onRead(const boost::system::error_code& ec, std::size_t by
         std::ofstream out(filename.string());
         out << session->httpResponse.get().body();
         session->callback(filename.string());
-        m_logger->debug("[{}] Downloaded {} bytes", session->filename, bytes);
+        Utils::logger()->debug("[{}] Downloaded {} bytes", session->filename, bytes);
     }
     else
     {
-        m_logger->error("[{}] Download error: {}", session->filename, ec.message());
+        Utils::logger()->error("[{}] Download error: {}", session->filename, ec.message());
     }
 }
 
@@ -80,7 +88,7 @@ void DownloadManager::onWrite(const boost::system::error_code& ec, std::size_t, 
     }
     else
     {
-        m_logger->error("[{}] Send download request error: {}", session->filename, ec.message());
+        Utils::logger()->error("[{}] Send download request error: {}", session->filename, ec.message());
     }
 }
 
@@ -99,7 +107,7 @@ void DownloadManager::onConnect(const boost::system::error_code& ec, ip::tcp::re
     }
     else
     {
-        m_logger->error("[{}] Connected to host with error: {}", session->filename, ec.message());
+        Utils::logger()->error("[{}] Connected to host with error: {}", session->filename, ec.message());
     }
 }
 
@@ -112,6 +120,6 @@ void DownloadManager::onResolve(const boost::system::error_code& ec, ip::tcp::re
     }
     else
     {
-        m_logger->error("[{}] Resolved host with error: {}", session->filename, ec.message());
+        Utils::logger()->error("[{}] Resolved host with error: {}", session->filename, ec.message());
     }
 }

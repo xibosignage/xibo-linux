@@ -1,10 +1,8 @@
 #ifndef REQUIREDFILES_HPP
-#define REQUIREDFILES_HP
+#define REQUIREDFILES_HPP
 
 #include "field.hpp"
 #include "soap.hpp"
-
-#include <variant>
 
 namespace RequiredFiles
 {

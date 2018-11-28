@@ -3,10 +3,11 @@
 #include "media/WebView.hpp"
 #include "adaptors/WebKitWebViewAdaptor.hpp"
 #include "utils/Resources.hpp"
+#include "utils/Utilities.hpp"
 
-#include <spdlog/spdlog.h>
 #include <fstream>
 #include <regex>
+#include <boost/optional/optional.hpp>
 
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
@@ -69,7 +70,7 @@ boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)
         std::smatch match;
         if(std::regex_search(line, match, re) && match.size() > 1)
         {
-            spdlog::get(LOGGER)->debug("DURATION parsed from .html {}", match[1].str());
+            Utils::logger()->debug("DURATION parsed from .html {}", match[1].str());
             // NOTE: 0 for full match, 1 for the first group match
             return std::stoi(match[1].str());
         }
