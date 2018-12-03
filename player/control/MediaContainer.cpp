@@ -112,12 +112,24 @@ void MediaContainer::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
     m_media.push_back(std::move(media));
 }
 
+#include "media/Video.hpp"
+#include "media/Audio.hpp"
+
 void MediaContainer::onMediaTimeout()
 {
-    m_media[m_currentMediaIndex]->stop();
+    auto&& media = m_media[m_currentMediaIndex];
+    if(auto video = dynamic_cast<Video*>(media.get()))
+    {
+        video->stopPlayback();
+    }
+    else if(auto audio = dynamic_cast<Audio*>(media.get()))
+    {
+        audio->stopPlayback();
+    }
 
     if(shouldNextMediaStart())
     {
+        media->stop();
         startMedia(getNextMediaIndex());
     }
 }

@@ -98,6 +98,11 @@ void AudioHandler::stop()
     m_pipeline->setState(Gst::State::NULL_STATE);
 }
 
+void AudioHandler::stopPlayback()
+{
+    stop();
+}
+
 void AudioHandler::connect(OnAudioFinished callback)
 {
     m_audioFinished.connect(callback);

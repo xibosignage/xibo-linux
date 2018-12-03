@@ -12,6 +12,7 @@ public:
     int width() const override;
     int height() const override;
 
+    void stopPlayback();
     void setLooped(bool looped);
     void setMuted(bool muted);
 

@@ -53,6 +53,11 @@ int Video::height() const
     return m_handler->height();
 }
 
+void Video::stopPlayback()
+{
+    m_handler->stopPlayback();
+}
+
 void Video::setLooped(bool looped)
 {
     m_looped = looped;
