@@ -25,6 +25,11 @@ void Audio::doStop()
     m_handler->stop();
 }
 
+void Audio::onMediaTimeout()
+{
+    m_handler->stopPlayback();
+}
+
 void Audio::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);

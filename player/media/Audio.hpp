@@ -15,6 +15,7 @@ public:
 protected:
     void doStop() override;
     void doStart() override;
+    void onMediaTimeout() override;
 
 private:
     void onAudioFinished();

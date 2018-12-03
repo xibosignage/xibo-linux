@@ -30,14 +30,16 @@ public:
 private:
     void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
     void scaleVisibleMedia(double scaleX, double scaleY);
+
     void startMedia(size_t mediaIndex);
+    void stopMedia(size_t mediaIndex);
     void onMediaTimeout();
+
     bool shouldNextMediaStart();
     size_t getNextMediaIndex();
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
-    std::unique_ptr<ITimerProvider> m_timer;
     int m_id;
     int m_zorder;
     bool m_mediaLooped = false;

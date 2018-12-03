@@ -192,6 +192,11 @@ void VideoHandler::play()
     m_videoWindow->show();
 }
 
+void VideoHandler::stopPlayback()
+{
+    m_pipeline->setState(Gst::State::NULL_STATE);
+}
+
 void VideoHandler::stop()
 {
     m_pipeline->setState(Gst::State::NULL_STATE);

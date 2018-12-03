@@ -39,6 +39,12 @@ void Video::doStart()
     m_handler->play();
 }
 
+void Video::onMediaTimeout()
+{
+    m_handler->stopPlayback();
+    mediaTimeout().emit();
+}
+
 void Video::scale(double scaleX, double scaleY)
 {
     m_handler->scale(scaleX, scaleY);

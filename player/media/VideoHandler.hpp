@@ -23,6 +23,7 @@ public:
 
     void load(const FilePath& path) override;
     void play() override;
+    void stopPlayback() override;
     void stop() override;
     void connect(OnVideoFinished callback) override;
     void setVolume(int volume) override;

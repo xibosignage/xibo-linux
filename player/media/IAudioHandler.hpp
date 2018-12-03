@@ -14,6 +14,7 @@ public:
     virtual void load(const FilePath& path) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
+    virtual void stopPlayback() = 0;
     virtual void connect(OnAudioFinished callback) = 0;
     virtual void setVolume(int volume) = 0;
 };

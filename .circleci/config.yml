@@ -54,7 +54,7 @@ workflows:
             branches:
               only:
                 - master
-                - develop
+                - /v.*/
       - push-snap-to-store:
           requires:
             - build
@@ -65,4 +65,4 @@ workflows:
             branches:
                 only:
                   - master
-                  - develop
+                  - /v.*/
