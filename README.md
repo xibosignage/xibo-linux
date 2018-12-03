@@ -1,8 +1,8 @@
 # XiboLinux
 
-| `develop` | `master`|
+| `v0.3.3-alpha` | `master`|
 |--------|--------|
-| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/develop.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/develop) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
+| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.3.3-alpha.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.3.3-alpha) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
 
 ## Building from sources
 
