@@ -27,6 +27,8 @@ struct XiboVideoSink
     GstVideoInfo info;
 
     Gtk::DrawingArea* handler;
+    GstVideoFrame frame;
+    bool frameMapped = false;
     Cairo::RefPtr<Cairo::ImageSurface> surface;
 };
 

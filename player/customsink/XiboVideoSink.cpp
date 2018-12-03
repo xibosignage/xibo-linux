@@ -4,7 +4,7 @@
 
 static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps);
 static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* video_sink, GstBuffer* buf);
-static bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<::Cairo::Context>& cairo);
+static bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<Cairo::Context>& cairo);
 static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass);
 static void gst_xibovideosink_init(XiboVideoSink* sink);
 
@@ -52,36 +52,41 @@ static void gst_xibovideosink_init(XiboVideoSink* sink)
     gst_element_add_pad(GST_ELEMENT(sink), sink->sinkpad);
 }
 
-static gboolean gst_xibovideosink_set_caps(GstBaseSink* sink, GstCaps* caps)
+static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps)
 {
-    XiboVideoSink* video_sink = GST_XIBOVIDEOSINK(sink);
-    gst_video_info_from_caps(&video_sink->info, caps);
+    XiboVideoSink* sink = GST_XIBOVIDEOSINK(base_sink);
+    gst_video_info_from_caps(&sink->info, caps);
     return true;
 }
 
-static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* sink, GstBuffer* buf)
+static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* base_sink, GstBuffer* buf)
 {
-    XiboVideoSink* video_sink = GST_XIBOVIDEOSINK(sink);
-    GstVideoFrame frame;
-    if(gst_video_frame_map(&frame, &video_sink->info, buf, GST_MAP_READ))
+    XiboVideoSink* sink = GST_XIBOVIDEOSINK(base_sink);
+    sink->frameMapped = gst_video_frame_map(&sink->frame, &sink->info, buf, GST_MAP_READ);
+    if(sink->frameMapped)
     {
-        video_sink->surface = Cairo::ImageSurface::create(static_cast<u_char*>(frame.data[0]),
-                                                          Cairo::FORMAT_RGB24,
-                                                          GST_VIDEO_INFO_WIDTH(&video_sink->info),
-                                                          GST_VIDEO_INFO_HEIGHT(&video_sink->info),
-                                                          GST_VIDEO_INFO_PLANE_STRIDE(&video_sink->info, 0));
-        video_sink->handler->queue_draw();
-        gst_video_frame_unmap(&frame);
+        sink->surface = Cairo::ImageSurface::create(static_cast<u_char*>(sink->frame.data[0]),
+                                                                         Cairo::FORMAT_RGB24,
+                                                                         GST_VIDEO_INFO_WIDTH(&sink->info),
+                                                                         GST_VIDEO_INFO_HEIGHT(&sink->info),
+                                                                         GST_VIDEO_INFO_PLANE_STRIDE(&sink->info, 0));
+        sink->handler->queue_draw();
     }
     return GST_FLOW_OK;
 }
 
-bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<::Cairo::Context>& cairo)
+bool gst_xibovideosink_on_frame_drawn(XiboVideoSink* sink, const Cairo::RefPtr<Cairo::Context>& cairo)
 {
     if(sink->surface)
     {
         cairo->set_source(sink->surface, 0, 0);
         cairo->paint();
+
+        if(sink->frameMapped)
+        {
+            gst_video_frame_unmap(&sink->frame);
+            sink->frameMapped = false;
+        }
     }
     return true;
 }

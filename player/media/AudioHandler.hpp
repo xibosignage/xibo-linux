@@ -15,6 +15,7 @@ public:
     void load(const FilePath& path) override;
     void play() override;
     void stop() override;
+    void stopPlayback() override;
     void connect(OnAudioFinished callback) override;
     void setVolume(int volume) override;
 

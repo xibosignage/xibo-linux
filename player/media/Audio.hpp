@@ -8,6 +8,7 @@ public:
     Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
     void apply(MediaVisitor& visitor) override;
 
+    void stopPlayback();
     void setVolume(int volume);
     void setLooped(bool looped);
 

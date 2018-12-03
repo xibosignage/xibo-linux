@@ -30,6 +30,11 @@ void Audio::apply(MediaVisitor& visitor)
     visitor.visit(*this);
 }
 
+void Audio::stopPlayback()
+{
+    m_handler->stopPlayback();
+}
+
 void Audio::onAudioFinished()
 {
     if(m_looped)
