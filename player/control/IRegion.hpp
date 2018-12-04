@@ -2,16 +2,13 @@
 
 #include <memory>
 
-class IVisibleMedia;
-class IInvisibleMedia;
 class IMedia;
-
 class IFixedLayoutAdaptor;
 
-class IMediaContainer
+class IRegion
 {
 public:
-    virtual ~IMediaContainer() = default;
+    virtual ~IRegion() = default;
 
     virtual int width() const = 0;
     virtual int height() const = 0;

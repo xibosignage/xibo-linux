@@ -11,23 +11,23 @@ TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
     constructAudio();
 }
 
-TEST_F(AudioTest, Start_Default_HandlerShowShouldBeCalled)
-{
-    auto audio = constructAudio();
+//TEST_F(AudioTest, Start_Default_HandlerShowShouldBeCalled)
+//{
+//    auto audio = constructAudio();
 
-    EXPECT_CALL(adaptor(), play());
+//    EXPECT_CALL(adaptor(), play());
 
-    audio->start();
-}
+//    audio->start();
+//}
 
-TEST_F(AudioTest, Stop_Default_HandlerHideShouldBeCalled)
-{
-    auto audio = constructAudio();
+//TEST_F(AudioTest, Stop_Default_HandlerHideShouldBeCalled)
+//{
+//    auto audio = constructAudio();
 
-    EXPECT_CALL(adaptor(), stop());
+//    EXPECT_CALL(adaptor(), stop());
 
-    audio->stop();
-}
+//    audio->stop();
+//}
 
 TEST_F(AudioTest, SetVolume_Default_HandlerSetVolumeShouldBeCalled)
 {

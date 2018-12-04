@@ -8,7 +8,7 @@
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 
-#include "mocks/MockMediaContainer.hpp"
+#include "mocks/MockRegion.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
 const std::vector<std::vector<int>> zorders = {

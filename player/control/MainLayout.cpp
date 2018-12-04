@@ -1,6 +1,6 @@
 #include "MainLayout.hpp"
 
-#include "IMediaContainer.hpp"
+#include "IRegion.hpp"
 #include "IBackground.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
@@ -35,35 +35,35 @@ int MainLayout::height() const
 void MainLayout::scale(double scaleX, double scaleY)
 {
     assert(m_background);
-    assert(m_containers.size() > 0);
+    assert(m_regions.size() > 0);
 
     m_handler->scale(scaleX, scaleY);
     m_background->scale(scaleX, scaleY);
-    scaleContainers(scaleX, scaleY);
+    scaleRegions(scaleX, scaleY);
 }
 
-void MainLayout::scaleContainers(double scaleX, double scaleY)
+void MainLayout::scaleRegions(double scaleX, double scaleY)
 {
-    for(auto&& container : m_containers)
+    for(auto&& region : m_regions)
     {
-        container->scale(scaleX, scaleY);
+        region->scale(scaleX, scaleY);
     }
 }
 
-void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y)
+void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y)
 {
-    assert(mediaContainer);
+    assert(region);
 
-    checkContainerSize(mediaContainer->width(), mediaContainer->height());
+    checkRegionSize(region->width(), region->height());
 
-    m_handler->addChild(mediaContainer->handler(), mediaContainer->width(), mediaContainer->height(), x, y);
-    m_containers.push_back(std::move(mediaContainer));
+    m_handler->addChild(region->handler(), region->width(), region->height(), x, y);
+    m_regions.push_back(std::move(region));
 }
 
-void MainLayout::checkContainerSize(int containerWidth, int containerHeight)
+void MainLayout::checkRegionSize(int regionWidth, int regionHeight)
 {
-    if(containerWidth > width() || containerHeight > height())
-        throw std::invalid_argument("Container width/height should not be greater than in layout");
+    if(regionWidth > width() || regionHeight > height())
+        throw std::invalid_argument("Region width/height should not be greater than in layout");
 }
 
 IOverlayAdaptor& MainLayout::handler()
@@ -74,42 +74,42 @@ IOverlayAdaptor& MainLayout::handler()
 void MainLayout::show()
 {
     assert(m_background);
-    assert(m_containers.size() > 0);
+    assert(m_regions.size() > 0);
 
     if(!m_handler->isShown())
     {
         m_handler->show();
         m_background->show();
-        sortReorderAndShowContainers();
+        sortReorderAndShowRegions();
     }
 }
 
-void MainLayout::sortReorderAndShowContainers()
+void MainLayout::sortReorderAndShowRegions()
 {
-    sortAndReorderContainers();
+    sortAndReorderRegions();
 
-    for(auto&& container : m_containers)
+    for(auto&& region : m_regions)
     {
-        container->show();
+        region->show();
     }
 }
 
-void MainLayout::sortAndReorderContainers()
+void MainLayout::sortAndReorderRegions()
 {
-    sortContainersByZorder();
+    sortRegionsByZorder();
 
-    for(size_t i = 0; i != m_containers.size(); ++i)
+    for(size_t i = 0; i != m_regions.size(); ++i)
     {
         int orderInParentWidget = static_cast<int>(i);
-        m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
+        m_handler->reorderChild(m_regions[i]->handler(), orderInParentWidget);
 
-        Utils::logger()->trace("Zorder: {} Order in overlay: {}", m_containers[i]->zorder(), orderInParentWidget);
+        Utils::logger()->trace("Zorder: {} Order in overlay: {}", m_regions[i]->zorder(), orderInParentWidget);
     }
 }
 
-void MainLayout::sortContainersByZorder()
+void MainLayout::sortRegionsByZorder()
 {
-    std::stable_sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
+    std::stable_sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
         return first->zorder() < second->zorder();
     });
 }

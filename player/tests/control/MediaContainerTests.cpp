@@ -126,20 +126,20 @@ TEST_F(MediaContainerTest, Show_MediaDurationEquals0_TimerStartOnceShouldNotBeCa
     container->show();
 }
 
-TEST_F(MediaContainerTest, Show_With2Media_FirstMediaStartShouldBeCalled)
-{
-    auto container = constructContainer();
+//TEST_F(MediaContainerTest, Show_With2Media_FirstMediaStartShouldBeCalled)
+//{
+//    auto container = constructContainer();
 
-    EXPECT_CALL(firstInvisibleMedia(), start());
+//    EXPECT_CALL(firstInvisibleMedia(), start());
 
-    container->show();
-}
+//    container->show();
+//}
 
-TEST_F(MediaContainerTest, Show_With2Media_SecondMediaStartShouldNotBeCalled)
-{
-    auto container = constructContainer();
+//TEST_F(MediaContainerTest, Show_With2Media_SecondMediaStartShouldNotBeCalled)
+//{
+//    auto container = constructContainer();
 
-    EXPECT_CALL(secondVisibleMedia(), start()).Times(0);
+//    EXPECT_CALL(secondVisibleMedia(), start()).Times(0);
 
-    container->show();
-}
+//    container->show();
+//}

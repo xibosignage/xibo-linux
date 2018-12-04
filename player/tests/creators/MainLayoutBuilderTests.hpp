@@ -9,7 +9,7 @@
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 
-#include "mocks/MockMediaContainer.hpp"
+#include "mocks/MockRegion.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
 const int MIN_WIDTH = 1;

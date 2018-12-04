@@ -8,8 +8,6 @@ template<typename Interface>
 class MockMedia : public Interface
 {
 public:
-    MOCK_METHOD0(stop, void());
-    MOCK_METHOD0(start, void());
     MOCK_METHOD1(attachMedia, void(std::unique_ptr<IMedia>&& media));
     MOCK_METHOD1(connect, void(OnMediaTimeout callback));
     MOCK_CONST_METHOD0(duration, int());
@@ -19,7 +17,7 @@ public:
 
 };
 
-class MockVisibleMedia : public MockMedia<IVisibleMedia>
+class MockVisibleMedia : public MockMedia<IMedia>, public IVisible
 {
 public:
     MockVisibleMedia(std::unique_ptr<IWidgetAdaptor>&& handler) :
@@ -32,6 +30,8 @@ public:
         return *m_handler;
     }
 
+    MOCK_METHOD0(show, void());
+    MOCK_METHOD0(hide, void());
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
@@ -41,6 +41,6 @@ private:
 
 };
 
-class MockInvisibleMedia : public MockMedia<IInvisibleMedia>
+class MockInvisibleMedia : public MockMedia<IMedia>
 {
 };

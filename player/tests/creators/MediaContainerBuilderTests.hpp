@@ -8,7 +8,7 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "media/MediaVisitor.hpp"
 
-#include "control/IMediaContainer.hpp"
+#include "control/IRegion.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
@@ -21,7 +21,7 @@ const auto invalidMediaContainerSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
 
 class MediaContainerBuilderSizeTest : public testing::TestWithParam<Size> { };
 
-class MediaContainerBuilderTest : public MediaContainerBuilder
+class MediaContainerBuilderTest : public RegionBuilder
 {
 public:
     MediaContainerBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockFixedLayoutAdaptor>>&& adaptor)
@@ -44,7 +44,7 @@ public:
         return static_cast<MediaContainerBuilderTest&>(invisibleMedia(std::move(media)));
     }
 
-    MediaContainerBuilder& defaultSize()
+    RegionBuilder& defaultSize()
     {
         return width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT);
     }

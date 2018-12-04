@@ -20,10 +20,6 @@ public:
     Media& operator=(const Media& other) = delete;
 
     int id() const final;
-
-    void stop() final;
-    void start() final;
-
     void attachMedia(std::unique_ptr<IMedia>&& media) final;
     void connect(OnMediaTimeout callback) final;
 
@@ -31,13 +27,11 @@ public:
     void setDuration(int duration) final;
 
 protected:
-    virtual void doStop() = 0;
-    virtual void doStart() = 0;
-
-    virtual void onMediaTimeout()
+    virtual void onDurationExpired()
     {
         m_mediaTimeout.emit();
     }
+
     MediaTimeoutSignal& mediaTimeout();
 
 private:
@@ -64,48 +58,6 @@ template<typename Interface>
 int Media<Interface>::id() const
 {
     return m_id;
-}
-
-template<typename Interface>
-void Media<Interface>::stop()
-{
-    stopAttachedMedia();
-    doStop();
-}
-
-template<typename Interface>
-void Media<Interface>::stopAttachedMedia()
-{
-    if(m_attachedMedia)
-    {
-        m_attachedMedia->stop();
-    }
-}
-
-template<typename Interface>
-void Media<Interface>::start()
-{
-    startTimer();
-    startAttachedMedia();
-    doStart();
-}
-
-template<typename Interface>
-void Media<Interface>::startTimer()
-{
-    if(m_duration > 0)
-    {
-        m_timer->startOnce(m_duration * MSECS, std::bind(&Media::onMediaTimeout, this));
-    }
-}
-
-template<typename Interface>
-void Media<Interface>::startAttachedMedia()
-{
-    if(m_attachedMedia)
-    {
-        m_attachedMedia->start();
-    }
 }
 
 template<typename Interface>

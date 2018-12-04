@@ -3,7 +3,7 @@
 #include "BaseTestWithHandler.hpp"
 
 #include "creators/MediaContainerBuilderTests.hpp" // FIXME zorder from here
-#include "control/MediaContainer.hpp"
+#include "control/Region.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 #include "mocks/MockTimerProvider.hpp"
 
@@ -16,7 +16,7 @@ class MediaContainerTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 public:
     auto constructContainer()
     {
-        auto container = construct<MediaContainer>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, unique(m_timer), unique(&adaptor()));
+        auto container = construct<Region>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, unique(m_timer), unique(&adaptor()));
         addMediaToContainer(*container);
         return container;
     }
@@ -52,7 +52,7 @@ protected:
     }
 
 private:
-    void addMediaToContainer(MediaContainer& container)
+    void addMediaToContainer(Region& container)
     {
         auto visibleMedia = createMediaWithPos();
         auto invisibleMedia = createMedia();

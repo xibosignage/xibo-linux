@@ -5,10 +5,13 @@
 class IVideoHandler;
 class FilePath;
 
-class Video : public Media<IVisibleMedia>
+class Video : public Media<IMedia>, public IVisible, public IPlayable
 {
 public:
     Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
+
+    void play() override;
+    void stop() override;
 
     void scale(double, double) override;
     int width() const override;
@@ -21,9 +24,9 @@ public:
     void apply(MediaVisitor& visitor) override;
 
 protected:
-    void doStop() override;
-    void doStart() override;
-    void onMediaTimeout() override;
+    void show() override;
+    void hide() override;
+    void onDurationExpired() override;
 
 private:
     void onVideoFinished();

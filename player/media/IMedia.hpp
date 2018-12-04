@@ -14,9 +14,6 @@ class IMedia
 public:
     virtual ~IMedia() = default;
 
-    virtual void stop() = 0;
-    virtual void start() = 0;
-
     virtual int duration() const = 0;
     virtual void setDuration(int duration) = 0;
 
@@ -28,9 +25,14 @@ public:
 
 };
 
-class IVisibleMedia : public IMedia
+class IVisible
 {
 public:
+    virtual ~IVisible() = default;
+
+    virtual void show() = 0;
+    virtual void hide() = 0;
+
     virtual int width() const = 0;
     virtual int height() const = 0;
     virtual void scale(double scaleX, double scaleY) = 0;
@@ -39,7 +41,12 @@ public:
 
 };
 
-class IInvisibleMedia : public IMedia
+class IPlayable
 {
+public:
+    virtual ~IPlayable() = default;
+
+    virtual void play() = 0;
+    virtual void stop() = 0;
 
 };

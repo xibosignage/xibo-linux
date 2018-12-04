@@ -15,17 +15,17 @@ Audio::Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& hand
     m_handler->connect(std::bind(&Audio::onAudioFinished, this));
 }
 
-void Audio::doStart()
+void Audio::play()
 {
     m_handler->play();
 }
 
-void Audio::doStop()
+void Audio::stop()
 {
     m_handler->stop();
 }
 
-void Audio::onMediaTimeout()
+void Audio::onDurationExpired()
 {
     m_handler->stopPlayback();
 }

@@ -4,7 +4,7 @@
 #include <vector>
 #include <boost/optional/optional_fwd.hpp>
 
-class IMediaContainer;
+class IRegion;
 class IMedia;
 class IFixedLayoutAdaptor;
 class ITimerProvider;
@@ -19,28 +19,28 @@ struct MediaWithPos
 const int DEFAULT_ZORDER = 0;
 const bool DEFAULT_LOOP = false;
 
-class MediaContainerBuilder
+class RegionBuilder
 {
 public:
-    std::unique_ptr<IMediaContainer> build();
+    std::unique_ptr<IRegion> build();
 
-    MediaContainerBuilder& id(int id);
-    MediaContainerBuilder& width(int width);
-    MediaContainerBuilder& height(int height);
-    MediaContainerBuilder& zorder(const boost::optional<int>& zorder);
-    MediaContainerBuilder& loop(const boost::optional<bool>& loop);
-    MediaContainerBuilder& visibleMedia(std::vector<MediaWithPos>&& visibleMedia);
-    MediaContainerBuilder& invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& visibleMedia);
+    RegionBuilder& id(int id);
+    RegionBuilder& width(int width);
+    RegionBuilder& height(int height);
+    RegionBuilder& zorder(const boost::optional<int>& zorder);
+    RegionBuilder& loop(const boost::optional<bool>& loop);
+    RegionBuilder& visibleMedia(std::vector<MediaWithPos>&& visibleMedia);
+    RegionBuilder& invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& visibleMedia);
 
 protected:
     virtual std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
     virtual std::unique_ptr<ITimerProvider> createTimer();
 
 private:
-    std::unique_ptr<IMediaContainer> createContainer();
+    std::unique_ptr<IRegion> createRegion();
 
-    void loopMedia(IMediaContainer& container);
-    void addAllMedia(IMediaContainer& container);
+    void loopMedia(IRegion& region);
+    void addAllMedia(IRegion& region);
     void checkWidth(int width);
     void checkHeight(int height);
 

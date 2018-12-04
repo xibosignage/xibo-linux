@@ -1,18 +1,19 @@
 #pragma once
 
-#include "IMediaContainer.hpp"
+#include "IRegion.hpp"
 #include <vector>
 
+class IVisible;
 class ITimerProvider;
 
-class MediaContainer : public IMediaContainer
+class Region : public IRegion
 {
 public:
-    MediaContainer(int id, int width, int height, int zorder, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
-    ~MediaContainer() override;
+    Region(int id, int width, int height, int zorder, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+    ~Region() override;
 
-    MediaContainer(const MediaContainer& other) = delete;
-    MediaContainer& operator=(const MediaContainer& other) = delete;
+    Region(const Region& other) = delete;
+    Region& operator=(const Region& other) = delete;
 
     int width() const override;
     int height() const override;
@@ -31,11 +32,11 @@ private:
     void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
     void scaleVisibleMedia(double scaleX, double scaleY);
 
-    void startMedia(size_t mediaIndex);
-    void stopMedia(size_t mediaIndex);
-    void onMediaTimeout();
+    void placeMedia(size_t mediaIndex);
+    void removeMedia(size_t mediaIndex);
+    void onMediaDurationTimeout();
 
-    bool shouldNextMediaStart();
+    bool shouldBeMediaReplaced();
     size_t getNextMediaIndex();
 
 private:
@@ -44,7 +45,7 @@ private:
     int m_zorder;
     bool m_mediaLooped = false;
 
-    std::vector<IVisibleMedia*> m_visibleMedia;
+    std::vector<IVisible*> m_visibleMedia;
     std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
 

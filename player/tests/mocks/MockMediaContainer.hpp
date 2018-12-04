@@ -1,11 +1,11 @@
 #pragma once
 
-#include "control/IMediaContainer.hpp"
+#include "control/IRegion.hpp"
 #include "media/IMedia.hpp"
 
 #include <gmock/gmock.h>
 
-class MockMediaContainer : public IMediaContainer
+class MockMediaContainer : public IRegion
 {
 public:
     MockMediaContainer(std::unique_ptr<IFixedLayoutAdaptor>&& handler) :

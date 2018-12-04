@@ -6,11 +6,11 @@
 class IOverlayAdaptor;
 class IMainLayout;
 class IBackground;
-class IMediaContainer;
+class IRegion;
 
-struct MediaContainerWithPos
+struct RegionWithPos
 {
-    std::unique_ptr<IMediaContainer> container;
+    std::unique_ptr<IRegion> region;
     int x;
     int y;
 };
@@ -23,7 +23,7 @@ public:
     MainLayoutBuilder& width(int width);
     MainLayoutBuilder& height(int height);
     MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
-    MainLayoutBuilder& mediaContainers(std::vector<MediaContainerWithPos>&& mediaContainers);
+    MainLayoutBuilder& regions(std::vector<RegionWithPos>&& regions);
 
 protected:
     virtual std::unique_ptr<IOverlayAdaptor> createAdaptor();
@@ -40,6 +40,6 @@ private:
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;
-    std::vector<MediaContainerWithPos> m_mediaContainers;
+    std::vector<RegionWithPos> m_regions;
 
 };

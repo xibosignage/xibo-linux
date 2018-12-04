@@ -57,20 +57,20 @@ TEST_F(ImageTest, Valign_Default_EqualsDefault)
     ASSERT_EQ(image->valign(), DEFAULT_VALIGN);
 }
 
-TEST_F(ImageTest, Start_Default_HandlerShowShouldBeCalled)
-{
-    auto image = constructImage();
+//TEST_F(ImageTest, Start_Default_HandlerShowShouldBeCalled)
+//{
+//    auto image = constructImage();
 
-    EXPECT_CALL(adaptor(), show());
+//    EXPECT_CALL(adaptor(), show());
 
-    image->start();
-}
+//    image->start();
+//}
 
-TEST_F(ImageTest, Stop_Default_HandlerHideShouldBeCalled)
-{
-    auto image = constructImage();
+//TEST_F(ImageTest, Stop_Default_HandlerHideShouldBeCalled)
+//{
+//    auto image = constructImage();
 
-    EXPECT_CALL(adaptor(), hide());
+//    EXPECT_CALL(adaptor(), hide());
 
-    image->stop();
-}
+//    image->stop();
+//}

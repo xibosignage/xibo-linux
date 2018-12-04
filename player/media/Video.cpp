@@ -29,17 +29,27 @@ void Video::onVideoFinished()
     }
 }
 
-void Video::doStop()
-{
-    m_handler->stop();
-}
-
-void Video::doStart()
+void Video::play()
 {
     m_handler->play();
 }
 
-void Video::onMediaTimeout()
+void Video::stop()
+{
+    m_handler->stop();
+}
+
+void Video::show()
+{
+
+}
+
+void Video::hide()
+{
+
+}
+
+void Video::onDurationExpired()
 {
     m_handler->stopPlayback();
     mediaTimeout().emit();
@@ -79,3 +89,4 @@ void Video::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
 }
+

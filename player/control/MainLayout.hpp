@@ -18,23 +18,23 @@ public:
     int height() const override;
 
     void setBackground(std::unique_ptr<IBackground>&& background) override;
-    void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) override;
+    void addRegion(std::unique_ptr<IRegion>&& region, int x, int y) override;
 
     IOverlayAdaptor& handler() override;
     void show() override;
 
 private:
-    void sortReorderAndShowContainers();
-    void sortAndReorderContainers();
-    void sortContainersByZorder();
+    void sortReorderAndShowRegions();
+    void sortAndReorderRegions();
+    void sortRegionsByZorder();
     void removePreviousBackgroundIfSet();
-    void scaleContainers(double scaleX, double scaleY);
-    void checkContainerSize(int containerWidth, int containerHeight);
+    void scaleRegions(double scaleX, double scaleY);
+    void checkRegionSize(int regionWidth, int regionHeight);
     void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;
     std::unique_ptr<IBackground> m_background;
-    std::vector<std::unique_ptr<IMediaContainer>> m_containers;
+    std::vector<std::unique_ptr<IRegion>> m_regions;
 
 };

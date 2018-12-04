@@ -3,8 +3,8 @@
 #include "constants.hpp"
 #include "Image.hpp"
 
-GetMediaPosition::GetMediaPosition(int containerWidth, int containerHeight) :
-    m_containerWidth(containerWidth), m_containerHeight(containerHeight)
+GetMediaPosition::GetMediaPosition(int regionWidth, int regionHeight) :
+    m_regionWidth(regionWidth), m_regionHeight(regionHeight)
 {
 }
 
@@ -47,11 +47,11 @@ int GetMediaPosition::getImageX(ImageProperties::Align align, int imageWidth)
     switch(align)
     {
     case ImageProperties::Align::Center:
-        return (m_containerWidth - imageWidth) / 2;
+        return (m_regionWidth - imageWidth) / 2;
     case ImageProperties::Align::Left:
         return DEFAULT_XPOS;
     case ImageProperties::Align::Right:
-        return m_containerWidth - imageWidth;
+        return m_regionWidth - imageWidth;
     }
     return INVALID_POS;
 }
@@ -61,11 +61,11 @@ int GetMediaPosition::getImageY(ImageProperties::Valign valign, int imageHeight)
     switch(valign)
     {
     case ImageProperties::Valign::Middle:
-        return (m_containerHeight - imageHeight) / 2;
+        return (m_regionHeight - imageHeight) / 2;
     case ImageProperties::Valign::Top:
         return DEFAULT_YPOS;
     case ImageProperties::Valign::Bottom:
-        return m_containerHeight - imageHeight;
+        return m_regionHeight - imageHeight;
     }
     return INVALID_POS;
 }

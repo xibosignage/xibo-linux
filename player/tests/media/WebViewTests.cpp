@@ -50,32 +50,32 @@ TEST_F(WebViewTest, Scale_Default_WebViewScaleShouldBeCalled)
     webview->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST_F(WebViewTest, Start_Default_HandlerShowShouldBeCalled)
-{
-    auto webview = constructWebView();
+//TEST_F(WebViewTest, Start_Default_HandlerShowShouldBeCalled)
+//{
+//    auto webview = constructWebView();
 
-    EXPECT_CALL(adaptor(), show());
+//    EXPECT_CALL(adaptor(), show());
 
-    webview->start();
-}
+//    webview->start();
+//}
 
-TEST_F(WebViewTest, Start_Default_HandlerReloadShouldBeCalled)
-{
-    auto webview = constructWebView();
+//TEST_F(WebViewTest, Start_Default_HandlerReloadShouldBeCalled)
+//{
+//    auto webview = constructWebView();
 
-    EXPECT_CALL(adaptor(), reload());
+//    EXPECT_CALL(adaptor(), reload());
 
-    webview->start();
-}
+//    webview->start();
+//}
 
-TEST_F(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
-{
-    auto webview = constructWebView();
+//TEST_F(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
+//{
+//    auto webview = constructWebView();
 
-    EXPECT_CALL(adaptor(), hide());
+//    EXPECT_CALL(adaptor(), hide());
 
-    webview->stop();
-}
+//    webview->stop();
+//}
 
 TEST_F(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
 {

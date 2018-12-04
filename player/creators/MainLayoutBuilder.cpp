@@ -3,7 +3,7 @@
 
 #include "control/MainLayout.hpp"
 #include "control/IBackground.hpp"
-#include "control/IMediaContainer.hpp"
+#include "control/IRegion.hpp"
 #include "adaptors/GtkOverlayAdaptor.hpp"
 
 #include <cassert>
@@ -59,22 +59,22 @@ MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& 
     return *this;
 }
 
-MainLayoutBuilder& MainLayoutBuilder::mediaContainers(std::vector<MediaContainerWithPos>&& mediaContainers)
+MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regions)
 {
-    m_mediaContainers = std::move(mediaContainers);
+    m_regions = std::move(regions);
     return *this;
 }
 
 void MainLayoutBuilder::prepareLayout(IMainLayout& layout)
 {
     assert(m_background);
-    checkRegionsCount(m_mediaContainers.size());
+    checkRegionsCount(m_regions.size());
 
     layout.setBackground(std::move(m_background));
 
-    for(auto&& ct : m_mediaContainers)
+    for(auto&& ct : m_regions)
     {
-        layout.addMediaContainer(std::move(ct.container), ct.x, ct.y);
+        layout.addRegion(std::move(ct.region), ct.x, ct.y);
     }
 }
 

@@ -14,15 +14,15 @@ WebView::WebView(int id, int width, int height, const FilePath& path, std::uniqu
     m_handler->load(path);
 }
 
-void WebView::doStop()
-{
-    m_handler->hide();
-}
-
-void WebView::doStart()
+void WebView::show()
 {
     m_handler->show();
     m_handler->reload();
+}
+
+void WebView::hide()
+{
+    m_handler->hide();
 }
 
 void WebView::scale(double scaleX, double scaleY)

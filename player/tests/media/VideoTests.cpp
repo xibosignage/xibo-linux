@@ -17,23 +17,23 @@ TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
     constructVideo();
 }
 
-TEST_F(VideoTest, Start_Default_HandlerShowShouldBeCalled)
-{
-    auto video = constructVideo();
+//TEST_F(VideoTest, Start_Default_HandlerShowShouldBeCalled)
+//{
+//    auto video = constructVideo();
 
-    EXPECT_CALL(adaptor(), play());
+//    EXPECT_CALL(adaptor(), play());
 
-    video->start();
-}
+//    video->start();
+//}
 
-TEST_F(VideoTest, Stop_Default_HandlerHideShouldBeCalled)
-{
-    auto video = constructVideo();
+//TEST_F(VideoTest, Stop_Default_HandlerHideShouldBeCalled)
+//{
+//    auto video = constructVideo();
 
-    EXPECT_CALL(adaptor(), stop());
+//    EXPECT_CALL(adaptor(), stop());
 
-    video->stop();
-}
+//    video->stop();
+//}
 
 TEST_F(VideoTest, SetMuted_True_HandlerSetVolume0ShouldBeCalled)
 {

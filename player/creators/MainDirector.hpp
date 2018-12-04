@@ -10,11 +10,11 @@
 #include "parsers/AudioOptions.hpp"
 
 class IMainLayout;
-class IMediaContainer;
+class IRegion;
 class IMedia;
 class IBackground;
 
-struct MediaContainerWithPos;
+struct RegionWithPos;
 struct MediaWithPos;
 class MediaBuilder;
 
@@ -28,15 +28,15 @@ public:
 private:
     std::unique_ptr<IMainLayout> buildLayout(const xlf_node& layoutNode);
     std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::LayoutOptions& opts);
-    std::vector<MediaContainerWithPos> collectContainers(const xlf_node& layoutNode);
-    std::unique_ptr<IMediaContainer> buildContainer(const xlf_node& containerNode);
-    std::vector<MediaWithPos> collectVisibleMedia(int containerWidth, int containerHeight, const xlf_node& containerNode);
-    std::vector<std::unique_ptr<IMedia>> collectInvisibleMedia(const xlf_node& containerNode);
+    std::vector<RegionWithPos> collectRegions(const xlf_node& layoutNode);
+    std::unique_ptr<IRegion> buildRegion(const xlf_node& regionNode);
+    std::vector<MediaWithPos> collectVisibleMedia(int regionWidth, int regionHeight, const xlf_node& regionNode);
+    std::vector<std::unique_ptr<IMedia>> collectInvisibleMedia(const xlf_node& regionNode);
 
-    std::unique_ptr<IMedia> buildMedia(int containerWidth, int containerHeight, const xlf_node& mediaNode);
-    std::unique_ptr<MediaBuilder> prepareImageBuilder(int containerWidth, int containerHeight, const ResourcesXlf::ImageOptions& opts);
-    std::unique_ptr<MediaBuilder> prepareVideoBuilder(int containerWidth, int containerHeight, const ResourcesXlf::VideoOptions& opts);
-    std::unique_ptr<MediaBuilder> prepareWebViewBuilder(int containerWidth, int containerHeight, const ResourcesXlf::WebViewOptions& opts);
+    std::unique_ptr<IMedia> buildMedia(int regionWidth, int regionHeight, const xlf_node& mediaNode);
+    std::unique_ptr<MediaBuilder> prepareImageBuilder(int regionWidth, int regionHeight, const ResourcesXlf::ImageOptions& opts);
+    std::unique_ptr<MediaBuilder> prepareVideoBuilder(int regionWidth, int regionHeight, const ResourcesXlf::VideoOptions& opts);
+    std::unique_ptr<MediaBuilder> prepareWebViewBuilder(int regionWidth, int regionHeight, const ResourcesXlf::WebViewOptions& opts);
     void attachAdditionalMedia(const xlf_node& mediaNode, MediaBuilder& builder);
 
     std::unique_ptr<IMedia> buildMedia(const xlf_node& mediaNode);

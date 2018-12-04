@@ -14,14 +14,14 @@ Image::Image(int id, int width, int height, const FilePath& path, ImagePropertie
     loadImage(path);
 }
 
-void Image::doStop()
-{
-    m_handler->hide();
-}
-
-void Image::doStart()
+void Image::show()
 {
     m_handler->show();
+}
+
+void Image::hide()
+{
+    m_handler->hide();
 }
 
 void Image::loadImage(const FilePath& path)

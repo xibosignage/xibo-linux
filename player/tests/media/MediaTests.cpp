@@ -26,24 +26,24 @@ TYPED_TEST(MediaTest, SetDuration_NewValue_DurationEqualsNewValue)
     ASSERT_EQ(media->duration(), DEFAULT_DURATION + 1);
 }
 
-TYPED_TEST(MediaTest, Start_WithAttachedMedia_AttachedMediaStartShouldBeCalled)
-{
-    auto media = constructMedia<TypeParam>();
-    auto mockMedia = createMedia();
-    media->attachMedia(unique(mockMedia));
+//TYPED_TEST(MediaTest, Start_WithAttachedMedia_AttachedMediaStartShouldBeCalled)
+//{
+//    auto media = constructMedia<TypeParam>();
+//    auto mockMedia = createMedia();
+//    media->attachMedia(unique(mockMedia));
 
-    EXPECT_CALL(*mockMedia, start());
+//    EXPECT_CALL(*mockMedia, start());
 
-    media->start();
-}
+//    media->start();
+//}
 
-TYPED_TEST(MediaTest, Stop_WithAttachedMedia_AttachedMediaStopShouldBeCalled)
-{
-    auto media = constructMedia<TypeParam>();
-    auto mockMedia = createMedia();
-    media->attachMedia(unique(mockMedia));
+//TYPED_TEST(MediaTest, Stop_WithAttachedMedia_AttachedMediaStopShouldBeCalled)
+//{
+//    auto media = constructMedia<TypeParam>();
+//    auto mockMedia = createMedia();
+//    media->attachMedia(unique(mockMedia));
 
-    EXPECT_CALL(*mockMedia, stop());
+//    EXPECT_CALL(*mockMedia, stop());
 
-    media->stop();
-}
+//    media->stop();
+//}
