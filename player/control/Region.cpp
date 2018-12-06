@@ -89,7 +89,7 @@ void Region::addContent(std::unique_ptr<IRegionContent>&& content, int x, int y)
 {
     m_handler->addChild(content->handler(), x, y);
 
-    content->connect(std::bind(&Region::onContentDurationTimeout, this)); // TODO check that it could emit after content stopped
+    content->subcribe(EventType::DurationExpired, std::bind(&Region::onContentDurationTimeout, this));
     m_content.push_back(std::move(content));
 }
 

@@ -57,7 +57,7 @@ void WebView::handleEvent(const Event& ev)
             break;
         case EventType::ScaleMedia:
         {
-            auto scaleEv = static_cast<const ScaleEvent&>(ev);
+            auto scaleEv = static_cast<const ScaleMediaEvent&>(ev);
             scale(scaleEv.scaleX(), scaleEv.scaleY());
             break;
         }

@@ -1,6 +1,7 @@
 #include "RegionContent.hpp"
 
 #include "media/IMedia.hpp"
+#include "adaptors/GtkDrawingAreaAdaptor.hpp"
 #include "constants.hpp"
 
 RegionContent::RegionContent(std::unique_ptr<IMedia>&& media, std::unique_ptr<ITimerProvider>&& timer) : m_media(std::move(media)), m_timer(std::move(timer))
@@ -17,7 +18,7 @@ RegionContent::RegionContent(std::unique_ptr<IMedia>&& media, std::unique_ptr<IT
 void RegionContent::start()
 {
     startTimer();
-    m_mediaPlaced.emit(StartMediaEvent{});
+    pushEvent(StartMediaEvent{});
 }
 
 void RegionContent::startTimer()
@@ -25,14 +26,14 @@ void RegionContent::startTimer()
     if(m_media->duration() > 0)
     {
         m_timer->startOnce(static_cast<unsigned int>(m_media->duration()) * MSECS, [=](){
-            m_mediaTimeout.emit();
+            pushEvent(DurationExpiredEvent{});
         });
     }
 }
 
 void RegionContent::stop()
 {
-    m_mediaRemoved.emit(StopMediaEvent{});
+    pushEvent(StopMediaEvent{});
 }
 
 void RegionContent::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
@@ -41,25 +42,27 @@ void RegionContent::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
     subscribeToEvents(*m_attachedMedia);
 }
 
-void RegionContent::connect(OnMediaTimeout callback)
-{
-    m_mediaTimeout.connect(callback);
-}
-
 void RegionContent::scale(double scaleX, double scaleY)
 {
-    m_mediaScaled.emit(ScaleEvent{scaleX, scaleY});
+    pushEvent(ScaleMediaEvent{scaleX, scaleY});
 }
 
 IWidgetAdaptor& RegionContent::handler()
 {
+    static GtkDrawingAreaAdaptor blankHandler;
+
+    if(!m_mediaHandler)
+        return blankHandler;
+
     return *m_mediaHandler;
 }
 
 void RegionContent::subscribeToEvents(IMedia& media)
 {
-    m_mediaPlaced.connect(std::bind(&IMedia::handleEvent, &media, std::placeholders::_1));
-    m_mediaRemoved.connect(std::bind(&IMedia::handleEvent, &media, std::placeholders::_1));
-    m_mediaTimeout.connect(std::bind(&IMedia::handleEvent, &media, DurationExpiredEvent{}));
-    m_mediaScaled.connect(std::bind(&IMedia::handleEvent, &media, std::placeholders::_1));
+    auto handler = std::bind(&IMedia::handleEvent, &media, std::placeholders::_1);
+
+    subcribe(EventType::StartMedia, handler);
+    subcribe(EventType::StopMedia, handler);
+    subcribe(EventType::ScaleMedia, handler);
+    subcribe(EventType::DurationExpired, handler);
 }

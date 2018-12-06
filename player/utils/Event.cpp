@@ -15,21 +15,26 @@ EventType DurationExpiredEvent::type() const
     return EventType::DurationExpired;
 }
 
-ScaleEvent::ScaleEvent(double scaleX, double scaleY) : m_scaleX(scaleX), m_scaleY(scaleY)
+ScaleMediaEvent::ScaleMediaEvent(double scaleX, double scaleY) : m_scaleX(scaleX), m_scaleY(scaleY)
 {
 }
 
-EventType ScaleEvent::type() const
+EventType ScaleMediaEvent::type() const
 {
     return EventType::ScaleMedia;
 }
 
-double ScaleEvent::scaleX() const
+double ScaleMediaEvent::scaleX() const
 {
     return m_scaleX;
 }
 
-double ScaleEvent::scaleY() const
+double ScaleMediaEvent::scaleY() const
 {
     return m_scaleY;
+}
+
+EventType PlaybackFinishedEvent::type() const
+{
+    return EventType::PlaybackFinished;
 }

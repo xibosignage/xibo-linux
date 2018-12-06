@@ -1,11 +1,11 @@
 #pragma once
 
 #include "IMedia.hpp"
-#include "utils/Event.hpp"
+#include "utils/Observable.hpp"
 
 #include <memory>
 
-class Media : public IMedia
+class Media : public Observable<IMedia>
 {
 public:
     Media(int id);

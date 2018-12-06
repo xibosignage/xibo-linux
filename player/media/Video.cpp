@@ -11,14 +11,14 @@ Video::Video(int id, int width, int height, const FilePath& path, std::unique_pt
 
     m_handler->setSize(width, height);
     m_handler->load(path);
-    m_handler->connect(std::bind(&Video::onVideoFinished, this));
+    m_handler->connect(std::bind(&Video::onVideoFinished, this)); // FIXME change to subscribe
 }
 
 void Video::onVideoFinished()
 {
     if(duration() == 0)
     {
-//        mediaTimeout().emit();
+        pushEvent(PlaybackFinishedEvent{});
         return;
     }
 
@@ -89,10 +89,12 @@ void Video::handleEvent(const Event& ev)
             break;
         case EventType::ScaleMedia:
         {
-            auto scaleEv = static_cast<const ScaleEvent&>(ev);
+            auto scaleEv = static_cast<const ScaleMediaEvent&>(ev);
             scale(scaleEv.scaleX(), scaleEv.scaleY());
             break;
         }
+        default:
+            break;
     }
 }
 

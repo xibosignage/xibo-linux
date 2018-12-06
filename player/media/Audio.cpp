@@ -56,11 +56,9 @@ void Audio::handleEvent(const Event& ev)
         case EventType::StartMedia:
             play();
             break;
+        case EventType::DurationExpired:
         case EventType::StopMedia:
             stop();
-            break;
-        case EventType::DurationExpired:
-            m_handler->stopPlayback();
             break;
         default:
             break;

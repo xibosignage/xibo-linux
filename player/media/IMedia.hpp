@@ -1,11 +1,12 @@
 #pragma once
 
 #include "utils/IObserver.hpp"
+#include "utils/IObservable.hpp"
 
 class MediaVisitor;
 class IWidgetAdaptor;
 
-class IMedia : public IObserver
+class IMedia : public IObserver, public IObservable
 {
 public:
     virtual ~IMedia() = default;
