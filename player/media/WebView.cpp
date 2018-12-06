@@ -45,6 +45,27 @@ void WebView::apply(MediaVisitor& visitor)
     visitor.visit(*this);
 }
 
+void WebView::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            show();
+            break;
+        case EventType::StopMedia:
+            hide();
+            break;
+        case EventType::ScaleMedia:
+        {
+            auto scaleEv = static_cast<const ScaleEvent&>(ev);
+            scale(scaleEv.scaleX(), scaleEv.scaleY());
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 void WebView::setTransparent(bool transparent)
 {
     if(transparent)

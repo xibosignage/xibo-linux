@@ -5,7 +5,7 @@
 class IVideoHandler;
 class FilePath;
 
-class Video : public Media<IMedia>, public IVisible, public IPlayable
+class Video : public Media, public IVisible, public IPlayable
 {
 public:
     Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
@@ -22,11 +22,11 @@ public:
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
+    void handleEvent(const Event& ev) override;
 
 protected:
-    void show() override;
-    void hide() override;
-    void onDurationExpired() override;
+    void show() override { }
+    void hide() override { }
 
 private:
     void onVideoFinished();

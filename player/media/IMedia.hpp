@@ -1,15 +1,11 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <functional>
+#include "utils/IObserver.hpp"
 
 class MediaVisitor;
 class IWidgetAdaptor;
 
-using OnMediaTimeout = std::function<void()>;
-
-class IMedia
+class IMedia : public IObserver
 {
 public:
     virtual ~IMedia() = default;
@@ -17,12 +13,8 @@ public:
     virtual int duration() const = 0;
     virtual void setDuration(int duration) = 0;
 
-    virtual void attachMedia(std::unique_ptr<IMedia>&& media) = 0;
-    virtual void connect(OnMediaTimeout callback) = 0;
-
     virtual int id() const = 0;
     virtual void apply(MediaVisitor& visitor) = 0;
-
 };
 
 class IVisible

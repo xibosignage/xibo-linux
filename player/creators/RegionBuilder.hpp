@@ -5,13 +5,13 @@
 #include <boost/optional/optional_fwd.hpp>
 
 class IRegion;
-class IMedia;
+class IRegionContent;
 class IFixedLayoutAdaptor;
 class ITimerProvider;
 
-struct MediaWithPos
+struct ContentWithPos
 {
-    std::unique_ptr<IMedia> media;
+    std::unique_ptr<IRegionContent> content;
     int x;
     int y;
 };
@@ -29,18 +29,16 @@ public:
     RegionBuilder& height(int height);
     RegionBuilder& zorder(const boost::optional<int>& zorder);
     RegionBuilder& loop(const boost::optional<bool>& loop);
-    RegionBuilder& visibleMedia(std::vector<MediaWithPos>&& visibleMedia);
-    RegionBuilder& invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& visibleMedia);
+    RegionBuilder& content(std::vector<ContentWithPos>&& content);
 
 protected:
     virtual std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
-    virtual std::unique_ptr<ITimerProvider> createTimer();
 
 private:
     std::unique_ptr<IRegion> createRegion();
 
-    void loopMedia(IRegion& region);
-    void addAllMedia(IRegion& region);
+    void loopContent(IRegion& region);
+    void addAllContent(IRegion& region);
     void checkWidth(int width);
     void checkHeight(int height);
 
@@ -50,7 +48,6 @@ private:
     int m_height;
     int m_zorder;
     bool m_loop;
-    std::vector<MediaWithPos> m_visibleMedia;
-    std::vector<std::unique_ptr<IMedia>> m_invisibleMedia;
+    std::vector<ContentWithPos> m_content;
 
 };

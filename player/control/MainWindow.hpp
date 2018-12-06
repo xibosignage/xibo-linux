@@ -1,16 +1,14 @@
 #pragma once
 
 #include "IMainWindow.hpp"
+#include <boost/noncopyable.hpp>
 
 class IMainLayout;
 
-class MainWindow : public IMainWindow
+class MainWindow : public IMainWindow, private boost::noncopyable
 {
 public:
     MainWindow(std::unique_ptr<IWindowAdaptor>&& handler);
-
-    MainWindow(const MainWindow& other) = delete;
-    MainWindow& operator=(const MainWindow& other) = delete;
 
     void setSize(int width, int height) override;
     void setPos(int x, int y) override;

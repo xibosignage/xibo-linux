@@ -12,9 +12,11 @@
 #include "control/IRegion.hpp"
 #include "control/IBackground.hpp"
 #include "control/IMainLayout.hpp"
+#include "control/RegionContent.hpp"
 #include "media/IMedia.hpp"
 #include "media/GetMediaPosition.hpp"
 #include "parsers/XlfResources.hpp"
+#include "utils/TimerProvider.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -56,40 +58,27 @@ std::vector<RegionWithPos> MainDirector::collectRegions(const xlf_node& layoutNo
 std::unique_ptr<IRegion> MainDirector::buildRegion(const xlf_node& regionNode)
 {
     RegionOptions opts{regionNode};
+    auto allContent = collectContent(opts.width(), opts.height(), regionNode);
 
-    auto visibleMedia = collectVisibleMedia(opts.width(), opts.height(), regionNode);
-    auto invisibleMedia = collectInvisibleMedia(regionNode);
-
-    return RegionBuilder().id(opts.id()).width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop())
-                                  .visibleMedia(std::move(visibleMedia)).invisibleMedia(std::move(invisibleMedia)).build();
+    return RegionBuilder().id(opts.id()).width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop()).content(std::move(allContent)).build();
 }
 
-std::vector<MediaWithPos> MainDirector::collectVisibleMedia(int regionWidth, int regionHeight, const xlf_node& regionNode)
+std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xlf_node& regionNode)
 {
-    std::vector<MediaWithPos> media;
+    std::vector<ContentWithPos> media;
     for(auto [nodeName, mediaNode] : regionNode)
     {
-        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) != ResourcesXlf::AudioType)
+        if(nodeName == ResourcesXlf::MediaNode)
         {
             auto builtMedia = buildMedia(regionWidth, regionHeight, mediaNode);
 
             GetMediaPosition visitor(regionWidth, regionHeight);
             builtMedia->apply(visitor);
 
-            media.emplace_back(MediaWithPos{std::move(builtMedia), visitor.getMediaX(), visitor.getMediaY()});
-        }
-    }
-    return media;
-}
+            auto content = std::make_unique<RegionContent>(std::move(builtMedia), std::make_unique<TimerProvider>());
+            attachAdditionalMedia(mediaNode, *content);
 
-std::vector<std::unique_ptr<IMedia>> MainDirector::collectInvisibleMedia(const xlf_node& regionNode)
-{
-    std::vector<std::unique_ptr<IMedia>> media;
-    for(auto [nodeName, mediaNode] : regionNode)
-    {
-        if(nodeName == ResourcesXlf::MediaNode && MediaOptions::getType(mediaNode) == ResourcesXlf::AudioType)
-        {
-            media.emplace_back(buildMedia(mediaNode));
+            media.emplace_back(ContentWithPos{std::move(content), visitor.getMediaX(), visitor.getMediaY()});
         }
     }
     return media;
@@ -99,64 +88,43 @@ std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeig
 {
     auto type = MediaOptions::getType(mediaNode);
 
-    MediaOptions opts{mediaNode};
-    std::unique_ptr<MediaBuilder> builder;
-
     if(type == ResourcesXlf::ImageType)
-        builder = prepareImageBuilder(regionWidth, regionHeight, mediaNode);
+        return buildImage(regionWidth, regionHeight, mediaNode);
     else if(type == ResourcesXlf::VideoType)
-        builder = prepareVideoBuilder(regionWidth, regionHeight, mediaNode);
+        return buildVideo(regionWidth, regionHeight, mediaNode);
+    else if(type == ResourcesXlf::AudioType)
+        return buildAudio(mediaNode);
     else // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
-        builder = prepareWebViewBuilder(regionWidth, regionHeight, mediaNode);
-
-    builder->id(opts.id()).path(opts.uri()).duration(opts.duration());
-    attachAdditionalMedia(mediaNode, *builder);
-    return builder->build();
+        return buildWebView(regionWidth, regionHeight, mediaNode);
 }
 
-std::unique_ptr<MediaBuilder> MainDirector::prepareImageBuilder(int regionWidth, int regionHeight, const ImageOptions& opts)
+std::unique_ptr<IMedia> MainDirector::buildImage(int regionWidth, int regionHeight, const ImageOptions& opts)
 {
-    auto builder = std::make_unique<ImageBuilder>();
-    builder->width(regionWidth).height(regionHeight).scaleType(opts.scaleType()).align(opts.align()).valign(opts.valign());
-    return builder;
+    return ImageBuilder().width(regionWidth).height(regionHeight).scaleType(opts.scaleType()).align(opts.align()).valign(opts.valign()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-std::unique_ptr<MediaBuilder> MainDirector::prepareVideoBuilder(int regionWidth, int regionHeight, const VideoOptions& opts)
+std::unique_ptr<IMedia> MainDirector::buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts)
 {
-    auto builder = std::make_unique<VideoBuilder>();
-    builder->width(regionWidth).height(regionHeight).muted(opts.muted()).looped(opts.looped());
-    return builder;
+    return VideoBuilder().width(regionWidth).height(regionHeight).muted(opts.muted()).looped(opts.looped()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-std::unique_ptr<MediaBuilder> MainDirector::prepareWebViewBuilder(int regionWidth, int regionHeight, const WebViewOptions& opts)
+std::unique_ptr<IMedia> MainDirector::buildAudio(const AudioOptions& opts)
 {
-    auto builder = std::make_unique<WebViewBuilder>();
-    builder->width(regionWidth).height(regionHeight).transparent(opts.transparent());
-    return builder;
+    return AudioBuilder().muted(opts.muted()).looped(opts.looped()).volume(opts.volume()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-void MainDirector::attachAdditionalMedia(const xlf_node& mediaNode, MediaBuilder& builder)
+std::unique_ptr<IMedia> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
+{
+    return WebViewBuilder().width(regionWidth).height(regionHeight).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+}
+
+void MainDirector::attachAdditionalMedia(const xlf_node& mediaNode, IRegionContent& content)
 {
     for(auto [nodeName, additionalMediaNode] : mediaNode)
     {
         if(nodeName == ResourcesXlf::AudioType)
         {
-            builder.audio(buildAudio(AudioOptions{additionalMediaNode, AudioNodeTag{}}));
+            content.attachMedia(buildAudio(AudioOptions{additionalMediaNode, AudioNodeTag{}}));
         }
     }
-}
-
-std::unique_ptr<IMedia> MainDirector::buildMedia(const xlf_node& mediaNode)
-{
-    auto type = MediaOptions::getType(mediaNode);
-
-    if(type == ResourcesXlf::AudioType)
-        return buildAudio(mediaNode);
-
-    return nullptr;
-}
-
-std::unique_ptr<IMedia> MainDirector::buildAudio(const AudioOptions& opts)
-{
-    return AudioBuilder().muted(opts.muted()).looped(opts.looped()).volume(opts.volume()).path(opts.uri()).duration(opts.duration()).build();
 }

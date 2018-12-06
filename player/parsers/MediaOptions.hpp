@@ -19,7 +19,11 @@ namespace ResourcesXlf
     protected:
         MediaOptions() = default;
 
-    //    private: FIXME
+        void setId(int id);
+        void setUri(const boost::optional<std::string>& uri);
+        void setDuration(int duration);
+
+    private:
         int m_id;
         boost::optional<std::string> m_uri;
         int m_duration;

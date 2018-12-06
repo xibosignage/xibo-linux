@@ -1,8 +1,7 @@
 #include "RegionBuilder.hpp"
 
 #include "control/Region.hpp"
-#include "utils/TimerProvider.hpp"
-#include "media/IMedia.hpp"
+#include "control/IRegionContent.hpp"
 #include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
@@ -13,14 +12,14 @@ const int MIN_HEIGHT = 1;
 std::unique_ptr<IRegion> RegionBuilder::build()
 {
     auto region = createRegion();
-    loopMedia(*region);
-    addAllMedia(*region);
+    loopContent(*region);
+    addAllContent(*region);
     return region;
 }
 
 std::unique_ptr<IRegion> RegionBuilder::createRegion()
 {
-    return std::make_unique<Region>(m_id, m_width, m_height, m_zorder, createTimer(), createAdaptor());
+    return std::make_unique<Region>(m_id, m_width, m_height, m_zorder, createAdaptor());
 }
 
 std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()
@@ -28,31 +27,21 @@ std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()
     return std::make_unique<GtkFixedLayoutAdaptor>();
 }
 
-std::unique_ptr<ITimerProvider> RegionBuilder::createTimer()
-{
-    return std::make_unique<TimerProvider>();
-}
-
-void RegionBuilder::loopMedia(IRegion& region)
+void RegionBuilder::loopContent(IRegion& region)
 {
     if(m_loop)
     {
-        region.loopMedia();
+        region.loopContent();
     }
 }
 
-void RegionBuilder::addAllMedia(IRegion& region)
+void RegionBuilder::addAllContent(IRegion& region)
 {
-    assert(m_visibleMedia.size() > 0 || m_invisibleMedia.size() > 0);
+    assert(m_content.size() > 0);
 
-    for(auto&& ct : m_visibleMedia)
+    for(auto&& ct : m_content)
     {
-        region.addMedia(std::move(ct.media), ct.x, ct.y);
-    }
-
-    for(auto&& media : m_invisibleMedia)
-    {
-        region.addMedia(std::move(media));
+        region.addContent(std::move(ct.content), ct.x, ct.y);
     }
 }
 
@@ -102,14 +91,8 @@ RegionBuilder& RegionBuilder::loop(const boost::optional<bool>& loop)
     return *this;
 }
 
-RegionBuilder& RegionBuilder::visibleMedia(std::vector<MediaWithPos>&& visibleMedia)
+RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia)
 {
-    m_visibleMedia = std::move(visibleMedia);
-    return *this;
-}
-
-RegionBuilder& RegionBuilder::invisibleMedia(std::vector<std::unique_ptr<IMedia>>&& invisibleMedia)
-{
-    m_invisibleMedia = std::move(invisibleMedia);
+    m_content = std::move(visibleMedia);
     return *this;
 }

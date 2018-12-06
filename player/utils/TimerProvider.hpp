@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ITimerProvider.hpp"
 
 class TimerProvider : public ITimerProvider

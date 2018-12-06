@@ -6,7 +6,7 @@
 class IImageAdaptor;
 class FilePath;
 
-class Image : public Media<IMedia>, public IVisible
+class Image : public Media, public IVisible
 {
 public:
     Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
@@ -24,6 +24,7 @@ public:
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
+    void handleEvent(const Event& ev) override;
 
 private:
     void loadImage(const FilePath& path);

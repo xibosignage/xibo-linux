@@ -1,11 +1,13 @@
 #pragma once
 
 #include "IBackground.hpp"
+
 #include <memory>
+#include <boost/noncopyable.hpp>
 
 class FilePath;
 
-class Background : public IBackground
+class Background : public IBackground, private boost::noncopyable
 {
 public:
     Background(const Background&) = delete;

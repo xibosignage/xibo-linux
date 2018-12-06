@@ -5,7 +5,7 @@
 class IWebViewAdaptor;
 class FilePath;
 
-class WebView : public Media<IMedia>, public IVisible
+class WebView : public Media, public IVisible
 {
 public:
     WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
@@ -19,6 +19,7 @@ public:
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
+    void handleEvent(const Event& ev) override;
 
     void setTransparent(bool transparent);
 

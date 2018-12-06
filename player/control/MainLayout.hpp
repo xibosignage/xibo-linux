@@ -3,15 +3,13 @@
 #include "IMainLayout.hpp"
 
 #include <vector>
+#include <boost/noncopyable.hpp>
 
-class MainLayout : public IMainLayout
+class MainLayout : public IMainLayout, private boost::noncopyable
 {
 public:
     MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
     ~MainLayout() override;
-
-    MainLayout(const MainLayout& other) = delete;
-    MainLayout& operator=(const MainLayout& other) = delete;
 
     void scale(double scaleX, double scaleY) override;
     int width() const override;

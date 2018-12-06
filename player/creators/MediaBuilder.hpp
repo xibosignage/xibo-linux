@@ -16,8 +16,6 @@ public:
     std::unique_ptr<IMedia> build();
 
     MediaBuilder& id(int id);
-    MediaBuilder& audio(std::unique_ptr<IMedia>&& audio);
-
     virtual MediaBuilder& path(const boost::optional<std::string>& path);
     virtual MediaBuilder& duration(int duration);
 
@@ -30,7 +28,6 @@ private:
 
 protected:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    std::unique_ptr<IMedia> m_audio;
     FilePath m_path;
     int m_id;
     int m_duration;

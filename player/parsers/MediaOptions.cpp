@@ -29,3 +29,18 @@ int ResourcesXlf::MediaOptions::duration() const
 {
     return m_duration;
 }
+
+void ResourcesXlf::MediaOptions::setId(int id)
+{
+    m_id = id;
+}
+
+void ResourcesXlf::MediaOptions::setUri(const boost::optional<std::string>& uri)
+{
+    m_uri = uri;
+}
+
+void ResourcesXlf::MediaOptions::setDuration(int duration)
+{
+    m_duration = duration;
+}

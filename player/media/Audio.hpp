@@ -3,20 +3,19 @@
 class FilePath;
 class IAudioHandler;
 
-class Audio : public Media<IMedia>, public IPlayable
+class Audio : public Media, public IPlayable
 {
 public:
     Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
 
     void play() override;
     void stop() override;
+
     void apply(MediaVisitor& visitor) override;
+    void handleEvent(const Event& ev) override;
 
     void setVolume(int volume);
     void setLooped(bool looped);
-
-protected:
-    void onDurationExpired() override;
 
 private:
     void onAudioFinished();

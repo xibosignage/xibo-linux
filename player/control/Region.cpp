@@ -1,15 +1,14 @@
 #include "Region.hpp"
-#include "constants.hpp"
 
-#include "media/IMedia.hpp"
+#include "control/IRegionContent.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
-#include "utils/ITimerProvider.hpp"
 
 #include <cassert>
 
-const int FIRST_MEDIA_INDEX = 0;
+const int FIRST_CONTENT_INDEX = 0;
 
-Region::Region(int id, int width, int height, int zorder, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+
+Region::Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
     m_handler(std::move(handler)), m_id(id), m_zorder(zorder)
 {
     assert(m_handler);
@@ -33,15 +32,15 @@ int Region::height() const
 
 void Region::scale(double scaleX, double scaleY)
 {
-    assert(m_media.size() > 0);
+    assert(m_content.size() > 0);
 
     m_handler->scale(scaleX, scaleY);
-    scaleVisibleMedia(scaleX, scaleY);
+    scaleContent(scaleX, scaleY);
 }
 
-void Region::loopMedia()
+void Region::loopContent()
 {
-    m_mediaLooped = true;
+    m_contentLooped = true;
 }
 
 int Region::id() const
@@ -49,11 +48,11 @@ int Region::id() const
     return m_id;
 }
 
-void Region::scaleVisibleMedia(double scaleX, double scaleY)
+void Region::scaleContent(double scaleX, double scaleY)
 {
-    for(auto media : m_visibleMedia)
+    for(auto&& content : m_content)
     {
-        media->scale(scaleX, scaleY);
+        content->scale(scaleX, scaleY);
     }
 }
 
@@ -69,82 +68,51 @@ IFixedLayoutAdaptor& Region::handler()
 
 void Region::show()
 {
-    assert(m_media.size() > 0);
+    assert(m_content.size() > 0);
 
     m_handler->show();
-    placeMedia(FIRST_MEDIA_INDEX);
+    placeContent(FIRST_CONTENT_INDEX);
 }
 
-void Region::placeMedia(size_t mediaIndex)
+void Region::placeContent(size_t contentIndex)
 {
-    m_currentMediaIndex = mediaIndex;
-    auto&& media = m_media[mediaIndex];
-    if(auto playable = dynamic_cast<IPlayable*>(media.get()))
+    m_currentContentIndex = contentIndex;
+    m_content[contentIndex]->start();
+}
+
+void Region::removeContent(size_t contentIndex)
+{
+    m_content[contentIndex]->stop();
+}
+
+void Region::addContent(std::unique_ptr<IRegionContent>&& content, int x, int y)
+{
+    m_handler->addChild(content->handler(), x, y);
+
+    content->connect(std::bind(&Region::onContentDurationTimeout, this)); // TODO check that it could emit after content stopped
+    m_content.push_back(std::move(content));
+}
+
+void Region::onContentDurationTimeout()
+{
+    if(shouldBeContentReplaced())
     {
-        playable->play();
-    }
-    else if(auto visible = dynamic_cast<IVisible*>(media.get()))
-    {
-        visible->show();
-    }
-}
-
-void Region::removeMedia(size_t mediaIndex)
-{
-    auto&& media = m_media[mediaIndex];
-    if(auto playable = dynamic_cast<IPlayable*>(media.get()))
-    {
-        playable->stop();
-    }
-    else if(auto visible = dynamic_cast<IVisible*>(media.get()))
-    {
-        visible->hide();
-    }
-}
-
-void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
-{
-    auto visibleMedia = dynamic_cast<IVisible*>(media.get());
-
-    m_handler->addChild(visibleMedia->handler(), x, y);
-    m_visibleMedia.push_back(visibleMedia);
-
-    initAndAddMediaToList(std::move(media));
-}
-
-void Region::addMedia(std::unique_ptr<IMedia>&& media)
-{
-    initAndAddMediaToList(std::move(media));
-}
-
-void Region::initAndAddMediaToList(std::unique_ptr<IMedia>&& media)
-{
-    assert(media);
-
-    media->connect(std::bind(&Region::onMediaDurationTimeout, this)); // TODO check that it could emit after media stopped
-    m_media.push_back(std::move(media));
-}
-
-void Region::onMediaDurationTimeout()
-{
-    if(shouldBeMediaReplaced())
-    {
-        removeMedia(m_currentMediaIndex);
-        placeMedia(getNextMediaIndex());
+        removeContent(m_currentContentIndex);
+        placeContent(getNextContentIndex());
     }
 }
 
-bool Region::shouldBeMediaReplaced()
+bool Region::shouldBeContentReplaced()
 {
-    return m_media.size() > 1 || m_mediaLooped;
+    return m_content.size() > 1 || m_contentLooped;
 }
 
-size_t Region::getNextMediaIndex()
+size_t Region::getNextContentIndex()
 {
-    size_t nextMediaIndex = m_currentMediaIndex + 1;
+    size_t nextContentIndex = m_currentContentIndex + 1;
 
-    if(nextMediaIndex >= m_media.size())
-        return FIRST_MEDIA_INDEX;
+    if(nextContentIndex >= m_content.size())
+        return FIRST_CONTENT_INDEX;
 
-    return nextMediaIndex;
+    return nextContentIndex;
 }

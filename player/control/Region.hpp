@@ -1,52 +1,48 @@
 #pragma once
 
 #include "IRegion.hpp"
-#include <vector>
 
-class IVisible;
+#include <vector>
+#include <boost/noncopyable.hpp>
+
+class IRegionContent;
 class ITimerProvider;
 
-class Region : public IRegion
+class Region : public IRegion, private boost::noncopyable
 {
 public:
-    Region(int id, int width, int height, int zorder, std::unique_ptr<ITimerProvider>&& timer, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+    Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~Region() override;
-
-    Region(const Region& other) = delete;
-    Region& operator=(const Region& other) = delete;
 
     int width() const override;
     int height() const override;
     void scale(double scaleX, double scaleY) override;
 
-    void loopMedia() override;
+    void loopContent() override;
     int id() const override;
     int zorder() const override;
     void show() override;
 
-    void addMedia(std::unique_ptr<IMedia>&& media, int x, int y) override;
-    void addMedia(std::unique_ptr<IMedia>&& media) override;
+    void addContent(std::unique_ptr<IRegionContent>&& content, int x, int y) override;
     IFixedLayoutAdaptor& handler() override;
 
 private:
-    void initAndAddMediaToList(std::unique_ptr<IMedia>&& media);
-    void scaleVisibleMedia(double scaleX, double scaleY);
+    void scaleContent(double scaleX, double scaleY);
 
-    void placeMedia(size_t mediaIndex);
-    void removeMedia(size_t mediaIndex);
-    void onMediaDurationTimeout();
+    void placeContent(size_t mediaIndex);
+    void removeContent(size_t mediaIndex);
+    void onContentDurationTimeout();
 
-    bool shouldBeMediaReplaced();
-    size_t getNextMediaIndex();
+    bool shouldBeContentReplaced();
+    size_t getNextContentIndex();
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     int m_id;
     int m_zorder;
-    bool m_mediaLooped = false;
+    bool m_contentLooped = false;
 
-    std::vector<IVisible*> m_visibleMedia;
-    std::vector<std::unique_ptr<IMedia>> m_media;
-    size_t m_currentMediaIndex = 0;
+    std::vector<std::unique_ptr<IRegionContent>> m_content;
+    size_t m_currentContentIndex = 0;
 
 };

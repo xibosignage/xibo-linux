@@ -84,7 +84,7 @@ void XiboApp::runPlayer(MainWindow& window)
         auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
 
         window.setSize(1366, 768);
-        window.setFullscreen(true);
+//        window.setFullscreen(true);
         window.addLayout(director.buildLayoutWithChildren(parsedXlfTree));
         window.showLayout();
     }

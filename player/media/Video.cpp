@@ -18,7 +18,7 @@ void Video::onVideoFinished()
 {
     if(duration() == 0)
     {
-        mediaTimeout().emit();
+//        mediaTimeout().emit();
         return;
     }
 
@@ -37,22 +37,6 @@ void Video::play()
 void Video::stop()
 {
     m_handler->stop();
-}
-
-void Video::show()
-{
-
-}
-
-void Video::hide()
-{
-
-}
-
-void Video::onDurationExpired()
-{
-    m_handler->stopPlayback();
-    mediaTimeout().emit();
 }
 
 void Video::scale(double scaleX, double scaleY)
@@ -88,5 +72,27 @@ IWidgetAdaptor& Video::handler()
 void Video::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
+}
+
+void Video::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            play();
+            break;
+        case EventType::StopMedia:
+            stop();
+            break;
+        case EventType::DurationExpired:
+            m_handler->stopPlayback();
+            break;
+        case EventType::ScaleMedia:
+        {
+            auto scaleEv = static_cast<const ScaleEvent&>(ev);
+            scale(scaleEv.scaleX(), scaleEv.scaleY());
+            break;
+        }
+    }
 }
 

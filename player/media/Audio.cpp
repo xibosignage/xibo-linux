@@ -25,11 +25,6 @@ void Audio::stop()
     m_handler->stop();
 }
 
-void Audio::onDurationExpired()
-{
-    m_handler->stopPlayback();
-}
-
 void Audio::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
@@ -52,6 +47,24 @@ void Audio::setVolume(int volume)
 void Audio::setLooped(bool looped)
 {
     m_looped = looped;
+}
+
+void Audio::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            play();
+            break;
+        case EventType::StopMedia:
+            stop();
+            break;
+        case EventType::DurationExpired:
+            m_handler->stopPlayback();
+            break;
+        default:
+            break;
+    }
 }
 
 

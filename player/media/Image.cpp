@@ -55,6 +55,27 @@ void Image::apply(MediaVisitor& visitor)
     visitor.visit(*this);
 }
 
+void Image::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            show();
+            break;
+        case EventType::StopMedia:
+            hide();
+            break;
+        case EventType::ScaleMedia:
+        {
+            auto scaleEv = static_cast<const ScaleEvent&>(ev);
+            scale(scaleEv.scaleX(), scaleEv.scaleY());
+            break;
+        }
+        default:
+            break;
+    }
+}
+
 ImageProperties::ScaleType Image::scaleType() const
 {
     return m_scaleType;
