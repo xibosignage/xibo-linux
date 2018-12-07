@@ -6,10 +6,15 @@
 
 RegionContent::RegionContent(std::unique_ptr<IMedia>&& media, std::unique_ptr<ITimerProvider>&& timer) : m_media(std::move(media)), m_timer(std::move(timer))
 {
-    auto visibleMedia = dynamic_cast<IVisible*>(m_media.get());
-    if(visibleMedia)
+    if(auto visibleMedia = dynamic_cast<IVisible*>(m_media.get()))
     {
         m_mediaHandler = &visibleMedia->handler();
+    }
+    if(dynamic_cast<IPlayable*>(m_media.get()))
+    {
+        m_media->subcribe(EventType::PlaybackFinished, [=](const Event&){
+           pushEvent(DurationExpiredEvent{});
+        });
     }
 
     subscribeToEvents(*m_media);
