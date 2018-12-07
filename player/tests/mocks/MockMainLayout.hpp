@@ -21,7 +21,7 @@ public:
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD1(setBackground, void(std::unique_ptr<IBackground>&& background));
-    MOCK_METHOD3(addMediaContainer, void(std::unique_ptr<IRegion>&& mediaContainer, int x, int y));
+    MOCK_METHOD3(addRegion, void(std::unique_ptr<IRegion>&& region, int x, int y));
     MOCK_METHOD0(show, void());
 
 private:

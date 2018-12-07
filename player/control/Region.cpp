@@ -89,7 +89,7 @@ void Region::addContent(std::unique_ptr<IRegionContent>&& content, int x, int y)
 {
     m_handler->addChild(content->handler(), x, y);
 
-    content->subcribe(EventType::DurationExpired, std::bind(&Region::onContentDurationTimeout, this));
+    content->subscribe(EventType::DurationExpired, std::bind(&Region::onContentDurationTimeout, this));
     m_content.push_back(std::move(content));
 }
 

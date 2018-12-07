@@ -12,7 +12,7 @@ RegionContent::RegionContent(std::unique_ptr<IMedia>&& media, std::unique_ptr<IT
     }
     if(dynamic_cast<IPlayable*>(m_media.get()))
     {
-        m_media->subcribe(EventType::PlaybackFinished, [=](const Event&){
+        m_media->subscribe(EventType::PlaybackFinished, [=](const Event&){
            pushEvent(DurationExpiredEvent{});
         });
     }
@@ -66,8 +66,8 @@ void RegionContent::subscribeToEvents(IMedia& media)
 {
     auto handler = std::bind(&IMedia::handleEvent, &media, std::placeholders::_1);
 
-    subcribe(EventType::StartMedia, handler);
-    subcribe(EventType::StopMedia, handler);
-    subcribe(EventType::ScaleMedia, handler);
-    subcribe(EventType::DurationExpired, handler);
+    subscribe(EventType::StartMedia, handler);
+    subscribe(EventType::StopMedia, handler);
+    subscribe(EventType::ScaleMedia, handler);
+    subscribe(EventType::DurationExpired, handler);
 }

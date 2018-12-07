@@ -38,11 +38,11 @@ public:
         return width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT);
     }
 
-    MainLayoutBuilderTest& defaultContainers()
+    MainLayoutBuilderTest& defaultRegions()
     {
-        std::vector<MediaContainerWithPos> containers;
-        containers.push_back(MediaContainerWithPos{constructMock<MockMediaContainer, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
-        return static_cast<MainLayoutBuilderTest&>(mediaContainers(std::move(containers)));
+        std::vector<RegionWithPos> allRegions;
+        allRegions.push_back(RegionWithPos{constructMock<MockRegion, MockFixedLayoutAdaptor>(), DEFAULT_XPOS, DEFAULT_YPOS});
+        return static_cast<MainLayoutBuilderTest&>(regions(std::move(allRegions)));
     }
 
 protected:

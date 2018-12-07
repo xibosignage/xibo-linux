@@ -11,12 +11,12 @@ class Observable : public Interface
     static_assert(std::is_base_of_v<IObservable, Interface>, "Should implement IObservable");
 
 public:
-    void subcribe(EventType type, const EventHandler& handler) override
+    void subscribe(EventType type, const EventHandler& handler) final
     {
         m_observers.emplace(type, handler);
     }
 
-    void pushEvent(const Event& ev) override
+    void pushEvent(const Event& ev) final
     {
         auto iterRange = m_observers.equal_range(ev.type());
 

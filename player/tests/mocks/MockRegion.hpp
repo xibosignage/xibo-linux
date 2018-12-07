@@ -1,14 +1,14 @@
 #pragma once
 
 #include "control/IRegion.hpp"
-#include "media/IMedia.hpp"
+#include "control/IRegionContent.hpp"
 
 #include <gmock/gmock.h>
 
-class MockMediaContainer : public IRegion
+class MockRegion : public IRegion
 {
 public:
-    MockMediaContainer(std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
+    MockRegion(std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
         m_handler(std::move(handler))
     {
     }
@@ -21,12 +21,11 @@ public:
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
-    MOCK_METHOD0(loopMedia, void());
+    MOCK_METHOD0(loopContent, void());
     MOCK_CONST_METHOD0(id, int());
     MOCK_CONST_METHOD0(zorder, int());
     MOCK_METHOD0(show, void());
-    MOCK_METHOD3(addMedia, void(std::unique_ptr<IMedia>&& media, int x, int y));
-    MOCK_METHOD1(addMedia, void(std::unique_ptr<IMedia>&& media));
+    MOCK_METHOD3(addContent, void(std::unique_ptr<IRegionContent>&& content, int x, int y));
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;

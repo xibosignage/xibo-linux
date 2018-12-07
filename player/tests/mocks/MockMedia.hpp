@@ -4,20 +4,20 @@
 
 #include <gmock/gmock.h>
 
-template<typename Interface>
-class MockMedia : public Interface
+class MockMedia : public IMedia
 {
 public:
-    MOCK_METHOD1(attachMedia, void(std::unique_ptr<IMedia>&& media));
-    MOCK_METHOD1(connect, void(OnMediaTimeout callback));
     MOCK_CONST_METHOD0(duration, int());
     MOCK_METHOD1(setDuration, void(int duration));
     MOCK_CONST_METHOD0(id, int());
     MOCK_METHOD1(apply, void(MediaVisitor& visitor));
+    MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
+    MOCK_METHOD1(pushEvent, void(const Event& ev));
+    MOCK_METHOD1(handleEvent, void(const Event& ev));
 
 };
 
-class MockVisibleMedia : public MockMedia<IMedia>, public IVisible
+class MockVisibleMedia : public MockMedia, public IVisible
 {
 public:
     MockVisibleMedia(std::unique_ptr<IWidgetAdaptor>&& handler) :
@@ -39,8 +39,4 @@ public:
 private:
     std::unique_ptr<IWidgetAdaptor> m_handler;
 
-};
-
-class MockInvisibleMedia : public MockMedia<IMedia>
-{
 };

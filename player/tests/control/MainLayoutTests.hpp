@@ -31,7 +31,7 @@ public:
         ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
         ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
 
-        addBackgroundAndContainer(*layout);
+        addBackgroundAndRegions(*layout);
 
         return layout;
     }
@@ -42,9 +42,9 @@ protected:
         return *m_background;
     }
 
-    MockMediaContainer& container()
+    MockRegion& region()
     {
-        return *m_container;
+        return *m_region;
     }
 
     auto createBackground()
@@ -57,14 +57,14 @@ protected:
         return background;
     }
 
-    auto createMediaContainer()
+    auto createRegion()
     {
-        auto container = constructMock<MockMediaContainer, MockFixedLayoutAdaptor>();
+        auto region = constructMock<MockRegion, MockFixedLayoutAdaptor>();
 
-        ON_CALL(*container, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
-        ON_CALL(*container, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+        ON_CALL(*region, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(*region, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
 
-        return container;
+        return region;
     }
 
     virtual void addBackground(MainLayout& layout)
@@ -75,58 +75,58 @@ protected:
         layout.setBackground(std::move(background));
     }
 
-    virtual void addContainers(MainLayout& layout)
+    virtual void addRegions(MainLayout& layout)
     {
-        auto container = createMediaContainer();
-        m_container = container.get();
+        auto region = createRegion();
+        m_region = region.get();
 
-        layout.addMediaContainer(std::move(container), DEFAULT_XPOS, DEFAULT_XPOS);
+        layout.addRegion(std::move(region), DEFAULT_XPOS, DEFAULT_XPOS);
     }
 
 private:
-    void addBackgroundAndContainer(MainLayout& layout)
+    void addBackgroundAndRegions(MainLayout& layout)
     {
         addBackground(layout);
-        addContainers(layout);
+        addRegions(layout);
     }
 
 private:
     MockBackground* m_background = nullptr;
-    MockMediaContainer* m_container = nullptr;
+    MockRegion* m_region = nullptr;
 
 };
 
 class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
 {
 protected:
-    void addContainers(MainLayout& layout) override
+    void addRegions(MainLayout& layout) override
     {
         for(int zorder : GetParam())
         {
-            auto container = createMediaContainer();
+            auto region = createRegion();
 
-            ON_CALL(*container, zorder()).WillByDefault(testing::Return(zorder));
-            pushContainerAndSort(container.get());
+            ON_CALL(*region, zorder()).WillByDefault(testing::Return(zorder));
+            pushRegionAndSort(region.get());
 
-            layout.addMediaContainer(std::move(container), DEFAULT_XPOS, DEFAULT_YPOS);
+            layout.addRegion(std::move(region), DEFAULT_XPOS, DEFAULT_YPOS);
         }
     }
 
-    testing::NiceMock<MockMediaContainer>* container(size_t index)
+    testing::NiceMock<MockRegion>* region(size_t index)
     {
-        return m_containers[index];
+        return m_regions[index];
     }
 
 private:
-    void pushContainerAndSort(testing::NiceMock<MockMediaContainer>* container)
+    void pushRegionAndSort(testing::NiceMock<MockRegion>* region)
     {
-        m_containers.push_back(container);
-        std::sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
+        m_regions.push_back(region);
+        std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
             return first->zorder() < second->zorder();
         });
     }
 
 private:
-    std::vector<testing::NiceMock<MockMediaContainer>*> m_containers;
+    std::vector<testing::NiceMock<MockRegion>*> m_regions;
 
 };
