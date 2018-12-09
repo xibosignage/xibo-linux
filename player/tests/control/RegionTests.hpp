@@ -5,7 +5,6 @@
 #include "creators/RegionBuilderTests.hpp" // FIXME zorder from here
 #include "control/Region.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
-#include "mocks/MockTimerProvider.hpp"
 
 #include "mocks/MockRegionContent.hpp"
 #include "mocks/MockWidgetAdaptor.hpp"

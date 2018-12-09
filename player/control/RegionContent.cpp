@@ -4,20 +4,36 @@
 #include "adaptors/GtkDrawingAreaAdaptor.hpp"
 #include "constants.hpp"
 
+#include <cassert>
+
 RegionContent::RegionContent(std::unique_ptr<IMedia>&& media, std::unique_ptr<ITimerProvider>&& timer) : m_media(std::move(media)), m_timer(std::move(timer))
+{
+    assert(m_media);
+    assert(m_timer);
+
+    checkVisibleMedia();
+    checkPlayableMedia();
+
+    subscribeToEvents(*m_media);
+}
+
+void RegionContent::checkVisibleMedia()
 {
     if(auto visibleMedia = dynamic_cast<IVisible*>(m_media.get()))
     {
         m_mediaHandler = &visibleMedia->handler();
+        subscribe(EventType::ScaleMedia, std::bind(&IMedia::handleEvent, m_media.get(), std::placeholders::_1));
     }
+}
+
+void RegionContent::checkPlayableMedia()
+{
     if(dynamic_cast<IPlayable*>(m_media.get()))
     {
         m_media->subscribe(EventType::PlaybackFinished, [=](const Event&){
            pushEvent(DurationExpiredEvent{});
         });
     }
-
-    subscribeToEvents(*m_media);
 }
 
 void RegionContent::start()
@@ -43,6 +59,8 @@ void RegionContent::stop()
 
 void RegionContent::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
 {
+    assert(attachedMedia);
+
     m_attachedMedia = std::move(attachedMedia);
     subscribeToEvents(*m_attachedMedia);
 }
@@ -54,12 +72,16 @@ void RegionContent::scale(double scaleX, double scaleY)
 
 IWidgetAdaptor& RegionContent::handler()
 {
-    static GtkDrawingAreaAdaptor blankHandler;
-
     if(!m_mediaHandler)
-        return blankHandler;
+        return blankHandler();
 
     return *m_mediaHandler;
+}
+
+IWidgetAdaptor& RegionContent::blankHandler()
+{
+    static GtkDrawingAreaAdaptor handler;
+    return handler;
 }
 
 void RegionContent::subscribeToEvents(IMedia& media)
@@ -68,6 +90,5 @@ void RegionContent::subscribeToEvents(IMedia& media)
 
     subscribe(EventType::StartMedia, handler);
     subscribe(EventType::StopMedia, handler);
-    subscribe(EventType::ScaleMedia, handler);
     subscribe(EventType::DurationExpired, handler);
 }

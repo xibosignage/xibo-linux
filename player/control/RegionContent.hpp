@@ -19,7 +19,12 @@ public:
     void scale(double scaleX, double scaleY) override;
     IWidgetAdaptor& handler() override;
 
+protected:
+    virtual IWidgetAdaptor& blankHandler();
+
 private:
+    void checkVisibleMedia();
+    void checkPlayableMedia();
     void subscribeToEvents(IMedia& media);
     void startTimer();
 
