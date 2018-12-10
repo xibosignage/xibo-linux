@@ -2,7 +2,7 @@
 
 | `v0.4-alpha` | `master`|
 |--------|--------|
-| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.3.3-alpha.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.3.3-alpha) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
+| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.4-alpha.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.4-alpha) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
 
 ## Building from sources
 
