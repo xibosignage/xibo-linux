@@ -22,6 +22,7 @@ public:
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD0(loopContent, void());
+    MOCK_CONST_METHOD0(contentLooped, bool());
     MOCK_CONST_METHOD0(id, int());
     MOCK_CONST_METHOD0(zorder, int());
     MOCK_METHOD0(show, void());

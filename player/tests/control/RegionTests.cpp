@@ -4,18 +4,25 @@ using namespace ::testing;
 
 const std::size_t FIRST_CONTENT_INDEX = 0;
 
+TEST_F(RegionTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructRegion();
+}
+
+TEST_F(RegionTest, Id_Default_EqualsToDefaultId)
+{
+    auto region = constructRegion();
+
+    ASSERT_EQ(region->id(), DEFAULT_ID);
+}
+
 TEST_F(RegionTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
     auto region = constructRegion();
 
     ASSERT_EQ(&region->handler(), &adaptor());
-}
-
-TEST_F(RegionTest, Id_Default_IdEqualsDefault)
-{
-    auto region = constructRegion();
-
-    ASSERT_EQ(region->id(), DEFAULT_ID);
 }
 
 TEST_F(RegionTest, Width_HandlerReturnsDefaultWidth_RegionWidthEqualsDefault)
@@ -41,6 +48,22 @@ TEST_F(RegionTest, Zorder_Default_RegionZorderEquals0)
     auto region = constructRegion();
 
     ASSERT_EQ(region->zorder(), DEFAULT_ZORDER);
+}
+
+TEST_F(RegionTest, ContentLooped_Default_RegionContentLoopedEqualsFalse)
+{
+    auto region = constructRegion();
+
+    ASSERT_EQ(region->contentLooped(), false);
+}
+
+TEST_F(RegionTest, ContentLooped_LoopedContent_RegionContentLoopedEqualsFalse)
+{
+    auto region = constructRegion();
+
+    region->loopContent();
+
+    ASSERT_EQ(region->contentLooped(), true);
 }
 
 TEST_F(RegionTest, AddContentWithCoords_Valid_HandlerAddChildShouldBeCalled)

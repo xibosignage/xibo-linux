@@ -12,7 +12,6 @@
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
-
 const auto invalidRegionSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
 
 class RegionBuilderSizeTest : public testing::TestWithParam<Size> { };

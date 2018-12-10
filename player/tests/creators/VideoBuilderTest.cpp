@@ -1,6 +1,6 @@
 #include "VideoBuilderTest.hpp"
 
-#include "media/IMedia.hpp"
+#include "media/Video.hpp"
 #include "adaptors/IWidgetAdaptor.hpp"
 
 using namespace testing;
@@ -48,4 +48,18 @@ TEST(VideoBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
     ON_CALL(builder.filesystem(), isRegularFile(_)).WillByDefault(Return(false));
 
     ASSERT_THROW(builder.path(DEFAULT_PATH.string()).build(), std::runtime_error);
+}
+
+TEST(VideoBuilderTest, Construct_LoopTrue_VideoLoopedEqualsTrue)
+{
+    auto video = VideoBuilderTest().muted(DEFAULT_VIDEO_MUTED).looped(true).build();
+
+    ASSERT_EQ(dynamic_cast<Video&>(*video).looped(), true);
+}
+
+TEST(VideoBuilderTest, Construct_LoopFalse_VideoLoopedEqualsFalse)
+{
+    auto video = VideoBuilderTest().muted(DEFAULT_VIDEO_MUTED).looped(false).build();
+
+    ASSERT_EQ(dynamic_cast<Video&>(*video).looped(), false);
 }

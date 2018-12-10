@@ -5,9 +5,6 @@
 
 #include <boost/optional/optional.hpp>
 
-const bool DEFAULT_LOOPED = false;
-const bool DEFAULT_MUTED = false;
-
 std::unique_ptr<IMedia> AudioBuilder::doBuild()
 {
     auto audio = createAudio();
@@ -28,13 +25,13 @@ std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
 
 AudioBuilder& AudioBuilder::muted(const boost::optional<bool>& muted)
 {
-    m_muted = muted.value_or(DEFAULT_MUTED);
+    m_muted = muted.value_or(DEFAULT_AUDIO_MUTED);
     return *this;
 }
 
 AudioBuilder& AudioBuilder::looped(const boost::optional<bool>& looped)
 {
-    m_looped = looped.value_or(DEFAULT_LOOPED);
+    m_looped = looped.value_or(DEFAULT_AUDIO_LOOPED);
     return *this;
 }
 

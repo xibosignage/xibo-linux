@@ -74,3 +74,31 @@ TEST_F(ImageTest, Hide_Default_HandlerHideShouldBeCalled)
 
     image->hide();
 }
+
+TEST_F(ImageTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), show());
+
+    image->handleEvent(StartMediaEvent{});
+}
+
+TEST_F(ImageTest, HandlerEvent_StopMediaEvent_HandlerHideShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), hide());
+
+    image->handleEvent(StopMediaEvent{});
+}
+
+TEST_F(ImageTest, HandlerEvent_ScaledMediaEvent_HandlerScaleShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    image->handleEvent(ScaleMediaEvent{DEFAULT_XSCALE, DEFAULT_YSCALE});
+}
+

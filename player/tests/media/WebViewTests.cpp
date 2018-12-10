@@ -94,3 +94,30 @@ TEST_F(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCal
 
     webview->setTransparent(false);
 }
+
+TEST_F(WebViewTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), show());
+
+    webview->handleEvent(StartMediaEvent{});
+}
+
+TEST_F(WebViewTest, HandlerEvent_StopMediaEvent_HandlerHideShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), hide());
+
+    webview->handleEvent(StopMediaEvent{});
+}
+
+TEST_F(WebViewTest, HandlerEvent_ScaledMediaEvent_HandlerScaleShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    webview->handleEvent(ScaleMediaEvent{DEFAULT_XSCALE, DEFAULT_YSCALE});
+}

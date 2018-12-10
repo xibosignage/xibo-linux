@@ -19,6 +19,7 @@ public:
     void scale(double scaleX, double scaleY) override;
 
     void loopContent() override;
+    bool contentLooped() const override;
     int id() const override;
     int zorder() const override;
     void show() override;

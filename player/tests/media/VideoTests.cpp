@@ -53,6 +53,24 @@ TEST_F(VideoTest, SetMuted_False_HandlerSetVolume100ShouldBeCalled)
     video->setMuted(false);
 }
 
+TEST_F(VideoTest, SetLooped_True_LoopedEqualsTrue)
+{
+    auto video = constructVideo();
+
+    video->setLooped(true);
+
+    ASSERT_EQ(video->looped(), true);
+}
+
+TEST_F(VideoTest, SetLooped_False_LoopedEqualsFalse)
+{
+    auto video = constructVideo();
+
+    video->setLooped(false);
+
+    ASSERT_EQ(video->looped(), false);
+}
+
 TEST_F(VideoTest, Width_HandlerReturnsDefaultWidth_VideoWidthEqualsDefault)
 {
     auto video = constructVideo();
@@ -78,4 +96,40 @@ TEST_F(VideoTest, Scale_Default_VideoScaleShouldBeCalled)
     EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     video->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+}
+
+TEST_F(VideoTest, HandlerEvent_StartMediaEvent_HandlerPlayShouldBeCalled)
+{
+    auto video = constructVideo();
+
+    EXPECT_CALL(adaptor(), play());
+
+    video->handleEvent(StartMediaEvent{});
+}
+
+TEST_F(VideoTest, HandlerEvent_StopMediaEvent_HandlerStopShouldBeCalled)
+{
+    auto video = constructVideo();
+
+    EXPECT_CALL(adaptor(), stop());
+
+    video->handleEvent(StopMediaEvent{});
+}
+
+TEST_F(VideoTest, HandlerEvent_DurationExpiredMediaEvent_HandlerStopPlaybackShouldBeCalled)
+{
+    auto video = constructVideo();
+
+    EXPECT_CALL(adaptor(), stopPlayback());
+
+    video->handleEvent(DurationExpiredEvent{});
+}
+
+TEST_F(VideoTest, HandlerEvent_ScaledMediaEvent_HandlerScaleShouldBeCalled)
+{
+    auto video = constructVideo();
+
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    video->handleEvent(ScaleMediaEvent{DEFAULT_XSCALE, DEFAULT_YSCALE});
 }

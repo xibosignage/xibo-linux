@@ -3,6 +3,9 @@
 class IAudioHandler;
 class Audio;
 
+const bool DEFAULT_AUDIO_LOOPED = false;
+const bool DEFAULT_AUDIO_MUTED = false;
+
 class AudioBuilder : public MediaBuilder
 {
 public:

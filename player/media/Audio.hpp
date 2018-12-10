@@ -16,6 +16,7 @@ public:
 
     void setVolume(int volume);
     void setLooped(bool looped);
+    bool looped() const;
 
 private:
     void onAudioFinished();

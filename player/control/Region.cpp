@@ -43,6 +43,11 @@ void Region::loopContent()
     m_contentLooped = true;
 }
 
+bool Region::contentLooped() const
+{
+    return m_contentLooped;
+}
+
 int Region::id() const
 {
     return m_id;

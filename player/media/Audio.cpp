@@ -49,6 +49,11 @@ void Audio::setLooped(bool looped)
     m_looped = looped;
 }
 
+bool Audio::looped() const
+{
+    return m_looped;
+}
+
 void Audio::handleEvent(const Event& ev)
 {
     switch(ev.type())

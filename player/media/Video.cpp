@@ -59,6 +59,11 @@ void Video::setLooped(bool looped)
     m_looped = looped;
 }
 
+bool Video::looped() const
+{
+    return m_looped;
+}
+
 void Video::setMuted(bool muted)
 {
     m_handler->setVolume(muted ? MIN_VOLUME : MAX_VOLUME);

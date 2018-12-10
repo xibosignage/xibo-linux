@@ -3,6 +3,9 @@
 class Video;
 class IVideoHandler;
 
+const bool DEFAULT_VIDEO_LOOPED = false;
+const bool DEFAULT_VIDEO_MUTED = false;
+
 class VideoBuilder : public MediaBuilder
 {
 public:

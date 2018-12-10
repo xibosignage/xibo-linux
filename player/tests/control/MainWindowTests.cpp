@@ -16,6 +16,15 @@ TEST_F(MainWindowTest, Constuctor_Default_HandlerDisableWindowResizeShouldBeCall
     constructWindow();
 }
 
+TEST_F(MainWindowTest, SetSize_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto window = constructWindow();
+
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    window->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+}
+
 TEST_P(MainWindowTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto window = constructWindow();

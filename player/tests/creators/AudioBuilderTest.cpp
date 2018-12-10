@@ -1,5 +1,5 @@
 #include "AudioBuilderTest.hpp"
-#include "media/IMedia.hpp"
+#include "media/Audio.hpp"
 
 TEST(AudioBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
@@ -36,4 +36,19 @@ TEST(AudioBuilderTest, Construct_Volume50_HandlerSetVolume50ShouldBeCalled)
 
     builder.volume(50).muted(false).build();
 }
+
+TEST(AudioBuilderTest, Construct_LoopTrue_AudioLoopedEqualsTrue)
+{
+    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(true).build();
+
+    ASSERT_EQ(dynamic_cast<Audio&>(*audio).looped(), true);
+}
+
+TEST(AudioBuilderTest, Construct_LoopFalse_AudioLoopedEqualsFalse)
+{
+    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(false).build();
+
+    ASSERT_EQ(dynamic_cast<Audio&>(*audio).looped(), false);
+}
+
 

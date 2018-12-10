@@ -5,9 +5,6 @@
 
 #include <boost/optional/optional.hpp>
 
-const bool DEFAULT_LOOPED = false;
-const bool DEFAULT_MUTED = false;
-
 std::unique_ptr<IMedia> VideoBuilder::doBuild()
 {
     auto video = createVideo();
@@ -40,13 +37,13 @@ VideoBuilder& VideoBuilder::height(int height)
 
 VideoBuilder& VideoBuilder::muted(const boost::optional<bool>& muted)
 {
-    m_muted = muted.value_or(DEFAULT_MUTED);
+    m_muted = muted.value_or(DEFAULT_VIDEO_MUTED);
     return *this;
 }
 
 VideoBuilder& VideoBuilder::looped(const boost::optional<bool>& looped)
 {
-    m_looped = looped.value_or(DEFAULT_LOOPED);
+    m_looped = looped.value_or(DEFAULT_VIDEO_LOOPED);
     return *this;
 }
 

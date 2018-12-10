@@ -18,6 +18,7 @@ public:
     int height() const override;
 
     void setLooped(bool looped);
+    bool looped() const;
     void setMuted(bool muted);
 
     IWidgetAdaptor& handler() override;

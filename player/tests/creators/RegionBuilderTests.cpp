@@ -33,3 +33,24 @@ TEST(RegionBuilderTest, Construct_CustomZorder_RegionWithCustomZorderCreated)
 
     ASSERT_EQ(region->zorder(), DEFAULT_ZORDER + 1);
 }
+
+TEST(RegionBuilderTest, Construct_CustomId_RegionWithCustomIdCreated)
+{
+    auto region = RegionBuilderTest().defaultContent().defaultSize().id(DEFAULT_ID + 1).build();
+
+    ASSERT_EQ(region->id(), DEFAULT_ID + 1);
+}
+
+TEST(RegionBuilderTest, Construct_LoopedTrue_RegionWithLoopedContentCreated)
+{
+    auto region = RegionBuilderTest().defaultContent().defaultSize().loop(true).build();
+
+    ASSERT_EQ(region->contentLooped(), true);
+}
+
+TEST(RegionBuilderTest, Construct_LoopedFalse_RegionWithoutLoopedContentCreated)
+{
+    auto region = RegionBuilderTest().defaultContent().defaultSize().loop(false).build();
+
+    ASSERT_EQ(region->contentLooped(), false);
+}
