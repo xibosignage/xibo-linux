@@ -1,20 +1,28 @@
 #include "RegisterDisplay.hpp"
 
-#include "xmds.hpp"
-#include "control/PlayerSettings.hpp"
+#include "utils/Utilities.hpp"
 
-template<>
-std::string soap::requestString(const RegisterDisplay::Request& request)
+constexpr const std::string_view REQUEST_NAME = "RegisterDisplay";
+
+SOAP::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
 {
-    return createRequest<RegisterDisplay::Request>
-            (request.clientCode, request.clientType, request.clientVersion,
-             request.displayName, request.macAddress, request.serverKey, request.hardwareKey);
 }
 
-template<>
-RegisterDisplay::Response soap::createResponse(const std::string& soapResponse)
+std::string SOAP::RequestSerializer<RegisterDisplay::Request>::string()
 {
-    auto display = xmds::parseXmlResponse(soapResponse).get_child("display");
+    return createRequest(REQUEST_NAME, request().clientCode, request().clientType, request().clientVersion,
+                         request().displayName, request().macAddress, request().serverKey, request().hardwareKey);
+
+}
+
+SOAP::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+{
+}
+
+RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::get()
+{
+    auto activationMessage = responseTree().get_child("ActivationMessage").get_value<std::string>();
+    auto display = Utils::parseXmlFromString(activationMessage).get_child("display");
     auto attrs = display.get_child("<xmlattr>");
 
     RegisterDisplay::Response result;
@@ -22,28 +30,33 @@ RegisterDisplay::Response soap::createResponse(const std::string& soapResponse)
     result.statusMessage = attrs.get<std::string>("message");
     if(result.status == RegisterDisplay::Response::Status::Ready)
     {
-        result.playerSettings.collectInterval = display.get<int>("collectInterval");
-        result.playerSettings.downloadStartWindow = display.get<std::string>("downloadStartWindow");
-        result.playerSettings.downloadEndWindow = display.get<std::string>("downloadEndWindow");
-        result.playerSettings.statsEnabled = display.get<bool>("statsEnabled");
-        result.playerSettings.xmrNetworkAddress = display.get<std::string>("xmrNetworkAddress");
-        result.playerSettings.sizeX = display.get<double>("sizeX");
-        result.playerSettings.sizeY = display.get<double>("sizeY");
-        result.playerSettings.offsetX = display.get<double>("offsetX");
-        result.playerSettings.offsetY = display.get<double>("offsetY");
-        result.playerSettings.logLevel = display.get<std::string>("logLevel");
-        result.playerSettings.shellCommandsEnabled = display.get<bool>("enableShellCommands");
-        result.playerSettings.modifiedLayoutsEnabled = display.get<bool>("expireModifiedLayouts");
-        result.playerSettings.maxConcurrentDownloads = display.get<int>("maxConcurrentDownloads");
-        //shellCommandAllowList
-        result.playerSettings.statusLayoutUpdate = display.get<bool>("sendCurrentLayoutAsStatusUpdate");
-        result.playerSettings.screenshotInterval = display.get<int>("screenShotRequestInterval");
-        result.playerSettings.screenshotSize = display.get<int>("screenShotSize");
-        result.playerSettings.maxLogFilesUploads = display.get<int>("maxLogFileUploads");
-        result.playerSettings.embeddedServerPort = display.get<int>("embeddedServerPort");
-        result.playerSettings.preventSleep = display.get<bool>("preventSleep");
-        result.playerSettings.displayName = display.get<std::string>("displayName");
-        result.playerSettings.screenshotRequested = display.get<bool>("screenShotRequested");
+        fillPlayerSettings(result.playerSettings, display);
     }
     return result;
+}
+
+void SOAP::ResponseParser<RegisterDisplay::Response>::fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display)
+{
+    settings.collectInterval = display.get<int>("collectInterval");
+    settings.downloadStartWindow = display.get<std::string>("downloadStartWindow");
+    settings.downloadEndWindow = display.get<std::string>("downloadEndWindow");
+    settings.statsEnabled = display.get<bool>("statsEnabled");
+    settings.xmrNetworkAddress = display.get<std::string>("xmrNetworkAddress");
+    settings.sizeX = display.get<double>("sizeX");
+    settings.sizeY = display.get<double>("sizeY");
+    settings.offsetX = display.get<double>("offsetX");
+    settings.offsetY = display.get<double>("offsetY");
+    settings.logLevel = display.get<std::string>("logLevel");
+    settings.shellCommandsEnabled = display.get<bool>("enableShellCommands");
+    settings.modifiedLayoutsEnabled = display.get<bool>("expireModifiedLayouts");
+    settings.maxConcurrentDownloads = display.get<int>("maxConcurrentDownloads");
+    //shellCommandAllowList
+    settings.statusLayoutUpdate = display.get<bool>("sendCurrentLayoutAsStatusUpdate");
+    settings.screenshotInterval = display.get<int>("screenShotRequestInterval");
+    settings.screenshotSize = display.get<int>("screenShotSize");
+    settings.maxLogFilesUploads = display.get<int>("maxLogFileUploads");
+    settings.embeddedServerPort = display.get<int>("embeddedServerPort");
+    settings.preventSleep = display.get<bool>("preventSleep");
+    settings.displayName = display.get<std::string>("displayName");
+    settings.screenshotRequested = display.get<bool>("screenShotRequested");
 }

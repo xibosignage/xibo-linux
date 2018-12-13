@@ -1,14 +1,13 @@
 #ifndef REQUIREDFILES_HPP
 #define REQUIREDFILES_HPP
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
 
 namespace RequiredFiles
 {
-    class Response
+    struct Response
     {
-    public:
         enum class FileType
         {
             Media,
@@ -24,7 +23,7 @@ namespace RequiredFiles
             Invalid
         };
 
-        struct required_file
+        struct RequiredFile
         {
             int id;
             size_t size;
@@ -35,21 +34,15 @@ namespace RequiredFiles
             FileType fileType;
         };
 
-        struct required_resource
+        struct RequiredResource
         {
             int layoutId;
             int regionId;
             int mediaId;
         };
 
-        const std::vector<required_file>& requiredFiles() const;
-        const std::vector<required_resource>& requiredResources() const;
-
-        void addFile(const boost::property_tree::ptree& attrs);
-
-    private:
-        std::vector<required_file> m_requiredMedia;
-        std::vector<required_resource> m_requiredResources;
+        std::vector<RequiredFile> requiredFiles;
+        std::vector<RequiredResource> requiredResources;
 
     };
 
@@ -61,10 +54,26 @@ namespace RequiredFiles
 }
 
 template<>
-struct soap::request_traits<RequiredFiles::Request>
+class SOAP::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
 {
-    static inline const std::string name = "RequiredFiles";
-    using response_t = RequiredFiles::Response;
+public:
+    RequestSerializer(const RequiredFiles::Request& request);
+    std::string string();
+
+};
+
+template<>
+class SOAP::ResponseParser<RequiredFiles::Response> : public BaseResponseParser
+{
+public:
+    ResponseParser(const std::string& soapResponse);
+    RequiredFiles::Response get();
+
+private:
+    void addRequiredFile(RequiredFiles::Response& response, const boost::property_tree::ptree& attrs);
+    RequiredFiles::Response::FileType toFileType(const std::string& type);
+    RequiredFiles::Response::DownloadType toDownloadType(const std::string& type);
+
 };
 
 

@@ -80,8 +80,8 @@ void CollectionInterval::onRegisterDisplay(const RegisterDisplay::Response& resp
 
 void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response)
 {
-    size_t filesCount = response.requiredFiles().size();
-    size_t resourcesCount = response.requiredResources().size();
+    size_t filesCount = response.requiredFiles.size();
+    size_t resourcesCount = response.requiredResources.size();
 
     Utils::logger()->debug("{} files and {} resources to download", filesCount, resourcesCount);
 
@@ -89,7 +89,7 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response
     session->downloadOverall = filesCount + resourcesCount;
     auto clbk = std::bind(&CollectionInterval::downloadCallback, this, std::placeholders::_1, session);
 
-    for(auto&& file : response.requiredFiles())
+    for(auto&& file : response.requiredFiles)
     {
         Utils::logger()->trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
         Utils::logger()->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
@@ -97,7 +97,7 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response
         Utils::downloadManager().download(file.filename, file.path, clbk); // FIXME add download type
     }
 
-    for(auto&& resource : response.requiredResources())
+    for(auto&& resource : response.requiredResources)
     {
         Utils::logger()->trace("layout_id: {} region_id: {} media_id: {}", resource.layoutId, resource.regionId, resource.mediaId);
 

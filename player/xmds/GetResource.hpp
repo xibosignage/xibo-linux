@@ -1,8 +1,8 @@
 #ifndef GETRESOURCE_HPP
 #define GETRESOURCE_HPP
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
 
 namespace GetResource
 {
@@ -22,10 +22,21 @@ namespace GetResource
 }
 
 template<>
-struct soap::request_traits<GetResource::Request>
+class SOAP::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
 {
-    static inline const std::string name = "GetResource";
-    using response_t = GetResource::Response;
+public:
+    RequestSerializer(const GetResource::Request& request);
+    std::string string();
+
+};
+
+template<>
+class SOAP::ResponseParser<GetResource::Response> : public BaseResponseParser
+{
+public:
+    ResponseParser(const std::string& soapResponse);
+    GetResource::Response get();
+
 };
 
 #endif // GETRESOURCE_HPP

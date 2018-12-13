@@ -1,8 +1,8 @@
 #ifndef REGISTERDISPLAY_HPP
 #define REGISTERDISPLAY_HPP
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
 #include "control/PlayerSettings.hpp"
 
 namespace RegisterDisplay
@@ -35,10 +35,25 @@ namespace RegisterDisplay
 }
 
 template<>
-struct soap::request_traits<RegisterDisplay::Request>
+class SOAP::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
 {
-    static inline const std::string name = "RegisterDisplay";
-    using response_t = RegisterDisplay::Response;
+public:
+    RequestSerializer(const RegisterDisplay::Request& request);
+    std::string string();
+
 };
+
+template<>
+class SOAP::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser
+{
+public:
+    ResponseParser(const std::string& soapResponse);
+    RegisterDisplay::Response get();
+
+private:
+    void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
+
+};
+
 
 #endif // REGISTERDISPLAY_HPP

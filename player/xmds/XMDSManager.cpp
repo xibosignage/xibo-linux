@@ -19,7 +19,7 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.macAddress = "test"; // FIXME get from the system
     request.displayName = displayName;
 
-    m_soapManager->sendRequest(request, callback);
+    m_soapManager->sendRequest<RegisterDisplay::Response>(request, callback);
 }
 
 void XMDSManager::requiredFiles(RequiredFilesCallback callback)
@@ -28,7 +28,7 @@ void XMDSManager::requiredFiles(RequiredFilesCallback callback)
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    m_soapManager->sendRequest(request, callback);
+    m_soapManager->sendRequest<RequiredFiles::Response>(request, callback);
 }
 
 void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback)
@@ -40,5 +40,5 @@ void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResour
     request.regionId = std::to_string(regionId);
     request.mediaId = std::to_string(mediaId);
 
-    m_soapManager->sendRequest(request, callback);
+    m_soapManager->sendRequest<GetResource::Response>(request, callback);
 }

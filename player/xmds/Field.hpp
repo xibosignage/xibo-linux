@@ -7,12 +7,16 @@ template<typename T>
 class Field
 {
 public:
-    Field(std::string_view name) : m_field_name(name) { }
+    Field(std::string_view name) : m_fieldName(name)
+    {
+    }
+
     Field& operator=(const T& value)
     {
-        m_value = value;
+        setValue(value);
         return *this;
     }
+
     std::string type() const
     {
         if constexpr(std::is_same_v<T, std::string>)
@@ -24,21 +28,24 @@ public:
 
         return "unsupported";
     }
+
     std::string name() const
     {
-        return m_field_name;
+        return m_fieldName;
     }
-    void set_value(const T& value)
+
+    void setValue(const T& value)
     {
         m_value = value;
     }
+
     T value() const
     {
         return m_value;
     }
 
 private:
-    std::string m_field_name;
+    std::string m_fieldName;
     T m_value;
 };
 
