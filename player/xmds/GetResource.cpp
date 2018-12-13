@@ -1,6 +1,7 @@
 #include "GetResource.hpp"
+#include "Resources.hpp"
 
-constexpr const std::string_view REQUEST_NAME = "GetResource";
+namespace Resources = XMDSResources::GetResource;
 
 SOAP::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResource::Request& request) : BaseRequestSerializer(request)
 {
@@ -8,7 +9,7 @@ SOAP::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResour
 
 std::string SOAP::RequestSerializer<GetResource::Request>::string()
 {
-    return createRequest(REQUEST_NAME, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
+    return createRequest(Resources::RequestName, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
 }
 
 SOAP::ResponseParser<GetResource::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
@@ -18,6 +19,6 @@ SOAP::ResponseParser<GetResource::Response>::ResponseParser(const std::string& s
 GetResource::Response SOAP::ResponseParser<GetResource::Response>::get()
 {
     GetResource::Response result;
-    result.resource = responseTree().get_child("resource").get_value<std::string>(); // TODO check in Postman
+    result.resource = responseTree().get<std::string>(Resources::Resource);
     return result;
 }
