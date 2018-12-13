@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Media.hpp"
 
 class FilePath;

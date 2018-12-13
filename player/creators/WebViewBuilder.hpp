@@ -1,11 +1,13 @@
 #include "MediaBuilder.hpp"
 
-class IWebViewAdaptor;
-class WebView;
+#include "adaptors/IWebViewAdaptor.hpp"
+#include "media/WebView.hpp"
 
-class WebViewBuilder : public MediaBuilder
+class WebViewBuilder : public BaseMediaBuilder<WebViewBuilder>
 {
 public:
+    std::unique_ptr<WebView> build();
+
     WebViewBuilder& path(const boost::optional<std::string>& path) override;
     WebViewBuilder& duration(int duration) override;
 
@@ -14,7 +16,6 @@ public:
     WebViewBuilder& transparent(const boost::optional<bool>& transparent);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() final;
     virtual std::unique_ptr<IWebViewAdaptor> createAdaptor();
 
 private:

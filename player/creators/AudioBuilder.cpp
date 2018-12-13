@@ -1,13 +1,12 @@
 #include "AudioBuilder.hpp"
-
-#include "media/Audio.hpp"
 #include "media/AudioHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<IMedia> AudioBuilder::doBuild()
+std::unique_ptr<Audio> AudioBuilder::build()
 {
     auto audio = createAudio();
+    prepareCommonParams(*audio);
     audio->setVolume(m_muted ? MIN_VOLUME : m_volume);
     audio->setLooped(m_looped);
     return audio;

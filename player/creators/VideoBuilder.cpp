@@ -1,13 +1,12 @@
 #include "VideoBuilder.hpp"
-
-#include "media/Video.hpp"
 #include "media/VideoHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<IMedia> VideoBuilder::doBuild()
+std::unique_ptr<Video> VideoBuilder::build()
 {
     auto video = createVideo();
+    prepareCommonParams(*video);
     video->setMuted(m_muted);
     video->setLooped(m_looped);
     return video;

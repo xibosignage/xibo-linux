@@ -1,10 +1,5 @@
 #include "MainDirector.hpp"
 
-#include "creators/ImageBuilder.hpp"
-#include "creators/VideoBuilder.hpp"
-#include "creators/AudioBuilder.hpp"
-#include "creators/WebViewBuilder.hpp"
-
 #include "creators/BackgroundBuilder.hpp"
 #include "creators/MainLayoutBuilder.hpp"
 #include "creators/RegionBuilder.hpp"
@@ -13,7 +8,12 @@
 #include "control/IBackground.hpp"
 #include "control/IMainLayout.hpp"
 #include "control/RegionContent.hpp"
-#include "media/IMedia.hpp"
+
+#include "creators/ImageBuilder.hpp"
+#include "creators/VideoBuilder.hpp"
+#include "creators/AudioBuilder.hpp"
+#include "creators/WebViewBuilder.hpp"
+
 #include "media/GetMediaPosition.hpp"
 #include "parsers/XlfResources.hpp"
 #include "utils/TimerProvider.hpp"
@@ -98,22 +98,22 @@ std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeig
         return buildWebView(regionWidth, regionHeight, mediaNode);
 }
 
-std::unique_ptr<IMedia> MainDirector::buildImage(int regionWidth, int regionHeight, const ImageOptions& opts)
+std::unique_ptr<Image> MainDirector::buildImage(int regionWidth, int regionHeight, const ImageOptions& opts)
 {
     return ImageBuilder().width(regionWidth).height(regionHeight).scaleType(opts.scaleType()).align(opts.align()).valign(opts.valign()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-std::unique_ptr<IMedia> MainDirector::buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts)
+std::unique_ptr<Video> MainDirector::buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts)
 {
     return VideoBuilder().width(regionWidth).height(regionHeight).muted(opts.muted()).looped(opts.looped()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-std::unique_ptr<IMedia> MainDirector::buildAudio(const AudioOptions& opts)
+std::unique_ptr<Audio> MainDirector::buildAudio(const AudioOptions& opts)
 {
     return AudioBuilder().muted(opts.muted()).looped(opts.looped()).volume(opts.volume()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-std::unique_ptr<IMedia> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
+std::unique_ptr<WebView> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
 {
     return WebViewBuilder().width(regionWidth).height(regionHeight).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }

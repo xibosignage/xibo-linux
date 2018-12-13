@@ -54,12 +54,12 @@ TEST(VideoBuilderTest, Construct_LoopTrue_VideoLoopedEqualsTrue)
 {
     auto video = VideoBuilderTest().muted(DEFAULT_VIDEO_MUTED).looped(true).build();
 
-    ASSERT_EQ(dynamic_cast<Video&>(*video).looped(), true);
+    ASSERT_EQ(video->looped(), true);
 }
 
 TEST(VideoBuilderTest, Construct_LoopFalse_VideoLoopedEqualsFalse)
 {
     auto video = VideoBuilderTest().muted(DEFAULT_VIDEO_MUTED).looped(false).build();
 
-    ASSERT_EQ(dynamic_cast<Video&>(*video).looped(), false);
+    ASSERT_EQ(video->looped(), false);
 }

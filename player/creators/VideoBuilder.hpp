@@ -1,21 +1,22 @@
 #include "MediaBuilder.hpp"
 
-class Video;
-class IVideoHandler;
+#include "media/IVideoHandler.hpp"
+#include "media/Video.hpp"
 
 const bool DEFAULT_VIDEO_LOOPED = false;
 const bool DEFAULT_VIDEO_MUTED = false;
 
-class VideoBuilder : public MediaBuilder
+class VideoBuilder : public BaseMediaBuilder<VideoBuilder>
 {
 public:
+    std::unique_ptr<Video> build();
+
     VideoBuilder& width(int width);
     VideoBuilder& height(int height);
     VideoBuilder& muted(const boost::optional<bool>& muted);
     VideoBuilder& looped(const boost::optional<bool>& looped);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() final;
     virtual std::unique_ptr<IVideoHandler> createHandler();
 
 private:

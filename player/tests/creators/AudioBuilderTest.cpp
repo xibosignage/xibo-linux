@@ -41,14 +41,14 @@ TEST(AudioBuilderTest, Construct_LoopTrue_AudioLoopedEqualsTrue)
 {
     auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(true).build();
 
-    ASSERT_EQ(dynamic_cast<Audio&>(*audio).looped(), true);
+    ASSERT_EQ(audio->looped(), true);
 }
 
 TEST(AudioBuilderTest, Construct_LoopFalse_AudioLoopedEqualsFalse)
 {
     auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(false).build();
 
-    ASSERT_EQ(dynamic_cast<Audio&>(*audio).looped(), false);
+    ASSERT_EQ(audio->looped(), false);
 }
 
 

@@ -1,6 +1,5 @@
 #include "WebViewBuilder.hpp"
 
-#include "media/WebView.hpp"
 #include "adaptors/WebKitWebViewAdaptor.hpp"
 #include "utils/Resources.hpp"
 #include "utils/Utilities.hpp"
@@ -12,9 +11,10 @@
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
 
-std::unique_ptr<IMedia> WebViewBuilder::doBuild()
+std::unique_ptr<WebView> WebViewBuilder::build()
 {
     auto webview = createWebView();
+    prepareCommonParams(*webview);
     webview->setTransparent(m_transparent);
     return webview;
 }
