@@ -11,7 +11,7 @@ std::shared_ptr<spdlog::logger> Utils::logger()
     return logger;
 }
 
-DownloadManager& Utils::downloadManager()
+HTTPDownloader& Utils::httpDownloader()
 {
     return XiboApp::app().downloadManager();
 }

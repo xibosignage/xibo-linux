@@ -5,7 +5,7 @@
 class XMDSManager;
 class IMainLayout;
 class MainWindow;
-class DownloadManager;
+class HTTPDownloader;
 class CollectionInterval;
 class CommandLineParser;
 struct PlayerSettings;
@@ -20,7 +20,7 @@ public:
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
     XMDSManager& xmdsManager();
-    DownloadManager& downloadManager();
+    HTTPDownloader& downloadManager();
 
     int run(int argc, char** argv);
 
@@ -34,7 +34,7 @@ private:
 private:
     std::unique_ptr<IMainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmdsManager;
-    std::unique_ptr<DownloadManager> m_downloadManager;
+    std::unique_ptr<HTTPDownloader> m_downloadManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<CommandLineParser> m_options;
 

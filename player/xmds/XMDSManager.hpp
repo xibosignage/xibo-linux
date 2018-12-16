@@ -7,8 +7,8 @@
 
 class SOAPManager;
 
-using RegisterDisplayCallback = std::function<void(const RegisterDisplay::Response&)>;
-using RequiredFilesCallback = std::function<void(const RequiredFiles::Response&)>;
+using RegisterDisplayCallback = std::function<void(RegisterDisplay::Response::Status, const PlayerSettings&)>;
+using RequiredFilesCallback = std::function<void(const RegularFiles&, const ResourceFiles&)>;
 using GetResourceCallback = std::function<void(const GetResource::Response&)>;
 
 class XMDSManager

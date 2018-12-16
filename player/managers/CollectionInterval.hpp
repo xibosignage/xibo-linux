@@ -1,44 +1,46 @@
-#ifndef COLLECTIONINTERVAL_HPP
-#define COLLECTIONINTERVAL_HPP
+#pragma once
 
+#include "RequiredFilesDownloader.hpp"
 #include "xmds/RegisterDisplay.hpp"
 #include "xmds/RequiredFiles.hpp"
+#include "utils/ITimerProvider.hpp"
 
-#include <sigc++/signal.h>
-#include <sigc++/connection.h>
-
-struct RequiredFilesSession
+struct CollectionResult
 {
-    size_t downloadCount = 0;
-    size_t downloadOverall = 0;
+    bool success = false;
 };
 
-using RequiredFilesSessionPtr = std::shared_ptr<RequiredFilesSession>;
+using CollectionResultCallback = std::function<void(const CollectionResult&)>;
+
+struct CollectionSession
+{
+    size_t requestsExecuted = 0;
+    CollectionResultCallback callback;
+};
+
+using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 
 class CollectionInterval
 {
 public:
     CollectionInterval();
+
     void start();
-    sigc::signal<void>& signalFinished();
-    sigc::signal<void, PlayerSettings>& signalSettingsUpdated();
+    void collect(CollectionResultCallback callback);
 
 private:
-    void collectData();
-    void updateTimer(uint collectInterval);
+    void startTimer();
+    void updateTimer(int collectInterval);
+
+    void startRegularCollection();
+    void onCollectionFinished(const CollectionResult& result);
+
+    void onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session);
+    void onRequiredFiles(const RegularFiles& files, const ResourceFiles& resources, CollectionSessionPtr session);
 
 private:
-    void onRegisterDisplay(const RegisterDisplay::Response& response);
-    void onRequiredFiles(const RequiredFiles::Response& response);
-
-    void downloadCallback(const std::string& filename, RequiredFilesSessionPtr session);
-
-private:
-    sigc::signal<void> m_signalFinished;
-    sigc::signal<void, PlayerSettings> m_signalSettingsUpdated;
-    sigc::connection m_intervalConnection;
-    boost::optional<uint> m_collectInterval;
+    int m_collectInterval;
+    RequiredFilesDownloader m_downloader;
+    std::unique_ptr<ITimerProvider> m_intervalTimer;
 
 };
-
-#endif // COLLECTIONINTERVAL_HPP

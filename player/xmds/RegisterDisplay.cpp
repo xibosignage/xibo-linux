@@ -27,9 +27,9 @@ RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::get()
     auto attrs = display.get_child(Resources::DisplayAttrs);
 
     RegisterDisplay::Response result;
-    result.status = static_cast<RegisterDisplay::Response::Status>(attrs.get<int>(Resources::Status));
-    result.statusMessage = attrs.get<std::string>(Resources::StatusMessage);
-    if(result.status == RegisterDisplay::Response::Status::Ready)
+    result.status.code = static_cast<RegisterDisplay::Response::Status::Code>(attrs.get<int>(Resources::Status));
+    result.status.message = attrs.get<std::string>(Resources::StatusMessage);
+    if(result.status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
         fillPlayerSettings(result.playerSettings, display);
     }

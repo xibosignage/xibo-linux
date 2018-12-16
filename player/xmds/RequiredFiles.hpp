@@ -4,6 +4,7 @@
 #include "Field.hpp"
 #include "SOAP.hpp"
 
+
 namespace RequiredFiles
 {
     struct Response
@@ -52,6 +53,9 @@ namespace RequiredFiles
         Field<std::string> hardwareKey{"hardwareKey"};
     };
 }
+
+using RegularFiles = std::vector<RequiredFiles::Response::RequiredFile>;
+using ResourceFiles = std::vector<RequiredFiles::Response::RequiredResource>;
 
 template<>
 class SOAP::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>

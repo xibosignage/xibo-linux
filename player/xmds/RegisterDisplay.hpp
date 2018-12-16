@@ -9,16 +9,21 @@ namespace RegisterDisplay
 {
     struct Response
     {
-        enum class Status
+        struct Status
         {
-            Ready,
-            Added,
-            Waiting,
-            Invalid = -1
+            enum class Code
+            {
+                Ready,
+                Added,
+                Waiting,
+                Invalid = -1
+            };
+
+            Code code = Code::Invalid;
+            std::string message;
         };
 
-        Status status = Status::Invalid;
-        std::string statusMessage;
+        Status status;
         PlayerSettings playerSettings;
     };
 

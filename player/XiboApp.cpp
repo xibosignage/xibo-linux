@@ -13,7 +13,7 @@
 #include "control/IMainLayout.hpp"
 
 #include "parsers/CommandLineParser.hpp"
-#include "managers/DownloadManager.hpp"
+#include "managers/HTTPDownloader.hpp"
 #include "managers/CollectionInterval.hpp"
 
 #include <spdlog/fmt/ostr.h>
@@ -40,7 +40,7 @@ XiboApp& XiboApp::create(const std::string& name)
 }
 
 XiboApp::XiboApp(const std::string& name) : Gtk::Application(name),
-    m_downloadManager(std::make_unique<DownloadManager>()),
+    m_downloadManager(std::make_unique<HTTPDownloader>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
 {      
@@ -58,14 +58,13 @@ int XiboApp::initPlayer()
     if(m_options->credentials())
     {
         m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-
-        auto runPlayer = std::bind(&XiboApp::runPlayer, this, std::ref(*window));
-        m_collectionInterval->signalFinished().connect(runPlayer);
-
-        auto updateSettings = std::bind(&XiboApp::updateSettings, this, std::placeholders::_1);
-        m_collectionInterval->signalSettingsUpdated().connect(updateSettings);
-
-        m_collectionInterval->start();
+        m_collectionInterval->collect([this, &window](const CollectionResult& result){
+            if(result.success)
+            {
+                m_collectionInterval->start();
+                runPlayer(*window);
+            }
+        });
     }
     else
     {
@@ -131,7 +130,7 @@ XMDSManager& XiboApp::xmdsManager()
     return *m_xmdsManager;
 }
 
-DownloadManager& XiboApp::downloadManager()
+HTTPDownloader& XiboApp::downloadManager()
 {
     return *m_downloadManager;
 }
