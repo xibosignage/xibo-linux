@@ -11,9 +11,7 @@
 
 void RequiredResourcesDownloader::download(const ResourceFiles& resources, ResourceDownloadFinished callback)
 {
-    m_resourcesDownloaded.connect([=](){
-        callback(5);
-    });
+    m_resourcesDownloaded.connect(callback);
 
     downloadAllResources(resources);
 }
@@ -46,9 +44,9 @@ void RequiredResourcesDownloader::downloadResource(int layoutId, int regionId, i
 
 std::string RequiredResourcesDownloader::createResource(int mediaId, const std::string& resourceContent)
 {
-    auto filename = Resources::directory() / (std::to_string(mediaId) + ".html");
+    auto filename = std::to_string(mediaId) + ".html";
 
-    std::ofstream out(filename.string());
+    std::ofstream out(Resources::directory() / filename);
     out << resourceContent;
 
     return filename;

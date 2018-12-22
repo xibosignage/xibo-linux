@@ -20,9 +20,9 @@ SOAP::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::strin
 {
 }
 
-RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::get()
+RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::doParse(const boost::property_tree::ptree& node)
 {
-    auto activationMessage = responseTree().get<std::string>(Resources::ActivationMessage);
+    auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto display = Utils::parseXmlFromString(activationMessage).get_child(Resources::Display);
     auto attrs = display.get_child(Resources::DisplayAttrs);
 
@@ -33,6 +33,7 @@ RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::get()
     {
         fillPlayerSettings(result.playerSettings, display);
     }
+
     return result;
 }
 
@@ -63,3 +64,4 @@ void SOAP::ResponseParser<RegisterDisplay::Response>::fillPlayerSettings(PlayerS
     settings.displayName = display.get<std::string>(Settings::DisplayName);
     settings.screenshotRequested = display.get<bool>(Settings::ScreenShotRequested);
 }
+

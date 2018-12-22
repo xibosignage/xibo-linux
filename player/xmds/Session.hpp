@@ -10,7 +10,7 @@
 template<typename Response, typename Request>
 struct Session
 {
-    using callback = std::function<void(const Response&)>;
+    using callback = std::function<void(const boost::system::error_code&, const Response&)>;
     Session(boost::asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
     boost::asio::ip::tcp::socket socket;
     boost::asio::ip::tcp::resolver resolver;

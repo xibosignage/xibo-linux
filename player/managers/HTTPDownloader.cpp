@@ -86,7 +86,6 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
             std::ofstream out(filename.string());
             out << session->httpResponse.get().body();
         }
-        Log::trace("[{}] Downloaded {} bytes", session->filename, bytes);
     }
     session->callback(DownloadedFile{ec, session->filename});
 }

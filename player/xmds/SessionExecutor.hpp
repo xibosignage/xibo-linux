@@ -29,6 +29,12 @@ public:
     }
 
 private:
+    void sessionFinished(const boost::system::error_code& ec)
+    {
+        Log::error("SOAP request finished with error: {}", ec.message());
+        m_session->responseCallback({}, {});
+    }
+
     void onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)
     {
         if(!ec)
@@ -38,7 +44,7 @@ private:
         }
         else
         {
-            Log::error("SOAP Resolved host with error: {}", ec.message());
+            sessionFinished(ec);
         }
     }
 
@@ -49,7 +55,7 @@ private:
             SOAP::RequestSerializer<Request> serializer{m_session->soapRequest};
 
             m_session->httpRequest.method(http::verb::post);
-            m_session->httpRequest.target("/xmds.php?v=5");
+            m_session->httpRequest.target("/xmds.php?v=55");
             m_session->httpRequest.version(11);
             m_session->httpRequest.set(http::field::host, m_host);
             m_session->httpRequest.body() = serializer.string();
@@ -62,7 +68,7 @@ private:
         }
         else
         {
-            Log::error("SOAP Connected to host with error: {}", ec.message());
+            sessionFinished(ec);
         }
     }
 
@@ -75,7 +81,7 @@ private:
         }
         else
         {
-            Log::error("Send SOAP request with error: {}", ec.message());
+            sessionFinished(ec);
         }
     }
 
@@ -83,19 +89,15 @@ private:
     {
         if(!ec)
         {
-            if(m_session->httpResponse.result() == http::status::ok)
-            {
-                SOAP::ResponseParser<Response> parser(m_session->httpResponse.body());
-                m_session->responseCallback(parser.get());
-            }
-            else
-            {
-                Log::error("Receive SOAP request with HTTP error: {}", m_session->httpResponse.result_int());
-            }
+            Log::trace("SOAP Response string: {}", m_session->httpResponse.body());
+
+            SOAP::ResponseParser<Response> parser(m_session->httpResponse.body());
+            auto [error, response] = parser.get();
+            m_session->responseCallback(error, response);
         }
         else
         {
-            Log::error("Receive SOAP request with error: {}", ec.message());
+            sessionFinished(ec);
         }
     }
 

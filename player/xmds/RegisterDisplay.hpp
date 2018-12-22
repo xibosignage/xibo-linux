@@ -3,6 +3,9 @@
 
 #include "Field.hpp"
 #include "SOAP.hpp"
+#include "BaseResponseParser.hpp"
+#include "BaseRequestSerializer.hpp"
+
 #include "control/PlayerSettings.hpp"
 
 namespace RegisterDisplay
@@ -49,15 +52,16 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser
+class SOAP::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser<RegisterDisplay::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
-    RegisterDisplay::Response get();
+
+protected:
+    RegisterDisplay::Response doParse(const boost::property_tree::ptree& node) override;
 
 private:
     void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
-
 };
 
 

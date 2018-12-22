@@ -91,10 +91,10 @@ void CollectionInterval::onRequiredFiles(const RegularFiles& files, const Resour
     session->listener = std::make_shared<AsyncListener>(std::bind(&CollectionInterval::sessionFinished, this, session));
 
     session->filesDownloader.download(files, session->listener->add<void>([](){
-        Log::debug("Files downloaded {}");
+        Log::debug("Files downloaded");
     }));
 
-    session->resourcesDownloader.download(resources, session->listener->add<void, int>([](int num){
-        Log::debug("Resources downloaded {}", num);
+    session->resourcesDownloader.download(resources, session->listener->add<void>([](){
+        Log::debug("Resources downloaded");
     }));
 }

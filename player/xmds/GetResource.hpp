@@ -3,6 +3,8 @@
 
 #include "Field.hpp"
 #include "SOAP.hpp"
+#include "BaseResponseParser.hpp"
+#include "BaseRequestSerializer.hpp"
 
 namespace GetResource
 {
@@ -31,11 +33,13 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<GetResource::Response> : public BaseResponseParser
+class SOAP::ResponseParser<GetResource::Response> : public BaseResponseParser<GetResource::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
-    GetResource::Response get();
+
+protected:
+    GetResource::Response doParse(const boost::property_tree::ptree& node) override;
 
 };
 

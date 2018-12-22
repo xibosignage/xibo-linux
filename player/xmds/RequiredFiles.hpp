@@ -3,7 +3,8 @@
 
 #include "Field.hpp"
 #include "SOAP.hpp"
-
+#include "BaseResponseParser.hpp"
+#include "BaseRequestSerializer.hpp"
 
 namespace RequiredFiles
 {
@@ -67,11 +68,13 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RequiredFiles::Response> : public BaseResponseParser
+class SOAP::ResponseParser<RequiredFiles::Response> : public BaseResponseParser<RequiredFiles::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
-    RequiredFiles::Response get();
+
+protected:
+    RequiredFiles::Response doParse(const boost::property_tree::ptree& node) override;
 
 private:
     void addRequiredFile(RequiredFiles::Response& response, const boost::property_tree::ptree& attrs);

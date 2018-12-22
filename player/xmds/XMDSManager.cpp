@@ -19,7 +19,7 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.macAddress = "test";
     request.displayName = displayName;
 
-    m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const RegisterDisplay::Response& response){
+    m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const boost::system::error_code&, const RegisterDisplay::Response& response){
         callback(response.status, response.playerSettings);
     });
 }
@@ -30,7 +30,7 @@ void XMDSManager::requiredFiles(RequiredFilesCallback callback)
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    m_soapManager->sendRequest<RequiredFiles::Response>(request, [=](const RequiredFiles::Response& response){
+    m_soapManager->sendRequest<RequiredFiles::Response>(request, [=](const boost::system::error_code&, const RequiredFiles::Response& response){
         callback(response.requiredFiles, response.requiredResources);
     });
 }
@@ -44,5 +44,7 @@ void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResour
     request.regionId = std::to_string(regionId);
     request.mediaId = std::to_string(mediaId);
 
-    m_soapManager->sendRequest<GetResource::Response>(request, callback);
+    m_soapManager->sendRequest<GetResource::Response>(request, [=](const boost::system::error_code&, const GetResource::Response& response){
+        callback(response);
+    });
 }

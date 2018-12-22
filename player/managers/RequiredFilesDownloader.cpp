@@ -17,8 +17,8 @@ void RequiredFilesDownloader::downloadAllFiles(const RegularFiles& files)
 {
     for(auto&& file : files)
     {
-        Log::trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
-        Log::trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
+        Log::trace("File type: {} ID: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
+        Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
 
         Utils::httpDownloader().download(file.filename, file.path, [=](const DownloadedFile& file)
         {

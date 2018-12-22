@@ -4,7 +4,7 @@
 
 #include <sigc++/sigc++.h>
 
-using ResourceDownloadFinished = std::function<void(int)>;
+using ResourceDownloadFinished = std::function<void()>;
 using ResourceDownloadCallback = std::function<void(std::string)>;
 
 class RequiredResourcesDownloader

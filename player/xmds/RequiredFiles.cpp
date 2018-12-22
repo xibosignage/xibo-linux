@@ -18,9 +18,9 @@ SOAP::ResponseParser<RequiredFiles::Response>::ResponseParser(const std::string&
 {
 }
 
-RequiredFiles::Response SOAP::ResponseParser<RequiredFiles::Response>::get()
+RequiredFiles::Response SOAP::ResponseParser<RequiredFiles::Response>::doParse(const boost::property_tree::ptree& node)
 {
-    auto requiredFilesXml = responseTree().get<std::string>(Resources::RequiredFilesXml);
+    auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
     auto filesNode = Utils::parseXmlFromString(requiredFilesXml).get_child(Resources::Files);
 
     RequiredFiles::Response result;
@@ -86,3 +86,5 @@ RequiredFiles::Response::DownloadType SOAP::ResponseParser<RequiredFiles::Respon
 
     return DownloadType::Invalid;
 }
+
+
