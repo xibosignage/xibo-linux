@@ -19,7 +19,6 @@ boost::property_tree::ptree SOAP::BaseResponseParser::parseSoapResponse(const st
 
     if(auto faultNode = parsedBody.get_child_optional("SOAP-ENV:Fault"))
     {
-        // FIXME: return error code or 2 versions (exceptions and error code passing)
         auto faultCode = faultNode->get<std::string>("faultcode");
         auto faultMessage = faultNode->get<std::string>("faultstring");
         Utils::logger()->debug("Fault Response: {} Message: {}", faultCode, faultMessage);

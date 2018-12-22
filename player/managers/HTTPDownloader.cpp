@@ -74,8 +74,18 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
     auto filename = Resources::directory() / session->filename;
     if(!ec)
     {
-        std::ofstream out(filename.string());
-        out << session->httpResponse.get().body();
+        // FIXME temporarily (until 0.4-a)
+        // also, it should not create file, just resend contents
+        if(std::filesystem::exists(filename.string()))
+        {
+            std::ofstream out(filename.string() + "_test");
+            out << session->httpResponse.get().body();
+        }
+        else
+        {
+            std::ofstream out(filename.string());
+            out << session->httpResponse.get().body();
+        }
         Utils::logger()->trace("[{}] Downloaded {} bytes", session->filename, bytes);
     }
     session->callback(DownloadedFile{ec, session->filename});

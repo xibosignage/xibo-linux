@@ -15,8 +15,8 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.hardwareKey = m_hardwareKey;
     request.clientType = DEFAULT_CLIENT_TYPE;
     request.clientCode = clientCode;
-    request.clientVersion = clientVersion; // WARNING get from player version (?)
-    request.macAddress = "test"; // FIXME get from the system
+    request.clientVersion = clientVersion;
+    request.macAddress = "test";
     request.displayName = displayName;
 
     m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const RegisterDisplay::Response& response){

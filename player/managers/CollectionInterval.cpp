@@ -50,24 +50,27 @@ void CollectionInterval::startRegularCollection()
     collect(std::bind(&CollectionInterval::onCollectionFinished, this, ph::_1));
 }
 
+void CollectionInterval::sessionFinished(CollectionSessionPtr session)
+{
+    Glib::MainContext::get_default()->invoke([=](){
+        session->callback(CollectionResult{true});
+        return false;
+    });
+
+    session->listener.reset();
+}
+
 void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session)
 {
-    switch(status.code)
+    Utils::logger()->debug(status.message);
+    if(status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
-    case RegisterDisplay::Response::Status::Code::Ready:
-        updateTimer(settings.collectInterval);
+//        updateTimer(settings.collectInterval);
         Utils::xmdsManager().requiredFiles(std::bind(&CollectionInterval::onRequiredFiles, this, ph::_1, ph::_2, session));
-        Utils::logger()->debug("Display is ready. Getting required files and resources...");
-        break;
-    case RegisterDisplay::Response::Status::Code::Added:
-        Utils::logger()->debug("Display has been added and waiting for approval in CMS");
-        break;
-    case RegisterDisplay::Response::Status::Code::Waiting:
-        Utils::logger()->debug("Display is waiting for approval in CMS");
-        break;
-    default:
-        Utils::logger()->critical("Invalid display status"); // WARNING exception(?)
-        break;
+    }
+    else
+    {
+        sessionFinished(session);
     }
 }
 
@@ -84,7 +87,13 @@ void CollectionInterval::onRequiredFiles(const RegularFiles& files, const Resour
 {
     Utils::logger()->debug("{} files and {} resources to download", files.size(), resources.size());
 
-    m_downloader.download(files, resources, [=](){
-        Utils::logger()->debug("All files downloaded");
-    });
+    session->listener = std::make_shared<AsyncListener>(std::bind(&CollectionInterval::sessionFinished, this, session));
+
+    session->filesDownloader.download(files, session->listener->add<void>([](){
+        Utils::logger()->debug("Files downloaded");
+    }));
+
+    session->resourcesDownloader.download(resources, session->listener->add<void, int>([](int num){
+        Utils::logger()->debug("Resources downloaded {}", num);
+    }));
 }

@@ -13,10 +13,8 @@ namespace http = boost::beast::http;
 namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 
-using OnSessionFinished = std::function<void()>;
-
 template<typename Response, typename Request>
-class SessionExecutor
+class SessionExecutor : public std::enable_shared_from_this<SessionExecutor<Response, Request>>
 {
 public:
     SessionExecutor(const std::string& host, int port, std::shared_ptr<Session<Response, Request>> session) :
@@ -24,11 +22,9 @@ public:
     {
     }
 
-    void exec(OnSessionFinished callback)
+    void exec()
     {
-        m_callback = callback;
-
-        auto resolve = std::bind(&SessionExecutor::onResolve, this, std::placeholders::_1, std::placeholders::_2);
+        auto resolve = std::bind(&SessionExecutor::onResolve, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
         m_session->resolver.async_resolve(m_host, std::to_string(m_port), ip::resolver_base::numeric_service, resolve);
     }
 
@@ -37,7 +33,7 @@ private:
     {
         if(!ec)
         {
-            auto connect = std::bind(&SessionExecutor::onConnect, this, std::placeholders::_1, std::placeholders::_2);
+            auto connect = std::bind(&SessionExecutor::onConnect, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
             boost::asio::async_connect(m_session->socket, results.begin(), results.end(), connect);
         }
         else
@@ -61,7 +57,7 @@ private:
 
             Utils::logger()->trace("SOAP Request string: {}", serializer.string());
 
-            auto write = std::bind(&SessionExecutor::onWriteSoap, this, std::placeholders::_1, std::placeholders::_2);
+            auto write = std::bind(&SessionExecutor::onWriteSoap, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
             boost::beast::http::async_write(m_session->socket, m_session->httpRequest, write);
         }
         else
@@ -74,7 +70,7 @@ private:
     {
         if(!ec)
         {
-            auto read = std::bind(&SessionExecutor::onReadSoap, this, std::placeholders::_1, std::placeholders::_2);
+            auto read = std::bind(&SessionExecutor::onReadSoap, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
             boost::beast::http::async_read(m_session->socket, m_session->buffer, m_session->httpResponse, read);
         }
         else
@@ -91,8 +87,6 @@ private:
             {
                 SOAP::ResponseParser<Response> parser(m_session->httpResponse.body());
                 m_session->responseCallback(parser.get());
-
-                m_callback();
             }
             else
             {
@@ -109,6 +103,5 @@ private:
     std::string m_host;
     int m_port;
     std::shared_ptr<Session<Response, Request>> m_session;
-    OnSessionFinished m_callback;
 
 };

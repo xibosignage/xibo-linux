@@ -21,15 +21,8 @@ public:
         session->responseCallback = responseCallback;
         session->soapRequest = soapRequest;
 
-        auto executor = std::make_shared<SessionExecutor<Response, Request>>(m_host, m_port, session);
-        executor->exec(std::bind(&SOAPManager::onSessionEnded<Response, Request>, this, executor));
-    }
-
-private:
-    template<typename Response, typename Request>
-    void onSessionEnded(std::shared_ptr<SessionExecutor<Response, Request>>)
-    {
-        Utils::logger()->trace("Request session ended");
+        auto e = std::make_shared<SessionExecutor<Response, Request>>(m_host, m_port, session);
+        e->exec();
     }
 
 private:
