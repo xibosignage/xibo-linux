@@ -2,7 +2,7 @@
 
 #include "MediaVisitor.hpp"
 #include "IVideoHandler.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 Video::Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
     Media(id), m_handler(std::move(handler))
@@ -24,7 +24,7 @@ void Video::onVideoFinished()
 
     if(m_looped)
     {
-        Utils::logger()->debug("Looping enabled. Restarting...");
+        Log::debug("Looping enabled. Restarting...");
         m_handler->play();
     }
 }

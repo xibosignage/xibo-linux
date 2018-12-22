@@ -4,7 +4,7 @@
 #include <boost/beast/http/write.hpp>
 #include <boost/asio/connect.hpp>
 
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 #include "SOAP.hpp"
 #include "Session.hpp"
 
@@ -38,7 +38,7 @@ private:
         }
         else
         {
-            Utils::logger()->error("SOAP Resolved host with error: {}", ec.message());
+            Log::error("SOAP Resolved host with error: {}", ec.message());
         }
     }
 
@@ -55,14 +55,14 @@ private:
             m_session->httpRequest.body() = serializer.string();
             m_session->httpRequest.prepare_payload();
 
-            Utils::logger()->trace("SOAP Request string: {}", serializer.string());
+            Log::trace("SOAP Request string: {}", serializer.string());
 
             auto write = std::bind(&SessionExecutor::onWriteSoap, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
             boost::beast::http::async_write(m_session->socket, m_session->httpRequest, write);
         }
         else
         {
-            Utils::logger()->error("SOAP Connected to host with error: {}", ec.message());
+            Log::error("SOAP Connected to host with error: {}", ec.message());
         }
     }
 
@@ -75,7 +75,7 @@ private:
         }
         else
         {
-            Utils::logger()->error("Send SOAP request with error: {}", ec.message());
+            Log::error("Send SOAP request with error: {}", ec.message());
         }
     }
 
@@ -90,12 +90,12 @@ private:
             }
             else
             {
-                Utils::logger()->error("Receive SOAP request with HTTP error: {}", m_session->httpResponse.result_int());
+                Log::error("Receive SOAP request with HTTP error: {}", m_session->httpResponse.result_int());
             }
         }
         else
         {
-            Utils::logger()->error("Receive SOAP request with error: {}", ec.message());
+            Log::error("Receive SOAP request with error: {}", ec.message());
         }
     }
 

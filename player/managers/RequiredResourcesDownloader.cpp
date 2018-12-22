@@ -4,7 +4,7 @@
 
 #include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 #include "utils/FilePath.hpp"
 
 #include <fstream>
@@ -22,7 +22,7 @@ void RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& reso
 {
     for(auto&& resource : resources)
     {
-        Utils::logger()->trace("Layout ID: {} Region ID: {} Media ID: {}", resource.layoutId, resource.regionId, resource.mediaId);
+        Log::trace("Layout ID: {} Region ID: {} Media ID: {}", resource.layoutId, resource.regionId, resource.mediaId);
 
         downloadResource(resource.layoutId, resource.regionId, resource.mediaId, [=](std::string resource)
         {
@@ -56,6 +56,6 @@ std::string RequiredResourcesDownloader::createResource(int mediaId, const std::
 
 void RequiredResourcesDownloader::processDownloadedResource(std::string resource)
 {
-    Utils::logger()->debug("[{}] Downloaded", resource);
+    Log::debug("[{}] Downloaded", resource);
     ++m_downloadsCount;
 }

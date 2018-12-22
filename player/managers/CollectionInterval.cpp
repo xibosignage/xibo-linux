@@ -2,6 +2,7 @@
 
 #include "xmds/XMDSManager.hpp"
 
+#include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/TimerProvider.hpp"
 
@@ -29,14 +30,14 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onCollectionFinished(const CollectionResult& result)
 {
-    Utils::logger()->debug("Collection finished with success result: {}", result.success);
-    Utils::logger()->debug("Next collection will start in {} seconds", m_collectInterval);
+    Log::debug("Collection finished with success result: {}", result.success);
+    Log::debug("Next collection will start in {} seconds", m_collectInterval);
     startTimer();
 }
 
 void CollectionInterval::collect(CollectionResultCallback callback)
 {
-    Utils::logger()->debug("Collection started");
+    Log::debug("Collection started");
 
     auto session = std::make_shared<CollectionSession>();
     session->callback = callback;
@@ -62,7 +63,7 @@ void CollectionInterval::sessionFinished(CollectionSessionPtr session)
 
 void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session)
 {
-    Utils::logger()->debug(status.message);
+    Log::debug(status.message);
     if(status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
 //        updateTimer(settings.collectInterval);
@@ -78,22 +79,22 @@ void CollectionInterval::updateTimer(int collectInterval)
 {
     if(m_collectInterval != collectInterval)
     {
-        Utils::logger()->debug("Collection interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
+        Log::debug("Collection interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
         m_collectInterval = collectInterval;
     }
 }
 
 void CollectionInterval::onRequiredFiles(const RegularFiles& files, const ResourceFiles& resources, CollectionSessionPtr session)
 {
-    Utils::logger()->debug("{} files and {} resources to download", files.size(), resources.size());
+    Log::debug("{} files and {} resources to download", files.size(), resources.size());
 
     session->listener = std::make_shared<AsyncListener>(std::bind(&CollectionInterval::sessionFinished, this, session));
 
     session->filesDownloader.download(files, session->listener->add<void>([](){
-        Utils::logger()->debug("Files downloaded");
+        Log::debug("Files downloaded {}");
     }));
 
     session->resourcesDownloader.download(resources, session->listener->add<void, int>([](int num){
-        Utils::logger()->debug("Resources downloaded {}", num);
+        Log::debug("Resources downloaded {}", num);
     }));
 }

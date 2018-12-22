@@ -1,7 +1,7 @@
 #include "HTTPDownloader.hpp"
 
 #include "utils/Resources.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 #include "utils/FilePath.hpp"
 
 #include <regex>
@@ -62,7 +62,7 @@ void HTTPDownloader::download(const std::string& filename, const std::string& pa
     {
         session->host = baseMatch[2].str();
         session->target = baseMatch[3].str();
-        Utils::logger()->trace("Host: {} Target: {}", session->host, session->target);
+        Log::trace("Host: {} Target: {}", session->host, session->target);
     }
 
     auto resolve = std::bind(&HTTPDownloader::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
@@ -86,7 +86,7 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
             std::ofstream out(filename.string());
             out << session->httpResponse.get().body();
         }
-        Utils::logger()->trace("[{}] Downloaded {} bytes", session->filename, bytes);
+        Log::trace("[{}] Downloaded {} bytes", session->filename, bytes);
     }
     session->callback(DownloadedFile{ec, session->filename});
 }
@@ -100,7 +100,7 @@ void HTTPDownloader::onWrite(const boost::system::error_code& ec, std::size_t, D
     }
     else
     {
-        Utils::logger()->trace("[{}] Send download request error: {}", session->filename, ec.message());
+        Log::trace("[{}] Send download request error: {}", session->filename, ec.message());
         session->callback(DownloadedFile{ec, session->filename});
     }
 }
@@ -120,7 +120,7 @@ void HTTPDownloader::onConnect(const boost::system::error_code& ec, ip::tcp::res
     }
     else
     {
-        Utils::logger()->trace("[{}] Connected to host with error: {}", session->filename, ec.message());
+        Log::trace("[{}] Connected to host with error: {}", session->filename, ec.message());
         session->callback(DownloadedFile{ec, session->filename});
     }
 }
@@ -134,7 +134,7 @@ void HTTPDownloader::onResolve(const boost::system::error_code& ec, ip::tcp::res
     }
     else
     {
-        Utils::logger()->trace("[{}] Resolved host with error: {}", session->filename, ec.message());
+        Log::trace("[{}] Resolved host with error: {}", session->filename, ec.message());
         session->callback(DownloadedFile{ec, session->filename});
     }
 }

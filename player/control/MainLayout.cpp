@@ -6,7 +6,7 @@
 #include "adaptors/IImageAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 #include <cassert>
 
@@ -103,7 +103,7 @@ void MainLayout::sortAndReorderRegions()
         int orderInParentWidget = static_cast<int>(i);
         m_handler->reorderChild(m_regions[i]->handler(), orderInParentWidget);
 
-        Utils::logger()->trace("Zorder: {} Order in overlay: {}", m_regions[i]->zorder(), orderInParentWidget);
+        Log::trace("Zorder: {} Order in overlay: {}", m_regions[i]->zorder(), orderInParentWidget);
     }
 }
 

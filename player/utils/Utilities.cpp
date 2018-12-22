@@ -2,14 +2,7 @@
 #include "XiboApp.hpp"
 #include "FilePath.hpp"
 
-#include <spdlog/spdlog.h>
 #include <boost/property_tree/xml_parser.hpp>
-
-std::shared_ptr<spdlog::logger> Utils::logger()
-{
-    static auto logger = spdlog::get(LOGGER);
-    return logger;
-}
 
 HTTPDownloader& Utils::httpDownloader()
 {

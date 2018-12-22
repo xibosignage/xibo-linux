@@ -28,7 +28,6 @@ void MainWindow::setSize(int width, int height)
     m_handler->setSize(width, height);
 }
 
-// TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowNewSize(int width, int height)
 {
     if(width < MIN_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT)
@@ -42,7 +41,6 @@ void MainWindow::setPos(int x, int y)
     m_handler->move(x, y);
 }
 
-// TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowCoordinates(int x, int y)
 {
     if(x < MIN_XPOS || y < MIN_YPOS)

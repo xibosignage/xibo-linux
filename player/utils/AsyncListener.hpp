@@ -2,8 +2,7 @@
 
 #include <functional>
 #include <mutex>
-
-#include "utils/Utilities.hpp"
+#include <atomic>
 
 class AsyncListener
 {
@@ -18,7 +17,6 @@ public:
         ++allCalls;
         return [=](Args&&... args)
         {
-            std::unique_lock<std::mutex> lock{mutex};
             clbk(std::forward<Args>(args)...);
             if(++callCounter == allCalls)
             {
@@ -30,6 +28,6 @@ public:
 private:
     std::mutex mutex;
     std::function<void()> finishedCallback;
-    int callCounter = 0;
+    std::atomic<int> callCounter = 0;
     int allCalls = 0;
 };

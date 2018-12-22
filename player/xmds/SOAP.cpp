@@ -1,6 +1,7 @@
 #include "SOAP.hpp"
 
 #include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 SOAP::BaseResponseParser::BaseResponseParser(const std::string& xmlResponse)
 {
@@ -21,7 +22,7 @@ boost::property_tree::ptree SOAP::BaseResponseParser::parseSoapResponse(const st
     {
         auto faultCode = faultNode->get<std::string>("faultcode");
         auto faultMessage = faultNode->get<std::string>("faultstring");
-        Utils::logger()->debug("Fault Response: {} Message: {}", faultCode, faultMessage);
+        Log::debug("Fault Response: {} Message: {}", faultCode, faultMessage);
         return {};
     }
     return bodyNode;

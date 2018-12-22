@@ -9,7 +9,7 @@
 #include "wrapper/Element.hpp"
 #include "wrapper/Pad.hpp"
 
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 #include "utils/FilePath.hpp"
 
 namespace ph = std::placeholders;
@@ -53,13 +53,13 @@ bool AudioHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         case Gst::MessageType::ERROR:
         {
             auto err = message->parseError();
-            Utils::logger()->error("{}", err.getText());
-            Utils::logger()->error("[AudioHandler] Debug details: {}", err.getDebugInfo());
+            Log::error("{}", err.getText());
+            Log::error("[AudioHandler] Debug details: {}", err.getDebugInfo());
             break;
         }
         case Gst::MessageType::EOS:
         {
-            Utils::logger()->debug("[AudioHandler] End of stream");
+            Log::debug("[AudioHandler] End of stream");
             m_pipeline->setState(Gst::State::NULL_STATE);
             m_audioFinished.emit();
             break;
@@ -72,12 +72,12 @@ bool AudioHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
 
 void AudioHandler::noMorePads()
 {
-    Utils::logger()->debug("[AudioHandler] No more pads");
+    Log::debug("[AudioHandler] No more pads");
 }
 
 void AudioHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
 {
-    Utils::logger()->debug("[AudioHandler] Pad added");
+    Log::debug("[AudioHandler] Pad added");
 
     auto sinkpad = m_audioConverter->getStaticPad("sink");
     pad->link(sinkpad);

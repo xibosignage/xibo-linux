@@ -1,5 +1,5 @@
 #include "Inspector.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 #include <cassert>
 
@@ -30,36 +30,36 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
     switch(result)
     {
         case GST_DISCOVERER_URI_INVALID:
-            Utils::logger()->debug("Invalid URI {}", uri);
+            Log::debug("Invalid URI {}", uri);
             break;
         case GST_DISCOVERER_ERROR:
-            Utils::logger()->debug("Discoverer error: {}", err->message);
+            Log::debug("Discoverer error: {}", err->message);
             break;
         case GST_DISCOVERER_TIMEOUT:
-            Utils::logger()->debug("Timeout");
+            Log::debug("Timeout");
             break;
         case GST_DISCOVERER_BUSY:
-            Utils::logger()->debug("Busy");
+            Log::debug("Busy");
             break;
         case GST_DISCOVERER_MISSING_PLUGINS:
         {
             auto missingPluginsInfo = gst_discoverer_info_get_missing_elements_installer_details(info);
 
-            Utils::logger()->debug("Missing plugins");
+            Log::debug("Missing plugins");
             for(size_t i = 0; missingPluginsInfo[i]; ++i)
             {
-                Utils::logger()->debug("{}", missingPluginsInfo[i]);
+                Log::debug("{}", missingPluginsInfo[i]);
             }
             break;
         }
         case GST_DISCOVERER_OK:
-            Utils::logger()->debug("Discovered {}", uri);
+            Log::debug("Discovered {}", uri);
             break;
     }
 
     if(result != GST_DISCOVERER_OK)
     {
-        Utils::logger()->debug("This URI cannot be played");
+        Log::debug("This URI cannot be played");
     }
 
     retrieveStreamsInfo(discoveredResult, gst_discoverer_info_get_stream_list(info));
@@ -88,7 +88,7 @@ void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* st
 
 void Gst::Inspector::onFinished(GstDiscoverer*, gpointer)
 {
-    Utils::logger()->debug("Finished discovering");
+    Log::debug("Finished discovering");
 }
 
 Gst::InspectorResult Gst::Inspector::discover(const std::string& uri)

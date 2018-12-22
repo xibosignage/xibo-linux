@@ -78,7 +78,7 @@ void XiboApp::runPlayer(MainWindow& window)
 {
     if(!window.isVisible())
     {
-        Utils::logger()->info("Player started");
+        Log::info("Player started");
         MainDirector director;
         auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
 
@@ -94,7 +94,6 @@ void XiboApp::updateSettings(const PlayerSettings& )
 //    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
 }
 
-// FIXME temporary workaround
 std::string XiboApp::findXlfFile()
 {
     namespace fs = std::filesystem;
@@ -143,13 +142,13 @@ int XiboApp::run(int argc, char** argv)
 
         if(m_options->helpOption())
         {
-            Utils::logger()->info("{}", m_options->availableOptions());
+            Log::info("{}", m_options->availableOptions());
         }
         else
         {
             if(m_options->versionOption())
             {
-                Utils::logger()->info("Project version: {}", getVersion());
+                Log::info("Project version: {}", getVersion());
             }
             if(m_options->exampleDir())
             {
@@ -163,7 +162,7 @@ int XiboApp::run(int argc, char** argv)
     }
     catch(std::exception& ex)
     {
-        Utils::logger()->error(ex.what());
+        Log::error(ex.what());
         return -1;
     }
     return 0;

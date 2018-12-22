@@ -2,7 +2,7 @@
 
 #include "adaptors/WebKitWebViewAdaptor.hpp"
 #include "utils/Resources.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 #include <fstream>
 #include <regex>
@@ -70,7 +70,7 @@ boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)
         std::smatch match;
         if(std::regex_search(line, match, re) && match.size() > 1)
         {
-            Utils::logger()->debug("DURATION parsed from .html {}", match[1].str());
+            Log::debug("DURATION parsed from .html {}", match[1].str());
             // NOTE: 0 for full match, 1 for the first group match
             return std::stoi(match[1].str());
         }

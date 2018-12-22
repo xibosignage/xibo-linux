@@ -2,8 +2,7 @@
 
 #include "HTTPDownloader.hpp"
 
-#include "utils/Utilities.hpp"
-#include "utils/Resources.hpp"
+#include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/FilePath.hpp"
 
@@ -18,8 +17,8 @@ void RequiredFilesDownloader::downloadAllFiles(const RegularFiles& files)
 {
     for(auto&& file : files)
     {
-        Utils::logger()->trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
-        Utils::logger()->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
+        Log::trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
+        Log::trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
 
         Utils::httpDownloader().download(file.filename, file.path, [=](const DownloadedFile& file)
         {
@@ -37,10 +36,10 @@ void RequiredFilesDownloader::processDownloadedFile(const DownloadedFile& file)
     ++m_finishedDownloads;
     if(!file.downloadError)
     {
-        Utils::logger()->debug("[{}] Downloaded", file.name);
+        Log::debug("[{}] Downloaded", file.name);
     }
     else
     {
-        Utils::logger()->error("[{}] Download error: {}", file.name, file.downloadError.message());
+        Log::error("[{}] Download error: {}", file.name, file.downloadError.message());
     }
 }

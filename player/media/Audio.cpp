@@ -2,7 +2,7 @@
 
 #include "IAudioHandler.hpp"
 #include "MediaVisitor.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
 
 namespace ph = std::placeholders;
 
@@ -34,7 +34,7 @@ void Audio::onAudioFinished()
 {
     if(m_looped)
     {
-        Utils::logger()->debug("Looping enabled. Restarting...");
+        Log::debug("Looping enabled. Restarting...");
         m_handler->play();
     }
 }
