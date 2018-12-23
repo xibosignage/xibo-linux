@@ -7,10 +7,12 @@
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 
+#include "SOAPError.hpp"
+
 template<typename Response, typename Request>
 struct Session
 {
-    using callback = std::function<void(const boost::system::error_code&, const Response&)>;
+    using callback = std::function<void(const SOAP::Error&, const Response&)>;
     Session(boost::asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
     boost::asio::ip::tcp::socket socket;
     boost::asio::ip::tcp::resolver resolver;

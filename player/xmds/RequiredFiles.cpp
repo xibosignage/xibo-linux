@@ -11,7 +11,7 @@ SOAP::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const Require
 
 std::string SOAP::RequestSerializer<RequiredFiles::Request>::string()
 {
-    return createRequest(Resources::RequestName, request().serverKey, request().hardwareKey);
+    return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
 SOAP::ResponseParser<RequiredFiles::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)

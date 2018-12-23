@@ -63,7 +63,7 @@ void CollectionInterval::sessionFinished(CollectionSessionPtr session)
 
 void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session)
 {
-    Log::debug(status.message);
+    displayMessage(status);
     if(status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
 //        updateTimer(settings.collectInterval);
@@ -72,6 +72,14 @@ void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response::St
     else
     {
         sessionFinished(session);
+    }
+}
+
+void CollectionInterval::displayMessage(const RegisterDisplay::Response::Status& status)
+{
+    if(status.code != RegisterDisplay::Response::Status::Code::Invalid)
+    {
+        Log::debug(status.message);
     }
 }
 

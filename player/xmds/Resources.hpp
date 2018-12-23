@@ -7,14 +7,14 @@ namespace XMDSResources
 {
     namespace GetResource
     {
-        const std::string_view RequestName = "GetResource";
+        const std::string_view Name = "GetResource";
 
         const std::string Resource = "resource";
     }
 
     namespace RegisterDisplay
     {
-        const std::string_view RequestName = "RegisterDisplay";
+        const std::string_view Name = "RegisterDisplay";
 
         const std::string ActivationMessage = "ActivationMessage";
         const std::string Display = "display";
@@ -50,7 +50,7 @@ namespace XMDSResources
 
     namespace RequiredFiles
     {
-        const std::string_view RequestName = "RequiredFiles";
+        const std::string_view Name = "RequiredFiles";
 
         const std::string RequiredFilesXml = "RequiredFilesXml";
         const std::string Files = "files";

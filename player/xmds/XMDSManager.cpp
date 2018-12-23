@@ -1,5 +1,6 @@
 #include "XMDSManager.hpp"
 #include "SOAPManager.hpp"
+#include "Resources.hpp"
 
 const std::string DEFAULT_CLIENT_TYPE = "linux";
 
@@ -19,7 +20,8 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.macAddress = "test";
     request.displayName = displayName;
 
-    m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const boost::system::error_code&, const RegisterDisplay::Response& response){
+    m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const SOAP::Error& err, const RegisterDisplay::Response& response){
+        logError(XMDSResources::RegisterDisplay::Name, err);
         callback(response.status, response.playerSettings);
     });
 }
@@ -30,7 +32,8 @@ void XMDSManager::requiredFiles(RequiredFilesCallback callback)
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    m_soapManager->sendRequest<RequiredFiles::Response>(request, [=](const boost::system::error_code&, const RequiredFiles::Response& response){
+    m_soapManager->sendRequest<RequiredFiles::Response>(request, [=](const SOAP::Error& err, const RequiredFiles::Response& response){
+        logError(XMDSResources::RequiredFiles::Name, err);
         callback(response.requiredFiles, response.requiredResources);
     });
 }
@@ -44,7 +47,16 @@ void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResour
     request.regionId = std::to_string(regionId);
     request.mediaId = std::to_string(mediaId);
 
-    m_soapManager->sendRequest<GetResource::Response>(request, [=](const boost::system::error_code&, const GetResource::Response& response){
+    m_soapManager->sendRequest<GetResource::Response>(request, [=](const SOAP::Error& err, const GetResource::Response& response){
+        logError(XMDSResources::GetResource::Name, err);
         callback(response);
     });
+}
+
+void XMDSManager::logError(std::string_view responseName, const SOAP::Error& err)
+{
+    if(err)
+    {
+        Log::debug("{} [{}]: {}", responseName, err.faultCode(), err.faultMessage());
+    }
 }

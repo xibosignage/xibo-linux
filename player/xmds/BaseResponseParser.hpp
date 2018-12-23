@@ -3,6 +3,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/system/error_code.hpp>
 
+#include "SOAPError.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 
@@ -15,12 +16,12 @@ namespace SOAP
         using OptionalParsedNode = boost::optional<boost::property_tree::ptree&>;
         using ParsedNode = boost::property_tree::ptree;
 
-        BaseResponseParser(const std::string& xmlResponse)
+        BaseResponseParser(const std::string& response) : m_response(response)
         {
-            tryParseResponse(xmlResponse);
+            tryParseResponse(response);
         }
 
-        std::pair<boost::system::error_code, Response> get()
+        std::pair<SOAP::Error, Response> get()
         {
             if(m_responseTree)
             {
@@ -31,21 +32,21 @@ namespace SOAP
                     return std::pair{makeErrorFromNode(node), Response{}};
                 }
 
-                return std::pair{boost::system::error_code{}, doParse(bodyNode)};
+                return std::pair{SOAP::Error{}, doParse(bodyNode)};
             }
 
-            return std::pair{boost::system::error_code{}, Response{}};
+            return std::pair{SOAP::Error{"Parser", m_response}, Response{}};
         }
 
     protected:
         virtual Response doParse(const ParsedNode& node) = 0;
 
     private:
-        void tryParseResponse(const std::string& xmlResponse)
+        void tryParseResponse(const std::string& response)
         {
             try
             {
-                m_responseTree = Utils::parseXmlFromString(xmlResponse).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
+                m_responseTree = Utils::parseXmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
             }
             catch(std::exception&)
             {
@@ -57,17 +58,16 @@ namespace SOAP
             return m_responseTree->get_child_optional("SOAP-ENV:Fault");
         }
 
-        boost::system::error_code makeErrorFromNode(OptionalParsedNode faultNode)
+        SOAP::Error makeErrorFromNode(OptionalParsedNode faultNode)
         {
             auto faultCode = faultNode->template get<std::string>("faultcode");
             auto faultMessage = faultNode->template get<std::string>("faultstring");
 
-            Log::debug("[{}] {}", faultCode, faultMessage);
-
-            return boost::system::error_code{};
+            return SOAP::Error{faultCode, faultMessage};
         }
 
     private:
+        std::string m_response;
         boost::optional<ParsedNode> m_responseTree;
 
     };

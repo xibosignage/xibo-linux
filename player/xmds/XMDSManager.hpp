@@ -21,6 +21,9 @@ public:
     void getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback);
 
 private:
+    void logError(std::string_view responseName, const SOAP::Error& err);
+
+private:
     std::unique_ptr<SOAPManager> m_soapManager;
     std::string m_serverKey;
     std::string m_hardwareKey;

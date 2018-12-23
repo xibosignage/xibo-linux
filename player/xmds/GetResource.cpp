@@ -9,7 +9,7 @@ SOAP::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResour
 
 std::string SOAP::RequestSerializer<GetResource::Request>::string()
 {
-    return createRequest(Resources::RequestName, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
+    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
 }
 
 SOAP::ResponseParser<GetResource::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)

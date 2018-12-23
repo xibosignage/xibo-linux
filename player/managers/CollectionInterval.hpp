@@ -42,6 +42,7 @@ private:
     void onCollectionFinished(const CollectionResult& result);
 
     void onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session);
+    void displayMessage(const RegisterDisplay::Response::Status& status);
     void onRequiredFiles(const RegularFiles& files, const ResourceFiles& resources, CollectionSessionPtr session);
 
 private:
