@@ -26,10 +26,11 @@ public:
 
 private:
     XiboApp(const std::string& name);
-    int initPlayer();
+    int initMainLoop();
     void runPlayer(MainWindow& window);
     void updateSettings(const PlayerSettings& settings);
     std::string findXlfFile();
+    void tryParseCommandLine(int argc, char** argv);
 
 private:
     std::unique_ptr<IMainLayout> m_layout;

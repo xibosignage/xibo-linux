@@ -45,8 +45,73 @@ XiboApp::XiboApp(const std::string& name) : Gtk::Application(name),
     m_options(std::make_unique<CommandLineParser>())
 {      
 }
+void XiboApp::updateSettings(const PlayerSettings& )
+{
+//    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
+}
 
-int XiboApp::initPlayer()
+XiboApp::~XiboApp()
+{
+    if(gst_is_initialized())
+    {
+        gst_deinit();
+    }
+}
+
+XiboApp& XiboApp::app()
+{
+    return *m_app;
+}
+
+XMDSManager& XiboApp::xmdsManager()
+{
+    return *m_xmdsManager;
+}
+
+HTTPDownloader& XiboApp::downloadManager()
+{
+    return *m_downloadManager;
+}
+
+int XiboApp::run(int argc, char** argv)
+{
+    tryParseCommandLine(argc, argv);
+
+    if(m_options->helpOption())
+    {
+        Log::info("{}", m_options->availableOptions());
+    }
+    else
+    {
+        if(m_options->versionOption())
+        {
+            Log::info("Project version: {}", getVersion());
+        }
+        if(m_options->exampleDir())
+        {
+            Resources::setDirectory(m_options->getExampleDir());
+        }
+        if(m_options->credentials() || m_options->exampleDir())
+        {
+            return initMainLoop();
+        }
+    }
+    return 0;
+}
+
+void XiboApp::tryParseCommandLine(int argc, char** argv)
+{
+    try
+    {
+        m_options->parse(argc, argv);
+    }
+    catch(std::exception& e)
+    {
+        Log::error(e.what());
+    }
+}
+
+int XiboApp::initMainLoop()
 {
     auto window = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
     auto&& windowHandler = static_cast<GtkWindowAdaptor&>(window->handler()).get();
@@ -76,23 +141,23 @@ int XiboApp::initPlayer()
 
 void XiboApp::runPlayer(MainWindow& window)
 {
-    if(!window.isVisible())
+    try
     {
-        Log::info("Player started");
-        MainDirector director;
         auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
 
         window.setSize(1366, 768);
 //        window.setFullscreen(true);
-        window.addLayout(director.buildLayoutWithChildren(parsedXlfTree));
+        window.addLayout(MainDirector{}.buildLayoutWithChildren(parsedXlfTree));
         window.showLayout();
+
+        Log::info("Player started");
+    }
+    catch(std::exception& e)
+    {
+        Log::error("Player failed to start: {}", e.what());
     }
 }
 
-void XiboApp::updateSettings(const PlayerSettings& )
-{
-//    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
-}
 
 std::string XiboApp::findXlfFile()
 {
@@ -108,62 +173,5 @@ std::string XiboApp::findXlfFile()
         ++it;
     }
 
-    throw std::runtime_error(".XLF file was not found");
-}
-
-XiboApp::~XiboApp()
-{
-    if(gst_is_initialized())
-    {
-        gst_deinit();
-    }
-}
-
-XiboApp& XiboApp::app()
-{
-    return *m_app;
-}
-
-XMDSManager& XiboApp::xmdsManager()
-{
-    return *m_xmdsManager;
-}
-
-HTTPDownloader& XiboApp::downloadManager()
-{
-    return *m_downloadManager;
-}
-
-int XiboApp::run(int argc, char** argv)
-{
-    try
-    {
-        m_options->parse(argc, argv);
-
-        if(m_options->helpOption())
-        {
-            Log::info("{}", m_options->availableOptions());
-        }
-        else
-        {
-            if(m_options->versionOption())
-            {
-                Log::info("Project version: {}", getVersion());
-            }
-            if(m_options->exampleDir())
-            {
-                Resources::setDirectory(m_options->getExampleDir());
-            }
-            if(m_options->credentials() || m_options->exampleDir())
-            {
-                return initPlayer();
-            }
-        }
-    }
-    catch(std::exception& ex)
-    {
-        Log::error(ex.what());
-        return -1;
-    }
-    return 0;
+    throw std::runtime_error{".XLF file hasn't been found"};
 }
