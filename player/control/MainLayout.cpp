@@ -1,179 +1,140 @@
 #include "MainLayout.hpp"
-#include "Region.hpp"
-#include "XiboApp.hpp"
-#include "utils/utilities.hpp"
 
-#include <spdlog/spdlog.h>
-#include <boost/filesystem.hpp>
-#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=22
-#include <gdkmm/monitor.h>
-#endif
+#include "IMediaContainer.hpp"
+#include "IBackground.hpp"
 
-MainLayout::MainLayout(int schema_version,
-                       int width,
-                       int height,
-                       const std::string& background_image,
-                       const std::string& background_color) :
-    m_schema_version(schema_version),
-    m_width(width),
-    m_height(height),
-    m_background_image(background_image),
-    m_background_color(background_color)
+#include "adaptors/IImageAdaptor.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
+#include "adaptors/IOverlayAdaptor.hpp"
+#include "utils/Utilities.hpp"
+
+#include <cassert>
+
+MainLayout::MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler) :
+    m_handler(std::move(handler))
 {
-    m_logger = spdlog::get(LOGGER);
+    assert(m_handler);
 
-    scale_to_monitor_size();
-    width = static_cast<int>(m_width * m_width_scale_factor);
-    height = static_cast<int>(m_height * m_height_scale_factor);
+    m_handler->setSize(width, height);
+}
 
-    set_size(width, height);
-    set_resizable(false);
-//    set_decorated(false);
-//    fullscreen();
-//    set_keep_above();
-//    move(500, 500);
+MainLayout::~MainLayout()
+{
+}
 
-    signal_realize().connect(sigc::mem_fun(*this, &MainLayout::on_window_realize));
+int MainLayout::width() const
+{
+    return m_handler->width();
+}
 
-    // NOTE image has higher priority
-    if(!m_background_color.empty())
-        set_background_color(utilities::to_hex(m_background_color));
+int MainLayout::height() const
+{
+    return m_handler->height();
+}
 
-    if(!m_background_image.empty())
-        set_background_image(utilities::example_dir() + "/" + m_background_image);
+void MainLayout::scale(double scaleX, double scaleY)
+{
+    assert(m_background);
+    assert(m_containers.size() > 0);
 
-    if(is_background_set)
+    m_handler->scale(scaleX, scaleY);
+    m_background->scale(scaleX, scaleY);
+    scaleContainers(scaleX, scaleY);
+}
+
+void MainLayout::scaleContainers(double scaleX, double scaleY)
+{
+    for(auto&& container : m_containers)
     {
-        m_main_overlay.add(m_background);
-        m_background.show();
+        container->scale(scaleX, scaleY);
     }
-
-    add(m_main_overlay);
-    m_main_overlay.show();
 }
 
-void MainLayout::add_region(std::unique_ptr<Region> region)
+void MainLayout::addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y)
 {
-    m_regions.push_back(std::move(region));
+    assert(mediaContainer);
 
-    auto&& cur_region = m_regions.back();
-    Gdk::Rectangle allocation(cur_region->position().left, cur_region->position().top,
-                              cur_region->size().width, cur_region->size().height);
+    checkContainerSize(mediaContainer->width(), mediaContainer->height());
 
-    m_main_overlay.add_overlay(*m_regions.back(), allocation);
+    m_handler->addChild(mediaContainer->handler(), mediaContainer->width(), mediaContainer->height(), x, y);
+    m_containers.push_back(std::move(mediaContainer));
 }
 
-Region& MainLayout::region(size_t index)
+void MainLayout::checkContainerSize(int containerWidth, int containerHeight)
 {
-    return *m_regions.at(index);
+    if(containerWidth > width() || containerHeight > height())
+        throw std::invalid_argument("Container width/height should not be greater than in layout");
 }
 
-size_t MainLayout::regions_count() const
+IOverlayAdaptor& MainLayout::handler()
 {
-    return m_regions.size();
+    return *m_handler;
 }
 
-void MainLayout::reorder_regions()
+void MainLayout::show()
 {
-    m_logger->debug("Reordering");
+    assert(m_background);
+    assert(m_containers.size() > 0);
 
-    std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
-        return first->zindex() < second->zindex();
+    if(!m_handler->isShown())
+    {
+        m_handler->show();
+        m_background->show();
+        sortReorderAndShowContainers();
+    }
+}
+
+void MainLayout::sortReorderAndShowContainers()
+{
+    sortAndReorderContainers();
+
+    for(auto&& container : m_containers)
+    {
+        container->show();
+    }
+}
+
+void MainLayout::sortAndReorderContainers()
+{
+    sortContainersByZorder();
+
+    for(size_t i = 0; i != m_containers.size(); ++i)
+    {
+        int orderInParentWidget = static_cast<int>(i);
+        m_handler->reorderChild(m_containers[i]->handler(), orderInParentWidget);
+
+        Utils::logger()->trace("Zorder: {} Order in overlay: {}", m_containers[i]->zorder(), orderInParentWidget);
+    }
+}
+
+void MainLayout::sortContainersByZorder()
+{
+    std::stable_sort(m_containers.begin(), m_containers.end(), [=](const auto& first, const auto& second){
+        return first->zorder() < second->zorder();
     });
+}
 
-    for(size_t i = 0; i != regions_count(); ++i)
+void MainLayout::setBackground(std::unique_ptr<IBackground>&& background)
+{
+    assert(background);
+
+    checkBackgroundSize(background->width(), background->height());
+
+    removePreviousBackgroundIfSet();
+    m_background = std::move(background);
+    m_handler->addMainChild(m_background->handler());
+}
+
+void MainLayout::checkBackgroundSize(int backgroundWidth, int backgroundHeight)
+{
+    if(backgroundWidth != width() || backgroundHeight != height())
+        throw std::invalid_argument("Background's and layout's size should be the same");
+}
+
+void MainLayout::removePreviousBackgroundIfSet()
+{
+    if(m_background)
     {
-        m_logger->debug("zindex: {} id: {} order: {}", m_regions[i]->zindex(), m_regions[i]->id(), i);
-        m_main_overlay.reorder_overlay(*m_regions[i], static_cast<int>(i));
+        m_handler->removeMainChild();
     }
-}
-
-void MainLayout::scale_to_monitor_size()
-{
-    Gdk::Rectangle area;
-#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>=22
-    auto current_monitor = get_display()->get_monitor_at_window(get_screen()->get_active_window());
-    current_monitor->get_geometry(area);
-#else
-    auto screen = get_screen();
-    int current_monitor = screen->get_monitor_at_window(screen->get_active_window());
-    screen->get_monitor_geometry(current_monitor, area);
-#endif
-
-    m_width_scale_factor = area.get_width() / static_cast<double>(m_width);
-    m_height_scale_factor = area.get_height() / static_cast<double>(m_height);
-    m_logger->debug("m: {} {} {} {}", area.get_width(), area.get_height(), m_width_scale_factor, m_height_scale_factor);
-}
-
-void MainLayout::set_size(int width, int height)
-{
-    m_width = width;
-    m_height = height;
-    set_default_size(width, height);
-}
-
-void MainLayout::set_background_color(uint32_t background_color_hex)
-{
-    try
-    {
-        auto pixbuf = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, m_width, m_height);
-        pixbuf->fill(background_color_hex);
-        m_background.set(pixbuf);
-        is_background_set = true;
-    }
-    catch(const Gdk::PixbufError& error)
-    {
-        m_logger->error("Could set background color: {}", std::string{error.what()});
-    }
-}
-
-void MainLayout::set_background_image(const std::string& background_image_path)
-{
-    if(boost::filesystem::exists(background_image_path))
-    {
-        m_logger->debug(background_image_path);
-        try
-        {
-            auto pixbuf = Gdk::Pixbuf::create_from_file(background_image_path, m_width, m_height);
-            m_background.set(pixbuf);
-            is_background_set = true;
-        }
-        catch(const Gdk::PixbufError& error)
-        {
-            m_logger->error("Could set background image: {}", std::string{error.what()});
-        }
-    }
-    else
-    {
-        m_logger->warn("Background image doesn't exists");
-    }
-}
-
-void MainLayout::show_regions()
-{
-    reorder_regions();
-
-    for(auto&& region : m_regions)
-    {
-        region->show();
-    }
-}
-
-void MainLayout::on_window_realize()
-{
-    Gtk::Window::on_realize();
-
-//    auto window = get_window();
-//    auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
-//    window->set_cursor(cursor);
-}
-
-double MainLayout::width_scale_factor() const
-{
-    return m_width_scale_factor;
-}
-
-double MainLayout::height_scale_factor() const
-{
-    return m_height_scale_factor;
 }

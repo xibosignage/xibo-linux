@@ -1,0 +1,68 @@
+
+version: 2
+jobs:
+ build:
+   machine:
+      docker_layer_caching: true
+   steps:
+     - checkout
+     - run: docker build -t xibo-linux .
+     - run: docker run -ti --rm -e DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v $(pwd)/build:/build xibo-linux
+     - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - project
+            
+ snap-player:
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/
+      - checkout
+      - run: docker run -v $(pwd):/my-snap snapcore/snapcraft sh -c "apt update; cd /my-snap && snapcraft"
+      - persist_to_workspace:
+          root: /home/circleci/
+          paths:
+            - project/*.snap
+            
+ push-snap-to-store:
+    machine: true
+    steps:
+      - attach_workspace:
+          at: /home/circleci/
+      - run: sudo apt update && sudo apt-get install gnupg2
+      - run: gpg -d --batch --passphrase $SNAP_KEY -o credentials.cfg .circleci/credentials.gpg
+      - run: |
+          if [[ $CIRCLE_BRANCH == "master" ]]; then RELEASE_CHANNEL=beta; else RELEASE_CHANNEL=edge; fi
+          docker run -e RELEASE_CHANNEL=$RELEASE_CHANNEL -v $(pwd):/my-snap snapcore/snapcraft sh -c \
+          "cd /my-snap && snapcraft login --with credentials.cfg && snapcraft push *.snap --release $RELEASE_CHANNEL"
+      
+workflows:
+  version: 2
+  main:
+    jobs:
+      - build:
+         filters:
+            tags:
+              only: /.*/
+      - snap-player:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              only:
+                - master
+                - /v.*/
+      - push-snap-to-store:
+          requires:
+            - build
+            - snap-player
+          filters:
+            tags:
+              only: /.*/
+            branches:
+                only:
+                  - master
+                  - /v.*/

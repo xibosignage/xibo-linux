@@ -1,71 +1,72 @@
 #include "Image.hpp"
-#include "control/Region.hpp"
 
-#include <spdlog/spdlog.h>
+#include "constants.hpp"
+#include "adaptors/IImageAdaptor.hpp"
+#include "media/MediaVisitor.hpp"
 
-Image::Image(const Region& region, int id, int duration, const std::string& uri,
-             ScaleType scale_type, Align align, Valign valign) :
-    Media(region, id, duration, Render::Native, uri)
+#include <cassert>
+
+Image::Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler)), m_scaleType(props.scaleType), m_align(props.align), m_valign(props.valign)
 {
-    bool scaled = is_scaled(scale_type);
-    auto pixbuf = Gdk::Pixbuf::create_from_file(m_uri, region.size().width, region.size().height, scaled);
-    m_size.width = pixbuf->get_width();
-    m_size.height = pixbuf->get_height();
-    m_handler.set(pixbuf);
+    assert(m_handler);
 
-    Point pos{get_left_pos(align), get_top_pos(valign)};
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_handler, pos);
-    });
+    m_handler->setSize(width, height);
+    loadImage(path);
 }
 
-void Image::stop()
+void Image::doStop()
 {
-    m_handler.hide();
-    Media::stop();
+    m_handler->hide();
 }
 
-void Image::start()
+void Image::doStart()
 {
-    m_handler.show();
-    Media::start();
+    m_handler->show();
 }
 
-bool Image::is_scaled(ScaleType scale_type)
+void Image::loadImage(const FilePath& path)
 {
-    if(scale_type == ScaleType::Scaled)
-        return true;
-    return false;
+    bool preserveAspectRatio = (m_scaleType == ImageProperties::ScaleType::Scaled) ? true : false;
+    m_handler->loadImage(path, preserveAspectRatio);
 }
 
-int Image::get_left_pos(Align align)
+int Image::width() const
 {
-    switch(align)
-    {
-        case Align::Center:
-            return (region().size().width - m_size.width) / 2;
-        case Align::Left:
-            return DEFAULT_LEFT_POS;
-        case Align::Right:
-            return region().size().width - m_size.width;
-        default:
-            break;
-    }
-    return INVALID_POS;
+    return m_handler->width();
 }
 
-int Image::get_top_pos(Valign valign)
+int Image::height() const
 {
-    switch(valign)
-    {
-        case Valign::Middle:
-            return (region().size().height - m_size.height) / 2;
-        case Valign::Top:
-            return DEFAULT_TOP_POS;
-        case Valign::Bottom:
-            return region().size().height - m_size.height;
-        default:
-            break;
-    }
-    return INVALID_POS;
+    return m_handler->height();
+}
+
+void Image::scale(double scaleX, double scaleY)
+{
+    m_handler->scale(scaleX, scaleY);
+}
+
+IWidgetAdaptor& Image::handler()
+{
+    return *m_handler;
+}
+
+void Image::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
+}
+
+ImageProperties::ScaleType Image::scaleType() const
+{
+    return m_scaleType;
+}
+
+ImageProperties::Align Image::align() const
+{
+    return m_align;
+}
+
+ImageProperties::Valign Image::valign() const
+{
+    return m_valign;
 }

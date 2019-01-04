@@ -1,47 +1,38 @@
 #pragma once
 
 #include "Media.hpp"
-#include <gtkmm/image.h>
+#include "ImageProperties.hpp"
+#include "utils/Helpers.hpp"
 
-class Image : public Media
+class IImageAdaptor;
+
+class Image : public Media<IVisibleMedia>
 {
 public:
-    enum class ScaleType
-    {
-        Scaled,
-        Stretch,
-        Invalid
-    };
+    Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
 
-    enum class Align
-    {
-        Left,
-        Center,
-        Right,
-        Invalid
-    };
+    ImageProperties::ScaleType scaleType() const;
+    ImageProperties::Align align() const;
+    ImageProperties::Valign valign() const;
 
-    enum class Valign
-    {
-        Top,
-        Middle,
-        Bottom,
-        Invalid
-    };
+    int width() const override;
+    int height() const override;
+    void scale(double, double) override;
 
-    Image(const Region& region, int id, int duration, const std::string& uri,
-          ScaleType scale_type, Align align, Valign valign);
+    IWidgetAdaptor& handler() override;
+    void apply(MediaVisitor& visitor) override;
 
-    void stop() override;
-    void start() override;
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    bool is_scaled(ScaleType scale_type);
-    int get_left_pos(Align align);
-    int get_top_pos(Valign valign);
+    void loadImage(const FilePath& path);
 
 private:
-    Gtk::Image m_handler;
-    Size m_size;
+    std::unique_ptr<IImageAdaptor> m_handler;
+    ImageProperties::ScaleType m_scaleType;
+    ImageProperties::Align m_align;
+    ImageProperties::Valign m_valign;
 
 };

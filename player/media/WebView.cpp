@@ -1,61 +1,59 @@
 #include "WebView.hpp"
-#include "control/Region.hpp"
 
-#include <spdlog/spdlog.h>
+#include "constants.hpp"
+#include "media/MediaVisitor.hpp"
 
-WebView::WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent) :
-    Media(region, id, duration, (modeId == 1) ? Render::Native : Render::HTML, uri),
-    m_transparent(transparent)
+#include <cassert>
+
+WebView::WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
+    Media(id), m_handler(std::move(handler))
 {
-    auto path = "file://" + uri;
-    spdlog::get(LOGGER)->debug(path);
+    assert(m_handler);
 
-    m_web_view = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
-    webkit_web_view_load_uri(m_web_view, path.c_str());
+    m_handler->setSize(width, height);
+    m_handler->load(path);
+}
 
-    if(m_transparent)
+void WebView::doStop()
+{
+    m_handler->hide();
+}
+
+void WebView::doStart()
+{
+    m_handler->show();
+    m_handler->reload();
+}
+
+void WebView::scale(double scaleX, double scaleY)
+{
+    m_handler->scale(scaleX, scaleY);
+}
+
+int WebView::width() const
+{
+    return m_handler->width();
+}
+
+int WebView::height() const
+{
+    return m_handler->height();
+}
+
+void WebView::apply(MediaVisitor& visitor)
+{
+    visitor.visit(*this);
+}
+
+void WebView::setTransparent(bool transparent)
+{
+    if(transparent)
     {
-        m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screen_changed));
-        screen_changed(m_handler.get_screen());
-
-        webkit_web_view_set_transparent(m_web_view, true);
-    }
-
-    auto widget = Glib::wrap(reinterpret_cast<GtkWidget*>(m_web_view));
-    m_handler.add(*widget);
-    m_handler.set_size_request(region.size().width, region.size().height);
-
-    region.request_handler().connect([=]{
-        handler_requested().emit(m_handler, DEFAULT_POINT);
-    });
-}
-
-void WebView::screen_changed(const Glib::RefPtr<Gdk::Screen>& screen)
-{
-    if(screen)
-    {
-        auto visual = screen->get_rgba_visual();
-        if(visual)
-        {
-            gtk_widget_set_visual(reinterpret_cast<GtkWidget*>(m_handler.gobj()), visual->gobj());
-        }
+        m_handler->enableTransparency();
     }
 }
 
-void WebView::stop()
+IWidgetAdaptor& WebView::handler()
 {
-    Media::stop();
-    m_handler.hide();
-}
-
-void WebView::start()
-{
-    Media::start();
-    m_handler.show_all();
-    webkit_web_view_reload(m_web_view);
-}
-
-bool WebView::transparent() const
-{
-    return m_transparent;
+    return *m_handler;
 }

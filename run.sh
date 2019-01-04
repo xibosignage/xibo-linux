@@ -1,4 +1,4 @@
 #!/bin/bash
-
-./app/_build/Player/Player --version
-cp -rv /app/_build/. /build
+cp -r /app/_build/. /build
+./app/_build/player/player "$@"
+./app/_build/player/tests/unit_tests

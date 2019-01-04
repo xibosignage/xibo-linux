@@ -4,30 +4,40 @@
 #include <spdlog/spdlog.h>
 
 #include "parsers/CommandLineParser.hpp"
+#include "managers/DownloadManager.hpp"
+#include "managers/CollectionInterval.hpp"
+#include "control/PlayerSettings.hpp"
+
+class XMDSManager;
+class IMainLayout;
+class MainWindow;
 
 class XiboApp : public Gtk::Application
 {
 public:
     XiboApp(const XiboApp& other) = delete;
     XiboApp& operator=(const XiboApp& other) = delete;
+    ~XiboApp() override;
 
     static XiboApp& create(const std::string& name);
-    static const XiboApp& app();
-
-    const CommandLineParser& command_line_parser() const;
+    static XiboApp& app();
+    XMDSManager& xmdsManager();
+    DownloadManager& downloadManager();
 
     int run(int argc, char** argv);
 
 private:
-    XiboApp();
-
-    void init();
-    void parse_command_line(int argc, char** argv);
-    std::string get_xlf_file();
+    XiboApp(const std::string& name);
+    int initPlayer();
+    void runPlayer(MainWindow& window);
+    void updateSettings(const PlayerSettings& settings);
+    std::string findXlfFile();
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parent_app;
-    std::shared_ptr<spdlog::logger> m_logger;
+    std::unique_ptr<IMainLayout> m_layout;
+    std::unique_ptr<XMDSManager> m_xmdsManager;
+    DownloadManager m_downloadManager;
+    CollectionInterval m_collectionInterval;
     CommandLineParser m_options;
 
     static std::unique_ptr<XiboApp> m_app;

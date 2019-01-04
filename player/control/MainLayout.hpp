@@ -1,63 +1,40 @@
 #pragma once
 
-#include <gtkmm/window.h>
-#include <gtkmm/image.h>
-#include <spdlog/spdlog.h>
-
-#include "LayoutOverlay.hpp"
+#include "IMainLayout.hpp"
 
 #include <vector>
-#include <memory>
 
-class Region;
-class Point;
-class Size;
-class Transition;
-
-class MainLayout : public Gtk::Window
+class MainLayout : public IMainLayout
 {
 public:
-    MainLayout(int schema_version,
-               int width,
-               int height,
-               const std::string& background_image,
-               const std::string& background_color);
-    ~MainLayout() = default;
+    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
+    ~MainLayout() override;
 
     MainLayout(const MainLayout& other) = delete;
     MainLayout& operator=(const MainLayout& other) = delete;
 
-    double width_scale_factor() const;
-    double height_scale_factor() const;
+    void scale(double scaleX, double scaleY) override;
+    int width() const override;
+    int height() const override;
 
-    void add_region(std::unique_ptr<Region> region);
-    Region& region(size_t index);
-    size_t regions_count() const;
-    void show_regions();
+    void setBackground(std::unique_ptr<IBackground>&& background) override;
+    void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) override;
 
-private:
-    void on_window_realize();
-    void create_ui();
-    void reorder_regions();
-
-    void set_size(int width, int height);
-    void scale_to_monitor_size();
-    void set_background_color(uint32_t background_color_hex);
-    void set_background_image(const std::string& background_image);
+    IOverlayAdaptor& handler() override;
+    void show() override;
 
 private:
-    Gtk::Image m_background;
-    LayoutOverlay m_main_overlay;
+    void sortReorderAndShowContainers();
+    void sortAndReorderContainers();
+    void sortContainersByZorder();
+    void removePreviousBackgroundIfSet();
+    void scaleContainers(double scaleX, double scaleY);
+    void checkContainerSize(int containerWidth, int containerHeight);
+    void checkBackgroundSize(int backgroundWidth, int backgroundHeight);
 
-    int m_schema_version;
-    int m_width;
-    int m_height;
-    std::string m_background_image;
-    std::string m_background_color;
-    bool is_background_set = false;
+private:
+    std::unique_ptr<IOverlayAdaptor> m_handler;
+    std::unique_ptr<IBackground> m_background;
+    std::vector<std::unique_ptr<IMediaContainer>> m_containers;
 
-    double m_width_scale_factor;
-    double m_height_scale_factor;
-    std::vector<std::unique_ptr<Region>> m_regions;
-    std::shared_ptr<spdlog::logger> m_logger;
 };

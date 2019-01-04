@@ -1,3 +1,84 @@
+### 0.3.2-alpha Maroon
+
+**23.11.2018 - `(unstable)`**
+
+- **User Part**
+  - Fixed issue with downloading big files
+  - Fixed bug with video looping
+  - Fixed bug with black bars that should appear during proportional scaling
+  - Fixed issue when audio and video in the same region led to the crash
+
+- **Developer Part**
+  - Fixed bug with Gtk-CRITICAL for drawing area
+
+
+### 0.3.1-alpha Maroon
+
+**05.11.2018 - `(unstable)`**
+
+- **User Part**
+  - `--example-dir` added again to simplify testing
+  - Added layout scaling support from scratch (old system contained a lot of bugs)
+  - Added snap package: users can easily download and update player from snapstore
+  - Size setting unified and less error-prone now
+  - Region looping fixed
+  - Region ordering fixed
+  - Fixed window resize during runtime
+  - Fixed bug with image size
+  - Background color is checked and parsed properly now
+  
+- **Developer Part**
+  - A lot of new unit-tests that covers main player classes (Layout, MediaContainer, all media, some utils)
+  - Tests moved to subproject and splitted into folders
+  - Classes depends on interfaces instead of real objects now to simplify future changes in the project
+  - All interaction with GTK+ moved to adaptors
+  - A lot of minor improvements and refactoring
+  - Media splitted into visible and invisible media to simplify handling
+  - Parsing and creation (using Builder) logic was splitted
+  - Libs updated to the newer ones
+  - Added code coverage report
+  - camelCase is used everywhere now
+  - std::filesystem is used instead of boost::filesystem
+
+### 0.3-alpha Maroon
+
+**27.08.2018 - `(unstable)`**
+
+- **User Part**
+  - `--example-dir`, `--log-level` options removed
+  - Now player can be launched using only CMS
+  - `--host`, `--server-key`, `--hardware-key` options are used to establish connection with CMS
+  - Default resources folder (cannot be changed for now) is `resources`. Downloaded files are placed there.
+  - Implemented basic collection interval (2 requests for now: RegisterDisplay and RequiredFiles)
+  - Only HTTP download type is supported for now in RequiredFiles
+  - Video/audio content cannot be downloaded for now due to size limitations (will be fixed in the next release)
+- **Developer Part**
+  - Implemented all XMDS requests/responses (except for Schedule response)
+  - CommandLineParser was refactored
+  - spdlog updated to 1.1.0
+  - boost updated to 1.68.0
+  - Build is cached now
+  - Moved to new CI
+  - Added DownloadManager, SOAPManager, XMDSManager
+  - Small refactorings in other parts of the project
+
+### 0.2.2-alpha Navy
+
+**12.06.2018 - `(unstable)`**
+
+- **User Part**
+  - Audio restart was fixed
+  - Region and media resizes correctly now
+- **Developer Part**
+  - Docker build was fixed
+  - Running player from command-line using Docker
+  - Unit-tests for parsers and layout using GTest library
+  - Large scale parsers refactoring
+  - Background is a separate class now
+  - C++ wrapper for GStreamer
+  - Check for memory leaks
+  - Video sink and GStreamer wrapper are separate libs now
+
 ### 0.2.1-alpha Navy (hotfix)
 
 **18.04.2018 - `(unstable)`**

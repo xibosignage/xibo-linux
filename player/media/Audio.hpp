@@ -1,38 +1,26 @@
 #include "Media.hpp"
 
-#include <gst/gst.h>
-#include <spdlog/spdlog.h>
+#include "IAudioHandler.hpp"
 
-class Audio : public Media
+class Audio : public Media<IInvisibleMedia>
 {
 public:
-    Audio(const Region& region, int id, int duration, const std::string& uri, bool muted, bool looped, double volume);
-    ~Audio() override;
+    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
+    void apply(MediaVisitor& visitor) override;
 
-    void stop() override;
-    void start() override;
-    void start_timer() override;
+    void stopPlayback();
+    void setVolume(int volume);
+    void setLooped(bool looped);
 
-    void set_volume(double volume);
-    void play();
-
-private:
-    gboolean bus_message_watch(GstBus* bus, GstMessage* message, gpointer user_data);
-    void no_more_pads(GstElement* decodebin, gpointer user_data);
-    void on_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data);
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    bool m_muted;
-    bool m_looped;
+    void onAudioFinished();
 
-    guint m_watch_id;
-    bool m_audio_ended = false;
-    std::shared_ptr<spdlog::logger> m_logger;
+private:
+    std::unique_ptr<IAudioHandler> m_handler;
+    bool m_looped = false;
 
-    GstElement* m_pipeline;
-    GstElement* m_source;
-    GstElement* m_decodebin;
-    GstElement* m_volume;
-    GstElement* m_audio_converter;
-    GstElement* m_audio_sink;
 };

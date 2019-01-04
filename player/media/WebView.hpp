@@ -1,25 +1,27 @@
 #pragma once
 
 #include "Media.hpp"
+#include "adaptors/IWebViewAdaptor.hpp"
 
-#include <gtkmm/scrolledwindow.h>
-#include <webkit/webkit.h>
-
-class WebView : public Media
+class WebView : public Media<IVisibleMedia>
 {
 public:
-    WebView(const Region& region, int id, int duration, const std::string& uri, int modeId, bool transparent);
+    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
 
-    void stop() override;
-    void start() override;
-    bool transparent() const;
+    void scale(double, double) override;
+    int width() const override;
+    int height() const override;
+
+    IWidgetAdaptor& handler() override;
+    void apply(MediaVisitor& visitor) override;
+
+    void setTransparent(bool transparent);
+
+protected:
+    void doStop() override;
+    void doStart() override;
 
 private:
-    void screen_changed(const Glib::RefPtr<Gdk::Screen>& screen);
-
-private:
-    bool m_transparent;
-    WebKitWebView* m_web_view = nullptr;
-    Gtk::ScrolledWindow m_handler;
+    std::unique_ptr<IWebViewAdaptor> m_handler;
 
 };
