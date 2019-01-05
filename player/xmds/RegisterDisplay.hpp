@@ -1,5 +1,4 @@
-#ifndef REGISTERDISPLAY_HPP
-#define REGISTERDISPLAY_HPP
+#pragma once
 
 #include "Field.hpp"
 #include "SOAP.hpp"
@@ -63,6 +62,3 @@ protected:
 private:
     void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
 };
-
-
-#endif // REGISTERDISPLAY_HPP

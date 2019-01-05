@@ -7,6 +7,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_context.hpp>
 #include <thread>
+#include <future>
 
 struct DownloadedFile
 {
@@ -28,9 +29,10 @@ public:
     HTTPDownloader(const HTTPDownloader&) = delete;
     HTTPDownloader& operator=(const HTTPDownloader&) = delete;
 
-    void download(const std::string& filename, const std::string& path, FileDownloadCallback callback);
+    std::future<void> download(const std::string& filename, const std::string& path, FileDownloadCallback callback);
 
 private:
+    void sessionFinished(const boost::system::error_code& ec, DownloadSessionPtr session);
     void onRead(const boost::system::error_code& ec, std::size_t bytes_transferred, DownloadSessionPtr session);
     void onWrite(const boost::system::error_code& ec, std::size_t bytes_transferred, DownloadSessionPtr session);
     void onConnect(const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::iterator, DownloadSessionPtr session);

@@ -12,7 +12,6 @@
 template<typename Response, typename Request>
 struct Session
 {
-    using callback = std::function<void(const SOAP::Error&, const Response&)>;
     Session(boost::asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
     boost::asio::ip::tcp::socket socket;
     boost::asio::ip::tcp::resolver resolver;
@@ -20,5 +19,4 @@ struct Session
     boost::beast::flat_buffer buffer;
     boost::beast::http::response<boost::beast::http::string_body> httpResponse;
     Request soapRequest;
-    callback responseCallback;
 };

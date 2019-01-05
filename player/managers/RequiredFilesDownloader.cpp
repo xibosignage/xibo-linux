@@ -6,34 +6,43 @@
 #include "utils/Utilities.hpp"
 #include "utils/FilePath.hpp"
 
-void RequiredFilesDownloader::download(const RegularFiles& files, FileDownloadFinished callback)
+std::future<void> RequiredFilesDownloader::download(const RegularFiles& files)
 {
-    m_filesDownloaded.connect(callback);
+    return std::async(std::launch::async, [=](){
+        auto downloadResults = downloadAllFiles(files);
 
-    downloadAllFiles(files);
+        for(auto&& result : downloadResults)
+        {
+            result.wait();
+        }
+    });
 }
 
-void RequiredFilesDownloader::downloadAllFiles(const RegularFiles& files)
+DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFiles& files)
 {
+    DownloadFilesResults results;
+
     for(auto&& file : files)
     {
         Log::trace("File type: {} ID: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
         Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
 
-        Utils::httpDownloader().download(file.filename, file.path, [=](const DownloadedFile& file)
-        {
-            processDownloadedFile(file);
-            if(m_finishedDownloads == files.size())
-            {
-                m_filesDownloaded.emit();
-            }
-        });
+        results.push_back(downloadFile(file.filename, file.path));
     }
+
+    return results;
+}
+
+std::future<void> RequiredFilesDownloader::downloadFile(const std::string& filename, const std::string& path)
+{
+    // FIXME
+    return Utils::httpDownloader().download(filename, path, [=](const DownloadedFile& file){
+        processDownloadedFile(file);
+    });
 }
 
 void RequiredFilesDownloader::processDownloadedFile(const DownloadedFile& file)
 {
-    ++m_finishedDownloads;
     if(!file.downloadError)
     {
         Log::debug("[{}] Downloaded", file.name);

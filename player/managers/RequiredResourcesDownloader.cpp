@@ -9,11 +9,11 @@
 
 #include <fstream>
 
-void RequiredResourcesDownloader::download(const ResourceFiles& resources, ResourceDownloadFinished callback)
+std::future<void> RequiredResourcesDownloader::download(const ResourceFiles& resources)
 {
-    m_resourcesDownloaded.connect(callback);
-
-    downloadAllResources(resources);
+    return std::async(std::launch::async, [=](){
+        downloadAllResources(resources);
+    });
 }
 
 void RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& resources)
@@ -22,24 +22,16 @@ void RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& reso
     {
         Log::trace("Layout ID: {} Region ID: {} Media ID: {}", resource.layoutId, resource.regionId, resource.mediaId);
 
-        downloadResource(resource.layoutId, resource.regionId, resource.mediaId, [=](std::string resource)
-        {
-            processDownloadedResource(resource);
-            if(m_downloadsCount == resources.size())
-            {
-                m_resourcesDownloaded.emit();
-            }
-        });
+        auto result = Utils::xmdsManager().getResource(resource.layoutId, resource.regionId, resource.mediaId);
+        processDownloadedResource(resource.mediaId, result.get());
     }
 }
 
-void RequiredResourcesDownloader::downloadResource(int layoutId, int regionId, int mediaId, ResourceDownloadCallback callback)
+void RequiredResourcesDownloader::processDownloadedResource(int mediaId, const GetResource::Response& response)
 {
-    Utils::xmdsManager().getResource(layoutId, regionId, mediaId, [=](const GetResource::Response& response)
-    {
-        auto filename = createResource(mediaId, response.resource);
-        callback(filename);
-    });
+    auto filename = createResource(mediaId, response.resource);
+
+    Log::debug("[{}] Downloaded", filename);
 }
 
 std::string RequiredResourcesDownloader::createResource(int mediaId, const std::string& resourceContent)
@@ -50,10 +42,4 @@ std::string RequiredResourcesDownloader::createResource(int mediaId, const std::
     out << resourceContent;
 
     return filename;
-}
-
-void RequiredResourcesDownloader::processDownloadedResource(std::string resource)
-{
-    Log::debug("[{}] Downloaded", resource);
-    ++m_downloadsCount;
 }

@@ -3,25 +3,27 @@
 
 #include "RegisterDisplay.hpp"
 #include "RequiredFiles.hpp"
+#include "Schedule.hpp"
 #include "GetResource.hpp"
 
 class SOAPManager;
 
-using RegisterDisplayCallback = std::function<void(RegisterDisplay::Response::Status, const PlayerSettings&)>;
-using RequiredFilesCallback = std::function<void(const RegularFiles&, const ResourceFiles&)>;
+using RegisterDisplayCallback = std::function<void(const RegisterDisplay::Response&)>;
+using RequiredFilesCallback = std::function<void(const RequiredFiles::Response)>;
+using ScheduleCallback = std::function<void(const Schedule::Response&)>;
 using GetResourceCallback = std::function<void(const GetResource::Response&)>;
+
+#include <future>
 
 class XMDSManager
 {
 public:
     XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    void registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName, RegisterDisplayCallback callback);
-    void requiredFiles(RequiredFilesCallback callback);
-    void getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback);
-
-private:
-    void logError(std::string_view responseName, const SOAP::Error& err);
+    std::future<RegisterDisplay::Response> registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName);
+    std::future<RequiredFiles::Response> requiredFiles();
+    std::future<Schedule::Response> schedule();
+    std::future<GetResource::Response> getResource(int layoutId, int regionId, int mediaId);
 
 private:
     std::unique_ptr<SOAPManager> m_soapManager;

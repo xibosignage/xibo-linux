@@ -11,6 +11,8 @@
 const uint DEFAULT_INTERVAL = 5;
 namespace ph = std::placeholders;
 
+#include <future>
+
 CollectionInterval::CollectionInterval() :
     m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
 {
@@ -37,13 +39,13 @@ void CollectionInterval::onCollectionFinished(const CollectionResult& result)
 
 void CollectionInterval::collect(CollectionResultCallback callback)
 {
-    Log::debug("Collection started");
+    Log::debug("Collection started {}", std::this_thread::get_id());
 
     auto session = std::make_shared<CollectionSession>();
     session->callback = callback;
 
-    auto clbk = std::bind(&CollectionInterval::onDisplayRegistered, this, ph::_1, ph::_2, session);
-    Utils::xmdsManager().registerDisplay(121, "1.8", "Display", clbk);
+    auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display");
+    onDisplayRegistered(registerDisplayResult.get(), session);
 }
 
 void CollectionInterval::startRegularCollection()
@@ -57,17 +59,23 @@ void CollectionInterval::sessionFinished(CollectionSessionPtr session)
         session->callback(CollectionResult{true});
         return false;
     });
-
-    session->listener.reset();
 }
 
-void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session)
+void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response& response, CollectionSessionPtr session)
 {
-    displayMessage(status);
-    if(status.code == RegisterDisplay::Response::Status::Code::Ready)
+    Log::trace("onDisplayRegistered {}", std::this_thread::get_id());
+
+    displayMessage(response.status);
+    if(response.status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
 //        updateTimer(settings.collectInterval);
-        Utils::xmdsManager().requiredFiles(std::bind(&CollectionInterval::onRequiredFiles, this, ph::_1, ph::_2, session));
+
+        auto requiredFilesResult = Utils::xmdsManager().requiredFiles();
+        auto scheduleResult = Utils::xmdsManager().schedule();
+        onSchedule(scheduleResult.get(), session);
+        onRequiredFiles(requiredFilesResult.get(), session);
+
+        sessionFinished(session);
     }
     else
     {
@@ -92,17 +100,49 @@ void CollectionInterval::updateTimer(int collectInterval)
     }
 }
 
-void CollectionInterval::onRequiredFiles(const RegularFiles& files, const ResourceFiles& resources, CollectionSessionPtr session)
+void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response, CollectionSessionPtr)
 {
-    Log::debug("{} files and {} resources to download", files.size(), resources.size());
+    RequiredFilesDownloader filesDownloader;
+    RequiredResourcesDownloader resourcesDownloader;
 
-    session->listener = std::make_shared<AsyncListener>(std::bind(&CollectionInterval::sessionFinished, this, session));
+    auto&& files = response.requiredFiles;
+    auto&& resources = response.requiredResources;
 
-    session->filesDownloader.download(files, session->listener->add<void>([](){
-        Log::debug("Files downloaded");
-    }));
+    Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
 
-    session->resourcesDownloader.download(resources, session->listener->add<void>([](){
-        Log::debug("Resources downloaded");
-    }));
+    auto resourcesResult = resourcesDownloader.download(resources);
+    auto filesResult = filesDownloader.download(files);
+
+    Log::trace("Waiting for downloads... {}", std::this_thread::get_id());
+    filesResult.wait();
+    Log::debug("Files downloaded");
+    resourcesResult.wait();
+    Log::debug("Resources downloaded");
+}
+
+void CollectionInterval::onSchedule(const Schedule::Response& response, CollectionSessionPtr)
+{
+    Log::trace("OnSchedule {}", std::this_thread::get_id());
+
+    Log::debug("Default layout Id: {}", response.defaultLayout.id);
+    for(auto dependant : response.defaultLayout.dependants)
+    {
+        Log::debug(dependant);
+    }
+
+    for(auto layout : response.layouts)
+    {
+        Log::debug("ScheduleId: {} LayoutId: {} StartDT: {} EndDT: {} Priority: {}", layout.scheduleId, layout.id, layout.startDT, layout.endDT, layout.priority);
+        for(auto dependant : layout.dependants)
+        {
+            Log::debug(dependant);
+        }
+    }
+
+    Log::debug("Global dependants");
+
+    for(auto dependant : response.globalDependants)
+    {
+        Log::debug(dependant);
+    }
 }

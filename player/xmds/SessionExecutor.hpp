@@ -13,6 +13,8 @@ namespace http = boost::beast::http;
 namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 
+#include <future>
+
 template<typename Response, typename Request>
 class SessionExecutor : public std::enable_shared_from_this<SessionExecutor<Response, Request>>
 {
@@ -22,16 +24,19 @@ public:
     {
     }
 
-    void exec()
+    std::future<Response> exec()
     {
         auto resolve = std::bind(&SessionExecutor::onResolve, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
         m_session->resolver.async_resolve(m_host, std::to_string(m_port), ip::resolver_base::numeric_service, resolve);
+
+        return m_promise.get_future();
     }
 
 private:
-    void sessionFinished(const boost::system::error_code& ec)
+    void sessionFinished(const SOAP::Error& err)
     {
-        m_session->responseCallback(SOAP::Error{"HTTP", ec.message()}, {});
+        Log::debug("Session finished with error [{}]: {}", err.faultCode(), err.faultMessage());
+        m_promise.set_value({});
     }
 
     void onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)
@@ -43,7 +48,7 @@ private:
         }
         else
         {
-            sessionFinished(ec);
+            sessionFinished(SOAP::Error{"HTTP", ec.message()});
         }
     }
 
@@ -67,7 +72,7 @@ private:
         }
         else
         {
-            sessionFinished(ec);
+            sessionFinished(SOAP::Error{"HTTP", ec.message()});
         }
     }
 
@@ -80,7 +85,7 @@ private:
         }
         else
         {
-            sessionFinished(ec);
+            sessionFinished(SOAP::Error{"HTTP", ec.message()});
         }
     }
 
@@ -92,17 +97,25 @@ private:
 
             SOAP::ResponseParser<Response> parser(m_session->httpResponse.body());
             auto [error, response] = parser.get();
-            m_session->responseCallback(error, response);
+            if(error)
+            {
+                sessionFinished(error);
+            }
+            else
+            {
+                m_promise.set_value(response);
+            }
         }
         else
         {
-            sessionFinished(ec);
+            sessionFinished(SOAP::Error{"HTTP", ec.message()});
         }
     }
 
 private:
     std::string m_host;
     int m_port;
+    std::promise<Response> m_promise;
     std::shared_ptr<Session<Response, Request>> m_session;
 
 };

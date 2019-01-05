@@ -1,5 +1,4 @@
-#ifndef GETRESOURCE_HPP
-#define GETRESOURCE_HPP
+#pragma once
 
 #include "Field.hpp"
 #include "SOAP.hpp"
@@ -42,5 +41,3 @@ protected:
     GetResource::Response doParse(const boost::property_tree::ptree& node) override;
 
 };
-
-#endif // GETRESOURCE_HPP

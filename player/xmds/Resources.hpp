@@ -12,6 +12,28 @@ namespace XMDSResources
         const std::string Resource = "resource";
     }
 
+    namespace Schedule
+    {
+        const std::string_view Name = "Schedule";
+
+        const std::string ScheduleXml = "ScheduleXml";
+        const std::string Schedule = "schedule";
+        const std::string Layout = "layout";
+        const std::string DefaultLayout = "default";
+        const std::string GlobalDependants = "dependants";
+
+        namespace LayoutAttrs
+        {
+            const std::string Node = "<xmlattr>";
+            const std::string ScheduleId = "scheduleid";
+            const std::string Id = "file";
+            const std::string Priority = "priority";
+            const std::string StartDT = "fromdt";
+            const std::string EndDT = "todt";
+            const std::string Dependants = "dependents";
+        }
+    }
+
     namespace RegisterDisplay
     {
         const std::string_view Name = "RegisterDisplay";

@@ -1,25 +1,18 @@
 #pragma once
 
 #include "xmds/RequiredFiles.hpp"
+#include "xmds/GetResource.hpp"
 
-#include <sigc++/sigc++.h>
-
-using ResourceDownloadFinished = std::function<void()>;
-using ResourceDownloadCallback = std::function<void(std::string)>;
+#include <future>
 
 class RequiredResourcesDownloader
 {
 public:
-    void download(const ResourceFiles& resources, ResourceDownloadFinished callback);
+    std::future<void> download(const ResourceFiles& resources);
 
 private:
     void downloadAllResources(const ResourceFiles& resources);
-    void downloadResource(int layoutId, int regionId, int mediaId, ResourceDownloadCallback callback);
-    void processDownloadedResource(std::string resource);
+    void processDownloadedResource(int mediaId, const GetResource::Response& response);
     std::string createResource(int mediaId, const std::string& resourceContent);
-
-private:
-    sigc::signal<void()> m_resourcesDownloaded;
-    size_t m_downloadsCount = 0;
 
 };

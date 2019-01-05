@@ -1,5 +1,4 @@
-#ifndef REQUIREDFILES_HPP
-#define REQUIREDFILES_HPP
+#pragma once
 
 #include "Field.hpp"
 #include "SOAP.hpp"
@@ -82,6 +81,3 @@ private:
     RequiredFiles::Response::DownloadType toDownloadType(const std::string& type);
 
 };
-
-
-#endif // REQUIREDFILES_HPP

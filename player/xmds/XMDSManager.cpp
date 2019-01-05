@@ -9,7 +9,7 @@ XMDSManager::XMDSManager(const std::string& host, const std::string& serverKey, 
 {
 }
 
-void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName, RegisterDisplayCallback callback)
+std::future<RegisterDisplay::Response> XMDSManager::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = m_serverKey;
@@ -20,25 +20,28 @@ void XMDSManager::registerDisplay(int clientCode, const std::string& clientVersi
     request.macAddress = "test";
     request.displayName = displayName;
 
-    m_soapManager->sendRequest<RegisterDisplay::Response>(request, [=](const SOAP::Error& err, const RegisterDisplay::Response& response){
-        logError(XMDSResources::RegisterDisplay::Name, err);
-        callback(response.status, response.playerSettings);
-    });
+    return m_soapManager->sendRequest<RegisterDisplay::Response>(request);
 }
 
-void XMDSManager::requiredFiles(RequiredFilesCallback callback)
+std::future<RequiredFiles::Response> XMDSManager::requiredFiles()
 {
     RequiredFiles::Request request;
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    m_soapManager->sendRequest<RequiredFiles::Response>(request, [=](const SOAP::Error& err, const RequiredFiles::Response& response){
-        logError(XMDSResources::RequiredFiles::Name, err);
-        callback(response.requiredFiles, response.requiredResources);
-    });
+    return m_soapManager->sendRequest<RequiredFiles::Response>(request);
 }
 
-void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResourceCallback callback)
+std::future<Schedule::Response> XMDSManager::schedule()
+{
+    Schedule::Request request;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+
+    return m_soapManager->sendRequest<Schedule::Response>(request);
+}
+
+std::future<GetResource::Response> XMDSManager::getResource(int layoutId, int regionId, int mediaId)
 {
     GetResource::Request request;
     request.serverKey = m_serverKey;
@@ -47,16 +50,5 @@ void XMDSManager::getResource(int layoutId, int regionId, int mediaId, GetResour
     request.regionId = std::to_string(regionId);
     request.mediaId = std::to_string(mediaId);
 
-    m_soapManager->sendRequest<GetResource::Response>(request, [=](const SOAP::Error& err, const GetResource::Response& response){
-        logError(XMDSResources::GetResource::Name, err);
-        callback(response);
-    });
-}
-
-void XMDSManager::logError(std::string_view responseName, const SOAP::Error& err)
-{
-    if(err)
-    {
-        Log::debug("{} [{}]: {}", responseName, err.faultCode(), err.faultMessage());
-    }
+    return m_soapManager->sendRequest<GetResource::Response>(request);
 }

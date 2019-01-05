@@ -5,8 +5,9 @@
 
 #include "xmds/RegisterDisplay.hpp"
 #include "xmds/RequiredFiles.hpp"
+#include "xmds/Schedule.hpp"
+
 #include "utils/ITimerProvider.hpp"
-#include "utils/AsyncListener.hpp"
 
 struct CollectionResult
 {
@@ -17,9 +18,6 @@ using CollectionResultCallback = std::function<void(const CollectionResult&)>;
 
 struct CollectionSession
 {
-    RequiredFilesDownloader filesDownloader;
-    RequiredResourcesDownloader resourcesDownloader;
-    std::shared_ptr<AsyncListener> listener;
     CollectionResultCallback callback;
 };
 
@@ -41,9 +39,10 @@ private:
     void sessionFinished(CollectionSessionPtr session);
     void onCollectionFinished(const CollectionResult& result);
 
-    void onDisplayRegistered(const RegisterDisplay::Response::Status& status, const PlayerSettings& settings, CollectionSessionPtr session);
+    void onDisplayRegistered(const RegisterDisplay::Response& response, CollectionSessionPtr session);
     void displayMessage(const RegisterDisplay::Response::Status& status);
-    void onRequiredFiles(const RegularFiles& files, const ResourceFiles& resources, CollectionSessionPtr session);
+    void onRequiredFiles(const RequiredFiles::Response& response, CollectionSessionPtr session);
+    void onSchedule(const Schedule::Response& response, CollectionSessionPtr session);
 
 private:
     int m_collectInterval;

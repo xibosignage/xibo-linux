@@ -2,22 +2,20 @@
 
 #include "xmds/RequiredFiles.hpp"
 
-#include <sigc++/sigc++.h>
+#include <future>
 
-using FileDownloadFinished = std::function<void()>;
+using DownloadFilesResults = std::vector<std::future<void>>;
 class DownloadedFile;
 
 class RequiredFilesDownloader
 {
 public:
-    void download(const RegularFiles& files, FileDownloadFinished callback);
+    std::future<void> download(const RegularFiles& files);
 
 private:
-    void downloadAllFiles(const RegularFiles& files);
+    DownloadFilesResults downloadAllFiles(const RegularFiles& files);
+    std::future<void> downloadFile(const std::string& filename, const std::string& path);
     void processDownloadedFile(const DownloadedFile& file);
 
-private:
-    sigc::signal<void()> m_filesDownloaded;
-    size_t m_finishedDownloads = 0;
 
 };

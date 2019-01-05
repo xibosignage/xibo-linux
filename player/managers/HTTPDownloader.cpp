@@ -33,6 +33,7 @@ struct DownloadSession
     std::string target;
     std::string host;
     FileDownloadCallback callback;
+    std::promise<void> result;
 };
 
 HTTPDownloader::HTTPDownloader() :
@@ -49,7 +50,7 @@ HTTPDownloader::~HTTPDownloader()
     m_workThread->join();
 }
 
-void HTTPDownloader::download(const std::string& filename, const std::string& path, FileDownloadCallback callback)
+std::future<void> HTTPDownloader::download(const std::string& filename, const std::string& path, FileDownloadCallback callback)
 {
     auto session = std::make_shared<DownloadSession>(m_ioc);
     session->filename = filename;
@@ -67,6 +68,18 @@ void HTTPDownloader::download(const std::string& filename, const std::string& pa
 
     auto resolve = std::bind(&HTTPDownloader::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
     session->resolver.async_resolve(session->host, std::to_string(80), ip::resolver_base::numeric_service, resolve);
+
+    return session->result.get_future();
+}
+
+void HTTPDownloader::sessionFinished(const boost::system::error_code& ec, DownloadSessionPtr session)
+{
+    if(ec)
+    {
+        Log::trace("[{}] Session finished with error: {}", session->filename, ec.message());
+    }
+    session->callback(DownloadedFile{ec, session->filename});
+    session->result.set_value();
 }
 
 void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t bytes, DownloadSessionPtr session)
@@ -87,7 +100,7 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
             out << session->httpResponse.get().body();
         }
     }
-    session->callback(DownloadedFile{ec, session->filename});
+    sessionFinished(ec, session);
 }
 
 void HTTPDownloader::onWrite(const boost::system::error_code& ec, std::size_t, DownloadSessionPtr session)
@@ -99,8 +112,7 @@ void HTTPDownloader::onWrite(const boost::system::error_code& ec, std::size_t, D
     }
     else
     {
-        Log::trace("[{}] Send download request error: {}", session->filename, ec.message());
-        session->callback(DownloadedFile{ec, session->filename});
+        sessionFinished(ec, session);
     }
 }
 
@@ -119,8 +131,7 @@ void HTTPDownloader::onConnect(const boost::system::error_code& ec, ip::tcp::res
     }
     else
     {
-        Log::trace("[{}] Connected to host with error: {}", session->filename, ec.message());
-        session->callback(DownloadedFile{ec, session->filename});
+        sessionFinished(ec, session);
     }
 }
 
@@ -133,7 +144,6 @@ void HTTPDownloader::onResolve(const boost::system::error_code& ec, ip::tcp::res
     }
     else
     {
-        Log::trace("[{}] Resolved host with error: {}", session->filename, ec.message());
-        session->callback(DownloadedFile{ec, session->filename});
+        sessionFinished(ec, session);
     }
 }
