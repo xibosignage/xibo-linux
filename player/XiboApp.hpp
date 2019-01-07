@@ -6,6 +6,7 @@ class XMDSManager;
 class IMainLayout;
 class MainWindow;
 class HTTPDownloader;
+class Scheduler;
 class CollectionInterval;
 class CommandLineParser;
 struct PlayerSettings;
@@ -29,13 +30,12 @@ private:
     int initMainLoop();
     void runPlayer(MainWindow& window);
     void updateSettings(const PlayerSettings& settings);
-    std::string findXlfFile();
     void tryParseCommandLine(int argc, char** argv);
 
 private:
-    std::unique_ptr<IMainLayout> m_layout;
     std::unique_ptr<XMDSManager> m_xmdsManager;
     std::unique_ptr<HTTPDownloader> m_downloadManager;
+    std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<CommandLineParser> m_options;
 

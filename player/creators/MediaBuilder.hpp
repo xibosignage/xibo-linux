@@ -2,7 +2,6 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-#include "utils/FilePath.hpp"
 
 #include <boost/optional/optional.hpp>
 

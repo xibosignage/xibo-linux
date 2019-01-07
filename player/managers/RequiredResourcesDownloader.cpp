@@ -5,7 +5,6 @@
 #include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
 #include "utils/Logger.hpp"
-#include "utils/FilePath.hpp"
 
 #include <fstream>
 

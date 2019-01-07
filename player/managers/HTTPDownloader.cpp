@@ -2,7 +2,6 @@
 
 #include "utils/Resources.hpp"
 #include "utils/Logger.hpp"
-#include "utils/FilePath.hpp"
 
 #include <regex>
 #include <fstream>
@@ -87,7 +86,7 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
     auto filename = Resources::directory() / session->filename;
     if(!ec)
     {
-        // FIXME temporarily (until 0.4-a)
+        // FIXME temporarily (fix in 0.4-a)
         // also, it should not create file, just resend contents
         if(std::filesystem::exists(filename.string()))
         {

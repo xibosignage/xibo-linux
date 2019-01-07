@@ -1,13 +1,10 @@
 ﻿#include "XiboApp.hpp"
 #include "config.hpp"
 
-#include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
-#include "utils/FilePath.hpp"
 
 #include "xmds/XMDSManager.hpp"
 #include "xmds/SOAPManager.hpp"
-#include "creators/MainDirector.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
 #include "control/MainWindow.hpp"
 #include "control/IMainLayout.hpp"
@@ -15,6 +12,7 @@
 #include "parsers/CommandLineParser.hpp"
 #include "managers/HTTPDownloader.hpp"
 #include "managers/CollectionInterval.hpp"
+#include "managers/Scheduler.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -32,7 +30,7 @@ XiboApp& XiboApp::create(const std::string& name)
     gst_init(nullptr, nullptr);
 
     auto path = std::filesystem::current_path() / DEFAULT_RESOURCES_DIR;
-    Resources::removeDirectoryContents(path);
+//    Resources::removeDirectoryContents(path);
     Resources::setDirectory(path);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -41,6 +39,7 @@ XiboApp& XiboApp::create(const std::string& name)
 
 XiboApp::XiboApp(const std::string& name) : Gtk::Application(name),
     m_downloadManager(std::make_unique<HTTPDownloader>()),
+    m_scheduler(std::make_unique<Scheduler>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
 {      
@@ -143,11 +142,9 @@ void XiboApp::runPlayer(MainWindow& window)
 {
     try
     {
-        auto parsedXlfTree = Utils::parseXmlFromPath(findXlfFile());
-
         window.setSize(1366, 768);
 //        window.setFullscreen(true);
-        window.addLayout(MainDirector{}.buildLayoutWithChildren(parsedXlfTree));
+        window.addLayout(m_scheduler->nextLayout());
         window.showLayout();
 
         Log::info("Player started");
@@ -156,22 +153,4 @@ void XiboApp::runPlayer(MainWindow& window)
     {
         Log::error("Player failed to start: {}", e.what());
     }
-}
-
-
-std::string XiboApp::findXlfFile()
-{
-    namespace fs = std::filesystem;
-
-    fs::directory_iterator it(Resources::directory());
-    fs::directory_iterator end;
-
-    while(it != end)
-    {
-        if(fs::is_regular_file(*it) && it->path().extension() == ".xlf")
-            return it->path().string();
-        ++it;
-    }
-
-    throw std::runtime_error{".XLF file hasn't been found"};
 }
