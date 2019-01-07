@@ -39,6 +39,16 @@ public:
     EventType type() const override;
 };
 
+class RegionDurationExpiredEvent : public DurationExpiredEvent
+{
+public:
+    RegionDurationExpiredEvent(int id);
+    int id() const;
+
+private:
+    int m_id;
+};
+
 class PlaybackFinishedEvent : public Event
 {
 public:

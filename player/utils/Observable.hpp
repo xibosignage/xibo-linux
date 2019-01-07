@@ -5,7 +5,7 @@
 
 #include <map>
 
-template<typename Interface>
+template<typename Interface = IObservable>
 class Observable : public Interface
 {
     static_assert(std::is_base_of_v<IObservable, Interface>, "Should implement IObservable");

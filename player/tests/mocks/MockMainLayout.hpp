@@ -23,6 +23,9 @@ public:
     MOCK_METHOD1(setBackground, void(std::unique_ptr<IBackground>&& background));
     MOCK_METHOD3(addRegion, void(std::unique_ptr<IRegion>&& region, int x, int y));
     MOCK_METHOD0(show, void());
+    MOCK_METHOD1(handleEvent, void(const Event& ev));
+    MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
+    MOCK_METHOD1(pushEvent, void(const Event& ev));
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

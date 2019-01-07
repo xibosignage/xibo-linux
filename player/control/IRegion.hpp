@@ -2,10 +2,12 @@
 
 #include <memory>
 
+#include "utils/IObservable.hpp"
+
 class IRegionContent;
 class IFixedLayoutAdaptor;
 
-class IRegion
+class IRegion : public IObservable
 {
 public:
     virtual ~IRegion() = default;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IRegion.hpp"
+#include "utils/Observable.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -8,7 +9,7 @@
 class IRegionContent;
 class ITimerProvider;
 
-class Region : public IRegion, private boost::noncopyable
+class Region : public Observable<IRegion>, private boost::noncopyable
 {
 public:
     Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
@@ -34,8 +35,9 @@ private:
     void removeContent(size_t mediaIndex);
     void onContentDurationTimeout();
 
-    bool shouldBeContentReplaced();
-    size_t getNextContentIndex();
+    bool shouldBeContentReplaced() const;
+    size_t getNextContentIndex() const;
+    bool isExpired() const;
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;

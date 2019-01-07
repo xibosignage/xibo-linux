@@ -38,3 +38,12 @@ EventType PlaybackFinishedEvent::type() const
 {
     return EventType::PlaybackFinished;
 }
+
+RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) : m_id(id)
+{
+}
+
+int RegionDurationExpiredEvent::id() const
+{
+    return m_id;
+}

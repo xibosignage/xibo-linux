@@ -2,11 +2,14 @@
 
 #include <memory>
 
+#include "utils/IObserver.hpp"
+#include "utils/IObservable.hpp"
+
 class IBackground;
 class IRegion;
 class IOverlayAdaptor;
 
-class IMainLayout
+class IMainLayout : public IObserver, public IObservable
 {
 public:
     virtual ~IMainLayout() = default;

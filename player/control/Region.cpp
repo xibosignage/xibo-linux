@@ -100,6 +100,11 @@ void Region::addContent(std::unique_ptr<IRegionContent>&& content, int x, int y)
 
 void Region::onContentDurationTimeout()
 {
+    if(isExpired())
+    {
+        pushEvent(RegionDurationExpiredEvent{m_id});
+    }
+
     if(shouldBeContentReplaced())
     {
         removeContent(m_currentContentIndex);
@@ -107,12 +112,17 @@ void Region::onContentDurationTimeout()
     }
 }
 
-bool Region::shouldBeContentReplaced()
+bool Region::isExpired() const
+{
+    return getNextContentIndex() == FIRST_CONTENT_INDEX;
+}
+
+bool Region::shouldBeContentReplaced() const
 {
     return m_content.size() > 1 || m_contentLooped;
 }
 
-size_t Region::getNextContentIndex()
+size_t Region::getNextContentIndex() const
 {
     size_t nextContentIndex = m_currentContentIndex + 1;
 

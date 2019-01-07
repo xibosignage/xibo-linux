@@ -27,6 +27,8 @@ public:
     MOCK_CONST_METHOD0(zorder, int());
     MOCK_METHOD0(show, void());
     MOCK_METHOD3(addContent, void(std::unique_ptr<IRegionContent>&& content, int x, int y));
+    MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
+    MOCK_METHOD1(pushEvent, void(const Event& ev));
 
 private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;

@@ -6,6 +6,8 @@
 #include "adaptors/IImageAdaptor.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
+
+#include "utils/Event.hpp"
 #include "utils/Logger.hpp"
 
 #include <cassert>
@@ -56,8 +58,50 @@ void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y)
 
     checkRegionSize(region->width(), region->height());
 
+    m_expiredRegions[region->id()] = false;
+    region->subscribe(EventType::DurationExpired, std::bind(&MainLayout::handleEvent, this, std::placeholders::_1));
     m_handler->addChild(region->handler(), region->width(), region->height(), x, y);
     m_regions.push_back(std::move(region));
+}
+
+void MainLayout::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::DurationExpired:
+        {
+            auto event = static_cast<const RegionDurationExpiredEvent&>(ev);
+            onRegionExpired(event.id());
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void MainLayout::onRegionExpired(int regionId)
+{
+    Log::debug("Region expired");
+    m_expiredRegions[regionId] = true;
+
+    if(areAllRegionsExpired())
+    {
+        pushEvent(DurationExpiredEvent{});
+        Log::debug("Layout expired");
+    }
+}
+
+bool MainLayout::areAllRegionsExpired() const
+{
+    bool allRegionsExpired = true;
+    for(auto [id, expired] : m_expiredRegions)
+    {
+        if(!expired)
+        {
+            allRegionsExpired = false;
+        }
+    }
+    return allRegionsExpired;
 }
 
 void MainLayout::checkRegionSize(int regionWidth, int regionHeight)
