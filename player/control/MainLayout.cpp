@@ -7,7 +7,7 @@
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
 
-#include "utils/Event.hpp"
+#include "events/Event.hpp"
 #include "utils/Logger.hpp"
 
 #include <cassert>
@@ -86,7 +86,8 @@ void MainLayout::onRegionExpired(int regionId)
 
     if(areAllRegionsExpired())
     {
-        pushEvent(DurationExpiredEvent{});
+        pushEvent(new DurationExpiredEvent{});
+        Log::debug("Duration expired layout sent");
     }
 }
 

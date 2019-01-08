@@ -9,7 +9,8 @@ enum class EventType
     StopMedia,
     DurationExpired,
     ScaleMedia,
-    PlaybackFinished
+    PlaybackFinished,
+    LayoutExpired
 };
 
 class Event
@@ -55,7 +56,11 @@ public:
     EventType type() const override;
 };
 
-
+class LayoutExpiredEvent : public Event
+{
+public:
+    EventType type() const override;
+};
 class ScaleMediaEvent : public Event
 {
 public:

@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "utils/IObserver.hpp"
-#include "utils/IObservable.hpp"
+#include "events/IObserver.hpp"
+#include "events/IObservable.hpp"
 
 class IBackground;
 class IRegion;

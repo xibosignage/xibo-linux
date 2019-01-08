@@ -7,7 +7,7 @@
 
 #include "mocks/MockMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
-#include "utils/Event.hpp"
+#include "events/Event.hpp"
 
 const int DEFAULT_WINDOW_POS = 100;
 const auto invalidMainWindowSizes = invalidSizes<MIN_DISPLAY_WIDTH, MIN_DISPLAY_HEIGHT>;
@@ -56,7 +56,7 @@ private:
         auto layout = constructLayout();
         m_layout = layout.get();
 
-        window.addLayout(std::move(layout));
+        window.setLayout(std::move(layout));
     }
 
 private:

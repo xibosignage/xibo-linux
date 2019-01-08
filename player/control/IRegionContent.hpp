@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/IObservable.hpp"
+#include "events/IObservable.hpp"
 #include <memory>
 
 using OnMediaTimeout = std::function<void()>;

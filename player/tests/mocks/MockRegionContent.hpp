@@ -23,7 +23,7 @@ public:
     MOCK_METHOD1(attachMedia, void(std::unique_ptr<IMedia>&& content));
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
-    MOCK_METHOD1(pushEvent, void(const Event& ev));
+    MOCK_METHOD1(pushEvent, void(Event* ev));
 
 private:
     std::unique_ptr<IWidgetAdaptor> m_handler;

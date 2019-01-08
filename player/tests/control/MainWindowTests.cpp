@@ -141,7 +141,7 @@ TEST_P(MainWindowTestScale, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
 
     EXPECT_CALL(*layout, scale(scaleFactor, scaleFactor));
 
-    window->addLayout(std::move(layout));
+    window->setLayout(std::move(layout));
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestScale, ::testing::ValuesIn(scalesForResolutions));
@@ -152,7 +152,7 @@ TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
 
     EXPECT_CALL(adaptor(), add(_));
 
-    window->addLayout(constructLayout());
+    window->setLayout(constructLayout());
 }
 
 TEST_F(MainWindowTest, IsVisible_HandlerIsVisibleTrue_WindowIsVisibleShouldReturnTrue)

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "events/Observable.hpp"
+
 #include <memory>
 #include <vector>
 
@@ -21,7 +23,7 @@ struct ScheduledLayout
     std::vector<std::string> dependants;
 };
 
-class Scheduler
+class Scheduler : public Observable<>
 {
 public:
     Scheduler();

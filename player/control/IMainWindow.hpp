@@ -17,7 +17,8 @@ public:
     virtual void setCursorVisible(bool cursorVisible) = 0;
     virtual bool isVisible() const = 0;
 
-    virtual void addLayout(std::unique_ptr<IMainLayout>&& layout) = 0;
+    virtual void setLayout(std::unique_ptr<IMainLayout>&& layout) = 0;
     virtual void showLayout() = 0;
+    virtual void show() = 0;
     virtual IWindowAdaptor& handler() = 0;
 };

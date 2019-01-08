@@ -25,7 +25,7 @@ public:
     MOCK_METHOD0(show, void());
     MOCK_METHOD1(handleEvent, void(const Event& ev));
     MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
-    MOCK_METHOD1(pushEvent, void(const Event& ev));
+    MOCK_METHOD1(pushEvent, void(Event* ev));
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

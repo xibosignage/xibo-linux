@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IMedia.hpp"
-#include "utils/Observable.hpp"
+#include "events/Observable.hpp"
 
 #include <memory>
 

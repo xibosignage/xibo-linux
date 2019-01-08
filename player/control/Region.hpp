@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IRegion.hpp"
-#include "utils/Observable.hpp"
+#include "events/Observable.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>

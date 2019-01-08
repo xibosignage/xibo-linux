@@ -22,6 +22,9 @@ std::unique_ptr<IMainLayout> Scheduler::nextLayout()
 
     layout->subscribe(EventType::DurationExpired, [=](const Event&){
         Log::debug("Got event layout expired");
+
+        m_layoutToPlayIndex = getNextLayoutIndex();
+        pushEvent(new LayoutExpiredEvent{});
     });
 
     return layout;
@@ -46,8 +49,6 @@ int Scheduler::getNextLayoutId()
     if(!m_layouts.empty())
     {
         auto&& layout = m_layouts[m_layoutToPlayIndex];
-        m_layoutToPlayIndex = getNextLayoutIndex();
-
         return layout.id;
     }
     else

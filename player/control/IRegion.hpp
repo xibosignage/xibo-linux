@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "utils/IObservable.hpp"
+#include "events/IObservable.hpp"
 
 class IRegionContent;
 class IFixedLayoutAdaptor;

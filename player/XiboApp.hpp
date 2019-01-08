@@ -11,12 +11,12 @@ class CollectionInterval;
 class CommandLineParser;
 struct PlayerSettings;
 
-class XiboApp : public Gtk::Application
+class XiboApp
 {
 public:
     XiboApp(const XiboApp& other) = delete;
     XiboApp& operator=(const XiboApp& other) = delete;
-    ~XiboApp() override;
+    ~XiboApp();
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
@@ -27,17 +27,22 @@ public:
 
 private:
     XiboApp(const std::string& name);
+
     int initMainLoop();
-    void runPlayer(MainWindow& window);
+    void runPlayer();
     void updateSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
+    bool processCallbackQueue();
 
 private:
+    Glib::RefPtr<Gtk::Application> m_parentApp;
+    std::unique_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<XMDSManager> m_xmdsManager;
     std::unique_ptr<HTTPDownloader> m_downloadManager;
     std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<CommandLineParser> m_options;
+    sigc::connection m_idleConnection;
 
     static std::unique_ptr<XiboApp> m_app;
 };

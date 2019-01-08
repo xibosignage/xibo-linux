@@ -2,6 +2,7 @@
 
 #include "IObserver.hpp"
 #include "IObservable.hpp"
+#include "CallbackGlobalQueue.hpp"
 
 #include <map>
 
@@ -16,13 +17,13 @@ public:
         m_observers.emplace(type, handler);
     }
 
-    void pushEvent(const Event& ev) final
+    void pushEvent(Event* ev) final
     {
-        auto iterRange = m_observers.equal_range(ev.type());
+        auto iterRange = m_observers.equal_range(ev->type());
 
         for(auto it = iterRange.first; it != iterRange.second; ++it)
         {
-            it->second(ev);
+            callbackQueue().add(std::bind(it->second, std::cref(*ev)));
         }
     }
 

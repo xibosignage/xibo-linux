@@ -47,3 +47,8 @@ int RegionDurationExpiredEvent::id() const
 {
     return m_id;
 }
+
+EventType LayoutExpiredEvent::type() const
+{
+    return EventType::LayoutExpired;
+}

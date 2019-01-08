@@ -3,7 +3,7 @@
 #include "IRegionContent.hpp"
 
 #include "utils/ITimerProvider.hpp"
-#include "utils/Observable.hpp"
+#include "events/Observable.hpp"
 #include "adaptors/IWidgetAdaptor.hpp"
 
 #include <boost/noncopyable.hpp>

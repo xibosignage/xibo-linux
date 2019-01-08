@@ -10,6 +10,8 @@
 MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
+    assert(m_handler);
+
     m_handler->disableWindowDecoration();
     m_handler->disableWindowResize();
 
@@ -70,13 +72,23 @@ bool MainWindow::isVisible() const
     return m_handler->isShown();
 }
 
-void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
+void MainWindow::setLayout(std::unique_ptr<IMainLayout>&& layout)
 {
     assert(layout);
+
+    removePreviousLayoutIfExists();
 
     m_handler->add(layout->handler());
     scaleLayout(*layout);
     m_layout = std::move(layout);
+}
+
+void MainWindow::removePreviousLayoutIfExists()
+{
+    if(m_layout)
+    {
+        m_handler->remove();
+    }
 }
 
 void MainWindow::scaleLayout(IMainLayout& layout)
@@ -92,6 +104,10 @@ void MainWindow::showLayout()
     assert(m_layout);
 
     m_layout->show();
+}
+
+void MainWindow::show()
+{
     m_handler->show();
 }
 

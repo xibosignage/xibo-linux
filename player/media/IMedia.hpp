@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utils/IObserver.hpp"
-#include "utils/IObservable.hpp"
+#include "events/IObserver.hpp"
+#include "events/IObservable.hpp"
 
 class MediaVisitor;
 class IWidgetAdaptor;

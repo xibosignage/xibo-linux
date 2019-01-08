@@ -17,14 +17,16 @@ public:
     void setCursorVisible(bool cursorVisible) override;
     bool isVisible() const override;
 
-    void addLayout(std::unique_ptr<IMainLayout>&& layout) override;
+    void setLayout(std::unique_ptr<IMainLayout>&& layout) override;
     void showLayout() override;
+    void show() override;
     IWindowAdaptor& handler() override;
 
 private:
     void scaleLayout(IMainLayout& layout);
     void checkWindowNewSize(int width, int height);
     void checkWindowCoordinates(int x, int y);
+    void removePreviousLayoutIfExists();
 
 private:
     std::unique_ptr<IWindowAdaptor> m_handler;

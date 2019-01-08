@@ -102,7 +102,7 @@ void Region::onContentDurationTimeout()
 {
     if(isExpired())
     {
-        pushEvent(RegionDurationExpiredEvent{m_id});
+        pushEvent(new RegionDurationExpiredEvent{m_id});
     }
 
     if(shouldBeContentReplaced())

@@ -71,6 +71,11 @@ void GtkWindowAdaptor::add(IWidgetAdaptor& child)
     m_handler.add(handler);
 }
 
+void GtkWindowAdaptor::remove()
+{
+    m_handler.remove();
+}
+
 void GtkWindowAdaptor::move(int x, int y)
 {
     m_handler.move(x, y);
