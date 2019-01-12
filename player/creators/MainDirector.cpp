@@ -17,14 +17,23 @@
 #include "media/GetMediaPosition.hpp"
 #include "parsers/XlfResources.hpp"
 #include "utils/TimerProvider.hpp"
+#include "utils/Utilities.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
 using namespace ResourcesXlf;
 
-std::unique_ptr<IMainLayout> MainDirector::buildLayoutWithChildren(const xlf_node& tree)
+std::unique_ptr<IMainLayout> MainDirector::buildLayoutWithChildren(int layoutId)
 {
+    auto tree = Utils::parseXmlFromPath(getLayoutXlfPath(layoutId));
+
     return buildLayout(tree.get_child(ResourcesXlf::LayoutNode));
+}
+
+std::string MainDirector::getLayoutXlfPath(int layoutId)
+{
+    auto xlfFile = std::to_string(layoutId) + ".xlf";
+    return Resources::directory() / xlfFile;
 }
 
 std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xlf_node& layoutNode)

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 struct DefaultScheduledLayout
 {
@@ -14,7 +15,7 @@ struct ScheduledLayout
     int scheduleId;
     int id;
     int priority;
-    std::string startDT;
-    std::string endDT;
+    boost::posix_time::ptime startDT;
+    boost::posix_time::ptime endDT;
     std::vector<std::string> dependants;
 };

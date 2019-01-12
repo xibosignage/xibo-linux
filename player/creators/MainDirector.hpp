@@ -29,10 +29,11 @@ class MainDirector
 
 public:
     MainDirector() = default;
-    std::unique_ptr<IMainLayout> buildLayoutWithChildren(const xlf_node& tree);
+    std::unique_ptr<IMainLayout> buildLayoutWithChildren(int layoutId);
 
 private:
     std::unique_ptr<IMainLayout> buildLayout(const xlf_node& layoutNode);
+    std::string getLayoutXlfPath(int layoutId);
     std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::LayoutOptions& opts);
     std::vector<RegionWithPos> collectRegions(const xlf_node& layoutNode);
     std::unique_ptr<IRegion> buildRegion(const xlf_node& regionNode);

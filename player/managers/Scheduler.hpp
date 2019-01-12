@@ -16,14 +16,17 @@ public:
     std::unique_ptr<IMainLayout> nextLayout();
 
 private:
-    std::unique_ptr<IMainLayout> createLayout();
-    std::string getLayoutXlfPath();
-    int getNextLayoutId();
-    size_t getNextLayoutIndex();
+    void resetSchedule();
+    void fillScheduleItems(const std::vector<ScheduledLayout>& scheduledItems);
+    int findMaxShowPriority(const std::vector<ScheduledLayout>& scheduledItems);
+    int nextLayoutToPlayId();
+    bool isLayoutOnSchedule(const ScheduledLayout& layout) const;
+    size_t increaseLayoutIndex(std::size_t index) const;
+    int nextValidLayoutId();
 
 private:
     DefaultScheduledLayout m_defaultLayout;
     std::vector<ScheduledLayout> m_layouts;
-    size_t m_layoutToPlayIndex = 0;
+    size_t m_nextLayoutIndex = 0;
 
 };

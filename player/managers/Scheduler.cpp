@@ -14,50 +14,65 @@ const size_t FIRST_ITEM_INDEX = 0;
 
 void Scheduler::update(const Schedule::Result& schedule)
 {
-    m_layoutToPlayIndex = FIRST_ITEM_INDEX;
-    m_layouts.clear();
+    resetSchedule();
 
     m_defaultLayout = schedule.defaultLayout;
-    for(auto layout : schedule.layouts)
+    fillScheduleItems(schedule.layouts);
+}
+
+void Scheduler::resetSchedule()
+{
+    m_nextLayoutIndex = FIRST_ITEM_INDEX; // FIXME (not to reset index ???)
+    m_layouts.clear();
+}
+
+void Scheduler::fillScheduleItems(const std::vector<ScheduledLayout>& scheduledItems)
+{
+    if(scheduledItems.empty()) return;
+
+    int maxShowPriority = findMaxShowPriority(scheduledItems);
+    Log::debug("Max show priority: {}", maxShowPriority);
+
+    for(auto layout : scheduledItems)
     {
-        m_layouts.push_back(layout);
+        Log::debug("Layout ID: {} SatartDT: {} EndDT: {} Priority: {}", layout.id, layout.startDT, layout.endDT, layout.priority);
+        if(layout.priority == maxShowPriority)
+        {
+            m_layouts.push_back(layout);
+        }
     }
+}
+
+int Scheduler::findMaxShowPriority(const std::vector<ScheduledLayout>& scheduledItems)
+{
+    assert(scheduledItems.size() > 0);
+
+    auto it = std::max_element(scheduledItems.begin(), scheduledItems.end(), [=](const auto& first, const auto& second){
+        return first.priority < second.priority;
+    });
+
+    return it->priority;
 }
 
 std::unique_ptr<IMainLayout> Scheduler::nextLayout()
 {
-    auto layout = createLayout();
+    MainDirector director;
+    auto layout = director.buildLayoutWithChildren(nextLayoutToPlayId());
 
-    layout->subscribe(EventType::DurationExpired, [=](const Event&){
+    layout->subscribe(EventType::DurationExpired, [this](const Event&){
         Log::debug("Got event layout expired");
 
-        m_layoutToPlayIndex = getNextLayoutIndex();
         pushEvent(LayoutExpiredEvent{});
     });
 
     return layout;
 }
 
-std::unique_ptr<IMainLayout> Scheduler::createLayout()
-{
-    auto parsedXlfTree = Utils::parseXmlFromPath(getLayoutXlfPath());
-
-    MainDirector director;
-    return director.buildLayoutWithChildren(parsedXlfTree);
-}
-
-std::string Scheduler::getLayoutXlfPath()
-{
-    auto xlfFile = std::to_string(getNextLayoutId()) + ".xlf";
-    return Resources::directory() / xlfFile;
-}
-
-int Scheduler::getNextLayoutId()
+int Scheduler::nextLayoutToPlayId()
 {
     if(!m_layouts.empty())
     {
-        auto&& layout = m_layouts[m_layoutToPlayIndex];
-        return layout.id;
+        return nextValidLayoutId();
     }
     else
     {
@@ -65,13 +80,45 @@ int Scheduler::getNextLayoutId()
     }
 }
 
-size_t Scheduler::getNextLayoutIndex()
+bool Scheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
 {
-    size_t nextLayoutToPlayIndex = m_layoutToPlayIndex + 1;
+    auto currentDT = boost::posix_time::second_clock::local_time();
+    if(currentDT >= layout.startDT && currentDT < layout.endDT)
+    {
+        return true;
+    }
+    return false;
+}
 
-    if(nextLayoutToPlayIndex >= m_layouts.size())
+size_t Scheduler::increaseLayoutIndex(std::size_t index) const
+{
+    size_t nextLayoutIndex = index + 1;
+
+    if(nextLayoutIndex >= m_layouts.size())
         return FIRST_ITEM_INDEX;
 
-    return nextLayoutToPlayIndex;
+    return nextLayoutIndex;
+}
+
+int Scheduler::nextValidLayoutId()
+{
+    std::size_t indexCount = 0;
+    std::size_t layoutIndex = m_nextLayoutIndex;
+
+    while(indexCount != m_layouts.size())
+    {
+        auto&& nextLayout = m_layouts[layoutIndex];
+
+        if(isLayoutOnSchedule(nextLayout))
+        {
+            m_nextLayoutIndex = increaseLayoutIndex(layoutIndex);
+            return nextLayout.id;
+        }
+
+        layoutIndex = increaseLayoutIndex(layoutIndex);
+        ++indexCount;
+    }
+
+    return m_defaultLayout.id;
 }
 

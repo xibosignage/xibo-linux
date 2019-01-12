@@ -50,7 +50,7 @@ void CollectionInterval::collect(CollectionResultCallback callback)
 
 void CollectionInterval::startRegularCollection()
 {
-//    collect(std::bind(&CollectionInterval::onCollectionFinished, this, ph::_1));
+    collect(std::bind(&CollectionInterval::onCollectionFinished, this, ph::_1));
 }
 
 void CollectionInterval::sessionFinished(CollectionSessionPtr session)

@@ -46,8 +46,8 @@ ScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseScheduledLayout(con
 
     layout.scheduleId = attrs.get<int>(LayoutAttrs::ScheduleId);
     layout.id = attrs.get<int>(LayoutAttrs::Id);
-    layout.startDT = attrs.get<std::string>(LayoutAttrs::StartDT);
-    layout.endDT = attrs.get<std::string>(LayoutAttrs::EndDT);
+    layout.startDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::StartDT));
+    layout.endDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::EndDT));
     layout.priority = attrs.get<int>(LayoutAttrs::Priority);
 
     if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))
