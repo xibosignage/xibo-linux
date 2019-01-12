@@ -7,7 +7,7 @@
 
 namespace GetResource
 {
-    struct Response
+    struct Result
     {
         std::string resource;
     };
@@ -32,12 +32,12 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<GetResource::Response> : public BaseResponseParser<GetResource::Response>
+class SOAP::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetResource::Response doParse(const boost::property_tree::ptree& node) override;
+    GetResource::Result doParse(const boost::property_tree::ptree& node) override;
 
 };

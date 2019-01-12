@@ -14,16 +14,16 @@ std::string SOAP::RequestSerializer<RequiredFiles::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
-SOAP::ResponseParser<RequiredFiles::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+SOAP::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
 {
 }
 
-RequiredFiles::Response SOAP::ResponseParser<RequiredFiles::Response>::doParse(const boost::property_tree::ptree& node)
+RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const boost::property_tree::ptree& node)
 {
     auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
     auto filesNode = Utils::parseXmlFromString(requiredFilesXml).get_child(Resources::Files);
 
-    RequiredFiles::Response result;
+    RequiredFiles::Result result;
     std::for_each(filesNode.begin(), filesNode.end(), [this, &result](const auto& file){
         auto [name, fileNode] = file;
         if(name == Resources::File)
@@ -35,9 +35,9 @@ RequiredFiles::Response SOAP::ResponseParser<RequiredFiles::Response>::doParse(c
     return result;
 }
 
-void SOAP::ResponseParser<RequiredFiles::Response>::addRequiredFile(RequiredFiles::Response& response, const boost::property_tree::ptree& attrs)
+void SOAP::ResponseParser<RequiredFiles::Result>::addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs)
 {
-    using FileType = RequiredFiles::Response::FileType;
+    using FileType = RequiredFiles::Result::FileType;
 
     auto fileType = toFileType(attrs.get<std::string>(Resources::FileType));
     if(fileType == FileType::Invalid) return;
@@ -50,20 +50,20 @@ void SOAP::ResponseParser<RequiredFiles::Response>::addRequiredFile(RequiredFile
         auto path = attrs.get<std::string>(Resources::RegularFile::Path);
         auto saveAs = attrs.get<std::string>(Resources::RegularFile::SaveAs);
         auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
-        response.requiredFiles.emplace_back(RequiredFiles::Response::RequiredFile{id, size, md5, path, saveAs, downloadType, fileType});
+        response.requiredFiles.emplace_back(RequiredFiles::Result::RequiredFile{id, size, md5, path, saveAs, downloadType, fileType});
     }
     else
     {
         auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
         auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
         auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
-        response.requiredResources.emplace_back(RequiredFiles::Response::RequiredResource{layoutId, regionId, mediaId});
+        response.requiredResources.emplace_back(RequiredFiles::Result::RequiredResource{layoutId, regionId, mediaId});
     }
 }
 
-RequiredFiles::Response::FileType SOAP::ResponseParser<RequiredFiles::Response>::toFileType(const std::string& type)
+RequiredFiles::Result::FileType SOAP::ResponseParser<RequiredFiles::Result>::toFileType(const std::string& type)
 {
-    using FileType = RequiredFiles::Response::FileType;
+    using FileType = RequiredFiles::Result::FileType;
 
     if(type == Resources::Media)
         return FileType::Media;
@@ -75,9 +75,9 @@ RequiredFiles::Response::FileType SOAP::ResponseParser<RequiredFiles::Response>:
     return FileType::Invalid;
 }
 
-RequiredFiles::Response::DownloadType SOAP::ResponseParser<RequiredFiles::Response>::toDownloadType(const std::string& type)
+RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(const std::string& type)
 {
-    using DownloadType = RequiredFiles::Response::DownloadType;
+    using DownloadType = RequiredFiles::Result::DownloadType;
 
     if(type == Resources::RegularFile::HTTPDownload)
         return DownloadType::HTTP;

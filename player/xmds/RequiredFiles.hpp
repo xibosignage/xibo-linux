@@ -7,7 +7,7 @@
 
 namespace RequiredFiles
 {
-    struct Response
+    struct Result
     {
         enum class FileType
         {
@@ -54,8 +54,8 @@ namespace RequiredFiles
     };
 }
 
-using RegularFiles = std::vector<RequiredFiles::Response::RequiredFile>;
-using ResourceFiles = std::vector<RequiredFiles::Response::RequiredResource>;
+using RegularFiles = std::vector<RequiredFiles::Result::RequiredFile>;
+using ResourceFiles = std::vector<RequiredFiles::Result::RequiredResource>;
 
 template<>
 class SOAP::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
@@ -67,17 +67,17 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RequiredFiles::Response> : public BaseResponseParser<RequiredFiles::Response>
+class SOAP::ResponseParser<RequiredFiles::Result> : public BaseResponseParser<RequiredFiles::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Response doParse(const boost::property_tree::ptree& node) override;
+    RequiredFiles::Result doParse(const boost::property_tree::ptree& node) override;
 
 private:
-    void addRequiredFile(RequiredFiles::Response& response, const boost::property_tree::ptree& attrs);
-    RequiredFiles::Response::FileType toFileType(const std::string& type);
-    RequiredFiles::Response::DownloadType toDownloadType(const std::string& type);
+    void addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs);
+    RequiredFiles::Result::FileType toFileType(const std::string& type);
+    RequiredFiles::Result::DownloadType toDownloadType(const std::string& type);
 
 };

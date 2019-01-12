@@ -11,13 +11,15 @@
 
 struct CollectionResult
 {
-    bool success = false;
+    PlayerSettings settings;
+    Schedule::Result schedule;
 };
 
 using CollectionResultCallback = std::function<void(const CollectionResult&)>;
 
 struct CollectionSession
 {
+    CollectionResult result;
     CollectionResultCallback callback;
 };
 
@@ -39,10 +41,10 @@ private:
     void sessionFinished(CollectionSessionPtr session);
     void onCollectionFinished(const CollectionResult& result);
 
-    void onDisplayRegistered(const RegisterDisplay::Response& response, CollectionSessionPtr session);
-    void displayMessage(const RegisterDisplay::Response::Status& status);
-    void onRequiredFiles(const RequiredFiles::Response& response, CollectionSessionPtr session);
-    void onSchedule(const Schedule::Response& response, CollectionSessionPtr session);
+    void onDisplayRegistered(const RegisterDisplay::Result& response, CollectionSessionPtr session);
+    void displayMessage(const RegisterDisplay::Result::Status& status);
+    void onRequiredFiles(const RequiredFiles::Result& response, CollectionSessionPtr session);
+    void onSchedule(const Schedule::Result& response, CollectionSessionPtr session);
 
 private:
     int m_collectInterval;

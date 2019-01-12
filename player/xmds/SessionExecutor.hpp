@@ -3,6 +3,7 @@
 #include <boost/beast/http/read.hpp>
 #include <boost/beast/http/write.hpp>
 #include <boost/asio/connect.hpp>
+#include <future>
 
 #include "utils/Logger.hpp"
 #include "SOAP.hpp"
@@ -13,18 +14,16 @@ namespace http = boost::beast::http;
 namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 
-#include <future>
-
-template<typename Response, typename Request>
-class SessionExecutor : public std::enable_shared_from_this<SessionExecutor<Response, Request>>
+template<typename Result, typename Request>
+class SessionExecutor : public std::enable_shared_from_this<SessionExecutor<Result, Request>>
 {
 public:
-    SessionExecutor(const std::string& host, int port, std::shared_ptr<Session<Response, Request>> session) :
+    SessionExecutor(const std::string& host, int port, std::shared_ptr<Session<Result, Request>> session) :
         m_host(host), m_port(port), m_session(session)
     {
     }
 
-    std::future<Response> exec()
+    std::future<Result> exec()
     {
         auto resolve = std::bind(&SessionExecutor::onResolve, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2);
         m_session->resolver.async_resolve(m_host, std::to_string(m_port), ip::resolver_base::numeric_service, resolve);
@@ -95,7 +94,7 @@ private:
         {
             Log::trace("SOAP Response string: {}", m_session->httpResponse.body());
 
-            SOAP::ResponseParser<Response> parser(m_session->httpResponse.body());
+            SOAP::ResponseParser<Result> parser(m_session->httpResponse.body());
             auto [error, response] = parser.get();
             if(error)
             {
@@ -115,7 +114,7 @@ private:
 private:
     std::string m_host;
     int m_port;
-    std::promise<Response> m_promise;
-    std::shared_ptr<Session<Response, Request>> m_session;
+    std::promise<Result> m_promise;
+    std::shared_ptr<Session<Result, Request>> m_session;
 
 };

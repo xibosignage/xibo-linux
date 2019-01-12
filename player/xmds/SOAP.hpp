@@ -6,7 +6,7 @@
 namespace SOAP
 {
     template<typename Response>
-    Response createResponse(const std::string& soapResponse);
+    Response createResult(const std::string& soapResponse);
 
     template<typename Response>
     class ResponseParser;

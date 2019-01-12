@@ -16,20 +16,20 @@ std::string SOAP::RequestSerializer<RegisterDisplay::Request>::string()
 
 }
 
-SOAP::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+SOAP::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
 {
 }
 
-RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::doParse(const boost::property_tree::ptree& node)
+RegisterDisplay::Result SOAP::ResponseParser<RegisterDisplay::Result>::doParse(const boost::property_tree::ptree& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto display = Utils::parseXmlFromString(activationMessage).get_child(Resources::Display);
     auto attrs = display.get_child(Resources::DisplayAttrs);
 
-    RegisterDisplay::Response result;
-    result.status.code = static_cast<RegisterDisplay::Response::Status::Code>(attrs.get<int>(Resources::Status));
+    RegisterDisplay::Result result;
+    result.status.code = static_cast<RegisterDisplay::Result::Status::Code>(attrs.get<int>(Resources::Status));
     result.status.message = attrs.get<std::string>(Resources::StatusMessage);
-    if(result.status.code == RegisterDisplay::Response::Status::Code::Ready)
+    if(result.status.code == RegisterDisplay::Result::Status::Code::Ready)
     {
         fillPlayerSettings(result.playerSettings, display);
     }
@@ -37,7 +37,7 @@ RegisterDisplay::Response SOAP::ResponseParser<RegisterDisplay::Response>::doPar
     return result;
 }
 
-void SOAP::ResponseParser<RegisterDisplay::Response>::fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display)
+void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display)
 {
     namespace Settings = Resources::Settings;
 

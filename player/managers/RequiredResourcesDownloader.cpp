@@ -26,7 +26,7 @@ void RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& reso
     }
 }
 
-void RequiredResourcesDownloader::processDownloadedResource(int mediaId, const GetResource::Response& response)
+void RequiredResourcesDownloader::processDownloadedResource(int mediaId, const GetResource::Result& response)
 {
     auto filename = createResource(mediaId, response.resource);
 

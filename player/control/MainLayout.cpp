@@ -86,7 +86,7 @@ void MainLayout::onRegionExpired(int regionId)
 
     if(areAllRegionsExpired())
     {
-        pushEvent(new DurationExpiredEvent{});
+        pushEvent(DurationExpiredEvent{});
         Log::debug("Duration expired layout sent");
     }
 }

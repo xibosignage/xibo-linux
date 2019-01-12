@@ -12,7 +12,7 @@ public:
 
 private:
     void downloadAllResources(const ResourceFiles& resources);
-    void processDownloadedResource(int mediaId, const GetResource::Response& response);
+    void processDownloadedResource(int mediaId, const GetResource::Result& response);
     std::string createResource(int mediaId, const std::string& resourceContent);
 
 };

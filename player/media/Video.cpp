@@ -18,7 +18,7 @@ void Video::onVideoFinished()
 {
     if(duration() == 0)
     {
-        pushEvent(new PlaybackFinishedEvent{});
+        pushEvent(PlaybackFinishedEvent{});
         return;
     }
 

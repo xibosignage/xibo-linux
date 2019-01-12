@@ -17,13 +17,16 @@ public:
         m_observers.emplace(type, handler);
     }
 
-    void pushEvent(Event* ev) final
+    template<typename Event>
+    void pushEvent(const Event& ev)
     {
-        auto iterRange = m_observers.equal_range(ev->type());
+        static_assert(std::is_copy_assignable_v<Event> && std::is_copy_constructible_v<Event>, "Event should copy constructible and copy assignable");
+
+        auto iterRange = m_observers.equal_range(ev.type());
 
         for(auto it = iterRange.first; it != iterRange.second; ++it)
         {
-            callbackQueue().add(std::bind(it->second, std::cref(*ev)));
+            callbackQueue().add(std::bind(it->second, ev));
         }
     }
 

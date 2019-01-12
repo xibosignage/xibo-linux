@@ -27,12 +27,12 @@ XiboApp& XiboApp::create(const std::string& name)
 {
     spdlog::stdout_logger_st(LOGGER);
     spdlog::set_level(spdlog::level::debug);
-    spdlog::set_pattern("[%H:%M:%S] [%l]: %v");
+    spdlog::set_pattern("[%H:%M:%S.%e] [%l]: %v");
 
     gst_init(nullptr, nullptr);
 
     auto path = std::filesystem::current_path() / DEFAULT_RESOURCES_DIR;
-//    Resources::removeDirectoryContents(path);
+    Resources::removeDirectoryContents(path);
     Resources::setDirectory(path);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -148,11 +148,9 @@ int XiboApp::initMainLoop()
     {
         m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
         m_collectionInterval->collect([this](const CollectionResult& result){
-            if(result.success)
-            {
-                m_collectionInterval->start();
-                runPlayer();
-            }
+            m_scheduler->update(result.schedule);
+            m_collectionInterval->start();
+            runPlayer();
         });
     }
     else

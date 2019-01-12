@@ -9,7 +9,7 @@ XMDSManager::XMDSManager(const std::string& host, const std::string& serverKey, 
 {
 }
 
-std::future<RegisterDisplay::Response> XMDSManager::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
+std::future<RegisterDisplay::Result> XMDSManager::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = m_serverKey;
@@ -20,28 +20,28 @@ std::future<RegisterDisplay::Response> XMDSManager::registerDisplay(int clientCo
     request.macAddress = "test";
     request.displayName = displayName;
 
-    return m_soapManager->sendRequest<RegisterDisplay::Response>(request);
+    return m_soapManager->sendRequest<RegisterDisplay::Result>(request);
 }
 
-std::future<RequiredFiles::Response> XMDSManager::requiredFiles()
+std::future<RequiredFiles::Result> XMDSManager::requiredFiles()
 {
     RequiredFiles::Request request;
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    return m_soapManager->sendRequest<RequiredFiles::Response>(request);
+    return m_soapManager->sendRequest<RequiredFiles::Result>(request);
 }
 
-std::future<Schedule::Response> XMDSManager::schedule()
+std::future<Schedule::Result> XMDSManager::schedule()
 {
     Schedule::Request request;
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
 
-    return m_soapManager->sendRequest<Schedule::Response>(request);
+    return m_soapManager->sendRequest<Schedule::Result>(request);
 }
 
-std::future<GetResource::Response> XMDSManager::getResource(int layoutId, int regionId, int mediaId)
+std::future<GetResource::Result> XMDSManager::getResource(int layoutId, int regionId, int mediaId)
 {
     GetResource::Request request;
     request.serverKey = m_serverKey;
@@ -50,5 +50,5 @@ std::future<GetResource::Response> XMDSManager::getResource(int layoutId, int re
     request.regionId = std::to_string(regionId);
     request.mediaId = std::to_string(mediaId);
 
-    return m_soapManager->sendRequest<GetResource::Response>(request);
+    return m_soapManager->sendRequest<GetResource::Result>(request);
 }

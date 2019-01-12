@@ -5,7 +5,6 @@
 
 #include <boost/noncopyable.hpp>
 #include <thread>
-
 #include <future>
 
 class SOAPManager : private boost::noncopyable
@@ -14,15 +13,15 @@ public:
     SOAPManager(const std::string& host);
     ~SOAPManager();
 
-    template<typename Response, typename Request>
-    std::future<Response> sendRequest(const Request& soapRequest)
+    template<typename Result, typename Request>
+    std::future<Result> sendRequest(const Request& soapRequest)
     {
         static_assert(std::is_copy_assignable_v<Request> && std::is_copy_constructible_v<Request>);
 
-        auto session = std::make_shared<Session<Response, Request>>(m_ioc);
+        auto session = std::make_shared<Session<Result, Request>>(m_ioc);
         session->soapRequest = soapRequest;
 
-        auto sessionExecutor = std::make_shared<SessionExecutor<Response, Request>>(m_host, m_port, session);
+        auto sessionExecutor = std::make_shared<SessionExecutor<Result, Request>>(m_host, m_port, session);
         return sessionExecutor->exec();
     }
 

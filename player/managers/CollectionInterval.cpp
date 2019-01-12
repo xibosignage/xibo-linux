@@ -32,7 +32,7 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onCollectionFinished(const CollectionResult& result)
 {
-    Log::debug("Collection finished with success result: {}", result.success);
+    Log::debug("Collection finished");
     Log::debug("Next collection will start in {} seconds", m_collectInterval);
     startTimer();
 }
@@ -56,19 +56,20 @@ void CollectionInterval::startRegularCollection()
 void CollectionInterval::sessionFinished(CollectionSessionPtr session)
 {
     Glib::MainContext::get_default()->invoke([=](){
-        session->callback(CollectionResult{true});
+        session->callback(session->result);
         return false;
     });
 }
 
-void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response& response, CollectionSessionPtr session)
+void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Result& result, CollectionSessionPtr session)
 {
     Log::trace("onDisplayRegistered {}", std::this_thread::get_id());
 
-    displayMessage(response.status);
-    if(response.status.code == RegisterDisplay::Response::Status::Code::Ready)
+    displayMessage(result.status);
+    if(result.status.code == RegisterDisplay::Result::Status::Code::Ready)
     {
-//        updateTimer(settings.collectInterval);
+        updateTimer(result.playerSettings.collectInterval);
+        session->result.settings = result.playerSettings;
 
         auto requiredFilesResult = Utils::xmdsManager().requiredFiles();
         auto scheduleResult = Utils::xmdsManager().schedule();
@@ -83,9 +84,9 @@ void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Response& re
     }
 }
 
-void CollectionInterval::displayMessage(const RegisterDisplay::Response::Status& status)
+void CollectionInterval::displayMessage(const RegisterDisplay::Result::Status& status)
 {
-    if(status.code != RegisterDisplay::Response::Status::Code::Invalid)
+    if(status.code != RegisterDisplay::Result::Status::Code::Invalid)
     {
         Log::debug(status.message);
     }
@@ -100,13 +101,13 @@ void CollectionInterval::updateTimer(int collectInterval)
     }
 }
 
-void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response, CollectionSessionPtr)
+void CollectionInterval::onRequiredFiles(const RequiredFiles::Result& result, CollectionSessionPtr)
 {
     RequiredFilesDownloader filesDownloader;
     RequiredResourcesDownloader resourcesDownloader;
 
-    auto&& files = response.requiredFiles;
-    auto&& resources = response.requiredResources;
+    auto&& files = result.requiredFiles;
+    auto&& resources = result.requiredResources;
 
     Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
 
@@ -120,29 +121,8 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response
     Log::debug("Resources downloaded");
 }
 
-void CollectionInterval::onSchedule(const Schedule::Response& response, CollectionSessionPtr)
+void CollectionInterval::onSchedule(const Schedule::Result& shedule, CollectionSessionPtr session)
 {
     Log::trace("OnSchedule {}", std::this_thread::get_id());
-
-    Log::debug("Default layout Id: {}", response.defaultLayout.id);
-    for(auto dependant : response.defaultLayout.dependants)
-    {
-        Log::debug(dependant);
-    }
-
-    for(auto layout : response.layouts)
-    {
-        Log::debug("ScheduleId: {} LayoutId: {} StartDT: {} EndDT: {} Priority: {}", layout.scheduleId, layout.id, layout.startDT, layout.endDT, layout.priority);
-        for(auto dependant : layout.dependants)
-        {
-            Log::debug(dependant);
-        }
-    }
-
-    Log::debug("Global dependants");
-
-    for(auto dependant : response.globalDependants)
-    {
-        Log::debug(dependant);
-    }
+    session->result.schedule = shedule;
 }

@@ -9,7 +9,7 @@
 
 namespace RegisterDisplay
 {
-    struct Response
+    struct Result
     {
         struct Status
         {
@@ -51,13 +51,13 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser<RegisterDisplay::Response>
+class SOAP::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Response doParse(const boost::property_tree::ptree& node) override;
+    RegisterDisplay::Result doParse(const boost::property_tree::ptree& node) override;
 
 private:
     void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);

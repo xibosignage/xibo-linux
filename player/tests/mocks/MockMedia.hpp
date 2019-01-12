@@ -12,7 +12,6 @@ public:
     MOCK_CONST_METHOD0(id, int());
     MOCK_METHOD1(apply, void(MediaVisitor& visitor));
     MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
-    MOCK_METHOD1(pushEvent, void(Event* ev));
     MOCK_METHOD1(handleEvent, void(const Event& ev));
 
 };

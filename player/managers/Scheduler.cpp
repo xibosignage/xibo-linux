@@ -10,10 +10,18 @@
 #include <boost/property_tree/ptree.hpp>
 #include <filesystem>
 
-Scheduler::Scheduler()
+const size_t FIRST_ITEM_INDEX = 0;
+
+void Scheduler::update(const Schedule::Result& schedule)
 {
-    m_layouts.push_back(ScheduledLayout{10, 18, 0, "1970-01-01 01:00:00", "2038-01-19 03:14:07", {}});
-    m_layouts.push_back(ScheduledLayout{13, 15, 0, "1970-01-01 01:00:00", "2038-01-19 03:14:07", {}});
+    m_layoutToPlayIndex = FIRST_ITEM_INDEX;
+    m_layouts.clear();
+
+    m_defaultLayout = schedule.defaultLayout;
+    for(auto layout : schedule.layouts)
+    {
+        m_layouts.push_back(layout);
+    }
 }
 
 std::unique_ptr<IMainLayout> Scheduler::nextLayout()
@@ -24,7 +32,7 @@ std::unique_ptr<IMainLayout> Scheduler::nextLayout()
         Log::debug("Got event layout expired");
 
         m_layoutToPlayIndex = getNextLayoutIndex();
-        pushEvent(new LayoutExpiredEvent{});
+        pushEvent(LayoutExpiredEvent{});
     });
 
     return layout;
@@ -62,7 +70,7 @@ size_t Scheduler::getNextLayoutIndex()
     size_t nextLayoutToPlayIndex = m_layoutToPlayIndex + 1;
 
     if(nextLayoutToPlayIndex >= m_layouts.size())
-        return 0;
+        return FIRST_ITEM_INDEX;
 
     return nextLayoutToPlayIndex;
 }

@@ -9,7 +9,7 @@
 
 namespace SOAP
 {
-    template<typename Response>
+    template<typename Result>
     class BaseResponseParser
     {
     public:
@@ -20,8 +20,9 @@ namespace SOAP
         {
             tryParseResponse(response);
         }
+        virtual ~BaseResponseParser() = default;
 
-        std::pair<SOAP::Error, Response> get()
+        std::pair<SOAP::Error, Result> get()
         {
             if(m_responseTree)
             {
@@ -29,17 +30,17 @@ namespace SOAP
 
                 if(auto node = getFaultNode())
                 {
-                    return std::pair{makeErrorFromNode(node), Response{}};
+                    return std::pair{makeErrorFromNode(node), Result{}};
                 }
 
                 return std::pair{SOAP::Error{}, doParse(bodyNode)};
             }
 
-            return std::pair{SOAP::Error{"Parser", m_response}, Response{}};
+            return std::pair{SOAP::Error{"Parser", m_response}, Result{}};
         }
 
     protected:
-        virtual Response doParse(const ParsedNode& node) = 0;
+        virtual Result doParse(const ParsedNode& node) = 0;
 
     private:
         void tryParseResponse(const std::string& response)

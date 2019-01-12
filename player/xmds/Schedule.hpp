@@ -5,29 +5,15 @@
 #include "BaseRequestSerializer.hpp"
 #include "BaseResponseParser.hpp"
 
+#include "managers/ScheduleItem.hpp"
+
 namespace Schedule
 {
-    struct Response
+    struct Result
     {
-        struct DefaultLayout
-        {
-            int id;
-            std::vector<std::string> dependants;
-        };
-
-        struct Layout
-        {
-            int scheduleId;
-            int id;
-            int priority;
-            std::string startDT;
-            std::string endDT;
-            std::vector<std::string> dependants;
-        };
-
         std::vector<std::string> globalDependants;
-        std::vector<Layout> layouts;
-        DefaultLayout defaultLayout;
+        std::vector<ScheduledLayout> layouts;
+        DefaultScheduledLayout defaultLayout;
     };
 
     struct Request
@@ -47,17 +33,17 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<Schedule::Response> : public BaseResponseParser<Schedule::Response>
+class SOAP::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Response doParse(const boost::property_tree::ptree& scheduleNode) override;
+    Schedule::Result doParse(const boost::property_tree::ptree& scheduleNode) override;
 
 private:
-    Schedule::Response::Layout parseScheduledLayout(const boost::property_tree::ptree& layoutNode);
-    Schedule::Response::DefaultLayout parseDefaultLayout(const boost::property_tree::ptree& layoutNode);
+    ScheduledLayout parseScheduledLayout(const boost::property_tree::ptree& layoutNode);
+    DefaultScheduledLayout parseDefaultLayout(const boost::property_tree::ptree& layoutNode);
     std::vector<std::string> parseDependants(const boost::property_tree::ptree& dependantsNode);
 
 };

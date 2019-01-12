@@ -1,6 +1,8 @@
 #ifndef XMDSMANAGER_H
 #define XMDSMANAGER_H
 
+#include <future>
+
 #include "RegisterDisplay.hpp"
 #include "RequiredFiles.hpp"
 #include "Schedule.hpp"
@@ -8,22 +10,20 @@
 
 class SOAPManager;
 
-using RegisterDisplayCallback = std::function<void(const RegisterDisplay::Response&)>;
-using RequiredFilesCallback = std::function<void(const RequiredFiles::Response)>;
-using ScheduleCallback = std::function<void(const Schedule::Response&)>;
-using GetResourceCallback = std::function<void(const GetResource::Response&)>;
-
-#include <future>
+using RegisterDisplayCallback = std::function<void(const RegisterDisplay::Result&)>;
+using RequiredFilesCallback = std::function<void(const RequiredFiles::Result)>;
+using ScheduleCallback = std::function<void(const Schedule::Result&)>;
+using GetResourceCallback = std::function<void(const GetResource::Result&)>;
 
 class XMDSManager
 {
 public:
     XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    std::future<RegisterDisplay::Response> registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName);
-    std::future<RequiredFiles::Response> requiredFiles();
-    std::future<Schedule::Response> schedule();
-    std::future<GetResource::Response> getResource(int layoutId, int regionId, int mediaId);
+    std::future<RegisterDisplay::Result> registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName);
+    std::future<RequiredFiles::Result> requiredFiles();
+    std::future<Schedule::Result> schedule();
+    std::future<GetResource::Result> getResource(int layoutId, int regionId, int mediaId);
 
 private:
     std::unique_ptr<SOAPManager> m_soapManager;

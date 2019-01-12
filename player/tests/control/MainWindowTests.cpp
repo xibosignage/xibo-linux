@@ -182,11 +182,11 @@ TEST_F(MainWindowTest, ShowLayout_WithLayout_LayoutShowShouldBeCalled)
     window->showLayout();
 }
 
-TEST_F(MainWindowTest, ShowLayout_WithLayout_HandlerShowShouldBeCalled)
+TEST_F(MainWindowTest, Show_Default_HandlerShowShouldBeCalled)
 {
     auto window = constructWindow();
 
     EXPECT_CALL(adaptor(), show());
 
-    window->showLayout();
+    window->show();
 }

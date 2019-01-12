@@ -31,7 +31,7 @@ void RegionContent::checkPlayableMedia()
     if(dynamic_cast<IPlayable*>(m_media.get()))
     {
         m_media->subscribe(EventType::PlaybackFinished, [=](const Event&){
-           pushEvent(new DurationExpiredEvent{});
+           pushEvent(DurationExpiredEvent{});
         });
     }
 }
@@ -39,7 +39,7 @@ void RegionContent::checkPlayableMedia()
 void RegionContent::start()
 {
     startTimer();
-    pushEvent(new StartMediaEvent{});
+    pushEvent(StartMediaEvent{});
 }
 
 void RegionContent::startTimer()
@@ -47,14 +47,14 @@ void RegionContent::startTimer()
     if(m_media->duration() > 0)
     {
         m_timer->startOnce(static_cast<unsigned int>(m_media->duration()) * MSECS, [=](){
-            pushEvent(new DurationExpiredEvent{});
+            pushEvent(DurationExpiredEvent{});
         });
     }
 }
 
 void RegionContent::stop()
 {
-    pushEvent(new StopMediaEvent{});
+    pushEvent(StopMediaEvent{});
 }
 
 void RegionContent::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
@@ -67,7 +67,7 @@ void RegionContent::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
 
 void RegionContent::scale(double scaleX, double scaleY)
 {
-    pushEvent(new ScaleMediaEvent{scaleX, scaleY});
+    pushEvent(ScaleMediaEvent{scaleX, scaleY});
 }
 
 IWidgetAdaptor& RegionContent::handler()
