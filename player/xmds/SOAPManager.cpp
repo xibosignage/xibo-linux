@@ -8,7 +8,7 @@ SOAPManager::SOAPManager(const std::string& host) :
 {
     for(int i = 0; i != DEFAULT_CONCURRENT_REQUESTS; ++i)
     {
-        m_workThreads.push_back(std::make_unique<std::thread>([=](){
+        m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
             Log::trace("SOAP Thread {}", std::this_thread::get_id());
 
             m_ioc.run();
@@ -19,8 +19,4 @@ SOAPManager::SOAPManager(const std::string& host) :
 SOAPManager::~SOAPManager()
 {
     m_ioc.stop();
-    for(auto&& thread : m_workThreads)
-    {
-        thread->join();
-    }
 }

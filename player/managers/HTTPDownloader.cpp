@@ -38,15 +38,14 @@ struct DownloadSession
 HTTPDownloader::HTTPDownloader() :
     m_work{m_ioc}
 {
-    m_workThread.reset(new std::thread([=](){
+    m_workThread = std::make_unique<JoinableThread>([=](){
         m_ioc.run();
-    }));
+    });
 }
 
 HTTPDownloader::~HTTPDownloader()
 {
     m_ioc.stop();
-    m_workThread->join();
 }
 
 std::future<void> HTTPDownloader::download(const std::string& filename, const std::string& path, FileDownloadCallback callback)

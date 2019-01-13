@@ -7,7 +7,6 @@
 
 const int FIRST_CONTENT_INDEX = 0;
 
-
 Region::Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
     m_handler(std::move(handler)), m_id(id), m_zorder(zorder)
 {

@@ -61,4 +61,6 @@ protected:
 
 private:
     void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
+    spdlog::level::level_enum toLogLevelEnum(const std::string& level);
+
 };

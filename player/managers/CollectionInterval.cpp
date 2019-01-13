@@ -1,24 +1,24 @@
 #include "CollectionInterval.hpp"
 
 #include "xmds/XMDSManager.hpp"
+#include "events/CallbackGlobalQueue.hpp"
 
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/TimerProvider.hpp"
 
 #include <glibmm/main.h>
+#include <future>
 
 const uint DEFAULT_INTERVAL = 5;
 namespace ph = std::placeholders;
-
-#include <future>
 
 CollectionInterval::CollectionInterval() :
     m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
 {
 }
 
-void CollectionInterval::start()
+void CollectionInterval::startRegularCollection()
 {
     startTimer();
 }
@@ -26,38 +26,38 @@ void CollectionInterval::start()
 void CollectionInterval::startTimer()
 {
     m_intervalTimer->startOnceSeconds(static_cast<unsigned int>(m_collectInterval), [=](){
-        startRegularCollection();
+        collectOnce(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
     });
 }
 
-void CollectionInterval::onCollectionFinished(const CollectionResult& result)
+void CollectionInterval::onRegularCollectionFinished(const CollectionResult& result)
 {
-    Log::debug("Collection finished");
+    Log::debug("Collection finished {}", std::this_thread::get_id());
     Log::debug("Next collection will start in {} seconds", m_collectInterval);
+    pushEvent(CollectionFinished{result});
     startTimer();
 }
 
-void CollectionInterval::collect(CollectionResultCallback callback)
+void CollectionInterval::collectOnce(CollectionResultCallback callback)
 {
-    Log::debug("Collection started {}", std::this_thread::get_id());
+    auto threadStartPoint = [=](){
+        Log::debug("Collection started {}", std::this_thread::get_id());
 
-    auto session = std::make_shared<CollectionSession>();
-    session->callback = callback;
+        auto session = std::make_shared<CollectionSession>();
+        session->callback = callback;
 
-    auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display");
-    onDisplayRegistered(registerDisplayResult.get(), session);
-}
+        auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display");
+        onDisplayRegistered(registerDisplayResult.get(), session);
+    };
 
-void CollectionInterval::startRegularCollection()
-{
-    collect(std::bind(&CollectionInterval::onCollectionFinished, this, ph::_1));
+    m_workerThread = std::make_unique<JoinableThread>(threadStartPoint);
 }
 
 void CollectionInterval::sessionFinished(CollectionSessionPtr session)
 {
-    Glib::MainContext::get_default()->invoke([=](){
+    callbackQueue().add([session](){
+        session->result.success = true;
         session->callback(session->result);
-        return false;
     });
 }
 

@@ -30,10 +30,7 @@ XiboApp& XiboApp::create(const std::string& name)
     spdlog::set_pattern("[%H:%M:%S.%e] [%l]: %v");
 
     gst_init(nullptr, nullptr);
-
-    auto path = std::filesystem::current_path() / DEFAULT_RESOURCES_DIR;
-//    Resources::removeDirectoryContents(path);
-    Resources::setDirectory(path);
+    Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
@@ -50,14 +47,33 @@ XiboApp::XiboApp(const std::string& name) :
         return processCallbackQueue();
     });
 
+    m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
+        auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
+        onCollectionFinished(collectionEvent.result());
+    });
+
     m_scheduler->subscribe(EventType::LayoutExpired, [this](const Event&){
         m_mainWindow->setLayout(m_scheduler->nextLayout());
         m_mainWindow->showLayout();
     });
 }
-void XiboApp::updateSettings(const PlayerSettings& )
+
+void XiboApp::onCollectionFinished(const CollectionResult& result)
 {
-//    spdlog::set_level(static_cast<spdlog::level::level_enum>(settings.log_level));
+    Log::debug("Received collection result");
+
+    if(result.success)
+    {
+        m_scheduler->update(result.schedule);
+        updateSettings(result.settings);
+    }
+}
+
+void XiboApp::updateSettings(const PlayerSettings& settings)
+{
+    Log::debug("Log level updated");
+
+    spdlog::set_level(settings.logLevel);
 }
 
 XiboApp::~XiboApp()
@@ -147,9 +163,9 @@ int XiboApp::initMainLoop()
     if(m_options->credentials())
     {
         m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-        m_collectionInterval->collect([this](const CollectionResult& result){
-            m_scheduler->update(result.schedule);
-            m_collectionInterval->start();
+        m_collectionInterval->collectOnce([this](const CollectionResult& result){
+            onCollectionFinished(result);
+            m_collectionInterval->startRegularCollection();
             runPlayer();
         });
     }

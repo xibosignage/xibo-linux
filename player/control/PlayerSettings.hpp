@@ -2,6 +2,7 @@
 #define PLAYERSETTINGS_HPP
 
 #include <string>
+#include <spdlog/common.h>
 
 struct PlayerSettings
 {
@@ -14,7 +15,7 @@ struct PlayerSettings
     double sizeY;
     double offsetX;
     double offsetY;
-    std::string logLevel;
+    spdlog::level::level_enum logLevel;
     bool shellCommandsEnabled;
     bool modifiedLayoutsEnabled;
     int maxConcurrentDownloads;

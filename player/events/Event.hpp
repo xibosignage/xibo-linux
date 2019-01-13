@@ -10,7 +10,8 @@ enum class EventType
     DurationExpired,
     ScaleMedia,
     PlaybackFinished,
-    LayoutExpired
+    LayoutExpired,
+    CollectionFinished
 };
 
 class Event
@@ -40,16 +41,6 @@ public:
     EventType type() const override;
 };
 
-class RegionDurationExpiredEvent : public DurationExpiredEvent
-{
-public:
-    RegionDurationExpiredEvent(int id);
-    int id() const;
-
-private:
-    int m_id;
-};
-
 class PlaybackFinishedEvent : public Event
 {
 public:
@@ -72,4 +63,28 @@ public:
 private:
     double m_scaleX;
     double m_scaleY;
+};
+
+class RegionDurationExpiredEvent : public DurationExpiredEvent
+{
+public:
+    RegionDurationExpiredEvent(int id);
+    int id() const;
+
+private:
+    int m_id;
+};
+
+#include "managers/CollectionResult.hpp"
+
+class CollectionFinished : public Event
+{
+public:
+    CollectionFinished(const CollectionResult& result);
+    EventType type() const override;
+    const CollectionResult& result() const;
+
+private:
+    CollectionResult m_result;
+
 };

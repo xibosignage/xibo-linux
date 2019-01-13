@@ -9,6 +9,7 @@ class HTTPDownloader;
 class Scheduler;
 class CollectionInterval;
 class CommandLineParser;
+class CollectionResult;
 struct PlayerSettings;
 
 class XiboApp
@@ -30,6 +31,7 @@ private:
 
     int initMainLoop();
     void runPlayer();
+    void onCollectionFinished(const CollectionResult& result);
     void updateSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
     bool processCallbackQueue();

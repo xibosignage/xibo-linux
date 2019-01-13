@@ -6,8 +6,8 @@
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_context.hpp>
-#include <thread>
 #include <future>
+#include "utils/JoinableThread.hpp"
 
 struct DownloadedFile
 {
@@ -41,5 +41,5 @@ private:
 private:
     boost::asio::io_context m_ioc;
     boost::asio::io_context::work m_work;
-    std::unique_ptr<std::thread> m_workThread;
+    std::unique_ptr<JoinableThread> m_workThread;
 };

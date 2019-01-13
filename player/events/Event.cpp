@@ -39,6 +39,11 @@ EventType PlaybackFinishedEvent::type() const
     return EventType::PlaybackFinished;
 }
 
+EventType LayoutExpiredEvent::type() const
+{
+    return EventType::LayoutExpired;
+}
+
 RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) : m_id(id)
 {
 }
@@ -48,7 +53,17 @@ int RegionDurationExpiredEvent::id() const
     return m_id;
 }
 
-EventType LayoutExpiredEvent::type() const
+CollectionFinished::CollectionFinished(const CollectionResult& result)
 {
-    return EventType::LayoutExpired;
+    m_result = result;
+}
+
+EventType CollectionFinished::type() const
+{
+    return EventType::CollectionFinished;
+}
+
+const CollectionResult& CollectionFinished::result() const
+{
+    return m_result;
 }

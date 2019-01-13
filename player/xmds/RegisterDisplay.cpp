@@ -50,7 +50,7 @@ void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
     settings.sizeY = display.get<double>(Settings::SizeY);
     settings.offsetX = display.get<double>(Settings::OffsetX);
     settings.offsetY = display.get<double>(Settings::OffsetY);
-    settings.logLevel = display.get<std::string>(Settings::LogLevel);
+    settings.logLevel = toLogLevelEnum(display.get<std::string>(Settings::LogLevel));
     settings.shellCommandsEnabled = display.get<bool>(Settings::EnableShellCommands);
     settings.modifiedLayoutsEnabled = display.get<bool>(Settings::ExpireModifiedLayouts);
     settings.maxConcurrentDownloads = display.get<int>(Settings::MaxConcurrentDownloads);
@@ -65,3 +65,15 @@ void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
     settings.screenshotRequested = display.get<bool>(Settings::ScreenShotRequested);
 }
 
+
+spdlog::level::level_enum SOAP::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const std::string& level)
+{
+    if(level == "audit")
+        return spdlog::level::level_enum::trace;
+    else if(level == "info")
+        return spdlog::level::level_enum::debug;
+    else if(level == "error")
+        return spdlog::level::level_enum::warn;
+    else
+        return spdlog::level::level_enum::off;
+}

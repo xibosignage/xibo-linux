@@ -23,7 +23,7 @@ void Scheduler::update(const Schedule::Result& schedule)
 
 void Scheduler::resetSchedule()
 {
-    m_nextLayoutIndex = FIRST_ITEM_INDEX; // FIXME (not to reset index ???)
+//    m_nextLayoutIndex = FIRST_ITEM_INDEX; // FIXME (should I reset index ???)
     m_layouts.clear();
 }
 

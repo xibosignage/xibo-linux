@@ -2,9 +2,9 @@
 #define SOAPMANAGER_HPP
 
 #include "SessionExecutor.hpp"
+#include "utils/JoinableThread.hpp"
 
 #include <boost/noncopyable.hpp>
-#include <thread>
 #include <future>
 
 class SOAPManager : private boost::noncopyable
@@ -28,7 +28,7 @@ public:
 private:
     asio::io_context m_ioc;
     asio::io_context::work m_work;
-    std::vector<std::unique_ptr<std::thread>> m_workThreads;
+    std::vector<std::unique_ptr<JoinableThread>> m_workerThreads;
     std::string m_host;
     int m_port;
 };
