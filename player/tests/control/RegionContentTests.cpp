@@ -36,60 +36,60 @@ TEST_F(RegionContentTest, Start_MediaDurationEquals0_TimerStartOnceShouldNotBeCa
     content->start();
 }
 
-TEST_F(RegionContentTest, Start_Default_MediaHandleStartMediaEventShouldBeCalled)
-{
-    auto content = constructRegionContent();
+//TEST_F(RegionContentTest, Start_Default_MediaHandleStartMediaEventShouldBeCalled)
+//{
+//    auto content = constructRegionContent();
 
-    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::StartMedia)));
+//    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::StartMedia)));
 
-    content->start();
-}
+//    content->start();
+//}
 
-TEST_F(RegionContentTest, Start_WithAttachedMedia_AttachedMediaHandleStartMediaEventShouldBeCalled)
-{
-    auto attachedMedia = createMedia<MockMedia>();
-    auto content = constructRegionContent();
+//TEST_F(RegionContentTest, Start_WithAttachedMedia_AttachedMediaHandleStartMediaEventShouldBeCalled)
+//{
+//    auto attachedMedia = createMedia<MockMedia>();
+//    auto content = constructRegionContent();
 
-    EXPECT_CALL(*attachedMedia, handleEvent(ResultOf(eventHandler(), EventType::StartMedia)));
+//    EXPECT_CALL(*attachedMedia, handleEvent(ResultOf(eventHandler(), EventType::StartMedia)));
 
-    content->attachMedia(unique(attachedMedia));
-    content->start();
-}
+//    content->attachMedia(unique(attachedMedia));
+//    content->start();
+//}
 
-TEST_F(RegionContentTest, Stop_WithAttachedMedia_AttachedMediaHandleStopMediaEventShouldBeCalled)
-{
-    auto attachedMedia = createMedia<MockMedia>();
-    auto content = constructRegionContent();
+//TEST_F(RegionContentTest, Stop_WithAttachedMedia_AttachedMediaHandleStopMediaEventShouldBeCalled)
+//{
+//    auto attachedMedia = createMedia<MockMedia>();
+//    auto content = constructRegionContent();
 
-    EXPECT_CALL(*attachedMedia, handleEvent(ResultOf(eventHandler(), EventType::StopMedia)));
+//    EXPECT_CALL(*attachedMedia, handleEvent(ResultOf(eventHandler(), EventType::StopMedia)));
 
-    content->attachMedia(unique(attachedMedia));
-    content->stop();
-}
+//    content->attachMedia(unique(attachedMedia));
+//    content->stop();
+//}
 
-TEST_F(RegionContentTest, Stop_Default_MediaHandleStopMediaEventShouldBeCalled)
-{
-    auto content = constructRegionContent();
+//TEST_F(RegionContentTest, Stop_Default_MediaHandleStopMediaEventShouldBeCalled)
+//{
+//    auto content = constructRegionContent();
 
-    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::StopMedia)));
+//    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::StopMedia)));
 
-    content->stop();
-}
+//    content->stop();
+//}
 
-TEST_F(RegionContentTest, Scale_InvisibleMedia_MediaHandleScaleMediaEventShouldNotBeCalled)
-{
-    auto content = constructRegionContent();
+//TEST_F(RegionContentTest, Scale_InvisibleMedia_MediaHandleScaleMediaEventShouldNotBeCalled)
+//{
+//    auto content = constructRegionContent();
 
-    EXPECT_CALL(media(), handleEvent(_)).Times(0);
+//    EXPECT_CALL(media(), handleEvent(_)).Times(0);
 
-    content->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
-}
+//    content->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+//}
 
-TEST_F(RegionContentTest, Scale_VisibleMedia_MediaHandleScaleMediaEventShouldBeCalled)
-{
-    auto content = constructRegionContent<MockVisibleMedia>();
+//TEST_F(RegionContentTest, Scale_VisibleMedia_MediaHandleScaleMediaEventShouldBeCalled)
+//{
+//    auto content = constructRegionContent<MockVisibleMedia>();
 
-    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::ScaleMedia)));
+//    EXPECT_CALL(media(), handleEvent(ResultOf(eventHandler(), EventType::ScaleMedia)));
 
-    content->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
-}
+//    content->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
+//}
