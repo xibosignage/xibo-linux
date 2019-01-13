@@ -86,14 +86,8 @@ void HTTPDownloader::onRead(const boost::system::error_code& ec, std::size_t byt
     auto filename = Resources::directory() / session->filename;
     if(!ec)
     {
-        // FIXME temporarily (fix in 0.4-a)
-        // also, it should not create file, just resend contents
-        if(std::filesystem::exists(filename.string()))
-        {
-            std::ofstream out(filename.string() + "_test");
-            out << session->httpResponse.get().body();
-        }
-        else
+        // FIXME it should use FileCacheManager
+        if(!std::filesystem::exists(filename.string()))
         {
             std::ofstream out(filename.string());
             out << session->httpResponse.get().body();

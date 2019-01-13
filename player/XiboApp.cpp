@@ -32,7 +32,7 @@ XiboApp& XiboApp::create(const std::string& name)
     gst_init(nullptr, nullptr);
 
     auto path = std::filesystem::current_path() / DEFAULT_RESOURCES_DIR;
-    Resources::removeDirectoryContents(path);
+//    Resources::removeDirectoryContents(path);
     Resources::setDirectory(path);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));

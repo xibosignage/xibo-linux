@@ -17,6 +17,7 @@ void Scheduler::update(const Schedule::Result& schedule)
     resetSchedule();
 
     m_defaultLayout = schedule.defaultLayout;
+    m_globalDependants = std::move(schedule.globalDependants);
     fillScheduleItems(schedule.layouts);
 }
 
@@ -80,26 +81,6 @@ int Scheduler::nextLayoutToPlayId()
     }
 }
 
-bool Scheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
-{
-    auto currentDT = boost::posix_time::second_clock::local_time();
-    if(currentDT >= layout.startDT && currentDT < layout.endDT)
-    {
-        return true;
-    }
-    return false;
-}
-
-size_t Scheduler::increaseLayoutIndex(std::size_t index) const
-{
-    size_t nextLayoutIndex = index + 1;
-
-    if(nextLayoutIndex >= m_layouts.size())
-        return FIRST_ITEM_INDEX;
-
-    return nextLayoutIndex;
-}
-
 int Scheduler::nextValidLayoutId()
 {
     std::size_t indexCount = 0;
@@ -109,7 +90,7 @@ int Scheduler::nextValidLayoutId()
     {
         auto&& nextLayout = m_layouts[layoutIndex];
 
-        if(isLayoutOnSchedule(nextLayout))
+        if(isLayoutOnSchedule(nextLayout) && allFilesExist(nextLayout.dependants))
         {
             m_nextLayoutIndex = increaseLayoutIndex(layoutIndex);
             return nextLayout.id;
@@ -122,3 +103,44 @@ int Scheduler::nextValidLayoutId()
     return m_defaultLayout.id;
 }
 
+
+bool Scheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
+{
+    auto currentDT = boost::posix_time::second_clock::local_time();
+    if(currentDT >= layout.startDT && currentDT < layout.endDT)
+    {
+        return true;
+    }
+    return false;
+}
+
+bool Scheduler::allFilesExist(const std::vector<std::string>& dependants) const
+{
+    for(auto dependant : m_globalDependants)
+    {
+        if(!std::filesystem::exists(Resources::directory() / dependant))
+        {
+            return false;
+        }
+    }
+
+    for(auto dependant : dependants)
+    {
+        if(!std::filesystem::exists(Resources::directory() / dependant))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+size_t Scheduler::increaseLayoutIndex(std::size_t index) const
+{
+    size_t nextLayoutIndex = index + 1;
+
+    if(nextLayoutIndex >= m_layouts.size())
+        return FIRST_ITEM_INDEX;
+
+    return nextLayoutIndex;
+}
