@@ -60,12 +60,16 @@ XiboApp::XiboApp(const std::string& name) :
 
 void XiboApp::onCollectionFinished(const CollectionResult& result)
 {
-    Log::debug("Received collection result");
-
-    if(result.success)
+    if(!result.error)
     {
+        Log::debug("Received collection result");
+
         m_scheduler->update(result.schedule);
         updateSettings(result.settings);
+    }
+    else
+    {
+        Log::debug("Collection interval error: {}", result.error.message);
     }
 }
 

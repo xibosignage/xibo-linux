@@ -40,7 +40,8 @@ void CollectionInterval::onRegularCollectionFinished(const CollectionResult& res
 
 void CollectionInterval::collectOnce(CollectionResultCallback callback)
 {
-    auto threadStartPoint = [=](){
+    m_workerThread = std::make_unique<JoinableThread>([=]()
+    {
         Log::debug("Collection started {}", std::this_thread::get_id());
 
         auto session = std::make_shared<CollectionSession>();
@@ -48,15 +49,13 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 
         auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display");
         onDisplayRegistered(registerDisplayResult.get(), session);
-    };
-
-    m_workerThread = std::make_unique<JoinableThread>(threadStartPoint);
+    });
 }
 
-void CollectionInterval::sessionFinished(CollectionSessionPtr session)
+void CollectionInterval::sessionFinished(CollectionSessionPtr session, CollectionResult::Error error)
 {
-    callbackQueue().add([session](){
-        session->result.success = true;
+    callbackQueue().add([session, error](){
+        session->result.error = error;
         session->callback(session->result);
     });
 }
@@ -80,7 +79,7 @@ void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Result& resu
     }
     else
     {
-        sessionFinished(session);
+        sessionFinished(session, CollectionResult::Error{"DisplayRegister request error"});
     }
 }
 

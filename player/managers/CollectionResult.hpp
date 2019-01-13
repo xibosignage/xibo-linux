@@ -5,7 +5,17 @@
 
 struct CollectionResult
 {
-    bool success;
+    struct Error
+    {
+        std::string message;
+
+        operator bool() const
+        {
+            return !message.empty();
+        }
+
+    } error;
+
     PlayerSettings settings;
     Schedule::Result schedule;
 };

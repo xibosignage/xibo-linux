@@ -33,7 +33,7 @@ private:
     void startTimer();
     void updateTimer(int collectInterval);
 
-    void sessionFinished(CollectionSessionPtr session);
+    void sessionFinished(CollectionSessionPtr session, CollectionResult::Error = {});
     void onRegularCollectionFinished(const CollectionResult& result);
 
     void onDisplayRegistered(const RegisterDisplay::Result& response, CollectionSessionPtr session);
