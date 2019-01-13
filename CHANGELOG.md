@@ -24,7 +24,7 @@
   - There is not file cache management for now 
 
 - **Known bugs**
-  - Video can sometimes stop unexpectedly (issue #139) 
+  - Video can sometimes stop unexpectedly and causes the schedule to broke (issue #139) 
   - Web View always uses `file://` scheme (in theory this can lead to weird bugs)
   - Closing app while downloading files leads to exception std::bad_alloc
   - Closing app while video/audio playing on the layout doesn't really terminate the app (event loop is still running)
