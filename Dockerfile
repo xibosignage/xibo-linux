@@ -84,7 +84,7 @@ RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOO
     cd /root && \
     tar -zxvf boost.tar.gz && \
     cd boost_${BOOST} && \
-    ./bootstrap.sh --with-libraries=system,filesystem,program_options && \
+    ./bootstrap.sh --with-libraries=system,filesystem,program_options,date_time && \
     ./b2 install && \
     cd /root && \
     rm -r /root/boost_${BOOST} && \
