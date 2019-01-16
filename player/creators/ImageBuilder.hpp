@@ -1,17 +1,18 @@
 #include "MediaBuilder.hpp"
 
+#include "adaptors/IImageAdaptor.hpp"
 #include "media/ImageProperties.hpp"
-
-class Image;
-class IImageAdaptor;
+#include "media/Image.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
 const std::string DEFAULT_VALIGN = "middle";
 
-class ImageBuilder : public MediaBuilder
+class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
 {
 public:
+    std::unique_ptr<Image> build();
+
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
     ImageBuilder& scaleType(const boost::optional<std::string>& scaleType);
@@ -19,7 +20,6 @@ public:
     ImageBuilder& valign(const boost::optional<std::string>& valign);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() final;
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
 
 private:

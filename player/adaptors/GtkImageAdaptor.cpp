@@ -1,6 +1,5 @@
 #include "GtkImageAdaptor.hpp"
-
-#include <gdkmm/pixbufloader.h>
+#include "utils/FilePath.hpp"
 
 const int DEFAULT_WIDTH = 1;
 const int DEFAULT_HEIGHT = 1;

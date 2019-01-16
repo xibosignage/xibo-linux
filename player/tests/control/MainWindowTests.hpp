@@ -7,6 +7,7 @@
 
 #include "mocks/MockMainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
+#include "events/Event.hpp"
 
 const int DEFAULT_WINDOW_POS = 100;
 const auto invalidMainWindowSizes = invalidSizes<MIN_DISPLAY_WIDTH, MIN_DISPLAY_HEIGHT>;
@@ -17,6 +18,7 @@ struct ScaleForResolution
     Size playerResolution;
     double scaleFactor;
 };
+
 const Size DEFAULT_RESOLUTION = Size{1920, 1080};
 const std::vector<ScaleForResolution> scalesForResolutions{{Size{960, 432}, DEFAULT_RESOLUTION, 0.4},
                                                            {Size{1920, 432}, DEFAULT_RESOLUTION, 0.4},
@@ -54,7 +56,7 @@ private:
         auto layout = constructLayout();
         m_layout = layout.get();
 
-        window.addLayout(std::move(layout));
+        window.setLayout(std::move(layout));
     }
 
 private:

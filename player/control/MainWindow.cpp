@@ -1,14 +1,17 @@
 #include "MainWindow.hpp"
-#include "constants.hpp"
 
 #include "adaptors/IWindowAdaptor.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
+#include "IMainLayout.hpp"
+#include "constants.hpp"
 
 #include <cassert>
 
 MainWindow::MainWindow(std::unique_ptr<IWindowAdaptor>&& handler) :
     m_handler(std::move(handler))
 {
+    assert(m_handler);
+
     m_handler->disableWindowDecoration();
     m_handler->disableWindowResize();
 
@@ -27,7 +30,6 @@ void MainWindow::setSize(int width, int height)
     m_handler->setSize(width, height);
 }
 
-// TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowNewSize(int width, int height)
 {
     if(width < MIN_DISPLAY_WIDTH || height < MIN_DISPLAY_HEIGHT)
@@ -41,7 +43,6 @@ void MainWindow::setPos(int x, int y)
     m_handler->move(x, y);
 }
 
-// TODO specify after adding Monitor max width and height
 void MainWindow::checkWindowCoordinates(int x, int y)
 {
     if(x < MIN_XPOS || y < MIN_YPOS)
@@ -71,13 +72,23 @@ bool MainWindow::isVisible() const
     return m_handler->isShown();
 }
 
-void MainWindow::addLayout(std::unique_ptr<IMainLayout>&& layout)
+void MainWindow::setLayout(std::unique_ptr<IMainLayout>&& layout)
 {
     assert(layout);
+
+    removePreviousLayoutIfExists();
 
     m_handler->add(layout->handler());
     scaleLayout(*layout);
     m_layout = std::move(layout);
+}
+
+void MainWindow::removePreviousLayoutIfExists()
+{
+    if(m_layout)
+    {
+        m_handler->remove();
+    }
 }
 
 void MainWindow::scaleLayout(IMainLayout& layout)
@@ -93,6 +104,10 @@ void MainWindow::showLayout()
     assert(m_layout);
 
     m_layout->show();
+}
+
+void MainWindow::show()
+{
     m_handler->show();
 }
 

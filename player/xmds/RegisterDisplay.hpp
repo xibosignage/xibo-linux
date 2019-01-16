@@ -1,24 +1,31 @@
-#ifndef REGISTERDISPLAY_HPP
-#define REGISTERDISPLAY_HPP
+#pragma once
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
+#include "BaseResponseParser.hpp"
+#include "BaseRequestSerializer.hpp"
+
 #include "control/PlayerSettings.hpp"
 
 namespace RegisterDisplay
 {
-    struct Response
+    struct Result
     {
-        enum class Status
+        struct Status
         {
-            Ready,
-            Added,
-            Waiting,
-            Invalid = -1
+            enum class Code
+            {
+                Ready,
+                Added,
+                Waiting,
+                Invalid = -1
+            };
+
+            Code code = Code::Invalid;
+            std::string message;
         };
 
-        Status status = Status::Invalid;
-        std::string statusMessage;
+        Status status;
         PlayerSettings playerSettings;
     };
 
@@ -35,10 +42,25 @@ namespace RegisterDisplay
 }
 
 template<>
-struct soap::request_traits<RegisterDisplay::Request>
+class SOAP::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
 {
-    static inline const std::string name = "RegisterDisplay";
-    using response_t = RegisterDisplay::Response;
+public:
+    RequestSerializer(const RegisterDisplay::Request& request);
+    std::string string();
+
 };
 
-#endif // REGISTERDISPLAY_HPP
+template<>
+class SOAP::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
+{
+public:
+    ResponseParser(const std::string& soapResponse);
+
+protected:
+    RegisterDisplay::Result doParse(const boost::property_tree::ptree& node) override;
+
+private:
+    void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
+    spdlog::level::level_enum toLogLevelEnum(const std::string& level);
+
+};

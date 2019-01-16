@@ -5,6 +5,7 @@
 
 #include "constants.hpp"
 #include "utils/Helpers.hpp"
+#include "utils/FilePath.hpp"
 
 const std::string DEFAULT_RESOURCES_DIR = "fakedir";
 const FilePath DEFAULT_PATH = "fakepath";

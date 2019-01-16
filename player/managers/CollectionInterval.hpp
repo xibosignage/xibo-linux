@@ -1,45 +1,49 @@
-#ifndef COLLECTIONINTERVAL_HPP
-#define COLLECTIONINTERVAL_HPP
+#pragma once
 
-#include "xmds/XMDSManager.hpp"
+#include "RequiredFilesDownloader.hpp"
+#include "RequiredResourcesDownloader.hpp"
+#include "CollectionResult.hpp"
 
-#include <sigc++/signal.h>
-#include <sigc++/connection.h>
-#include <spdlog/spdlog.h>
+#include "xmds/RegisterDisplay.hpp"
+#include "xmds/RequiredFiles.hpp"
 
-struct RequiredFilesSession
+#include "utils/ITimerProvider.hpp"
+#include "utils/JoinableThread.hpp"
+#include "events/Observable.hpp"
+
+using CollectionResultCallback = std::function<void(const CollectionResult&)>;
+
+struct CollectionSession
 {
-    size_t downloadCount = 0;
-    size_t downloadOverall = 0;
+    CollectionResult result;
+    CollectionResultCallback callback;
 };
 
-using RequiredFilesSessionPtr = std::shared_ptr<RequiredFilesSession>;
+using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 
-class CollectionInterval
+class CollectionInterval : public Observable<>
 {
 public:
     CollectionInterval();
-    void start();
-    sigc::signal<void>& signalFinished();
-    sigc::signal<void, PlayerSettings>& signalSettingsUpdated();
+
+    void startRegularCollection();
+    void collectOnce(CollectionResultCallback callback);
 
 private:
-    void collectData();
-    void updateTimer(uint collectInterval);
+    void startTimer();
+    void updateTimer(int collectInterval);
+
+    void sessionFinished(CollectionSessionPtr session, CollectionResult::Error = {});
+    void onRegularCollectionFinished(const CollectionResult& result);
+
+    void onDisplayRegistered(const RegisterDisplay::Result& response, CollectionSessionPtr session);
+    void displayMessage(const RegisterDisplay::Result::Status& status);
+    void onRequiredFiles(const RequiredFiles::Result& response, CollectionSessionPtr session);
+    void onSchedule(const Schedule::Result& response, CollectionSessionPtr session);
 
 private:
-    void onRegisterDisplay(const RegisterDisplay::Response& response);
-    void onRequiredFiles(const RequiredFiles::Response& response);
-
-    void downloadCallback(const std::string& filename, RequiredFilesSessionPtr session);
-
-private:
-    std::shared_ptr<spdlog::logger> m_logger;
-    sigc::signal<void> m_signalFinished;
-    sigc::signal<void, PlayerSettings> m_signalSettingsUpdated;
-    sigc::connection m_intervalConnection;
-    boost::optional<uint> m_collectInterval;
+    std::unique_ptr<JoinableThread> m_workerThread;
+    int m_collectInterval;
+    std::unique_ptr<ITimerProvider> m_intervalTimer;
 
 };
-
-#endif // COLLECTIONINTERVAL_HPP

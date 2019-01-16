@@ -1,7 +1,7 @@
 #include "WebView.hpp"
 
-#include "constants.hpp"
-#include "media/MediaVisitor.hpp"
+#include "MediaVisitor.hpp"
+#include "adaptors/IWebViewAdaptor.hpp"
 
 #include <cassert>
 
@@ -14,15 +14,15 @@ WebView::WebView(int id, int width, int height, const FilePath& path, std::uniqu
     m_handler->load(path);
 }
 
-void WebView::doStop()
-{
-    m_handler->hide();
-}
-
-void WebView::doStart()
+void WebView::show()
 {
     m_handler->show();
     m_handler->reload();
+}
+
+void WebView::hide()
+{
+    m_handler->hide();
 }
 
 void WebView::scale(double scaleX, double scaleY)
@@ -43,6 +43,27 @@ int WebView::height() const
 void WebView::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
+}
+
+void WebView::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            show();
+            break;
+        case EventType::StopMedia:
+            hide();
+            break;
+        case EventType::ScaleMedia:
+        {
+            auto scaleEv = static_cast<const ScaleMediaEvent&>(ev);
+            scale(scaleEv.scaleX(), scaleEv.scaleY());
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 void WebView::setTransparent(bool transparent)

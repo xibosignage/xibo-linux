@@ -49,6 +49,62 @@ TEST(ImageBuilderTest, Construct_InvalidValign_InvaldiArgShouldBeThrown)
     ASSERT_THROW(builder.scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("invalid"s).build(), std::invalid_argument);
 }
 
+TEST(ImageBuilderTest, Construct_ScaleTypeCenter_ImageScaleTypeEqualsScaled)
+{
+    auto image = ImageBuilderTest().scaleType("center"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build();
+
+    ASSERT_EQ(image->scaleType(), ImageProperties::ScaleType::Scaled);
+}
+
+TEST(ImageBuilderTest, Construct_ScaleTypeStretch_ImageScaleTypeEqualsStretch)
+{
+    auto image = ImageBuilderTest().scaleType("stretch"s).align(DEFAULT_ALIGN).valign(DEFAULT_VALIGN).build();
+
+    ASSERT_EQ(image->scaleType(), ImageProperties::ScaleType::Stretch);
+}
+
+TEST(ImageBuilderTest, Construct_AlignCenter_ImageAlignEqualsCenter)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align("center"s).valign(DEFAULT_VALIGN).build();
+
+    ASSERT_EQ(image->align(), ImageProperties::Align::Center);
+}
+
+TEST(ImageBuilderTest, Construct_AlignRight_ImageAlignEqualsRight)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align("right"s).valign(DEFAULT_VALIGN).build();
+
+    ASSERT_EQ(image->align(), ImageProperties::Align::Right);
+}
+
+TEST(ImageBuilderTest, Construct_AlignLeft_ImageAlignEqualsLeft)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align("left"s).valign(DEFAULT_VALIGN).build();
+
+    ASSERT_EQ(image->align(), ImageProperties::Align::Left);
+}
+
+TEST(ImageBuilderTest, Construct_ValignMiddle_ImageValignEqualsMiddle)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("middle"s).build();
+
+    ASSERT_EQ(image->valign(), ImageProperties::Valign::Middle);
+}
+
+TEST(ImageBuilderTest, Construct_ValignTop_ImageValignEqualsTop)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("top"s).build();
+
+    ASSERT_EQ(image->valign(), ImageProperties::Valign::Top);
+}
+
+TEST(ImageBuilderTest, Construct_ValignBottom_ImageValignEqualsBottom)
+{
+    auto image = ImageBuilderTest().scaleType(DEFAULT_SCALE_TYPE).align(DEFAULT_ALIGN).valign("bottom"s).build();
+
+    ASSERT_EQ(image->valign(), ImageProperties::Valign::Bottom);
+}
+
 TEST(ImageBuilderTest, Construct_InvalidPath_ShouldThrowRunTimeError)
 {
     ImageBuilderTest builder;

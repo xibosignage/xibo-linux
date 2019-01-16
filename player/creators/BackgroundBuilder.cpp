@@ -4,9 +4,9 @@
 #include "adaptors/GtkImageAdaptor.hpp"
 
 #include "utils/Resources.hpp"
-#include "utils/Helpers.hpp"
 #include "utils/ColorToHexConverter.hpp"
 #include "utils/FileSystemAdaptor.hpp"
+#include "constants.hpp"
 
 const std::string DEFAULT_COLOR = "#000";
 

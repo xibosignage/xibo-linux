@@ -1,14 +1,12 @@
 #include "VideoBuilder.hpp"
-
-#include "media/Video.hpp"
 #include "media/VideoHandler.hpp"
 
-const bool DEFAULT_LOOPED = false;
-const bool DEFAULT_MUTED = false;
+#include <boost/optional/optional.hpp>
 
-std::unique_ptr<IMedia> VideoBuilder::doBuild()
+std::unique_ptr<Video> VideoBuilder::build()
 {
     auto video = createVideo();
+    prepareCommonParams(*video);
     video->setMuted(m_muted);
     video->setLooped(m_looped);
     return video;
@@ -38,13 +36,13 @@ VideoBuilder& VideoBuilder::height(int height)
 
 VideoBuilder& VideoBuilder::muted(const boost::optional<bool>& muted)
 {
-    m_muted = muted.value_or(DEFAULT_MUTED);
+    m_muted = muted.value_or(DEFAULT_VIDEO_MUTED);
     return *this;
 }
 
 VideoBuilder& VideoBuilder::looped(const boost::optional<bool>& looped)
 {
-    m_looped = looped.value_or(DEFAULT_LOOPED);
+    m_looped = looped.value_or(DEFAULT_VIDEO_LOOPED);
     return *this;
 }
 

@@ -1,19 +1,15 @@
 #pragma once
 
-#include <string>
-#include <spdlog/logger.h>
-#include <filesystem>
-
 #include "constants.hpp"
 
 class XMDSManager;
-class DownloadManager;
+class HTTPDownloader;
+class FilePath;
 
 namespace Utils
 {
-    std::shared_ptr<spdlog::logger> logger();
     XMDSManager& xmdsManager();
-    DownloadManager& downloadManager();
-    boost::property_tree::ptree parseXmlFromPath(const std::filesystem::path& xlfPath);
-    boost::property_tree::ptree parseXmlFromString(const std::string& xml);
+    HTTPDownloader& httpDownloader();
+    xlf_node parseXmlFromPath(const FilePath& xlfPath);
+    xlf_node parseXmlFromString(const std::string& xml);
 }

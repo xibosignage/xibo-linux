@@ -3,8 +3,6 @@
 #include "BaseTestWithHandler.hpp"
 
 #include "media/Video.hpp"
-#include "media/MediaVisitor.hpp"
-
 #include "mocks/MockVideoHandler.hpp"
 
 class VideoTest : public BaseTestWithHandler<MockVideoHandler>

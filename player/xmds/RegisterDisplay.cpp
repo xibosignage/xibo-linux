@@ -1,50 +1,79 @@
 #include "RegisterDisplay.hpp"
 
-#include "xmds.hpp"
+#include "Resources.hpp"
 #include "utils/Utilities.hpp"
-#include "control/PlayerSettings.hpp"
 
-template<>
-std::string soap::requestString(const RegisterDisplay::Request& request)
+namespace Resources = XMDSResources::RegisterDisplay;
+
+SOAP::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
 {
-    return createRequest<RegisterDisplay::Request>
-            (request.clientCode, request.clientType, request.clientVersion,
-             request.displayName, request.macAddress, request.serverKey, request.hardwareKey);
 }
 
-template<>
-RegisterDisplay::Response soap::createResponse(const std::string& soapResponse)
+std::string SOAP::RequestSerializer<RegisterDisplay::Request>::string()
 {
-    auto display = xmds::parseXmlResponse(soapResponse).get_child("display");
-    auto attrs = display.get_child("<xmlattr>");
+    return createRequest(Resources::Name, request().clientCode, request().clientType, request().clientVersion,
+                         request().displayName, request().macAddress, request().serverKey, request().hardwareKey);
 
-    RegisterDisplay::Response result;
-    result.status = static_cast<RegisterDisplay::Response::Status>(attrs.get<int>("status"));
-    result.statusMessage = attrs.get<std::string>("message");
-    if(result.status == RegisterDisplay::Response::Status::Ready)
+}
+
+SOAP::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+{
+}
+
+RegisterDisplay::Result SOAP::ResponseParser<RegisterDisplay::Result>::doParse(const boost::property_tree::ptree& node)
+{
+    auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
+    auto display = Utils::parseXmlFromString(activationMessage).get_child(Resources::Display);
+    auto attrs = display.get_child(Resources::DisplayAttrs);
+
+    RegisterDisplay::Result result;
+    result.status.code = static_cast<RegisterDisplay::Result::Status::Code>(attrs.get<int>(Resources::Status));
+    result.status.message = attrs.get<std::string>(Resources::StatusMessage);
+    if(result.status.code == RegisterDisplay::Result::Status::Code::Ready)
     {
-        result.playerSettings.collectInterval = display.get<int>("collectInterval");
-        result.playerSettings.downloadStartWindow = display.get<std::string>("downloadStartWindow");
-        result.playerSettings.downloadEndWindow = display.get<std::string>("downloadEndWindow");
-        result.playerSettings.statsEnabled = display.get<bool>("statsEnabled");
-        result.playerSettings.xmrNetworkAddress = display.get<std::string>("xmrNetworkAddress");
-        result.playerSettings.sizeX = display.get<double>("sizeX");
-        result.playerSettings.sizeY = display.get<double>("sizeY");
-        result.playerSettings.offsetX = display.get<double>("offsetX");
-        result.playerSettings.offsetY = display.get<double>("offsetY");
-        result.playerSettings.logLevel = display.get<std::string>("logLevel");
-        result.playerSettings.shellCommandsEnabled = display.get<bool>("enableShellCommands");
-        result.playerSettings.modifiedLayoutsEnabled = display.get<bool>("expireModifiedLayouts");
-        result.playerSettings.maxConcurrentDownloads = display.get<int>("maxConcurrentDownloads");
-        //shellCommandAllowList
-        result.playerSettings.statusLayoutUpdate = display.get<bool>("sendCurrentLayoutAsStatusUpdate");
-        result.playerSettings.screenshotInterval = display.get<int>("screenShotRequestInterval");
-        result.playerSettings.screenshotSize = display.get<int>("screenShotSize");
-        result.playerSettings.maxLogFilesUploads = display.get<int>("maxLogFileUploads");
-        result.playerSettings.embeddedServerPort = display.get<int>("embeddedServerPort");
-        result.playerSettings.preventSleep = display.get<bool>("preventSleep");
-        result.playerSettings.displayName = display.get<std::string>("displayName");
-        result.playerSettings.screenshotRequested = display.get<bool>("screenShotRequested");
+        fillPlayerSettings(result.playerSettings, display);
     }
+
     return result;
+}
+
+void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display)
+{
+    namespace Settings = Resources::Settings;
+
+    settings.collectInterval = display.get<int>(Settings::CollectInterval);
+    settings.downloadStartWindow = display.get<std::string>(Settings::DownloadStartWindow);
+    settings.downloadEndWindow = display.get<std::string>(Settings::DownloadEndWindow);
+    settings.statsEnabled = display.get<bool>(Settings::StatsEnabled);
+    settings.xmrNetworkAddress = display.get<std::string>(Settings::XmrNetworkAddress);
+    settings.sizeX = display.get<double>(Settings::SizeX);
+    settings.sizeY = display.get<double>(Settings::SizeY);
+    settings.offsetX = display.get<double>(Settings::OffsetX);
+    settings.offsetY = display.get<double>(Settings::OffsetY);
+    settings.logLevel = toLogLevelEnum(display.get<std::string>(Settings::LogLevel));
+    settings.shellCommandsEnabled = display.get<bool>(Settings::EnableShellCommands);
+    settings.modifiedLayoutsEnabled = display.get<bool>(Settings::ExpireModifiedLayouts);
+    settings.maxConcurrentDownloads = display.get<int>(Settings::MaxConcurrentDownloads);
+    //shellCommandAllowList
+    settings.statusLayoutUpdate = display.get<bool>(Settings::SendCurrentLayoutAsStatusUpdate);
+    settings.screenshotInterval = display.get<int>(Settings::ScreenShotRequestInterval);
+    settings.screenshotSize = display.get<int>(Settings::ScreenShotSize);
+    settings.maxLogFilesUploads = display.get<int>(Settings::MaxLogFileUploads);
+    settings.embeddedServerPort = display.get<int>(Settings::EmbeddedServerPort);
+    settings.preventSleep = display.get<bool>(Settings::PreventSleep);
+    settings.displayName = display.get<std::string>(Settings::DisplayName);
+    settings.screenshotRequested = display.get<bool>(Settings::ScreenShotRequested);
+}
+
+
+spdlog::level::level_enum SOAP::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const std::string& level)
+{
+    if(level == "audit")
+        return spdlog::level::level_enum::trace;
+    else if(level == "info")
+        return spdlog::level::level_enum::debug;
+    else if(level == "error")
+        return spdlog::level::level_enum::warn;
+    else
+        return spdlog::level::level_enum::off;
 }

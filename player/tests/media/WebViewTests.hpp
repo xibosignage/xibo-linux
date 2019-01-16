@@ -3,8 +3,6 @@
 #include "BaseTestWithHandler.hpp"
 
 #include "media/WebView.hpp"
-#include "media/MediaVisitor.hpp"
-
 #include "mocks/MockWebViewAdaptor.hpp"
 
 class WebViewTest : public BaseTestWithHandler<MockWebViewAdaptor>

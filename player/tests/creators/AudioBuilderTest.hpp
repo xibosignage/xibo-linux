@@ -2,7 +2,6 @@
 
 #include "creators/MediaBuilderTest.hpp"
 #include "creators/AudioBuilder.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockAudioHandler.hpp"
 
 class AudioBuilderTest : public MediaBuilderTest<AudioBuilder>

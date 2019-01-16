@@ -1,9 +1,9 @@
 #pragma once
 
 #include "IWidgetAdaptor.hpp"
-#include "constants.hpp"
+#include <cstdint>
 
-#include <string>
+class FilePath;
 
 class IImageAdaptor : public IWidgetAdaptor
 {

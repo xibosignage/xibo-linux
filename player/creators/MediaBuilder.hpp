@@ -1,39 +1,67 @@
 #pragma once
 
-#include "constants.hpp"
-#include "utils/IFileSystemAdaptor.hpp"
+#include "utils/Resources.hpp"
+#include "utils/FileSystemAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
 
-class IMedia;
-
-class MediaBuilder
+template<typename Builder>
+class BaseMediaBuilder
 {
 public:
-    MediaBuilder();
-    virtual ~MediaBuilder() = default;
+    BaseMediaBuilder()
+    {
+        m_filesystem = std::make_unique<FileSystemAdaptor>();
+    }
 
-    std::unique_ptr<IMedia> build();
+    Builder& id(int id)
+    {
+        m_id = id;
+        return static_cast<Builder&>(*this);
+    }
 
-    MediaBuilder& id(int id);
-    MediaBuilder& audio(std::unique_ptr<IMedia>&& audio);
+    virtual Builder& path(const boost::optional<std::string>& path)
+    {
+        if(path)
+        {
+            auto fullPath = Resources::directory() / path.value();
 
-    virtual MediaBuilder& path(const boost::optional<std::string>& path);
-    virtual MediaBuilder& duration(int duration);
+            checkPath(fullPath);
+
+            m_path = fullPath;
+        }
+        return static_cast<Builder&>(*this);
+    }
+
+    virtual Builder& duration(int duration)
+    {
+        m_duration = duration;
+        return static_cast<Builder&>(*this);
+    }
 
 protected:
-    virtual std::unique_ptr<IMedia> doBuild() = 0;
-    virtual IFileSystemAdaptor& filesystem();
+    virtual IFileSystemAdaptor& filesystem()
+    {
+        return *m_filesystem;
+    }
+
+    template<typename Media>
+    void prepareCommonParams(Media& media)
+    {
+        media.setDuration(m_duration);
+    }
 
 private:
-    void checkPath(FilePath path);
+    void checkPath(FilePath path)
+    {
+        if(!filesystem().isRegularFile(path))
+            throw std::runtime_error("Not valid path");
+    }
 
 protected:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    int m_id;
-    std::unique_ptr<IMedia> m_audio;
     FilePath m_path;
+    int m_id;
     int m_duration;
-
 
 };

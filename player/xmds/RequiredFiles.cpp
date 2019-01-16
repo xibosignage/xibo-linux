@@ -1,90 +1,90 @@
 #include "RequiredFiles.hpp"
-#include "xmds.hpp"
 
-namespace RequiredFileHelper
+#include "Resources.hpp"
+#include "utils/Utilities.hpp"
+
+namespace Resources = XMDSResources::RequiredFiles;
+
+SOAP::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) : BaseRequestSerializer(request)
 {
-    auto toFileType(const std::string& type)
-    {
-        using FileType = RequiredFiles::Response::FileType;
-
-        if(type == "media")
-            return FileType::Media;
-        else if(type == "layout")
-            return FileType::Layout;
-        else if(type == "resource")
-            return FileType::Resource;
-
-        return FileType::Invalid;
-    }
-
-    auto toDownloadType(const std::string& type)
-    {
-        using DownloadType = RequiredFiles::Response::DownloadType;
-
-        if(type == "http")
-            return DownloadType::HTTP;
-        else if(type == "xmds")
-            return DownloadType::XMDS;
-
-        return DownloadType::Invalid;
-    }
 }
 
-const std::vector<RequiredFiles::Response::required_file>&
-RequiredFiles::Response::requiredFiles() const
+std::string SOAP::RequestSerializer<RequiredFiles::Request>::string()
 {
-    return m_requiredMedia;
+    return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
-const std::vector<RequiredFiles::Response::required_resource>&
-RequiredFiles::Response::requiredResources() const
+SOAP::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
 {
-    return m_requiredResources;
 }
 
-void RequiredFiles::Response::addFile(const boost::property_tree::ptree& attrs)
+RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const boost::property_tree::ptree& node)
 {
-    auto fileType = RequiredFileHelper::toFileType(attrs.get<std::string>("type"));
-    if(fileType == FileType::Invalid) return;
+    auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
+    auto filesNode = Utils::parseXmlFromString(requiredFilesXml).get_child(Resources::Files);
 
-    if(fileType != FileType::Resource)
-    {
-        int id = attrs.get<int>("id");
-        size_t size = attrs.get<size_t>("size");
-        std::string md5 = attrs.get<std::string>("md5");
-        std::string path = attrs.get<std::string>("path");
-        std::string saveAs = attrs.get<std::string>("saveAs");
-        auto downloadType = RequiredFileHelper::toDownloadType(attrs.get<std::string>("download"));
-        m_requiredMedia.emplace_back(required_file{id, size, md5, path, saveAs, downloadType, fileType});
-    }
-    else
-    {
-        int layoutId = attrs.get<int>("layoutid");
-        int regionId = attrs.get<int>("regionid");
-        int mediaId = attrs.get<int>("mediaid");
-        m_requiredResources.emplace_back(required_resource{layoutId, regionId, mediaId});
-    }
-}
-
-template<>
-std::string soap::requestString(const RequiredFiles::Request& request)
-{
-    return createRequest<RequiredFiles::Request>(request.serverKey, request.hardwareKey);
-}
-
-template<>
-RequiredFiles::Response soap::createResponse(const std::string& soapResponse)
-{
-    auto filesNode = xmds::parseXmlResponse(soapResponse).get_child("files");
-
-    RequiredFiles::Response result;
-    std::for_each(filesNode.begin(), filesNode.end(), [&result](const auto& file){
+    RequiredFiles::Result result;
+    std::for_each(filesNode.begin(), filesNode.end(), [this, &result](const auto& file){
         auto [name, fileNode] = file;
-        if(name == "file")
+        if(name == Resources::File)
         {
-            result.addFile(fileNode.get_child("<xmlattr>"));
+            addRequiredFile(result, fileNode.get_child(Resources::FileAttrs));
         }
     });
 
     return result;
 }
+
+void SOAP::ResponseParser<RequiredFiles::Result>::addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs)
+{
+    using FileType = RequiredFiles::Result::FileType;
+
+    auto fileType = toFileType(attrs.get<std::string>(Resources::FileType));
+    if(fileType == FileType::Invalid) return;
+
+    if(fileType != FileType::Resource)
+    {
+        auto id = attrs.get<int>(Resources::RegularFile::Id);
+        auto size = attrs.get<size_t>(Resources::RegularFile::Size);
+        auto md5 = attrs.get<std::string>(Resources::RegularFile::MD5);
+        auto path = attrs.get<std::string>(Resources::RegularFile::Path);
+        auto saveAs = attrs.get<std::string>(Resources::RegularFile::SaveAs);
+        auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
+        response.requiredFiles.emplace_back(RequiredFiles::Result::RequiredFile{id, size, md5, path, saveAs, downloadType, fileType});
+    }
+    else
+    {
+        auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
+        auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
+        auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
+        response.requiredResources.emplace_back(RequiredFiles::Result::RequiredResource{layoutId, regionId, mediaId});
+    }
+}
+
+RequiredFiles::Result::FileType SOAP::ResponseParser<RequiredFiles::Result>::toFileType(const std::string& type)
+{
+    using FileType = RequiredFiles::Result::FileType;
+
+    if(type == Resources::Media)
+        return FileType::Media;
+    else if(type == Resources::Layout)
+        return FileType::Layout;
+    else if(type == Resources::Resource)
+        return FileType::Resource;
+
+    return FileType::Invalid;
+}
+
+RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(const std::string& type)
+{
+    using DownloadType = RequiredFiles::Result::DownloadType;
+
+    if(type == Resources::RegularFile::HTTPDownload)
+        return DownloadType::HTTP;
+    else if(type == Resources::RegularFile::XMDSDownload)
+        return DownloadType::XMDS;
+
+    return DownloadType::Invalid;
+}
+
+

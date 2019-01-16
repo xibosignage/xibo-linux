@@ -3,7 +3,7 @@
 #include "IWidgetAdaptor.hpp"
 
 class IBackground;
-class IMediaContainer;
+class IRegion;
 class IImageAdaptor;
 class IFixedLayoutAdaptor;
 

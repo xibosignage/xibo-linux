@@ -1,6 +1,8 @@
 #include "MediaOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
 ResourcesXlf::MediaOptions::MediaOptions(const xlf_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));
@@ -26,4 +28,19 @@ boost::optional<std::string> ResourcesXlf::MediaOptions::uri() const
 int ResourcesXlf::MediaOptions::duration() const
 {
     return m_duration;
+}
+
+void ResourcesXlf::MediaOptions::setId(int id)
+{
+    m_id = id;
+}
+
+void ResourcesXlf::MediaOptions::setUri(const boost::optional<std::string>& uri)
+{
+    m_uri = uri;
+}
+
+void ResourcesXlf::MediaOptions::setDuration(int duration)
+{
+    m_duration = duration;
 }

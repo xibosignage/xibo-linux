@@ -1,6 +1,10 @@
 #include "AudioOptions.hpp"
 #include "XlfResources.hpp"
 
+#include <boost/property_tree/ptree.hpp>
+
+const int DEFAULT_DURATION = 0;
+
 ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node) :
     MediaOptions(node)
 {
@@ -13,9 +17,9 @@ ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node, AudioNodeTag)
 {
     auto uriNode = node.get_child(Media::Uri);
 
-    m_id = uriNode.get<int>(attr("mediaId"));
-    m_uri = uriNode.get_value<std::string>();
-    m_duration = 0;
+    setId(uriNode.get<int>(attr("mediaId")));
+    setUri(uriNode.get_value<std::string>());
+    setDuration(DEFAULT_DURATION);
 
     m_muted = uriNode.get_optional<bool>(attr(Media::Audio::Mute));
     m_looped = uriNode.get_optional<bool>(attr(Media::Audio::Loop));

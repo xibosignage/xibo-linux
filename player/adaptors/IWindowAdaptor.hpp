@@ -11,6 +11,7 @@ public:
     virtual ~IWindowAdaptor() = default;
     virtual void connectToHandlerResize(std::function<void()> handler) = 0;
     virtual void add(IWidgetAdaptor& child) = 0;
+    virtual void remove() = 0;
     virtual void move(int x, int y) = 0;
     virtual void disableWindowResize() = 0;
     virtual void disableWindowDecoration() = 0;

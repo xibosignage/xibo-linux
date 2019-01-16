@@ -50,31 +50,31 @@ TEST_F(WebViewTest, Scale_Default_WebViewScaleShouldBeCalled)
     webview->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST_F(WebViewTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(WebViewTest, Show_Default_HandlerShowShouldBeCalled)
 {
     auto webview = constructWebView();
 
     EXPECT_CALL(adaptor(), show());
 
-    webview->start();
+    webview->show();
 }
 
-TEST_F(WebViewTest, Start_Default_HandlerReloadShouldBeCalled)
+TEST_F(WebViewTest, Show_Default_HandlerReloadShouldBeCalled)
 {
     auto webview = constructWebView();
 
     EXPECT_CALL(adaptor(), reload());
 
-    webview->start();
+    webview->show();
 }
 
-TEST_F(WebViewTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(WebViewTest, Hide_Default_HandlerHideShouldBeCalled)
 {
     auto webview = constructWebView();
 
     EXPECT_CALL(adaptor(), hide());
 
-    webview->stop();
+    webview->hide();
 }
 
 TEST_F(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
@@ -93,4 +93,31 @@ TEST_F(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCal
     EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
 
     webview->setTransparent(false);
+}
+
+TEST_F(WebViewTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), show());
+
+    webview->handleEvent(StartMediaEvent{});
+}
+
+TEST_F(WebViewTest, HandlerEvent_StopMediaEvent_HandlerHideShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), hide());
+
+    webview->handleEvent(StopMediaEvent{});
+}
+
+TEST_F(WebViewTest, HandlerEvent_ScaledMediaEvent_HandlerScaleShouldBeCalled)
+{
+    auto webview = constructWebView();
+
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    webview->handleEvent(ScaleMediaEvent{DEFAULT_XSCALE, DEFAULT_YSCALE});
 }

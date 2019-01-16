@@ -1,17 +1,21 @@
 #include "MediaBuilder.hpp"
 
-class IAudioHandler;
-class Audio;
+#include "media/IAudioHandler.hpp"
+#include "media/Audio.hpp"
 
-class AudioBuilder : public MediaBuilder
+const bool DEFAULT_AUDIO_LOOPED = false;
+const bool DEFAULT_AUDIO_MUTED = false;
+
+class AudioBuilder : public BaseMediaBuilder<AudioBuilder>
 {
 public:
+    std::unique_ptr<Audio> build();
+
     AudioBuilder& muted(const boost::optional<bool>& muted);
     AudioBuilder& looped(const boost::optional<bool>& looped);
     AudioBuilder& volume(const boost::optional<int>& volume);
 
 protected:
-    std::unique_ptr<IMedia> doBuild() final;
     virtual std::unique_ptr<IAudioHandler> createHandler();
 
 private:

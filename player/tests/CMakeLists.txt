@@ -10,7 +10,6 @@ find_library(GMOCK NAMES gmock)
 file(GLOB_RECURSE TESTS_SOURCES ${CMAKE_SOURCE_DIR}/player/tests/*.cpp ${CMAKE_SOURCE_DIR}/player/tests/*.hpp)
 
 add_executable(${PROJECT_NAME} main.cpp ${TESTS_SOURCES})
-add_test(${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 

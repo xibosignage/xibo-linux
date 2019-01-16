@@ -2,11 +2,14 @@
 
 #include <memory>
 
+#include "events/IObserver.hpp"
+#include "events/IObservable.hpp"
+
 class IBackground;
-class IMediaContainer;
+class IRegion;
 class IOverlayAdaptor;
 
-class IMainLayout
+class IMainLayout : public IObserver, public IObservable
 {
 public:
     virtual ~IMainLayout() = default;
@@ -16,7 +19,7 @@ public:
     virtual int height() const = 0;
 
     virtual void setBackground(std::unique_ptr<IBackground>&& background) = 0;
-    virtual void addMediaContainer(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y) = 0;
+    virtual void addRegion(std::unique_ptr<IRegion>&& region, int x, int y) = 0;
 
     virtual IOverlayAdaptor& handler() = 0;
     virtual void show() = 0;

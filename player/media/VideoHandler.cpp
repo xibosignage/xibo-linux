@@ -16,7 +16,10 @@
 #include "wrapper/Inspector.hpp"
 #include "customsink/XiboVideoSink.hpp"
 
-#include "utils/Utilities.hpp"
+#include "utils/Logger.hpp"
+#include "utils/FilePath.hpp"
+#include "adaptors/GtkDrawingAreaAdaptor.hpp"
+
 #include <boost/format.hpp>
 
 namespace ph = std::placeholders;
@@ -132,13 +135,13 @@ bool VideoHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         case Gst::MessageType::ERROR:
         {
             auto err = message->parseError();
-            Utils::logger()->error("{}", err.getText());
-            Utils::logger()->error("[VideoHandler] Debug details: {}", err.getDebugInfo());
+            Log::error("{}", err.getText());
+            Log::error("[VideoHandler] Debug details: {}", err.getDebugInfo());
             break;
         }
         case Gst::MessageType::EOS:
         {
-            Utils::logger()->debug("[VideoHandler] End of stream");
+            Log::debug("[VideoHandler] End of stream");
             m_pipeline->setState(Gst::State::NULL_STATE);
             m_videoFinished.emit();
             break;
@@ -151,25 +154,25 @@ bool VideoHandler::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
 
 void VideoHandler::noMorePads()
 {
-    Utils::logger()->debug("[VideoHandler] No more pads");
+    Log::debug("[VideoHandler] No more pads");
 }
 
 void VideoHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
 {
     Gst::RefPtr<Gst::Pad> sinkpad;
-    Utils::logger()->debug("[VideoHandler] Pad added");
+    Log::debug("[VideoHandler] Pad added");
 
     auto mediaType = pad->mediaType();
     if(mediaType == Gst::MediaType::Video)
     {
-        Utils::logger()->debug("[VideoHandler] Video pad");
+        Log::debug("[VideoHandler] Video pad");
 
         sinkpad = m_videoConverter->getStaticPad("sink");
         pad->link(sinkpad);
     }
     else if(mediaType == Gst::MediaType::Audio)
     {
-        Utils::logger()->debug("[VideoHandler] Audio pad");
+        Log::debug("[VideoHandler] Audio pad");
 
         sinkpad = m_audioConverter->getStaticPad("sink");
         pad->link(sinkpad);

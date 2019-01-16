@@ -3,9 +3,11 @@
 #include <memory>
 #include <boost/optional/optional.hpp>
 
-#include "control/IBackground.hpp"
-#include "adaptors/IImageAdaptor.hpp"
 #include "utils/IFileSystemAdaptor.hpp"
+#include "utils/FilePath.hpp"
+
+class IBackground;
+class IImageAdaptor;
 
 class BackgroundBuilder
 {

@@ -1,5 +1,4 @@
 #include "CommandLineParser.hpp"
-#include "constants.hpp"
 
 #include <boost/program_options/parsers.hpp>
 

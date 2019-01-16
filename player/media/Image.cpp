@@ -1,8 +1,7 @@
 #include "Image.hpp"
 
-#include "constants.hpp"
+#include "MediaVisitor.hpp"
 #include "adaptors/IImageAdaptor.hpp"
-#include "media/MediaVisitor.hpp"
 
 #include <cassert>
 
@@ -15,14 +14,14 @@ Image::Image(int id, int width, int height, const FilePath& path, ImagePropertie
     loadImage(path);
 }
 
-void Image::doStop()
-{
-    m_handler->hide();
-}
-
-void Image::doStart()
+void Image::show()
 {
     m_handler->show();
+}
+
+void Image::hide()
+{
+    m_handler->hide();
 }
 
 void Image::loadImage(const FilePath& path)
@@ -54,6 +53,27 @@ IWidgetAdaptor& Image::handler()
 void Image::apply(MediaVisitor& visitor)
 {
     visitor.visit(*this);
+}
+
+void Image::handleEvent(const Event& ev)
+{
+    switch(ev.type())
+    {
+        case EventType::StartMedia:
+            show();
+            break;
+        case EventType::StopMedia:
+            hide();
+            break;
+        case EventType::ScaleMedia:
+        {
+            auto scaleEv = static_cast<const ScaleMediaEvent&>(ev);
+            scale(scaleEv.scaleX(), scaleEv.scaleY());
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 ImageProperties::ScaleType Image::scaleType() const

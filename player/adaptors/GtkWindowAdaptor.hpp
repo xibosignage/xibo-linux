@@ -17,6 +17,7 @@ public:
     void connectToHandlerResize(std::function<void()> handler) override;
 
     void add(IWidgetAdaptor& child) override;
+    void remove() override;
     void move(int x, int y) override;
     void disableWindowResize() override;
     void disableWindowDecoration() override;

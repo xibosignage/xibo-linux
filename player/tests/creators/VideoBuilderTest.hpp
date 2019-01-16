@@ -2,7 +2,6 @@
 
 #include "creators/MediaBuilderTest.hpp"
 #include "creators/VideoBuilder.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockVideoHandler.hpp"
 
 class VideoBuilderTest : public MediaBuilderTest<VideoBuilder>

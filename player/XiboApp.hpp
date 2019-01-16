@@ -1,44 +1,50 @@
 #pragma once
 
 #include <gtkmm/application.h>
-#include <spdlog/spdlog.h>
-
-#include "parsers/CommandLineParser.hpp"
-#include "managers/DownloadManager.hpp"
-#include "managers/CollectionInterval.hpp"
-#include "control/PlayerSettings.hpp"
 
 class XMDSManager;
 class IMainLayout;
 class MainWindow;
+class HTTPDownloader;
+class Scheduler;
+class CollectionInterval;
+class CommandLineParser;
+class CollectionResult;
+struct PlayerSettings;
 
-class XiboApp : public Gtk::Application
+class XiboApp
 {
 public:
     XiboApp(const XiboApp& other) = delete;
     XiboApp& operator=(const XiboApp& other) = delete;
-    ~XiboApp() override;
+    ~XiboApp();
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
     XMDSManager& xmdsManager();
-    DownloadManager& downloadManager();
+    HTTPDownloader& downloadManager();
 
     int run(int argc, char** argv);
 
 private:
     XiboApp(const std::string& name);
-    int initPlayer();
-    void runPlayer(MainWindow& window);
+
+    int initMainLoop();
+    void runPlayer();
+    void onCollectionFinished(const CollectionResult& result);
     void updateSettings(const PlayerSettings& settings);
-    std::string findXlfFile();
+    void tryParseCommandLine(int argc, char** argv);
+    bool processCallbackQueue();
 
 private:
-    std::unique_ptr<IMainLayout> m_layout;
+    Glib::RefPtr<Gtk::Application> m_parentApp;
+    std::unique_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<XMDSManager> m_xmdsManager;
-    DownloadManager m_downloadManager;
-    CollectionInterval m_collectionInterval;
-    CommandLineParser m_options;
+    std::unique_ptr<HTTPDownloader> m_downloadManager;
+    std::unique_ptr<Scheduler> m_scheduler;
+    std::unique_ptr<CollectionInterval> m_collectionInterval;
+    std::unique_ptr<CommandLineParser> m_options;
+    sigc::connection m_idleConnection;
 
     static std::unique_ptr<XiboApp> m_app;
 };

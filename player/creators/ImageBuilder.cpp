@@ -1,12 +1,14 @@
 #include "ImageBuilder.hpp"
-
-#include "media/Image.hpp"
 #include "adaptors/GtkImageAdaptor.hpp"
 
-std::unique_ptr<IMedia> ImageBuilder::doBuild()
+#include <boost/optional/optional.hpp>
+
+std::unique_ptr<Image> ImageBuilder::build()
 {
     ImageProperties props{m_scaleType, m_align, m_valign};
-    return std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
+    auto image = std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
+    prepareCommonParams(*image);
+    return image;
 }
 
 std::unique_ptr<IImageAdaptor> ImageBuilder::createAdaptor()

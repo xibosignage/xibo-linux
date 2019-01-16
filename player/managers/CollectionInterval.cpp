@@ -1,122 +1,127 @@
 #include "CollectionInterval.hpp"
-#include "DownloadManager.hpp"
 
-#include "constants.hpp"
+#include "xmds/XMDSManager.hpp"
+#include "events/CallbackGlobalQueue.hpp"
 
+#include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
-#include "control/PlayerSettings.hpp"
+#include "utils/TimerProvider.hpp"
 
 #include <glibmm/main.h>
+#include <future>
 
-const uint DEFAULT_INTERVAL = 60;
+const uint DEFAULT_INTERVAL = 5;
+namespace ph = std::placeholders;
 
-// FIXME interval may not be finished before starting the new one
-CollectionInterval::CollectionInterval()
+CollectionInterval::CollectionInterval() :
+    m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
 {
-    m_logger = spdlog::get(LOGGER);
 }
 
-void CollectionInterval::start()
+void CollectionInterval::startRegularCollection()
 {
-    // FIXME: doesn't actually run 20 seconds
-//    m_logger->debug("CollectionInterval timer started with DEFAULT {} interval", DEFAULT_INTERVAL);
-    m_intervalConnection = Glib::signal_timeout().connect_seconds([=]{
-        collectData();
-        return true;
-    }, DEFAULT_INTERVAL);
-
-    collectData();
+    startTimer();
 }
 
-sigc::signal<void>& CollectionInterval::signalFinished()
+void CollectionInterval::startTimer()
 {
-    return m_signalFinished;
+    m_intervalTimer->startOnceSeconds(static_cast<unsigned int>(m_collectInterval), [=](){
+        collectOnce(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
+    });
 }
 
-sigc::signal<void, PlayerSettings>&CollectionInterval::signalSettingsUpdated()
+void CollectionInterval::onRegularCollectionFinished(const CollectionResult& result)
 {
-    return m_signalSettingsUpdated;
+    Log::debug("Collection finished {}", std::this_thread::get_id());
+    Log::debug("Next collection will start in {} seconds", m_collectInterval);
+    pushEvent(CollectionFinished{result});
+    startTimer();
 }
 
-void CollectionInterval::collectData()
+void CollectionInterval::collectOnce(CollectionResultCallback callback)
 {
-    auto clbk = std::bind(&CollectionInterval::onRegisterDisplay, this, std::placeholders::_1);
-    Utils::xmdsManager().registerDisplay(121, "1.8", "Display", clbk);
+    m_workerThread = std::make_unique<JoinableThread>([=]()
+    {
+        Log::debug("Collection started {}", std::this_thread::get_id());
+
+        auto session = std::make_shared<CollectionSession>();
+        session->callback = callback;
+
+        auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display");
+        onDisplayRegistered(registerDisplayResult.get(), session);
+    });
 }
 
-void CollectionInterval::updateTimer(uint collectInterval)
+void CollectionInterval::sessionFinished(CollectionSessionPtr session, CollectionResult::Error error)
+{
+    callbackQueue().add([session, error](){
+        session->result.error = error;
+        session->callback(session->result);
+    });
+}
+
+void CollectionInterval::onDisplayRegistered(const RegisterDisplay::Result& result, CollectionSessionPtr session)
+{
+    Log::trace("onDisplayRegistered {}", std::this_thread::get_id());
+
+    displayMessage(result.status);
+    if(result.status.code == RegisterDisplay::Result::Status::Code::Ready)
+    {
+        updateTimer(result.playerSettings.collectInterval);
+        session->result.settings = result.playerSettings;
+
+        auto requiredFilesResult = Utils::xmdsManager().requiredFiles();
+        auto scheduleResult = Utils::xmdsManager().schedule();
+        onSchedule(scheduleResult.get(), session);
+        onRequiredFiles(requiredFilesResult.get(), session);
+
+        sessionFinished(session);
+    }
+    else
+    {
+        sessionFinished(session, CollectionResult::Error{"DisplayRegister request error"});
+    }
+}
+
+void CollectionInterval::displayMessage(const RegisterDisplay::Result::Status& status)
+{
+    if(status.code != RegisterDisplay::Result::Status::Code::Invalid)
+    {
+        Log::debug(status.message);
+    }
+}
+
+void CollectionInterval::updateTimer(int collectInterval)
 {
     if(m_collectInterval != collectInterval)
     {
+        Log::debug("Collection interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
         m_collectInterval = collectInterval;
-        m_intervalConnection.disconnect();
-
-        m_intervalConnection = Glib::signal_timeout().connect_seconds([=]{
-//            m_logger->debug("CollectionInterval timer started with {} interval", m_collect_interval.value());
-            collectData();
-            return true;
-        }, m_collectInterval.value());
     }
 }
 
-void CollectionInterval::onRegisterDisplay(const RegisterDisplay::Response& response)
+void CollectionInterval::onRequiredFiles(const RequiredFiles::Result& result, CollectionSessionPtr)
 {
-    switch(response.status)
-    {
-    case RegisterDisplay::Response::Status::Ready:
-        m_logger->debug("Display is ready. Getting required files...");
-        updateTimer(response.playerSettings.collectInterval);
-        m_signalSettingsUpdated.emit(response.playerSettings);
-        Utils::xmdsManager().requiredFiles(std::bind(&CollectionInterval::onRequiredFiles, this, std::placeholders::_1));
-        break;
-    case RegisterDisplay::Response::Status::Added:
-        m_logger->debug("Display has been added and waiting for approval in CMS");
-        break;
-    case RegisterDisplay::Response::Status::Waiting:
-        m_logger->debug("Display is still waiting for approval in CMS");
-        break;
-    default:
-        m_logger->critical("Invalid display status"); // WARNING exception(?)
-        break;
-    }
+    RequiredFilesDownloader filesDownloader;
+    RequiredResourcesDownloader resourcesDownloader;
+
+    auto&& files = result.requiredFiles;
+    auto&& resources = result.requiredResources;
+
+    Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
+
+    auto resourcesResult = resourcesDownloader.download(resources);
+    auto filesResult = filesDownloader.download(files);
+
+    Log::trace("Waiting for downloads... {}", std::this_thread::get_id());
+    filesResult.wait();
+    Log::debug("Files downloaded");
+    resourcesResult.wait();
+    Log::debug("Resources downloaded");
 }
 
-void CollectionInterval::onRequiredFiles(const RequiredFiles::Response& response)
+void CollectionInterval::onSchedule(const Schedule::Result& shedule, CollectionSessionPtr session)
 {
-    size_t filesCount = response.requiredFiles().size();
-    size_t resourcesCount = response.requiredResources().size();
-
-    m_logger->debug("{} files and {} resources to download", filesCount, resourcesCount);
-
-    auto session = std::make_shared<RequiredFilesSession>();
-    session->downloadOverall = filesCount + resourcesCount;
-    auto clbk = std::bind(&CollectionInterval::downloadCallback, this, std::placeholders::_1, session);
-
-    for(auto&& file : response.requiredFiles())
-    {
-        m_logger->trace("File type: {} Id: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
-        m_logger->trace("MD5: {} Filename: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
-
-        Utils::downloadManager().download(file.filename, file.path, clbk); // FIXME add download type
-    }
-
-    for(auto&& resource : response.requiredResources())
-    {
-        m_logger->trace("layout_id: {} region_id: {} media_id: {}", resource.layoutId, resource.regionId, resource.mediaId);
-
-        Utils::downloadManager().download(resource.layoutId, resource.regionId, resource.mediaId, clbk);
-    }
-}
-
-void CollectionInterval::downloadCallback(const std::string& filename, RequiredFilesSessionPtr session)
-{
-//    m_logger->debug("{} downloaded", filename);
-    if(++session->downloadCount == session->downloadOverall)
-    {
-        Glib::MainContext::get_default()->invoke([=](){
-            m_logger->debug("All files downloaded");
-            m_signalFinished.emit();
-            return false;
-        });
-    }
+    Log::trace("OnSchedule {}", std::this_thread::get_id());
+    session->result.schedule = shedule;
 }

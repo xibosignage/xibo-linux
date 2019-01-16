@@ -1,12 +1,12 @@
 #pragma once
 
-#include "media/MediaVisitor.hpp"
-#include "media/Image.hpp"
+#include "MediaVisitor.hpp"
+#include "ImageProperties.hpp"
 
 class GetMediaPosition : public MediaVisitor
 {
 public:
-    GetMediaPosition(int containerWidth, int containerHeight);
+    GetMediaPosition(int regionWidth, int regionHeight);
 
     int getMediaX() const;
     int getMediaY() const;
@@ -23,7 +23,7 @@ private:
 private:
     int m_mediaX;
     int m_mediaY;
-    int m_containerWidth;
-    int m_containerHeight;
+    int m_regionWidth;
+    int m_regionHeight;
 
 };

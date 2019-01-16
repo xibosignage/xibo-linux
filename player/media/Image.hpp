@@ -2,11 +2,11 @@
 
 #include "Media.hpp"
 #include "ImageProperties.hpp"
-#include "utils/Helpers.hpp"
 
 class IImageAdaptor;
+class FilePath;
 
-class Image : public Media<IVisibleMedia>
+class Image : public Media, public IVisible
 {
 public:
     Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
@@ -15,16 +15,16 @@ public:
     ImageProperties::Align align() const;
     ImageProperties::Valign valign() const;
 
+    void show() override;
+    void hide() override;
+
     int width() const override;
     int height() const override;
     void scale(double, double) override;
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
-
-protected:
-    void doStop() override;
-    void doStart() override;
+    void handleEvent(const Event& ev) override;
 
 private:
     void loadImage(const FilePath& path);

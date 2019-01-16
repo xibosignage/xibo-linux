@@ -44,9 +44,9 @@ auto constructMedia<Video>()
     return video;
 }
 
-inline testing::NiceMock<MockInvisibleMedia>* createMedia()
+inline testing::NiceMock<MockMedia>* createMedia()
 {
-    return new testing::NiceMock<MockInvisibleMedia>;
+    return new testing::NiceMock<MockMedia>;
 }
 
 

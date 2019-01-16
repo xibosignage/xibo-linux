@@ -16,6 +16,15 @@ TEST_F(MainWindowTest, Constuctor_Default_HandlerDisableWindowResizeShouldBeCall
     constructWindow();
 }
 
+TEST_F(MainWindowTest, SetSize_Default_HandlerSetSizeShouldBeCalled)
+{
+    auto window = constructWindow();
+
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    window->setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+}
+
 TEST_P(MainWindowTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
     auto window = constructWindow();
@@ -132,7 +141,7 @@ TEST_P(MainWindowTestScale, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
 
     EXPECT_CALL(*layout, scale(scaleFactor, scaleFactor));
 
-    window->addLayout(std::move(layout));
+    window->setLayout(std::move(layout));
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestScale, ::testing::ValuesIn(scalesForResolutions));
@@ -143,7 +152,7 @@ TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
 
     EXPECT_CALL(adaptor(), add(_));
 
-    window->addLayout(constructLayout());
+    window->setLayout(constructLayout());
 }
 
 TEST_F(MainWindowTest, IsVisible_HandlerIsVisibleTrue_WindowIsVisibleShouldReturnTrue)
@@ -173,11 +182,11 @@ TEST_F(MainWindowTest, ShowLayout_WithLayout_LayoutShowShouldBeCalled)
     window->showLayout();
 }
 
-TEST_F(MainWindowTest, ShowLayout_WithLayout_HandlerShowShouldBeCalled)
+TEST_F(MainWindowTest, Show_Default_HandlerShowShouldBeCalled)
 {
     auto window = constructWindow();
 
     EXPECT_CALL(adaptor(), show());
 
-    window->showLayout();
+    window->show();
 }

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 
-execute_process(COMMAND git rev-list v0.3.2-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
-project(XiboLinux VERSION 0.3.3.${GIT_REVISION})
+execute_process(COMMAND git rev-list v0.3.3-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
+project(XiboLinux VERSION 0.4.0.${GIT_REVISION})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.66 REQUIRED system program_options)
+find_package(Boost 1.66 REQUIRED system program_options date_time)
 
 # modules
 include(FindSonameLibs)

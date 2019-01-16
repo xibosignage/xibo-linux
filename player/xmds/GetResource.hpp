@@ -1,12 +1,13 @@
-#ifndef GETRESOURCE_HPP
-#define GETRESOURCE_HPP
+#pragma once
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
+#include "BaseResponseParser.hpp"
+#include "BaseRequestSerializer.hpp"
 
 namespace GetResource
 {
-    struct Response
+    struct Result
     {
         std::string resource;
     };
@@ -22,10 +23,21 @@ namespace GetResource
 }
 
 template<>
-struct soap::request_traits<GetResource::Request>
+class SOAP::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
 {
-    static inline const std::string name = "GetResource";
-    using response_t = GetResource::Response;
+public:
+    RequestSerializer(const GetResource::Request& request);
+    std::string string();
+
 };
 
-#endif // GETRESOURCE_HPP
+template<>
+class SOAP::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
+{
+public:
+    ResponseParser(const std::string& soapResponse);
+
+protected:
+    GetResource::Result doParse(const boost::property_tree::ptree& node) override;
+
+};

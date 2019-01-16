@@ -2,7 +2,6 @@
 
 #include "creators/MediaBuilderTest.hpp"
 #include "creators/WebViewBuilder.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockWebViewAdaptor.hpp"
 
 class WebViewBuilderTest : public MediaBuilderTest<WebViewBuilder>

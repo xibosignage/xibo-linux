@@ -21,8 +21,10 @@ public:
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
     MOCK_METHOD1(setBackground, void(std::unique_ptr<IBackground>&& background));
-    MOCK_METHOD3(addMediaContainer, void(std::unique_ptr<IMediaContainer>&& mediaContainer, int x, int y));
+    MOCK_METHOD3(addRegion, void(std::unique_ptr<IRegion>&& region, int x, int y));
     MOCK_METHOD0(show, void());
+    MOCK_METHOD1(handleEvent, void(const Event& ev));
+    MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
 
 private:
     std::unique_ptr<IOverlayAdaptor> m_handler;

@@ -57,20 +57,48 @@ TEST_F(ImageTest, Valign_Default_EqualsDefault)
     ASSERT_EQ(image->valign(), DEFAULT_VALIGN);
 }
 
-TEST_F(ImageTest, Start_Default_HandlerShowShouldBeCalled)
+TEST_F(ImageTest, Show_Default_HandlerShowShouldBeCalled)
 {
     auto image = constructImage();
 
     EXPECT_CALL(adaptor(), show());
 
-    image->start();
+    image->show();
 }
 
-TEST_F(ImageTest, Stop_Default_HandlerHideShouldBeCalled)
+TEST_F(ImageTest, Hide_Default_HandlerHideShouldBeCalled)
 {
     auto image = constructImage();
 
     EXPECT_CALL(adaptor(), hide());
 
-    image->stop();
+    image->hide();
 }
+
+TEST_F(ImageTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), show());
+
+    image->handleEvent(StartMediaEvent{});
+}
+
+TEST_F(ImageTest, HandlerEvent_StopMediaEvent_HandlerHideShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), hide());
+
+    image->handleEvent(StopMediaEvent{});
+}
+
+TEST_F(ImageTest, HandlerEvent_ScaledMediaEvent_HandlerScaleShouldBeCalled)
+{
+    auto image = constructImage();
+
+    EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
+
+    image->handleEvent(ScaleMediaEvent{DEFAULT_XSCALE, DEFAULT_YSCALE});
+}
+

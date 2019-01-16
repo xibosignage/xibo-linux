@@ -6,6 +6,6 @@
 class MockFileSystemAdaptor : public IFileSystemAdaptor
 {
 public:
-    MOCK_CONST_METHOD1(isRegularFile, bool(FilePath path));
+    MOCK_CONST_METHOD1(isRegularFile, bool(const FilePath& path));
 
 };

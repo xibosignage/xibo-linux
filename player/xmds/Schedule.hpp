@@ -1,17 +1,22 @@
-#ifndef SCHEDULE_HPP
-#define SCHEDULE_HPP
+#pragma once
 
-#include "field.hpp"
-#include "soap.hpp"
+#include "Field.hpp"
+#include "SOAP.hpp"
+#include "BaseRequestSerializer.hpp"
+#include "BaseResponseParser.hpp"
+
+#include "managers/ScheduleItem.hpp"
 
 namespace Schedule
 {
-    struct response
+    struct Result
     {
-        std::string scheduleXml;
+        std::vector<std::string> globalDependants;
+        std::vector<ScheduledLayout> layouts;
+        DefaultScheduledLayout defaultLayout;
     };
 
-    struct request
+    struct Request
     {
         Field<std::string> serverKey{"serverKey"};
         Field<std::string> hardwareKey{"hardwareKey"};
@@ -19,11 +24,26 @@ namespace Schedule
 }
 
 template<>
-struct soap::request_traits<Schedule::request>
+class SOAP::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
 {
-    static inline const std::string name = "Schedule";
-    using response_t = Schedule::response;
+public:
+    RequestSerializer(const Schedule::Request& request);
+    std::string string();
+
 };
 
+template<>
+class SOAP::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
+{
+public:
+    ResponseParser(const std::string& soapResponse);
 
-#endif // SCHEDULE_HPP
+protected:
+    Schedule::Result doParse(const boost::property_tree::ptree& scheduleNode) override;
+
+private:
+    ScheduledLayout parseScheduledLayout(const boost::property_tree::ptree& layoutNode);
+    DefaultScheduledLayout parseDefaultLayout(const boost::property_tree::ptree& layoutNode);
+    std::vector<std::string> parseDependants(const boost::property_tree::ptree& dependantsNode);
+
+};

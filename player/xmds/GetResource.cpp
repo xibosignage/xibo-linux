@@ -1,17 +1,24 @@
 #include "GetResource.hpp"
-#include "xmds.hpp"
+#include "Resources.hpp"
 
-template<>
-std::string soap::requestString(const GetResource::Request& request)
+namespace Resources = XMDSResources::GetResource;
+
+SOAP::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResource::Request& request) : BaseRequestSerializer(request)
 {
-    return createRequest<GetResource::Request>(request.serverKey, request.hardwareKey, request.layoutId,
-                                               request.regionId, request.mediaId);
 }
 
-template<>
-GetResource::Response soap::createResponse(const std::string& soapResponse)
+std::string SOAP::RequestSerializer<GetResource::Request>::string()
 {
-    GetResource::Response result;
-    result.resource = xmds::parseFileResponse(soapResponse); // TODO check in Postman
+    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
+}
+
+SOAP::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+{
+}
+
+GetResource::Result SOAP::ResponseParser<GetResource::Result>::doParse(const boost::property_tree::ptree& node)
+{
+    GetResource::Result result;
+    result.resource = node.get<std::string>(Resources::Resource);
     return result;
 }

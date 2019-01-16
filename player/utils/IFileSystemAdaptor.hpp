@@ -1,10 +1,10 @@
 #pragma once
 
-#include "constants.hpp"
+class FilePath;
 
 class IFileSystemAdaptor
 {
 public:
     virtual ~IFileSystemAdaptor() = default;
-    virtual bool isRegularFile(FilePath path) const = 0;
+    virtual bool isRegularFile(const FilePath& path) const = 0;
 };

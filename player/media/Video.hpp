@@ -1,27 +1,33 @@
 #pragma once
 
 #include "Media.hpp"
-#include "IVideoHandler.hpp"
 
-class Video : public Media<IVisibleMedia>
+class IVideoHandler;
+class FilePath;
+
+class Video : public Media, public IVisible, public IPlayable
 {
 public:
     Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
+
+    void play() override;
+    void stop() override;
 
     void scale(double, double) override;
     int width() const override;
     int height() const override;
 
-    void stopPlayback();
     void setLooped(bool looped);
+    bool looped() const;
     void setMuted(bool muted);
 
     IWidgetAdaptor& handler() override;
     void apply(MediaVisitor& visitor) override;
+    void handleEvent(const Event& ev) override;
 
 protected:
-    void doStop() override;
-    void doStart() override;
+    void show() override { }
+    void hide() override { }
 
 private:
     void onVideoFinished();

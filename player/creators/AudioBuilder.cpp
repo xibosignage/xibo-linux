@@ -1,14 +1,12 @@
 #include "AudioBuilder.hpp"
-
-#include "media/Audio.hpp"
 #include "media/AudioHandler.hpp"
 
-const bool DEFAULT_LOOPED = false;
-const bool DEFAULT_MUTED = false;
+#include <boost/optional/optional.hpp>
 
-std::unique_ptr<IMedia> AudioBuilder::doBuild()
+std::unique_ptr<Audio> AudioBuilder::build()
 {
     auto audio = createAudio();
+    prepareCommonParams(*audio);
     audio->setVolume(m_muted ? MIN_VOLUME : m_volume);
     audio->setLooped(m_looped);
     return audio;
@@ -26,13 +24,13 @@ std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
 
 AudioBuilder& AudioBuilder::muted(const boost::optional<bool>& muted)
 {
-    m_muted = muted.value_or(DEFAULT_MUTED);
+    m_muted = muted.value_or(DEFAULT_AUDIO_MUTED);
     return *this;
 }
 
 AudioBuilder& AudioBuilder::looped(const boost::optional<bool>& looped)
 {
-    m_looped = looped.value_or(DEFAULT_LOOPED);
+    m_looped = looped.value_or(DEFAULT_AUDIO_LOOPED);
     return *this;
 }
 

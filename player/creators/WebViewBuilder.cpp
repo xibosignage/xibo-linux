@@ -1,19 +1,20 @@
 #include "WebViewBuilder.hpp"
 
-#include "media/WebView.hpp"
 #include "adaptors/WebKitWebViewAdaptor.hpp"
 #include "utils/Resources.hpp"
+#include "utils/Logger.hpp"
 
-#include <spdlog/spdlog.h>
 #include <fstream>
 #include <regex>
+#include <boost/optional/optional.hpp>
 
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
 
-std::unique_ptr<IMedia> WebViewBuilder::doBuild()
+std::unique_ptr<WebView> WebViewBuilder::build()
 {
     auto webview = createWebView();
+    prepareCommonParams(*webview);
     webview->setTransparent(m_transparent);
     return webview;
 }
@@ -69,7 +70,7 @@ boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)
         std::smatch match;
         if(std::regex_search(line, match, re) && match.size() > 1)
         {
-            spdlog::get(LOGGER)->debug("DURATION parsed from .html {}", match[1].str());
+            Log::debug("DURATION parsed from .html {}", match[1].str());
             // NOTE: 0 for full match, 1 for the first group match
             return std::stoi(match[1].str());
         }
