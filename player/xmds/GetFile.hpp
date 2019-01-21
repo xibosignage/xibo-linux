@@ -19,8 +19,8 @@ namespace GetFile
         Field<std::string> hardwareKey{"hardwareKey"};
         Field<std::string> fileId{"fileId"};
         Field<std::string> fileType{"fileType"};
-        Field<double> chunkOffset{"chunkOffset"};
-        Field<double> chunkSize{"chuckSize"};
+        Field<std::size_t> chunkOffset{"chunkOffset"};
+        Field<std::size_t> chunkSize{"chuckSize"};
     };
 }
 

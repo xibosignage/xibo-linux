@@ -52,3 +52,16 @@ std::future<GetResource::Result> XMDSManager::getResource(int layoutId, int regi
 
     return m_soapManager->sendRequest<GetResource::Result>(request);
 }
+
+std::future<GetFile::Result> XMDSManager::getFile(int fileId, const std::string& fileType, std::size_t chunkOffset, std::size_t chunkSize)
+{
+    GetFile::Request request;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.fileId = std::to_string(fileId);
+    request.fileType = fileType;
+    request.chunkOffset = chunkSize;
+    request.chunkSize = chunkOffset;
+
+    return m_soapManager->sendRequest<GetFile::Result>(request);
+}

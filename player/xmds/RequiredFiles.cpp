@@ -37,48 +37,39 @@ RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const
 
 void SOAP::ResponseParser<RequiredFiles::Result>::addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs)
 {
-    using FileType = RequiredFiles::Result::FileType;
+    auto fileType = attrs.get<std::string>(Resources::FileType);
 
-    auto fileType = toFileType(attrs.get<std::string>(Resources::FileType));
-    if(fileType == FileType::Invalid) return;
-
-    if(fileType != FileType::Resource)
+    if(isLayoutOrMedia(fileType))
     {
         auto id = attrs.get<int>(Resources::RegularFile::Id);
         auto size = attrs.get<size_t>(Resources::RegularFile::Size);
         auto md5 = attrs.get<std::string>(Resources::RegularFile::MD5);
         auto path = attrs.get<std::string>(Resources::RegularFile::Path);
-        auto saveAs = attrs.get<std::string>(Resources::RegularFile::SaveAs);
+        auto saveAs = attrs.get_optional<std::string>(Resources::RegularFile::SaveAs);
         auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
-        response.requiredFiles.emplace_back(RequiredFiles::Result::RequiredFile{id, size, md5, path, saveAs, downloadType, fileType});
+        response.requiredFiles.emplace_back(RequiredFile{id, size, md5, path, saveAs.value_or(std::string{}), fileType, downloadType});
     }
-    else
+    else if(isResource(fileType))
     {
         auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
         auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
         auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
-        response.requiredResources.emplace_back(RequiredFiles::Result::RequiredResource{layoutId, regionId, mediaId});
+        response.requiredResources.emplace_back(RequiredResource{layoutId, regionId, mediaId});
     }
 }
 
-RequiredFiles::Result::FileType SOAP::ResponseParser<RequiredFiles::Result>::toFileType(const std::string& type)
+bool SOAP::ResponseParser<RequiredFiles::Result>::isLayoutOrMedia(const std::string& type) const
 {
-    using FileType = RequiredFiles::Result::FileType;
-
-    if(type == Resources::Media)
-        return FileType::Media;
-    else if(type == Resources::Layout)
-        return FileType::Layout;
-    else if(type == Resources::Resource)
-        return FileType::Resource;
-
-    return FileType::Invalid;
+    return type == Resources::MediaType || type == Resources::LayoutType;
 }
 
-RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(const std::string& type)
+bool SOAP::ResponseParser<RequiredFiles::Result>::isResource(const std::string& type) const
 {
-    using DownloadType = RequiredFiles::Result::DownloadType;
+    return type == Resources::ResourceType;
+}
 
+DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(const std::string& type)
+{
     if(type == Resources::RegularFile::HTTPDownload)
         return DownloadType::HTTP;
     else if(type == Resources::RegularFile::XMDSDownload)
@@ -86,5 +77,3 @@ RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>:
 
     return DownloadType::Invalid;
 }
-
-

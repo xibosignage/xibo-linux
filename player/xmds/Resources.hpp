@@ -79,9 +79,9 @@ namespace XMDSResources
         const std::string File = "file";
         const std::string FileAttrs = "<xmlattr>";
         const std::string FileType = "type";
-        const std::string Media = "media";
-        const std::string Layout = "layout";
-        const std::string Resource = "resource";
+        const std::string MediaType = "media";
+        const std::string LayoutType = "layout";
+        const std::string ResourceType = "resource";
 
         namespace RegularFile
         {

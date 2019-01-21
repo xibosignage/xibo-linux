@@ -7,13 +7,9 @@
 #include "RequiredFiles.hpp"
 #include "Schedule.hpp"
 #include "GetResource.hpp"
+#include "GetFile.hpp"
 
 class SOAPManager;
-
-using RegisterDisplayCallback = std::function<void(const RegisterDisplay::Result&)>;
-using RequiredFilesCallback = std::function<void(const RequiredFiles::Result)>;
-using ScheduleCallback = std::function<void(const Schedule::Result&)>;
-using GetResourceCallback = std::function<void(const GetResource::Result&)>;
 
 class XMDSManager
 {
@@ -24,6 +20,7 @@ public:
     std::future<RequiredFiles::Result> requiredFiles();
     std::future<Schedule::Result> schedule();
     std::future<GetResource::Result> getResource(int layoutId, int regionId, int mediaId);
+    std::future<GetFile::Result> getFile(int fileId, const std::string& fileType, std::size_t chunkOffset, std::size_t chunkSize);
 
 private:
     std::unique_ptr<SOAPManager> m_soapManager;

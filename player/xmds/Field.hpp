@@ -21,7 +21,7 @@ public:
     {
         if constexpr(std::is_same_v<T, std::string>)
             return "string";
-        else if constexpr(std::is_same_v<T, int>)
+        else if constexpr(std::is_same_v<T, int> || std::is_same_v<T, std::size_t>)
             return "int";
         else if constexpr(std::is_same_v<T, double>)
             return "double";

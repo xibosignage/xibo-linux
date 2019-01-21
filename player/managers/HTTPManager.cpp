@@ -83,7 +83,6 @@ std::pair<std::string, std::string> HTTPManager::parseUrl(const std::string& url
     {
         host = baseMatch[2].str();
         target = baseMatch[3].str();
-        Log::trace("Host: {} Target: {}", host, target);
     }
 
     return std::pair{host, target};

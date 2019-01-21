@@ -1,6 +1,6 @@
 #pragma once
 
-#include "xmds/RequiredFiles.hpp"
+#include "RequiredItems.hpp"
 #include "xmds/GetResource.hpp"
 
 #include <future>
