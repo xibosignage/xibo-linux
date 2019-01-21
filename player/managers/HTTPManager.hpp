@@ -19,6 +19,11 @@ struct RequestSession;
 using RequestSessionPtr = std::shared_ptr<RequestSession>;
 using RequestFinishedCallback = std::function<void(const ResponseResult&)>;
 
+namespace beast = boost::beast;
+namespace http = boost::beast::http;
+namespace asio = boost::asio;
+namespace ip = boost::asio::ip;
+
 class HTTPManager
 {
 public:
@@ -27,9 +32,14 @@ public:
     HTTPManager(const HTTPManager&) = delete;
     HTTPManager& operator=(const HTTPManager&) = delete;
 
-    std::future<void> send(const std::string& url, RequestFinishedCallback callback);
+    std::future<void> get(const std::string& url, RequestFinishedCallback callback);
+    std::future<void> post(const std::string& url, const std::string& body, RequestFinishedCallback callback);
 
 private:
+    std::future<void> send(http::verb method, const std::string& url, const std::string& body, RequestFinishedCallback callback);
+    std::pair<std::string, std::string> parseUrl(const std::string& url);
+    http::request<http::string_body> createRequest(http::verb method, const std::string& host, const std::string& target);
+
     void sessionFinished(const boost::system::error_code& ec, RequestSessionPtr session);
     void onRead(const boost::system::error_code& ec, std::size_t bytes_transferred, RequestSessionPtr session);
     void onWrite(const boost::system::error_code& ec, std::size_t bytes_transferred, RequestSessionPtr session);

@@ -31,15 +31,15 @@ DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFile
         Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.name, static_cast<int>(file.downloadType));
 
 
-        results.push_back(downloadFile(file.name, file.path));
+        results.push_back(downloadFile(file.name, file.url));
     }
 
     return results;
 }
 
-std::future<void> RequiredFilesDownloader::downloadFile(const std::string& fileName, const std::string& path)
+std::future<void> RequiredFilesDownloader::downloadFile(const std::string& fileName, const std::string& fileUrl)
 {
-    return Utils::httpManager().send(path, [=](const ResponseResult& response){
+    return Utils::httpManager().get(fileUrl, [=](const ResponseResult& response){
         if(!response.error)
         {
             createFile(fileName, response.result);

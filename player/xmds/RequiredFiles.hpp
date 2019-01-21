@@ -29,7 +29,7 @@ namespace RequiredFiles
             int id;
             size_t size;
             std::string md5;
-            std::string path;
+            std::string url;
             std::string name;
             DownloadType downloadType;
             FileType fileType;

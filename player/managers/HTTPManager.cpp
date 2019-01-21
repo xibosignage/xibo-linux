@@ -7,12 +7,8 @@
 #include <boost/beast/http/write.hpp>
 #include <boost/asio/connect.hpp>
 
-namespace beast = boost::beast;
-namespace http = boost::beast::http;
-namespace asio = boost::asio;
-namespace ip = boost::asio::ip;
-
 const std::regex URL_REGEX("([A-Za-z]*://)(.*)(/.*)");
+const int DEFAULT_HTTP_VERSION = 11;
 const int DEFAULT_PORT = 80;
 
 struct RequestSession
@@ -27,8 +23,6 @@ struct RequestSession
     boost::beast::http::request<boost::beast::http::string_body> httpRequest;
     boost::beast::http::response_parser<boost::beast::http::string_body> httpResponse;
     boost::beast::flat_buffer buffer;
-    std::string target;
-    std::string host;
     RequestFinishedCallback callback;
     std::promise<void> result;
 };
@@ -46,25 +40,57 @@ HTTPManager::~HTTPManager()
     m_ioc.stop();
 }
 
-std::future<void> HTTPManager::send(const std::string& url, RequestFinishedCallback callback)
+std::future<void> HTTPManager::get(const std::string& url, RequestFinishedCallback callback)
 {
-    auto session = std::make_shared<RequestSession>(m_ioc);
-    session->callback = callback;
+    return send(http::verb::get, url, {}, callback);
+}
 
+std::future<void> HTTPManager::post(const std::string& url, const std::string& body, RequestFinishedCallback callback)
+{
+    return send(http::verb::post, url, body, callback);
+}
+
+std::future<void> HTTPManager::send(http::verb method, const std::string& url, const std::string& body, RequestFinishedCallback callback)
+{
+    auto [host, target] = parseUrl(url);
+    auto session = std::make_shared<RequestSession>(m_ioc);
+
+    session->callback = callback;
+    session->httpRequest = createRequest(method, host, target);
+    session->httpRequest.body() = body;
+    session->httpRequest.prepare_payload();
+
+    auto resolve = std::bind(&HTTPManager::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
+    session->resolver.async_resolve(host, std::to_string(DEFAULT_PORT), ip::resolver_base::numeric_service, resolve);
+
+    return session->result.get_future();
+}
+
+// FIXME use strong_typdef
+std::pair<std::string, std::string> HTTPManager::parseUrl(const std::string& url)
+{
     const int GROUPS_COUNT = 3;
     std::smatch baseMatch;
+    std::string host, target;
 
     if(std::regex_match(url, baseMatch, URL_REGEX) && baseMatch.size() > GROUPS_COUNT)
     {
-        session->host = baseMatch[2].str();
-        session->target = baseMatch[3].str();
-        Log::trace("Host: {} Target: {}", session->host, session->target);
+        host = baseMatch[2].str();
+        target = baseMatch[3].str();
+        Log::trace("Host: {} Target: {}", host, target);
     }
 
-    auto resolve = std::bind(&HTTPManager::onResolve, this, std::placeholders::_1, std::placeholders::_2, session);
-    session->resolver.async_resolve(session->host, std::to_string(DEFAULT_PORT), ip::resolver_base::numeric_service, resolve);
+    return std::pair{host, target};
+}
 
-    return session->result.get_future();
+boost::beast::http::request<http::string_body> HTTPManager::createRequest(http::verb method, const std::string& host, const std::string& target)
+{
+    boost::beast::http::request<http::string_body> request;
+    request.method(method);
+    request.target(target);
+    request.version(DEFAULT_HTTP_VERSION);
+    request.set(http::field::host, host);
+    return request;
 }
 
 void HTTPManager::sessionFinished(const boost::system::error_code& ec, RequestSessionPtr session)
@@ -95,12 +121,6 @@ void HTTPManager::onConnect(const boost::system::error_code& ec, ip::tcp::resolv
 {
     if(!ec)
     {
-        session->httpRequest.method(http::verb::get);
-        session->httpRequest.target(session->target);
-        session->httpRequest.version(11);
-        session->httpRequest.set(http::field::host, session->host);
-        session->httpRequest.prepare_payload();
-
         auto write = std::bind(&HTTPManager::onWrite, this, std::placeholders::_1, std::placeholders::_2, session);
         http::async_write(session->socket, session->httpRequest, write);
     }

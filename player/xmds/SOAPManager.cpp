@@ -1,10 +1,9 @@
 #include "SOAPManager.hpp"
 
-const int DEFAULT_PORT = 80;
 const int DEFAULT_CONCURRENT_REQUESTS = 2;
 
 SOAPManager::SOAPManager(const std::string& host) :
-    m_work{m_ioc}, m_host(host), m_port(DEFAULT_PORT)
+    m_work{m_ioc}, m_host(host)
 {
     for(int i = 0; i != DEFAULT_CONCURRENT_REQUESTS; ++i)
     {
