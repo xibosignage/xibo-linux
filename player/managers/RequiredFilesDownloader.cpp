@@ -1,10 +1,13 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "HTTPDownloader.hpp"
+#include "HTTPManager.hpp"
 
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/FilePath.hpp"
+#include "utils/Resources.hpp"
+
+#include <fstream>
 
 std::future<void> RequiredFilesDownloader::download(const RegularFiles& files)
 {
@@ -25,30 +28,38 @@ DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFile
     for(auto&& file : files)
     {
         Log::trace("File type: {} ID: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
-        Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
+        Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.name, static_cast<int>(file.downloadType));
 
-        results.push_back(downloadFile(file.filename, file.path));
+
+        results.push_back(downloadFile(file.name, file.path));
     }
 
     return results;
 }
 
-std::future<void> RequiredFilesDownloader::downloadFile(const std::string& filename, const std::string& path)
+std::future<void> RequiredFilesDownloader::downloadFile(const std::string& fileName, const std::string& path)
 {
-    // FIXME
-    return Utils::httpDownloader().download(filename, path, [=](const DownloadedFile& file){
-        processDownloadedFile(file);
+    return Utils::httpManager().send(path, [=](const ResponseResult& response){
+        if(!response.error)
+        {
+            createFile(fileName, response.result);
+            Log::debug("[{}] Downloaded", fileName);
+        }
+        else
+        {
+            Log::error("[{}] Download error: {}", fileName, response.error.message());
+        }
     });
 }
 
-void RequiredFilesDownloader::processDownloadedFile(const DownloadedFile& file)
+void RequiredFilesDownloader::createFile(const std::string& fileName, const std::string& fileContent)
 {
-    if(!file.downloadError)
+    auto filePath = Resources::directory() / fileName;
+
+    // FIXME it should use FileCacheManager
+    if(!std::filesystem::exists(filePath.string()))
     {
-        Log::debug("[{}] Downloaded", file.name);
-    }
-    else
-    {
-        Log::error("[{}] Download error: {}", file.name, file.downloadError.message());
+        std::ofstream out(filePath.string());
+        out << fileContent;
     }
 }

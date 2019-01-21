@@ -5,7 +5,7 @@
 #include <future>
 
 using DownloadFilesResults = std::vector<std::future<void>>;
-class DownloadedFile;
+class ResponseResult;
 
 class RequiredFilesDownloader
 {
@@ -15,7 +15,6 @@ public:
 private:
     DownloadFilesResults downloadAllFiles(const RegularFiles& files);
     std::future<void> downloadFile(const std::string& filename, const std::string& path);
-    void processDownloadedFile(const DownloadedFile& file);
-
+    void createFile(const std::string& fileName, const std::string& fileContent);
 
 };

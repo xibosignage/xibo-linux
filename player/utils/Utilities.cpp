@@ -4,7 +4,7 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 
-HTTPDownloader& Utils::httpDownloader()
+HTTPManager& Utils::httpManager()
 {
     return XiboApp::app().downloadManager();
 }
