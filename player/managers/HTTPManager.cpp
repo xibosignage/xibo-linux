@@ -10,19 +10,20 @@
 const std::regex URL_REGEX("([A-Za-z]*://)(.*)(/.*)");
 const int DEFAULT_HTTP_VERSION = 11;
 const int DEFAULT_PORT = 80;
+const int DEFAULT_CONCURRENT_REQUESTS = 2;
 
 struct RequestSession
 {
-    RequestSession(boost::asio::io_context& ioc) : socket(ioc), resolver(ioc)
+    RequestSession(asio::io_context& ioc) : socket(ioc), resolver(ioc)
     {
         httpResponse.body_limit(std::numeric_limits<std::uint64_t>::max());
     }
 
-    boost::asio::ip::tcp::socket socket;
-    boost::asio::ip::tcp::resolver resolver;
-    boost::beast::http::request<boost::beast::http::string_body> httpRequest;
-    boost::beast::http::response_parser<boost::beast::http::string_body> httpResponse;
-    boost::beast::flat_buffer buffer;
+    ip::tcp::socket socket;
+    ip::tcp::resolver resolver;
+    http::request<http::string_body> httpRequest;
+    http::response_parser<http::string_body> httpResponse;
+    beast::flat_buffer buffer;
     RequestFinishedCallback callback;
     std::promise<void> result;
 };
@@ -30,9 +31,14 @@ struct RequestSession
 HTTPManager::HTTPManager() :
     m_work{m_ioc}
 {
-    m_workThread = std::make_unique<JoinableThread>([=](){
-        m_ioc.run();
-    });
+    for(int i = 0; i != DEFAULT_CONCURRENT_REQUESTS; ++i)
+    {
+        m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
+            Log::trace("HTTP thread {}", std::this_thread::get_id());
+
+            m_ioc.run();
+        }));
+    }
 }
 
 HTTPManager::~HTTPManager()
@@ -104,7 +110,7 @@ void HTTPManager::onRead(const boost::system::error_code& ec, std::size_t /*byte
     sessionFinished(ec, session);
 }
 
-void HTTPManager::onWrite(const boost::system::error_code& ec, std::size_t, RequestSessionPtr session)
+void HTTPManager::onWrite(const boost::system::error_code& ec, std::size_t /*bytes*/, RequestSessionPtr session)
 {
     if(!ec)
     {  

@@ -1,13 +1,15 @@
 #pragma once
 
+#include "utils/JoinableThread.hpp"
+
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/parser.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/noncopyable.hpp>
 #include <future>
-#include "utils/JoinableThread.hpp"
 
 struct ResponseResult
 {
@@ -24,13 +26,11 @@ namespace http = boost::beast::http;
 namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 
-class HTTPManager
+class HTTPManager : private boost::noncopyable
 {
 public:
     HTTPManager();
     ~HTTPManager();
-    HTTPManager(const HTTPManager&) = delete;
-    HTTPManager& operator=(const HTTPManager&) = delete;
 
     std::future<void> get(const std::string& url, RequestFinishedCallback callback);
     std::future<void> post(const std::string& url, const std::string& body, RequestFinishedCallback callback);
@@ -43,11 +43,11 @@ private:
     void sessionFinished(const boost::system::error_code& ec, RequestSessionPtr session);
     void onRead(const boost::system::error_code& ec, std::size_t bytes_transferred, RequestSessionPtr session);
     void onWrite(const boost::system::error_code& ec, std::size_t bytes_transferred, RequestSessionPtr session);
-    void onConnect(const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::iterator, RequestSessionPtr session);
-    void onResolve(const boost::system::error_code& ec, boost::asio::ip::tcp::resolver::results_type results, RequestSessionPtr session);
+    void onConnect(const boost::system::error_code& ec, ip::tcp::resolver::iterator, RequestSessionPtr session);
+    void onResolve(const boost::system::error_code& ec, ip::tcp::resolver::results_type results, RequestSessionPtr session);
 
 private:
     boost::asio::io_context m_ioc;
     boost::asio::io_context::work m_work;
-    std::unique_ptr<JoinableThread> m_workThread;
+    std::vector<std::unique_ptr<JoinableThread>> m_workerThreads;
 };
