@@ -103,4 +103,10 @@ namespace XMDSResources
             const std::string MediaId = "mediaid";
         }
     }
+
+    namespace GetFile
+    {
+        const std::string_view Name = "GetFile";
+        const std::string FileChunk = "file";
+    }
 }

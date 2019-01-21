@@ -26,7 +26,7 @@ std::unique_ptr<XiboApp> XiboApp::m_app;
 XiboApp& XiboApp::create(const std::string& name)
 {
     spdlog::stdout_logger_st(LOGGER);
-    spdlog::set_level(spdlog::level::debug);
+    spdlog::set_level(spdlog::level::trace);
     spdlog::set_pattern("[%H:%M:%S.%e] [%l]: %v");
 
     gst_init(nullptr, nullptr);
