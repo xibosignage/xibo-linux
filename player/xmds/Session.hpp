@@ -6,10 +6,9 @@
 #include <boost/beast/http/parser.hpp>
 #include <boost/beast/http/string_body.hpp>
 #include <boost/beast/core/flat_buffer.hpp>
+#include <future>
 
-#include "SOAPError.hpp"
-
-template<typename Response, typename Request>
+template<typename Result, typename Request>
 struct Session
 {
     Session(boost::asio::io_context& ioc) : socket(ioc), resolver(ioc) { }
@@ -19,4 +18,5 @@ struct Session
     boost::beast::flat_buffer buffer;
     boost::beast::http::response<boost::beast::http::string_body> httpResponse;
     Request soapRequest;
+    std::promise<Result> promise;
 };
