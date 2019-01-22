@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::WebViewOptions::WebViewOptions(const xlf_node& node) :
+ResourcesXlf::WebViewOptions::WebViewOptions(const xml_node& node) :
     MediaOptions(node)
 {
     m_transparent = node.get_optional<bool>(option(Media::WebView::Transparent));

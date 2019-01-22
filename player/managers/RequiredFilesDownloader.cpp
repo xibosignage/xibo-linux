@@ -37,7 +37,7 @@ DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFile
     return results;
 }
 
-std::future<void> RequiredFilesDownloader::downloadFile(const RequiredFile& file)
+std::future<void> RequiredFilesDownloader::downloadFile(const RegularFile& file)
 {
     if(file.downloadType == DownloadType::HTTP)
     {
@@ -45,7 +45,7 @@ std::future<void> RequiredFilesDownloader::downloadFile(const RequiredFile& file
     }
     else
     {
-        return downloadXmdsFile(file.id, file.type, file.size);
+        return downloadXmdsFile(file.id, file.name, file.type, file.size);
     }
 }
 
@@ -64,15 +64,13 @@ std::future<void> RequiredFilesDownloader::downloadHttpFile(const std::string& f
     });
 }
 
+#include <boost/beast/core/detail/base64.hpp>
 
-std::future<void> RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileType, std::size_t size)
+std::future<void> RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t size)
 {
-    static int i = 0;
-    auto fileName = "test" + std::to_string(i) + ".txt";
-    auto filePath = Resources::directory() / fileName;
-
     auto result = Utils::xmdsManager().getFile(fileId, fileType, 0, size);
-    createFile(filePath, result.get().base64chunk);
+    Log::debug("downloaded file {} {}", fileName, size);
+    createFile(fileName, boost::beast::detail::base64_decode(result.get().base64chunk));
 
     return std::async(std::launch::async, [](){});
 }

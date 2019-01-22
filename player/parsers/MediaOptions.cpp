@@ -3,14 +3,14 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::MediaOptions::MediaOptions(const xlf_node& node)
+ResourcesXlf::MediaOptions::MediaOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));
     m_uri = node.get_optional<std::string>(option(Media::Uri));
     m_duration = node.get<int>(attr(Media::Duration));
 }
 
-std::string ResourcesXlf::MediaOptions::getType(const xlf_node& node)
+std::string ResourcesXlf::MediaOptions::getType(const xml_node& node)
 {
     return node.get<std::string>(attr(Media::Type));
 }

@@ -10,6 +10,6 @@ namespace Utils
 {
     XMDSManager& xmdsManager();
     HTTPManager& httpManager();
-    xlf_node parseXmlFromPath(const FilePath& xlfPath);
-    xlf_node parseXmlFromString(const std::string& xml);
+    xml_node parseXmlFromPath(const FilePath& xlfPath);
+    xml_node parseXmlFromString(const std::string& xml);
 }

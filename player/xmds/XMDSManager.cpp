@@ -60,8 +60,8 @@ std::future<GetFile::Result> XMDSManager::getFile(int fileId, const std::string&
     request.hardwareKey = m_hardwareKey;
     request.fileId = std::to_string(fileId);
     request.fileType = fileType;
-    request.chunkOffset = chunkSize;
-    request.chunkSize = chunkOffset;
+    request.chunkOffset = chunkOffset;
+    request.chunkSize = chunkSize;
 
     return m_soapManager->sendRequest<GetFile::Result>(request);
 }

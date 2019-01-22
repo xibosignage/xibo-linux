@@ -105,8 +105,8 @@ void CollectionInterval::onRequiredFiles(const RequiredFiles::Result& result, Co
     RequiredFilesDownloader filesDownloader;
     RequiredResourcesDownloader resourcesDownloader;
 
-    auto&& files = result.requiredFiles;
-    auto&& resources = result.requiredResources;
+    auto&& files = result.requiredFiles();
+    auto&& resources = result.requiredResources();
 
     Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
 

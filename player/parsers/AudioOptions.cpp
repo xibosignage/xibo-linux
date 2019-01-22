@@ -5,7 +5,7 @@
 
 const int DEFAULT_DURATION = 0;
 
-ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node) :
+ResourcesXlf::AudioOptions::AudioOptions(const xml_node& node) :
     MediaOptions(node)
 {
     m_muted = node.get_optional<bool>(option(Media::Audio::Mute));
@@ -13,7 +13,7 @@ ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node) :
     m_volume = node.get_optional<int>(option(Media::Audio::Volume));
 }
 
-ResourcesXlf::AudioOptions::AudioOptions(const xlf_node& node, AudioNodeTag)
+ResourcesXlf::AudioOptions::AudioOptions(const xml_node& node, AudioNodeTag)
 {
     auto uriNode = node.get_child(Media::Uri);
 

@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::ImageOptions::ImageOptions(const xlf_node& node) :
+ResourcesXlf::ImageOptions::ImageOptions(const xml_node& node) :
     MediaOptions(node)
 {
     m_scaleType = node.get_optional<std::string>(option(Media::Image::ScaleType));

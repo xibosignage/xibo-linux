@@ -3,14 +3,6 @@
 #include <string>
 #include <vector>
 
-enum class FileType
-{
-    Media,
-    Layout,
-    Resource,
-    Invalid
-};
-
 enum class DownloadType
 {
     HTTP,
@@ -18,7 +10,7 @@ enum class DownloadType
     Invalid
 };
 
-struct RequiredFile
+struct RegularFile
 {
     int id;
     size_t size;
@@ -29,13 +21,13 @@ struct RequiredFile
     DownloadType downloadType;
 };
 
-struct RequiredResource
+struct ResourceFile
 {
     int layoutId;
     int regionId;
     int mediaId;
 };
 
-using RegularFiles = std::vector<RequiredFile>;
-using ResourceFiles = std::vector<RequiredResource>;
+using RegularFiles = std::vector<RegularFile>;
+using ResourceFiles = std::vector<ResourceFile>;
 

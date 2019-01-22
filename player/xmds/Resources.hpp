@@ -89,7 +89,7 @@ namespace XMDSResources
             const std::string Size = "size";
             const std::string MD5 = "md5";
             const std::string Path = "path";
-            const std::string SaveAs = "saveAs";
+            const std::string Name = "saveAs";
             const std::string DownloadType = "download";
             const std::string HTTPDownload = "http";
             const std::string XMDSDownload = "xmds";

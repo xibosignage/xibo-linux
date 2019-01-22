@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::RegionOptions::RegionOptions(const xlf_node& node)
+ResourcesXlf::RegionOptions::RegionOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Region::Id));
     m_width = static_cast<int>(node.get<float>(attr(Region::Width)));

@@ -11,8 +11,15 @@ namespace RequiredFiles
 {
     struct Result
     {
-        RegularFiles requiredFiles;
-        ResourceFiles requiredResources;
+        const RegularFiles& requiredFiles() const;
+        const ResourceFiles& requiredResources() const;
+
+        void addFile(RegularFile&& file);
+        void addResource(ResourceFile&& resource);
+
+    private:
+        RegularFiles m_requiredFiles;
+        ResourceFiles m_requiredResources;
     };
 
     struct Request
@@ -41,9 +48,13 @@ protected:
     RequiredFiles::Result doParse(const boost::property_tree::ptree& node) override;
 
 private:
-    void addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs);
-    bool isLayoutOrMedia(const std::string& type) const;
-    bool isResource(const std::string& type) const;
-    DownloadType toDownloadType(const std::string& type);
+    RegularFile parseRegularFile(const boost::property_tree::ptree& attrs);
+    ResourceFile parseResourceFile(const boost::property_tree::ptree& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs);
+
+    bool isLayout(std::string_view type) const;
+    bool isMedia(std::string_view type) const;
+    bool isResource(std::string_view type) const;
+    DownloadType toDownloadType(std::string_view type);
 
 };

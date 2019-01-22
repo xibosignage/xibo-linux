@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::VideoOptions::VideoOptions(const xlf_node& node) :
+ResourcesXlf::VideoOptions::VideoOptions(const xml_node& node) :
     MediaOptions(node)
 {
     m_muted = node.get_optional<bool>(option(Media::Video::Mute));

@@ -3,7 +3,7 @@
 #include <string>
 #include <boost/property_tree/ptree_fwd.hpp>
 
-using xlf_node = boost::property_tree::ptree;
+using xml_node = boost::property_tree::ptree;
 
 const std::string LOGGER = "logger";
 
