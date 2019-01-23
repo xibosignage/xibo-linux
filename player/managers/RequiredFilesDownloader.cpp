@@ -10,9 +10,9 @@
 
 #include <fstream>
 
-std::future<void> RequiredFilesDownloader::download(const RegularFiles& files)
+boost::future<void> RequiredFilesDownloader::download(const RegularFiles& files)
 {
-    return std::async(std::launch::async, [=](){
+    return boost::async(boost::launch::async, [=](){
         auto downloadResults = downloadAllFiles(files);
 
         for(auto&& result : downloadResults)
@@ -37,7 +37,7 @@ DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFile
     return results;
 }
 
-std::future<void> RequiredFilesDownloader::downloadFile(const RegularFile& file)
+boost::future<void> RequiredFilesDownloader::downloadFile(const RegularFile& file)
 {
     if(file.downloadType == DownloadType::HTTP)
     {
@@ -49,30 +49,45 @@ std::future<void> RequiredFilesDownloader::downloadFile(const RegularFile& file)
     }
 }
 
-std::future<void> RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
+boost::future<void> RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
 {
-    return Utils::httpManager().get(fileUrl, [=](const ResponseResult& response){
-        if(!response.error)
+    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HTTPResponseResult> future){
+        auto [httpError, httpResult] = future.get();
+        if(!httpError)
         {
-            createFile(fileName, response.result);
+            createFile(fileName, httpResult);
             Log::debug("[{}] Downloaded", fileName);
         }
         else
         {
-            Log::error("[{}] Download error: {}", fileName, response.error.message());
+            Log::error("[{}] Download error: {}", fileName, httpError.message());
         }
     });
 }
 
 #include <boost/beast/core/detail/base64.hpp>
+const std::size_t DEFAULT_CHUNK_SIZE = 524288;
 
-std::future<void> RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t size)
+// FIXME
+boost::future<void> RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
 {
-    auto result = Utils::xmdsManager().getFile(fileId, fileType, 0, size);
-    Log::debug("downloaded file {} {}", fileName, size);
-    createFile(fileName, boost::beast::detail::base64_decode(result.get().base64chunk));
+    std::size_t fileOffset = 0;
+    std::string fileContent;
 
-    return std::async(std::launch::async, [](){});
+    while(fileOffset < fileSize)
+    {
+        std::size_t chunkSize = fileOffset + DEFAULT_CHUNK_SIZE >= fileSize ? fileSize - fileOffset : DEFAULT_CHUNK_SIZE;
+
+        auto [error, result] = Utils::xmdsManager().getFile(fileId, fileType, fileOffset, chunkSize).get();
+        fileContent += boost::beast::detail::base64_decode(result.base64chunk);
+
+        fileOffset += chunkSize;
+    }
+
+    Log::debug("[{}] Downloaded", fileName);
+    createFile(fileName, fileContent);
+
+    return boost::async([](){});
 }
 
 void RequiredFilesDownloader::createFile(const std::string& fileName, const std::string& fileContent)

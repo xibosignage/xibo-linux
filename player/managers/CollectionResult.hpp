@@ -5,17 +5,7 @@
 
 struct CollectionResult
 {
-    struct Error
-    {
-        std::string message;
-
-        operator bool() const
-        {
-            return !message.empty();
-        }
-
-    } error;
-
+    boost::system::error_code error;
     PlayerSettings settings;
     Schedule::Result schedule;
 };

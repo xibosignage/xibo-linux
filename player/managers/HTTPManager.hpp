@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils/JoinableThread.hpp"
+#include "utils/ResponseResult.hpp"
 
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/parser.hpp>
@@ -9,17 +10,11 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/noncopyable.hpp>
-#include <future>
-
-struct ResponseResult
-{
-    boost::system::error_code error;
-    std::string result;
-};
+#include <boost/thread/future.hpp>
 
 struct RequestSession;
 using RequestSessionPtr = std::shared_ptr<RequestSession>;
-using RequestFinishedCallback = std::function<void(const ResponseResult&)>;
+using HTTPResponseResult = ResponseResult<std::string>;
 
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -32,11 +27,11 @@ public:
     HTTPManager();
     ~HTTPManager();
 
-    std::future<void> get(const std::string& url, RequestFinishedCallback callback);
-    std::future<void> post(const std::string& url, const std::string& body, RequestFinishedCallback callback);
+    boost::future<HTTPResponseResult> get(const std::string& url);
+    boost::future<HTTPResponseResult> post(const std::string& url, const std::string& body);
 
 private:
-    std::future<void> send(http::verb method, const std::string& url, const std::string& body, RequestFinishedCallback callback);
+    boost::future<HTTPResponseResult> send(http::verb method, const std::string& url, const std::string& body);
     std::pair<std::string, std::string> parseUrl(const std::string& url);
     http::request<http::string_body> createRequest(http::verb method, const std::string& host, const std::string& target);
 

@@ -1,15 +1,14 @@
 #pragma once
 
 #include "SOAP.hpp"
-#include "SOAPError.hpp"
 
+#include "utils/ResponseResult.hpp"
 #include "utils/JoinableThread.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "managers/HTTPManager.hpp"
 
 #include <boost/noncopyable.hpp>
-#include <future>
 
 const std::string XMDS_TARGET = "/xmds.php?v=5";
 
@@ -21,46 +20,26 @@ public:
     }
 
     template<typename Result, typename Request>
-    std::future<Result> sendRequest(const Request& soapRequest)
+    boost::future<ResponseResult<Result>> sendRequest(const Request& soapRequest)
     {
         static_assert(std::is_copy_assignable_v<Request> && std::is_copy_constructible_v<Request>);
 
-        auto result = std::make_shared<std::promise<Result>>();
         std::string url = m_host + XMDS_TARGET;
         SOAP::RequestSerializer<Request> serializer{soapRequest};
 
-        Utils::httpManager().post(url, serializer.string(), std::bind(&SOAPManager::onResponseReceived<Result>, this, std::placeholders::_1, result));
-
-        return result->get_future();
+        return Utils::httpManager().post(url, serializer.string()).then([this](boost::future<HTTPResponseResult> future){
+            return onResponseReceived<Result>(future.get());
+        });
     }
 
     template<typename Result>
-    void onResponseReceived(const ResponseResult& httpResponse, std::shared_ptr<std::promise<Result>> result)
+    ResponseResult<Result> onResponseReceived(const HTTPResponseResult& httpResponse)
     {
-        if(!httpResponse.error)
-        {
-            SOAP::ResponseParser<Result> parser(httpResponse.result);
-            auto [error, soapResponse] = parser.get();
-            if(!error)
-            {
-                result->set_value(soapResponse);
-            }
-            else
-            {
-                reportRequestError(error, result);
-            }
-        }
-        else
-        {
-            reportRequestError(SOAP::Error{"HTTP", httpResponse.error.message()}, result);
-        }
-    }
+        auto [httpError, httpResult] = httpResponse;
+        if(httpError) return ResponseResult<Result>{httpError, {}};
 
-    template<typename Result>
-    void reportRequestError(const SOAP::Error& error, std::shared_ptr<std::promise<Result>> result)
-    {
-        Log::debug("Session finished with error [{}]: {}", error.faultCode(), error.faultMessage());
-        result->set_value({});
+        SOAP::ResponseParser<Result> parser(httpResult);
+        return parser.get();
     }
 
 private:

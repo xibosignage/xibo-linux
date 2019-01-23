@@ -10,7 +10,7 @@
 const std::regex URL_REGEX("([A-Za-z]*://)(.*)(/.*)");
 const int DEFAULT_HTTP_VERSION = 11;
 const int DEFAULT_PORT = 80;
-const int DEFAULT_CONCURRENT_REQUESTS = 2;
+const int DEFAULT_CONCURRENT_REQUESTS = 1;
 
 struct RequestSession
 {
@@ -24,8 +24,7 @@ struct RequestSession
     http::request<http::string_body> httpRequest;
     http::response_parser<http::string_body> httpResponse;
     beast::flat_buffer buffer;
-    RequestFinishedCallback callback;
-    std::promise<void> result;
+    boost::promise<HTTPResponseResult> result;
 };
 
 HTTPManager::HTTPManager() :
@@ -46,22 +45,21 @@ HTTPManager::~HTTPManager()
     m_ioc.stop();
 }
 
-std::future<void> HTTPManager::get(const std::string& url, RequestFinishedCallback callback)
+boost::future<HTTPResponseResult> HTTPManager::get(const std::string& url)
 {
-    return send(http::verb::get, url, {}, callback);
+    return send(http::verb::get, url, {});
 }
 
-std::future<void> HTTPManager::post(const std::string& url, const std::string& body, RequestFinishedCallback callback)
+boost::future<HTTPResponseResult> HTTPManager::post(const std::string& url, const std::string& body)
 {
-    return send(http::verb::post, url, body, callback);
+    return send(http::verb::post, url, body);
 }
 
-std::future<void> HTTPManager::send(http::verb method, const std::string& url, const std::string& body, RequestFinishedCallback callback)
+boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const std::string& url, const std::string& body)
 {
     auto [host, target] = parseUrl(url);
     auto session = std::make_shared<RequestSession>(m_ioc);
 
-    session->callback = callback;
     session->httpRequest = createRequest(method, host, target);
     session->httpRequest.body() = body;
     session->httpRequest.prepare_payload();
@@ -100,8 +98,7 @@ boost::beast::http::request<http::string_body> HTTPManager::createRequest(http::
 
 void HTTPManager::sessionFinished(const boost::system::error_code& ec, RequestSessionPtr session)
 {
-    session->callback(ResponseResult{ec, session->httpResponse.get().body()});
-    session->result.set_value();
+    session->result.set_value(HTTPResponseResult{ec, session->httpResponse.get().body()});
 }
 
 void HTTPManager::onRead(const boost::system::error_code& ec, std::size_t /*bytes*/, RequestSessionPtr session)

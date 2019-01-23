@@ -15,6 +15,8 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -g")
 set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
 
+add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
+
 file(GLOB ADAPTORS_SOURCES ${CMAKE_SOURCE_DIR}/player/adaptors/*.cpp ${CMAKE_SOURCE_DIR}/player/adaptors/*.hpp)
 file(GLOB CONTROL_SOURCES ${CMAKE_SOURCE_DIR}/player/control/*.cpp ${CMAKE_SOURCE_DIR}/player/control/*.hpp)
 file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp ${CMAKE_SOURCE_DIR}/player/media/*.hpp)

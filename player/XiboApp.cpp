@@ -42,7 +42,7 @@ XiboApp::XiboApp(const std::string& name) :
     m_scheduler(std::make_unique<Scheduler>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
-{
+{        
     m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect([this]{
         return processCallbackQueue();
     });
@@ -69,7 +69,7 @@ void XiboApp::onCollectionFinished(const CollectionResult& result)
     }
     else
     {
-        Log::debug("Collection interval error: {}", result.error.message);
+        Log::debug("Collection interval error: {}", result.error.message());
     }
 }
 

@@ -3,9 +3,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/system/error_code.hpp>
 
-#include "SOAPError.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
+#include "utils/ResponseResult.hpp"
 
 namespace SOAP
 {
@@ -22,7 +22,7 @@ namespace SOAP
         }
         virtual ~BaseResponseParser() = default;
 
-        std::pair<SOAP::Error, Result> get()
+        ResponseResult<Result> get()
         {
             if(m_responseTree)
             {
@@ -33,10 +33,11 @@ namespace SOAP
                     return std::pair{makeErrorFromNode(node), Result{}};
                 }
 
-                return std::pair{SOAP::Error{}, doParse(bodyNode)};
+                return std::pair{boost::system::error_code{}, doParse(bodyNode)};
             }
 
-            return std::pair{SOAP::Error{"Parser", m_response}, Result{}};
+            // FIXME custom error
+            return std::pair{boost::system::error_code{}, Result{}};
         }
 
     protected:
@@ -59,12 +60,12 @@ namespace SOAP
             return m_responseTree->get_child_optional("SOAP-ENV:Fault");
         }
 
-        SOAP::Error makeErrorFromNode(OptionalParsedNode faultNode)
+        boost::system::error_code makeErrorFromNode(OptionalParsedNode faultNode)
         {
             auto faultCode = faultNode->template get<std::string>("faultcode");
             auto faultMessage = faultNode->template get<std::string>("faultstring");
 
-            return SOAP::Error{faultCode, faultMessage};
+            return boost::system::error_code{}; // FIXME custom error
         }
 
     private:
