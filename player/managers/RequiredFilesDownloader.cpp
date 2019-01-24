@@ -1,7 +1,6 @@
 #include "RequiredFilesDownloader.hpp"
 
 #include "HTTPManager.hpp"
-#include "xmds/XMDSManager.hpp"
 
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
@@ -60,34 +59,25 @@ boost::future<void> RequiredFilesDownloader::downloadHttpFile(const std::string&
         }
         else
         {
-            Log::error("[{}] Download error: {}", fileName, httpError.message());
+            Log::error(httpError);
         }
     });
 }
 
-#include <boost/beast/core/detail/base64.hpp>
-const std::size_t DEFAULT_CHUNK_SIZE = 524288;
-
-// FIXME
 boost::future<void> RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
 {
-    std::size_t fileOffset = 0;
-    std::string fileContent;
-
-    while(fileOffset < fileSize)
-    {
-        std::size_t chunkSize = fileOffset + DEFAULT_CHUNK_SIZE >= fileSize ? fileSize - fileOffset : DEFAULT_CHUNK_SIZE;
-
-        auto [error, result] = Utils::xmdsManager().getFile(fileId, fileType, fileOffset, chunkSize).get();
-        fileContent += boost::beast::detail::base64_decode(result.base64chunk);
-
-        fileOffset += chunkSize;
-    }
-
-    Log::debug("[{}] Downloaded", fileName);
-    createFile(fileName, fileContent);
-
-    return boost::async([](){});
+    return m_xmdsDownloader.download(fileId, fileType, fileSize).then([this, fileName](boost::future<XMDSResponseResult> future){
+        auto [xmdsError, fileContent] = future.get();
+        if(!xmdsError)
+        {
+            createFile(fileName, fileContent);
+            Log::debug("[{}] Downloaded", fileName);
+        }
+        else
+        {
+            Log::error(xmdsError);
+        }
+    });
 }
 
 void RequiredFilesDownloader::createFile(const std::string& fileName, const std::string& fileContent)

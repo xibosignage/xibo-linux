@@ -10,7 +10,7 @@
 const std::regex URL_REGEX("([A-Za-z]*://)(.*)(/.*)");
 const int DEFAULT_HTTP_VERSION = 11;
 const int DEFAULT_PORT = 80;
-const int DEFAULT_CONCURRENT_REQUESTS = 1;
+const int DEFAULT_CONCURRENT_REQUESTS = 4;
 
 struct RequestSession
 {

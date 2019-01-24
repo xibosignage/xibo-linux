@@ -8,7 +8,6 @@
 #include "utils/TimerProvider.hpp"
 
 #include <glibmm/main.h>
-#include <future>
 
 const uint DEFAULT_INTERVAL = 5;
 namespace ph = std::placeholders;
