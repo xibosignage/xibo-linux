@@ -5,7 +5,7 @@
 
 struct CollectionResult
 {
-    boost::system::error_code error;
+    PlayerError error;
     PlayerSettings settings;
     Schedule::Result schedule;
 };

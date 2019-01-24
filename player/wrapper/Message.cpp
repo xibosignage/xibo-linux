@@ -25,17 +25,17 @@ Gst::MessageType Gst::Message::type() const
     return static_cast<Gst::MessageType>(m_handler->type);
 }
 
-Gst::MessageError::MessageError(const std::string& text, const std::string& debugInfo) :
+Gst::MessageError::MessageError(std::string_view text, std::string_view debugInfo) :
     m_text(text), m_debugInfo(debugInfo)
 {
 }
 
-const std::string& Gst::MessageError::getText() const
+std::string_view Gst::MessageError::getText() const
 {
     return m_text;
 }
 
-const std::string& Gst::MessageError::getDebugInfo() const
+std::string_view Gst::MessageError::getDebugInfo() const
 {
     return m_debugInfo;
 }

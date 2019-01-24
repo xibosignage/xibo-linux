@@ -1,8 +1,8 @@
 #include "Pipeline.hpp"
 
-Gst::Pipeline::Pipeline(const std::string& name)
+Gst::Pipeline::Pipeline(std::string_view name)
 {
-    setElement(gst_pipeline_new(name.c_str()));
+    setElement(gst_pipeline_new(name.data()));
 }
 
 gboolean Gst::Pipeline::onBusWatchMem(GstBus*, GstMessage* message, gpointer)
@@ -25,7 +25,7 @@ Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create()
     return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline(std::string{}));
 }
 
-Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create(const std::string& name)
+Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create(std::string_view name)
 {
     return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline(name));
 }

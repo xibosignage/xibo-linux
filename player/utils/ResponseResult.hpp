@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/system/error_code.hpp>
 #include <utility>
+#include "PlayerError.hpp"
 
 template<typename Result>
-using ResponseResult = std::pair<boost::system::error_code, Result>;
+using ResponseResult = std::pair<PlayerError, Result>;

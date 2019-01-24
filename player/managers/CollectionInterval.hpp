@@ -34,7 +34,7 @@ private:
     void startTimer();
     void updateTimer(int collectInterval);
 
-    void sessionFinished(CollectionSessionPtr session, boost::system::error_code = {});
+    void sessionFinished(CollectionSessionPtr session, PlayerError = {});
     void onRegularCollectionFinished(const CollectionResult& result);
 
     void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);

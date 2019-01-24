@@ -15,7 +15,7 @@ class SOAPManager;
 class XMDSManager
 {
 public:
-    XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
+    XMDSManager(std::string_view host, std::string_view serverKey, std::string_view hardwareKey);
 
     boost::future<ResponseResult<RegisterDisplay::Result>> registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName);
     boost::future<ResponseResult<RequiredFiles::Result>> requiredFiles();

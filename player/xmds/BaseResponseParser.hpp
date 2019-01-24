@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/system/error_code.hpp>
 
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
@@ -33,11 +32,10 @@ namespace SOAP
                     return std::pair{makeErrorFromNode(node), Result{}};
                 }
 
-                return std::pair{boost::system::error_code{}, doParse(bodyNode)};
+                return std::pair{PlayerError{}, doParse(bodyNode)};
             }
 
-            // FIXME custom error
-            return std::pair{boost::system::error_code{}, Result{}};
+            return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
         }
 
     protected:
@@ -60,12 +58,10 @@ namespace SOAP
             return m_responseTree->get_child_optional("SOAP-ENV:Fault");
         }
 
-        boost::system::error_code makeErrorFromNode(OptionalParsedNode faultNode)
+        PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
         {
-            auto faultCode = faultNode->template get<std::string>("faultcode");
             auto faultMessage = faultNode->template get<std::string>("faultstring");
-
-            return boost::system::error_code{}; // FIXME custom error
+            return PlayerError{PlayerError::Type::SOAP, faultMessage};
         }
 
     private:

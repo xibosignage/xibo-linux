@@ -23,9 +23,9 @@ protected:
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
 
 private:
-    ImageProperties::ScaleType toScaleType(const std::string& scaleType);
-    ImageProperties::Align toAlign(const std::string& align);
-    ImageProperties::Valign toValign(const std::string& valign);
+    ImageProperties::ScaleType toScaleType(std::string_view scaleType);
+    ImageProperties::Align toAlign(std::string_view align);
+    ImageProperties::Valign toValign(std::string_view valign);
 
 private:
     int m_width;

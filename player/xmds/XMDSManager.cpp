@@ -4,7 +4,7 @@
 
 const std::string DEFAULT_CLIENT_TYPE = "linux";
 
-XMDSManager::XMDSManager(const std::string& host, const std::string& serverKey, const std::string& hardwareKey) :
+XMDSManager::XMDSManager(std::string_view host, std::string_view serverKey, std::string_view hardwareKey) :
     m_soapManager(std::make_unique<SOAPManager>(host)), m_serverKey(serverKey), m_hardwareKey(hardwareKey)
 {
 }

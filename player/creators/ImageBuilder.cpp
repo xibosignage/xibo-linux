@@ -46,7 +46,7 @@ ImageBuilder& ImageBuilder::valign(const boost::optional<std::string>& valign)
     return *this;
 }
 
-ImageProperties::ScaleType ImageBuilder::toScaleType(const std::string& scaleType)
+ImageProperties::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
 {
     if(scaleType == "center")
         return ImageProperties::ScaleType::Scaled;
@@ -56,7 +56,7 @@ ImageProperties::ScaleType ImageBuilder::toScaleType(const std::string& scaleTyp
     throw std::invalid_argument("ScaleType is not valid");
 }
 
-ImageProperties::Align ImageBuilder::toAlign(const std::string& align)
+ImageProperties::Align ImageBuilder::toAlign(std::string_view align)
 {
     if(align == "left")
         return ImageProperties::Align::Left;
@@ -68,7 +68,7 @@ ImageProperties::Align ImageBuilder::toAlign(const std::string& align)
     throw std::invalid_argument("Align is not valid");
 }
 
-ImageProperties::Valign ImageBuilder::toValign(const std::string& valign)
+ImageProperties::Valign ImageBuilder::toValign(std::string_view valign)
 {
     if(valign == "top")
         return ImageProperties::Valign::Top;

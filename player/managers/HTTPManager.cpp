@@ -98,7 +98,9 @@ boost::beast::http::request<http::string_body> HTTPManager::createRequest(http::
 
 void HTTPManager::sessionFinished(const boost::system::error_code& ec, RequestSessionPtr session)
 {
-    session->result.set_value(HTTPResponseResult{ec, session->httpResponse.get().body()});
+    PlayerError error = ec ? PlayerError{PlayerError::Type::HTTP, ec.message()} : PlayerError{};
+
+    session->result.set_value(HTTPResponseResult{error, session->httpResponse.get().body()});
 }
 
 void HTTPManager::onRead(const boost::system::error_code& ec, std::size_t /*bytes*/, RequestSessionPtr session)

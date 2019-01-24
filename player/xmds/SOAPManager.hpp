@@ -15,7 +15,7 @@ const std::string XMDS_TARGET = "/xmds.php?v=5";
 class SOAPManager : private boost::noncopyable
 {
 public:
-    SOAPManager(const std::string& host) : m_host(host)
+    SOAPManager(std::string_view host) : m_host(host)
     {
     }
 

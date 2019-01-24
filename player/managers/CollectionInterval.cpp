@@ -52,7 +52,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
     });
 }
 
-void CollectionInterval::sessionFinished(CollectionSessionPtr session, boost::system::error_code error)
+void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
     callbackQueue().add([session, error](){
         session->result.error = error;
@@ -119,7 +119,6 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         auto resourcesResult = resourcesDownloader.download(resources);
         auto filesResult = filesDownloader.download(files);
 
-        Log::trace("Waiting for downloads...");
         filesResult.wait();
         Log::debug("Files downloaded");
         resourcesResult.wait();

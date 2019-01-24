@@ -30,7 +30,7 @@ namespace Gst
         static Gst::RefPtr<Gst::Inspector> create(unsigned int timeoutSeconds);
         ~Inspector();
 
-        Gst::InspectorResult discover(const std::string& uri);
+        Gst::InspectorResult discover(std::string_view uri);
 
     private:
         Inspector(unsigned int timeoutSeconds);

@@ -69,7 +69,7 @@ void XiboApp::onCollectionFinished(const CollectionResult& result)
     }
     else
     {
-        Log::debug("Collection interval error: {}", result.error.message());
+        Log::debug("Collection interval error: {}", result.error);
     }
 }
 
