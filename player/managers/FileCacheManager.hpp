@@ -12,10 +12,12 @@ public:
     FileCacheManager();
 
     bool isFileInCache(const std::string& fileHash) const;
-    void addFileToCache(const std::string& fileHash);
     void saveFile(const std::string& fileName, const std::string& fileContent);
 
 private:
+    void addFileToCache(const std::string& fileHash);
+    std::string md5hash(std::string_view data);
+
     void loadCacheFromDrive(const FilePath& path);
     void updateCacheOnDrive(const FilePath& path);
 

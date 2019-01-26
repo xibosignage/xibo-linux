@@ -81,12 +81,3 @@ bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
 {
     return false;
 }
-
-void RequiredFilesDownloader::addFileToCache(const RegularFile& file)
-{
-    Utils::fileManager().addFileToCache(file.md5);
-}
-
-void RequiredFilesDownloader::addFileToCache(const ResourceFile&)
-{
-}

@@ -41,7 +41,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 {
     m_workerThread = std::make_unique<JoinableThread>([=]()
     {
-        Log::debug("Collection started {}", std::this_thread::get_id());
+        Log::debug("Collection started");
 
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;

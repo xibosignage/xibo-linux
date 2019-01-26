@@ -38,7 +38,6 @@ private:
 
             if(!isFileInCache(file))
             {
-                addFileToCache(file); // FIXME should be called inside saveFile
                 results.emplace_back(downloadRequiredFile(file));
             }
         }
@@ -64,8 +63,6 @@ private:
 
     bool isFileInCache(const RegularFile& file) const;
     bool isFileInCache(const ResourceFile& resource) const;
-    void addFileToCache(const RegularFile& file);
-    void addFileToCache(const ResourceFile& resource);
 
     DownloadResult downloadRequiredFile(const ResourceFile& res);
     DownloadResult downloadRequiredFile(const RegularFile& file);
