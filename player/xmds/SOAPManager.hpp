@@ -1,36 +1,48 @@
-#ifndef SOAPMANAGER_HPP
-#define SOAPMANAGER_HPP
+#pragma once
 
-#include "SessionExecutor.hpp"
+#include "SOAP.hpp"
+
+#include "utils/ResponseResult.hpp"
 #include "utils/JoinableThread.hpp"
+#include "utils/Logger.hpp"
+#include "utils/Utilities.hpp"
+#include "managers/HTTPManager.hpp"
 
 #include <boost/noncopyable.hpp>
-#include <future>
+
+const std::string XMDS_TARGET = "/xmds.php?v=5";
 
 class SOAPManager : private boost::noncopyable
 {
 public:
-    SOAPManager(const std::string& host);
-    ~SOAPManager();
+    SOAPManager(std::string_view host) : m_host(host)
+    {
+    }
 
     template<typename Result, typename Request>
-    std::future<Result> sendRequest(const Request& soapRequest)
+    boost::future<ResponseResult<Result>> sendRequest(const Request& soapRequest)
     {
         static_assert(std::is_copy_assignable_v<Request> && std::is_copy_constructible_v<Request>);
 
-        auto session = std::make_shared<Session<Result, Request>>(m_ioc);
-        session->soapRequest = soapRequest;
+        std::string url = m_host + XMDS_TARGET;
+        SOAP::RequestSerializer<Request> serializer{soapRequest};
 
-        auto sessionExecutor = std::make_shared<SessionExecutor<Result, Request>>(m_host, m_port, session);
-        return sessionExecutor->exec();
+        return Utils::httpManager().post(url, serializer.string()).then([this](boost::future<HTTPResponseResult> future){
+            return onResponseReceived<Result>(future.get());
+        });
+    }
+
+    template<typename Result>
+    ResponseResult<Result> onResponseReceived(const HTTPResponseResult& httpResponse)
+    {
+        auto [httpError, httpResult] = httpResponse;
+        if(httpError) return ResponseResult<Result>{httpError, {}};
+
+        SOAP::ResponseParser<Result> parser(httpResult);
+        return parser.get();
     }
 
 private:
-    asio::io_context m_ioc;
-    asio::io_context::work m_work;
-    std::vector<std::unique_ptr<JoinableThread>> m_workerThreads;
     std::string m_host;
-    int m_port;
-};
 
-#endif // SOAPMANAGER_HPP
+};

@@ -7,7 +7,7 @@ namespace ResourcesXlf
 class ImageOptions : public MediaOptions
 {
     public:
-        ImageOptions(const xlf_node& node);
+        ImageOptions(const xml_node& node);
 
         boost::optional<std::string> scaleType() const;
         boost::optional<std::string> align() const;

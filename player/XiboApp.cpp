@@ -11,7 +11,7 @@
 #include "control/IMainLayout.hpp"
 
 #include "parsers/CommandLineParser.hpp"
-#include "managers/HTTPDownloader.hpp"
+#include "managers/HTTPManager.hpp"
 #include "managers/CollectionInterval.hpp"
 #include "managers/Scheduler.hpp"
 
@@ -38,11 +38,11 @@ XiboApp& XiboApp::create(const std::string& name)
 
 XiboApp::XiboApp(const std::string& name) :
     m_parentApp(Gtk::Application::create(name)),
-    m_downloadManager(std::make_unique<HTTPDownloader>()),
+    m_downloadManager(std::make_unique<HTTPManager>()),
     m_scheduler(std::make_unique<Scheduler>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
-{
+{        
     m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect([this]{
         return processCallbackQueue();
     });
@@ -69,7 +69,7 @@ void XiboApp::onCollectionFinished(const CollectionResult& result)
     }
     else
     {
-        Log::debug("Collection interval error: {}", result.error.message);
+        Log::debug("Collection interval error: {}", result.error);
     }
 }
 
@@ -98,7 +98,7 @@ XMDSManager& XiboApp::xmdsManager()
     return *m_xmdsManager;
 }
 
-HTTPDownloader& XiboApp::downloadManager()
+HTTPManager& XiboApp::downloadManager()
 {
     return *m_downloadManager;
 }

@@ -7,7 +7,7 @@ namespace ResourcesXlf
     class WebViewOptions : public MediaOptions
     {
     public:
-        WebViewOptions(const xlf_node& node);
+        WebViewOptions(const xml_node& node);
 
         boost::optional<bool> transparent() const;
 

@@ -3,13 +3,13 @@
 #include "constants.hpp"
 
 class XMDSManager;
-class HTTPDownloader;
+class HTTPManager;
 class FilePath;
 
 namespace Utils
 {
     XMDSManager& xmdsManager();
-    HTTPDownloader& httpDownloader();
-    xlf_node parseXmlFromPath(const FilePath& xlfPath);
-    xlf_node parseXmlFromString(const std::string& xml);
+    HTTPManager& httpManager();
+    xml_node parseXmlFromPath(const FilePath& xlfPath);
+    xml_node parseXmlFromString(const std::string& xml);
 }

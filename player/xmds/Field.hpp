@@ -7,7 +7,7 @@ template<typename T>
 class Field
 {
 public:
-    Field(std::string_view name) : m_fieldName(name)
+    explicit Field(std::string_view name) : m_fieldName(name)
     {
     }
 
@@ -17,11 +17,11 @@ public:
         return *this;
     }
 
-    std::string type() const
+    std::string_view type() const
     {
         if constexpr(std::is_same_v<T, std::string>)
             return "string";
-        else if constexpr(std::is_same_v<T, int>)
+        else if constexpr(std::is_same_v<T, int> || std::is_same_v<T, std::size_t>)
             return "int";
         else if constexpr(std::is_same_v<T, double>)
             return "double";
@@ -29,7 +29,7 @@ public:
         return "unsupported";
     }
 
-    std::string name() const
+    std::string_view name() const
     {
         return m_fieldName;
     }

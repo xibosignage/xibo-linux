@@ -14,13 +14,13 @@ namespace Gst
     public:
         ~Pipeline();
         static Gst::RefPtr<Gst::Pipeline> create();
-        static Gst::RefPtr<Gst::Pipeline> create(const std::string& name);
+        static Gst::RefPtr<Gst::Pipeline> create(std::string_view name);
         Gst::RefPtr<Gst::Pipeline> add(Gst::RefPtr<Gst::Element> other);
         Gst::RefPtr<Gst::Pipeline> remove(Gst::RefPtr<Gst::Element> other);
         void addBusWatch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler);
 
     private:
-        Pipeline(const std::string& name);
+        Pipeline(std::string_view name);
         gboolean onBusWatchMem(GstBus*, GstMessage* message, gpointer);
         static gboolean onBusWatch(GstBus*, GstMessage* message, gpointer);
 

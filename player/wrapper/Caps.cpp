@@ -5,9 +5,9 @@ Gst::Caps::Caps(GstCaps* handler) :
 {
 }
 
-Gst::Caps::Caps(const std::string& stringCaps) :
+Gst::Caps::Caps(std::string_view stringCaps) :
     m_stringCaps(stringCaps),
-    m_handler(gst_caps_from_string(m_stringCaps.c_str()))
+    m_handler(gst_caps_from_string(m_stringCaps.data()))
 {
 }
 
@@ -27,7 +27,7 @@ Gst::Caps::~Caps()
     gst_caps_unref(m_handler);
 }
 
-Gst::RefPtr<Gst::Caps> Gst::Caps::create(const std::string& stringCaps)
+Gst::RefPtr<Gst::Caps> Gst::Caps::create(std::string_view stringCaps)
 {
     return std::make_shared<Gst::Caps>(stringCaps);
 }

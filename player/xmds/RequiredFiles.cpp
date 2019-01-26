@@ -5,6 +5,26 @@
 
 namespace Resources = XMDSResources::RequiredFiles;
 
+const RegularFiles& RequiredFiles::Result::requiredFiles() const
+{
+    return m_requiredFiles;
+}
+
+const ResourceFiles& RequiredFiles::Result::requiredResources() const
+{
+    return m_requiredResources;
+}
+
+void RequiredFiles::Result::addFile(RegularFile&& file)
+{
+    m_requiredFiles.emplace_back(std::move(file));
+}
+
+void RequiredFiles::Result::addResource(ResourceFile&& resource)
+{
+    m_requiredResources.emplace_back(std::move(resource));
+}
+
 SOAP::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) : BaseRequestSerializer(request)
 {
 }
@@ -18,67 +38,71 @@ SOAP::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& s
 {
 }
 
-RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const boost::property_tree::ptree& node)
+RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const xml_node& node)
 {
     auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
     auto filesNode = Utils::parseXmlFromString(requiredFilesXml).get_child(Resources::Files);
 
     RequiredFiles::Result result;
-    std::for_each(filesNode.begin(), filesNode.end(), [this, &result](const auto& file){
-        auto [name, fileNode] = file;
-        if(name == Resources::File)
+
+    for(auto [name, fileNode] : filesNode)
+    {
+        if(name != Resources::File) continue;
+
+        auto fileAttrs = fileNode.get_child(Resources::FileAttrs);
+        auto fileType = fileAttrs.get<std::string>(Resources::FileType);
+
+        if(isLayout(fileType) || isMedia(fileType))
         {
-            addRequiredFile(result, fileNode.get_child(Resources::FileAttrs));
+            result.addFile(parseRegularFile(fileAttrs));
         }
-    });
+        else if(isResource(fileType))
+        {
+            result.addResource(parseResourceFile(fileAttrs));
+        }
+    }
 
     return result;
 }
 
-void SOAP::ResponseParser<RequiredFiles::Result>::addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs)
+RegularFile SOAP::ResponseParser<RequiredFiles::Result>::parseRegularFile(const xml_node& attrs)
 {
-    using FileType = RequiredFiles::Result::FileType;
+    auto fileType = attrs.get<std::string>(Resources::FileType);
+    auto id = attrs.get<int>(Resources::RegularFile::Id);
+    auto size = attrs.get<size_t>(Resources::RegularFile::Size);
+    auto md5 = attrs.get<std::string>(Resources::RegularFile::MD5);
+    auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
+    auto [path, name] = parseFileNameAndPath(downloadType, fileType, attrs);
 
-    auto fileType = toFileType(attrs.get<std::string>(Resources::FileType));
-    if(fileType == FileType::Invalid) return;
-
-    if(fileType != FileType::Resource)
-    {
-        auto id = attrs.get<int>(Resources::RegularFile::Id);
-        auto size = attrs.get<size_t>(Resources::RegularFile::Size);
-        auto md5 = attrs.get<std::string>(Resources::RegularFile::MD5);
-        auto path = attrs.get<std::string>(Resources::RegularFile::Path);
-        auto saveAs = attrs.get<std::string>(Resources::RegularFile::SaveAs);
-        auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
-        response.requiredFiles.emplace_back(RequiredFiles::Result::RequiredFile{id, size, md5, path, saveAs, downloadType, fileType});
-    }
-    else
-    {
-        auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
-        auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
-        auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
-        response.requiredResources.emplace_back(RequiredFiles::Result::RequiredResource{layoutId, regionId, mediaId});
-    }
+    return RegularFile{id, size, md5, path, name, fileType, downloadType};
 }
 
-RequiredFiles::Result::FileType SOAP::ResponseParser<RequiredFiles::Result>::toFileType(const std::string& type)
+ResourceFile SOAP::ResponseParser<RequiredFiles::Result>::parseResourceFile(const xml_node& attrs)
 {
-    using FileType = RequiredFiles::Result::FileType;
+    auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
+    auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
+    auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
 
-    if(type == Resources::Media)
-        return FileType::Media;
-    else if(type == Resources::Layout)
-        return FileType::Layout;
-    else if(type == Resources::Resource)
-        return FileType::Resource;
-
-    return FileType::Invalid;
+    return ResourceFile{layoutId, regionId, mediaId};
 }
 
-RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(const std::string& type)
+bool SOAP::ResponseParser<RequiredFiles::Result>::isLayout(std::string_view type) const
 {
-    using DownloadType = RequiredFiles::Result::DownloadType;
+    return type == Resources::LayoutType;
+}
 
+bool SOAP::ResponseParser<RequiredFiles::Result>::isMedia(std::string_view type) const
+{
+    return type == Resources::MediaType;
+}
+
+bool SOAP::ResponseParser<RequiredFiles::Result>::isResource(std::string_view type) const
+{
+    return type == Resources::ResourceType;
+}
+
+DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
+{
     if(type == Resources::RegularFile::HTTPDownload)
         return DownloadType::HTTP;
     else if(type == Resources::RegularFile::XMDSDownload)
@@ -88,3 +112,28 @@ RequiredFiles::Result::DownloadType SOAP::ResponseParser<RequiredFiles::Result>:
 }
 
 
+// NOTE: workaround because filePath and fileName from RequiredFiles request are a bit clumsy to parse directly
+std::pair<std::string, std::string>
+SOAP::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs)
+{
+    std::string path, name;
+
+    switch(dType)
+    {
+        case DownloadType::HTTP:
+            path = attrs.get<std::string>(Resources::RegularFile::Path);
+            name = attrs.get<std::string>(Resources::RegularFile::Name);
+            break;
+        case DownloadType::XMDS:
+            name = attrs.get<std::string>(Resources::RegularFile::Path);
+            if(isLayout(fType))
+            {
+                name += ".xlf";
+            }
+            break;
+        default:
+            break;
+    }
+
+    return std::pair{path, name};
+}

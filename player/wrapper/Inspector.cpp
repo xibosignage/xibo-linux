@@ -91,10 +91,10 @@ void Gst::Inspector::onFinished(GstDiscoverer*, gpointer)
     Log::debug("Finished discovering");
 }
 
-Gst::InspectorResult Gst::Inspector::discover(const std::string& uri)
+Gst::InspectorResult Gst::Inspector::discover(std::string_view uri)
 {
     GError* err;
-    auto info = gst_discoverer_discover_uri(m_discoverer, uri.c_str(), &err);
+    auto info = gst_discoverer_discover_uri(m_discoverer, uri.data(), &err);
 
     return processDiscoveredInfo(info, err);
 }

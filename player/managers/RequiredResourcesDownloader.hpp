@@ -1,18 +1,22 @@
 #pragma once
 
-#include "xmds/RequiredFiles.hpp"
+#include "RequiredItems.hpp"
 #include "xmds/GetResource.hpp"
 
-#include <future>
+#include <boost/thread/future.hpp>
+
+#include "xmds/SOAPManager.hpp"
+
+using DownloadResourcesResults = std::vector<boost::future<void>>;
 
 class RequiredResourcesDownloader
 {
 public:
-    std::future<void> download(const ResourceFiles& resources);
+    boost::future<void> download(const ResourceFiles& resources);
 
 private:
-    void downloadAllResources(const ResourceFiles& resources);
-    void processDownloadedResource(int mediaId, const GetResource::Result& response);
+    DownloadResourcesResults downloadAllResources(const ResourceFiles& resources);
+    void processDownloadedResource(int mediaId, ResponseResult<GetResource::Result> response);
     std::string createResource(int mediaId, const std::string& resourceContent);
 
 };

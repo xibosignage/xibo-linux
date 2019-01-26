@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::LayoutOptions::LayoutOptions(const xlf_node& node)
+ResourcesXlf::LayoutOptions::LayoutOptions(const xml_node& node)
 {
     m_schemaVersion = node.get<int>(attr(Layout::SchemaVersion));
     m_width = node.get<int>(attr(Layout::Width));

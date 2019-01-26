@@ -8,29 +8,50 @@
 
 #include <fstream>
 
-std::future<void> RequiredResourcesDownloader::download(const ResourceFiles& resources)
+boost::future<void> RequiredResourcesDownloader::download(const ResourceFiles& resources)
 {
-    return std::async(std::launch::async, [=](){
-        downloadAllResources(resources);
+    return boost::async(boost::launch::async, [=](){
+        auto downloadResults = downloadAllResources(resources);
+
+        for(auto&& result : downloadResults)
+        {
+            result.wait();
+        }
     });
 }
 
-void RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& resources)
+DownloadResourcesResults RequiredResourcesDownloader::downloadAllResources(const ResourceFiles& resources)
 {
+    DownloadResourcesResults results;
+
     for(auto&& resource : resources)
     {
         Log::trace("Layout ID: {} Region ID: {} Media ID: {}", resource.layoutId, resource.regionId, resource.mediaId);
 
-        auto result = Utils::xmdsManager().getResource(resource.layoutId, resource.regionId, resource.mediaId);
-        processDownloadedResource(resource.mediaId, result.get());
+        auto processResource = [this, resource](auto future){
+            processDownloadedResource(resource.mediaId, future.get());
+        };
+
+        results.emplace_back(Utils::xmdsManager().getResource(resource.layoutId, resource.regionId, resource.mediaId).then(std::move(processResource)));
     }
+
+    return results;
 }
 
-void RequiredResourcesDownloader::processDownloadedResource(int mediaId, const GetResource::Result& response)
+void RequiredResourcesDownloader::processDownloadedResource(int mediaId, ResponseResult<GetResource::Result> response)
 {
-    auto filename = createResource(mediaId, response.resource);
+    auto [error, result] = response;
+    if(!error)
+    {
+        auto filename = createResource(mediaId, result.resource);
 
-    Log::debug("[{}] Downloaded", filename);
+        Log::debug("[{}] Downloaded", filename);
+    }
+    else
+    {
+        Log::debug("[{}] Download error", error.message());
+    }
+
 }
 
 std::string RequiredResourcesDownloader::createResource(int mediaId, const std::string& resourceContent)

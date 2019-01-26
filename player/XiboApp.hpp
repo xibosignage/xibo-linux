@@ -5,7 +5,7 @@
 class XMDSManager;
 class IMainLayout;
 class MainWindow;
-class HTTPDownloader;
+class HTTPManager;
 class Scheduler;
 class CollectionInterval;
 class CommandLineParser;
@@ -22,7 +22,7 @@ public:
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
     XMDSManager& xmdsManager();
-    HTTPDownloader& downloadManager();
+    HTTPManager& downloadManager();
 
     int run(int argc, char** argv);
 
@@ -40,7 +40,7 @@ private:
     Glib::RefPtr<Gtk::Application> m_parentApp;
     std::unique_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<XMDSManager> m_xmdsManager;
-    std::unique_ptr<HTTPDownloader> m_downloadManager;
+    std::unique_ptr<HTTPManager> m_downloadManager;
     std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<CommandLineParser> m_options;

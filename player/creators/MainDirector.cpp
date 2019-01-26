@@ -36,7 +36,7 @@ std::string MainDirector::getLayoutXlfPath(int layoutId)
     return Resources::directory() / xlfFile;
 }
 
-std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xlf_node& layoutNode)
+std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xml_node& layoutNode)
 {
     LayoutOptions opts{layoutNode};
 
@@ -50,7 +50,7 @@ std::unique_ptr<IBackground> MainDirector::buildBackground(const ResourcesXlf::L
                               .path(opts.backgroundPath()).color(opts.backgroundColor()).build();
 }
 
-std::vector<RegionWithPos> MainDirector::collectRegions(const xlf_node& layoutNode)
+std::vector<RegionWithPos> MainDirector::collectRegions(const xml_node& layoutNode)
 {
     std::vector<RegionWithPos> regions;
     for(auto [nodeName, regionNode] : layoutNode)
@@ -64,7 +64,7 @@ std::vector<RegionWithPos> MainDirector::collectRegions(const xlf_node& layoutNo
     return regions;
 }
 
-std::unique_ptr<IRegion> MainDirector::buildRegion(const xlf_node& regionNode)
+std::unique_ptr<IRegion> MainDirector::buildRegion(const xml_node& regionNode)
 {
     RegionOptions opts{regionNode};
     auto allContent = collectContent(opts.width(), opts.height(), regionNode);
@@ -72,7 +72,7 @@ std::unique_ptr<IRegion> MainDirector::buildRegion(const xlf_node& regionNode)
     return RegionBuilder().id(opts.id()).width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop()).content(std::move(allContent)).build();
 }
 
-std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xlf_node& regionNode)
+std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xml_node& regionNode)
 {
     std::vector<ContentWithPos> media;
     for(auto [nodeName, mediaNode] : regionNode)
@@ -93,7 +93,7 @@ std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int re
     return media;
 }
 
-std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeight, const xlf_node& mediaNode)
+std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeight, const xml_node& mediaNode)
 {
     auto type = MediaOptions::getType(mediaNode);
 
@@ -127,7 +127,7 @@ std::unique_ptr<WebView> MainDirector::buildWebView(int regionWidth, int regionH
     return WebViewBuilder().width(regionWidth).height(regionHeight).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
-void MainDirector::attachAdditionalMedia(const xlf_node& mediaNode, IRegionContent& content)
+void MainDirector::attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content)
 {
     for(auto [nodeName, additionalMediaNode] : mediaNode)
     {

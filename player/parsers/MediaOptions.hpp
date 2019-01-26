@@ -9,8 +9,8 @@ namespace ResourcesXlf
     class MediaOptions
     {
     public:
-        MediaOptions(const xlf_node& node);
-        static std::string getType(const xlf_node& node);
+        MediaOptions(const xml_node& node);
+        static std::string getType(const xml_node& node);
 
         int id() const;
         boost::optional<std::string> uri() const;

@@ -7,7 +7,7 @@ namespace ResourcesXlf
     class VideoOptions : public MediaOptions
     {
     public:
-        VideoOptions(const xlf_node& node);
+        VideoOptions(const xml_node& node);
 
         boost::optional<bool> muted() const;
         boost::optional<bool> looped() const;

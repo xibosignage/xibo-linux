@@ -32,20 +32,20 @@ public:
     std::unique_ptr<IMainLayout> buildLayoutWithChildren(int layoutId);
 
 private:
-    std::unique_ptr<IMainLayout> buildLayout(const xlf_node& layoutNode);
+    std::unique_ptr<IMainLayout> buildLayout(const xml_node& layoutNode);
     std::string getLayoutXlfPath(int layoutId);
     std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::LayoutOptions& opts);
-    std::vector<RegionWithPos> collectRegions(const xlf_node& layoutNode);
-    std::unique_ptr<IRegion> buildRegion(const xlf_node& regionNode);
-    std::vector<ContentWithPos> collectContent(int regionWidth, int regionHeight, const xlf_node& regionNode);
-    std::vector<std::unique_ptr<IMedia>> collectInvisibleMedia(const xlf_node& regionNode);
+    std::vector<RegionWithPos> collectRegions(const xml_node& layoutNode);
+    std::unique_ptr<IRegion> buildRegion(const xml_node& regionNode);
+    std::vector<ContentWithPos> collectContent(int regionWidth, int regionHeight, const xml_node& regionNode);
+    std::vector<std::unique_ptr<IMedia>> collectInvisibleMedia(const xml_node& regionNode);
 
-    std::unique_ptr<IMedia> buildMedia(int regionWidth, int regionHeight, const xlf_node& mediaNode);
+    std::unique_ptr<IMedia> buildMedia(int regionWidth, int regionHeight, const xml_node& mediaNode);
     std::unique_ptr<Image> buildImage(int regionWidth, int regionHeight, const ResourcesXlf::ImageOptions& opts);
     std::unique_ptr<Video> buildVideo(int regionWidth, int regionHeight, const ResourcesXlf::VideoOptions& opts);
     std::unique_ptr<Audio> buildAudio(const ResourcesXlf::AudioOptions& opts);
     std::unique_ptr<WebView> buildWebView(int regionWidth, int regionHeight, const ResourcesXlf::WebViewOptions& opts);
-    void attachAdditionalMedia(const xlf_node& mediaNode, IRegionContent& content);
+    void attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content);
 
 
 };

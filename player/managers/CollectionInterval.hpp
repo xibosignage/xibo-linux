@@ -9,6 +9,7 @@
 
 #include "utils/ITimerProvider.hpp"
 #include "utils/JoinableThread.hpp"
+#include "utils/ResponseResult.hpp"
 #include "events/Observable.hpp"
 
 using CollectionResultCallback = std::function<void(const CollectionResult&)>;
@@ -33,13 +34,13 @@ private:
     void startTimer();
     void updateTimer(int collectInterval);
 
-    void sessionFinished(CollectionSessionPtr session, CollectionResult::Error = {});
+    void sessionFinished(CollectionSessionPtr session, PlayerError = {});
     void onRegularCollectionFinished(const CollectionResult& result);
 
-    void onDisplayRegistered(const RegisterDisplay::Result& response, CollectionSessionPtr session);
+    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);
     void displayMessage(const RegisterDisplay::Result::Status& status);
-    void onRequiredFiles(const RequiredFiles::Result& response, CollectionSessionPtr session);
-    void onSchedule(const Schedule::Result& response, CollectionSessionPtr session);
+    void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
+    void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
 
 private:
     std::unique_ptr<JoinableThread> m_workerThread;

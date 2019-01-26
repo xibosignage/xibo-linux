@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Element.hpp"
-#include <string>
+#include <string_view>
 
 namespace Gst
 {
@@ -9,7 +9,7 @@ namespace Gst
     {
     public:
         static Gst::RefPtr<Gst::FileSrc> create();
-        void setLocation(const std::string& uri);
+        void setLocation(std::string_view uri);
 
     private:
         FileSrc();

@@ -5,46 +5,21 @@
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
 
+#include "managers/RequiredItems.hpp"
+
 namespace RequiredFiles
 {
     struct Result
     {
-        enum class FileType
-        {
-            Media,
-            Layout,
-            Resource,
-            Invalid
-        };
+        const RegularFiles& requiredFiles() const;
+        const ResourceFiles& requiredResources() const;
 
-        enum class DownloadType
-        {
-            HTTP,
-            XMDS,
-            Invalid
-        };
+        void addFile(RegularFile&& file);
+        void addResource(ResourceFile&& resource);
 
-        struct RequiredFile
-        {
-            int id;
-            size_t size;
-            std::string md5;
-            std::string path;
-            std::string filename;
-            DownloadType downloadType;
-            FileType fileType;
-        };
-
-        struct RequiredResource
-        {
-            int layoutId;
-            int regionId;
-            int mediaId;
-        };
-
-        std::vector<RequiredFile> requiredFiles;
-        std::vector<RequiredResource> requiredResources;
-
+    private:
+        RegularFiles m_requiredFiles;
+        ResourceFiles m_requiredResources;
     };
 
     struct Request
@@ -53,9 +28,6 @@ namespace RequiredFiles
         Field<std::string> hardwareKey{"hardwareKey"};
     };
 }
-
-using RegularFiles = std::vector<RequiredFiles::Result::RequiredFile>;
-using ResourceFiles = std::vector<RequiredFiles::Result::RequiredResource>;
 
 template<>
 class SOAP::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
@@ -76,8 +48,13 @@ protected:
     RequiredFiles::Result doParse(const boost::property_tree::ptree& node) override;
 
 private:
-    void addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs);
-    RequiredFiles::Result::FileType toFileType(const std::string& type);
-    RequiredFiles::Result::DownloadType toDownloadType(const std::string& type);
+    RegularFile parseRegularFile(const boost::property_tree::ptree& attrs);
+    ResourceFile parseResourceFile(const boost::property_tree::ptree& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs);
+
+    bool isLayout(std::string_view type) const;
+    bool isMedia(std::string_view type) const;
+    bool isResource(std::string_view type) const;
+    DownloadType toDownloadType(std::string_view type);
 
 };
