@@ -2,6 +2,7 @@
 
 #include "HTTPManager.hpp"
 #include "XMDSDownloader.hpp"
+#include "FileCacheManager.hpp"
 #include "xmds/XMDSManager.hpp"
 
 #include "utils/Utilities.hpp"
@@ -31,8 +32,6 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile&
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    // FIXME it should use FileCacheManager
-
     if(file.downloadType == DownloadType::HTTP)
     {
         return downloadHttpFile(file.name, file.url);
@@ -62,7 +61,7 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     auto [error, fileContent] = result;
     if(!error)
     {
-        createFile(fileName, fileContent);
+        Utils::fileManager().saveFile(fileName, fileContent);
         Log::debug("[{}] Downloaded", fileName);
         return true;
     }
@@ -73,10 +72,21 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     }
 }
 
-void RequiredFilesDownloader::createFile(const std::string& fileName, const std::string& fileContent)
+bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
 {
-    auto filePath = Resources::directory() / fileName;
+    return Utils::fileManager().isFileInCache(file.md5);
+}
 
-    std::ofstream out(filePath.string());
-    out << fileContent;
+bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
+{
+    return false;
+}
+
+void RequiredFilesDownloader::addFileToCache(const RegularFile& file)
+{
+    Utils::fileManager().addFileToCache(file.md5);
+}
+
+void RequiredFilesDownloader::addFileToCache(const ResourceFile&)
+{
 }

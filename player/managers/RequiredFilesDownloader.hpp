@@ -36,7 +36,11 @@ private:
         {
             Log::trace(file);
 
-            results.emplace_back(downloadRequiredFile(file));
+            if(!isFileInCache(file))
+            {
+                addFileToCache(file); // FIXME should be called inside saveFile
+                results.emplace_back(downloadRequiredFile(file));
+            }
         }
 
         return results;
@@ -58,12 +62,15 @@ private:
         return items;
     }
 
+    bool isFileInCache(const RegularFile& file) const;
+    bool isFileInCache(const ResourceFile& resource) const;
+    void addFileToCache(const RegularFile& file);
+    void addFileToCache(const ResourceFile& resource);
+
     DownloadResult downloadRequiredFile(const ResourceFile& res);
     DownloadResult downloadRequiredFile(const RegularFile& file);
     DownloadResult downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
     DownloadResult downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
-
-    void createFile(const std::string& fileName, const std::string& fileContent);
     bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName);
 
 private:

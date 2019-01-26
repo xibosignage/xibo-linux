@@ -15,6 +15,12 @@ XMDSManager& Utils::xmdsManager()
     return XiboApp::app().xmdsManager();
 }
 
+
+FileCacheManager& Utils::fileManager()
+{
+    return XiboApp::app().fileManager();
+}
+
 xml_node Utils::parseXmlFromPath(const FilePath& xlfPath)
 {
     xml_node tree;
@@ -35,10 +41,10 @@ std::string Utils::xmlTreeToEscapedString(const xml_node& node)
 {
     std::stringstream sstream;
     boost::property_tree::write_xml(sstream, node);
-    std::string str = sstream.str();
+    std::string xmlStr = sstream.str();
 
-    boost::replace_all(str, "<", "&lt;");
-    boost::replace_all(str, ">", "&gt;");
+    boost::replace_all(xmlStr, "<", "&lt;");
+    boost::replace_all(xmlStr, ">", "&gt;");
 
-    return str;
+    return xmlStr;
 }

@@ -14,6 +14,7 @@
 #include "managers/HTTPManager.hpp"
 #include "managers/CollectionInterval.hpp"
 #include "managers/Scheduler.hpp"
+#include "managers/FileCacheManager.hpp"
 
 #include <spdlog/fmt/ostr.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -40,6 +41,7 @@ XiboApp::XiboApp(const std::string& name) :
     m_parentApp(Gtk::Application::create(name)),
     m_downloadManager(std::make_unique<HTTPManager>()),
     m_scheduler(std::make_unique<Scheduler>()),
+    m_fileManager(std::make_unique<FileCacheManager>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
 {        
@@ -101,6 +103,11 @@ XMDSManager& XiboApp::xmdsManager()
 HTTPManager& XiboApp::downloadManager()
 {
     return *m_downloadManager;
+}
+
+FileCacheManager& XiboApp::fileManager()
+{
+    return *m_fileManager;
 }
 
 int XiboApp::run(int argc, char** argv)

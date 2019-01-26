@@ -118,9 +118,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         auto filesResult = downloader.download(files);
 
         updateMediaInventory(filesResult.get());
-        Log::debug("Files downloaded");
         updateMediaInventory(resourcesResult.get());
-        Log::debug("Resources downloaded");
     }
     else
     {
