@@ -65,3 +65,13 @@ boost::future<ResponseResult<GetFile::Result>> XMDSManager::getFile(int fileId, 
 
     return m_soapManager->sendRequest<GetFile::Result>(request);
 }
+
+boost::future<ResponseResult<MediaInventory::Result>> XMDSManager::mediaInventory(MediaInventoryItems&& items)
+{
+    MediaInventory::Request request;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.inventory = std::move(items);
+
+    return m_soapManager->sendRequest<MediaInventory::Result>(request);
+}

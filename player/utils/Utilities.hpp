@@ -12,4 +12,5 @@ namespace Utils
     HTTPManager& httpManager();
     xml_node parseXmlFromPath(const FilePath& xlfPath);
     xml_node parseXmlFromString(const std::string& xml);
+    std::string xmlTreeToEscapedString(const xml_node& node);
 }

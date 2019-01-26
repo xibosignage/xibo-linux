@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RequiredFilesDownloader.hpp"
-#include "RequiredResourcesDownloader.hpp"
 #include "CollectionResult.hpp"
 
 #include "xmds/RegisterDisplay.hpp"
@@ -41,6 +40,7 @@ private:
     void displayMessage(const RegisterDisplay::Result::Status& status);
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
+    void updateMediaInventory(MediaInventoryItems&& items);
 
 private:
     std::unique_ptr<JoinableThread> m_workerThread;

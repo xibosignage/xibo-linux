@@ -3,6 +3,7 @@
 #include "FilePath.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/algorithm/string.hpp>
 
 HTTPManager& Utils::httpManager()
 {
@@ -14,18 +15,30 @@ XMDSManager& Utils::xmdsManager()
     return XiboApp::app().xmdsManager();
 }
 
-boost::property_tree::ptree Utils::parseXmlFromPath(const FilePath& xlfPath)
+xml_node Utils::parseXmlFromPath(const FilePath& xlfPath)
 {
-    boost::property_tree::ptree tree;
+    xml_node tree;
     boost::property_tree::read_xml(xlfPath.string(), tree);
     return tree;
 }
 
-boost::property_tree::ptree Utils::parseXmlFromString(const std::string& xml)
+xml_node Utils::parseXmlFromString(const std::string& xml)
 {
     std::stringstream stream;
     stream << xml;
-    boost::property_tree::ptree tree;
+    xml_node tree;
     boost::property_tree::read_xml(stream, tree);
     return tree;
+}
+
+std::string Utils::xmlTreeToEscapedString(const xml_node& node)
+{
+    std::stringstream sstream;
+    boost::property_tree::write_xml(sstream, node);
+    std::string str = sstream.str();
+
+    boost::replace_all(str, "<", "&lt;");
+    boost::replace_all(str, ">", "&gt;");
+
+    return str;
 }

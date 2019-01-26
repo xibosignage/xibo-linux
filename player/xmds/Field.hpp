@@ -1,5 +1,4 @@
-#ifndef FIELD_HPP
-#define FIELD_HPP
+#pragma once
 
 #include <string>
 
@@ -48,5 +47,3 @@ private:
     std::string m_fieldName;
     T m_value;
 };
-
-#endif // FIELD_HPP

@@ -12,8 +12,8 @@ namespace SOAP
     class BaseResponseParser
     {
     public:
-        using OptionalParsedNode = boost::optional<boost::property_tree::ptree&>;
-        using ParsedNode = boost::property_tree::ptree;
+        using OptionalParsedNode = boost::optional<xml_node&>;
+        using ParsedNode = xml_node;
 
         BaseResponseParser(const std::string& response) : m_response(response)
         {

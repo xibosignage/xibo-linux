@@ -16,13 +16,11 @@ SOAP::ResponseParser<Schedule::Result>::ResponseParser(const std::string& soapRe
 {
 }
 
-Schedule::Result SOAP::ResponseParser<Schedule::Result>::doParse(const boost::property_tree::ptree& scheduleNode)
+Schedule::Result SOAP::ResponseParser<Schedule::Result>::doParse(const xml_node& scheduleNode)
 {
     auto scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);
     auto schedule = Utils::parseXmlFromString(scheduleXml).get_child(Resources::Schedule);
     Schedule::Result result;
-
-//    Log::debug(scheduleXml);
 
     for(auto [name, node] : schedule)
     {
@@ -37,7 +35,7 @@ Schedule::Result SOAP::ResponseParser<Schedule::Result>::doParse(const boost::pr
     return result;
 }
 
-ScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseScheduledLayout(const boost::property_tree::ptree& layoutNode)
+ScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseScheduledLayout(const xml_node& layoutNode)
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
@@ -58,7 +56,7 @@ ScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseScheduledLayout(con
     return layout;
 }
 
-DefaultScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseDefaultLayout(const boost::property_tree::ptree& layoutNode)
+DefaultScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseDefaultLayout(const xml_node& layoutNode)
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
@@ -75,7 +73,7 @@ DefaultScheduledLayout SOAP::ResponseParser<Schedule::Result>::parseDefaultLayou
     return layout;
 }
 
-std::vector<std::string> SOAP::ResponseParser<Schedule::Result>::parseDependants(const boost::property_tree::ptree& dependantsNode)
+std::vector<std::string> SOAP::ResponseParser<Schedule::Result>::parseDependants(const xml_node& dependantsNode)
 {
     std::vector<std::string> dependants;
 

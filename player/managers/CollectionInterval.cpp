@@ -107,20 +107,19 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if(!error)
     {
-        RequiredFilesDownloader filesDownloader;
-        RequiredResourcesDownloader resourcesDownloader;
+        RequiredFilesDownloader downloader;
 
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
 
-        Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
+        Log::debug("{} files and {} resources to download", files.size(), resources.size());
 
-        auto resourcesResult = resourcesDownloader.download(resources);
-        auto filesResult = filesDownloader.download(files);
+        auto resourcesResult = downloader.download(resources);
+        auto filesResult = downloader.download(files);
 
-        filesResult.wait();
+        updateMediaInventory(filesResult.get());
         Log::debug("Files downloaded");
-        resourcesResult.wait();
+        updateMediaInventory(resourcesResult.get());
         Log::debug("Resources downloaded");
     }
     else
@@ -141,4 +140,15 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     {
         sessionFinished(session, error);
     }
+}
+
+void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
+{
+    Utils::xmdsManager().mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+        auto [error, result] = future.get();
+        if(error)
+        {
+            Log::debug("MediaInventory update error: {}", error);
+        }
+    });
 }

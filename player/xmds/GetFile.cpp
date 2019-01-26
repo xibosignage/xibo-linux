@@ -16,7 +16,7 @@ SOAP::ResponseParser<GetFile::Result>::ResponseParser(const std::string& soapRes
 {
 }
 
-GetFile::Result SOAP::ResponseParser<GetFile::Result>::doParse(const boost::property_tree::ptree& node)
+GetFile::Result SOAP::ResponseParser<GetFile::Result>::doParse(const xml_node& node)
 {
     GetFile::Result result;
     result.base64chunk = node.get<std::string>(Resources::FileChunk);
