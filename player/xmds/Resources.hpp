@@ -109,4 +109,10 @@ namespace XMDSResources
         const std::string_view Name = "GetFile";
         const std::string FileChunk = "file";
     }
+
+    namespace MediaInventory
+    {
+        const std::string_view Name = "MediaInventory";
+        const std::string Success = "success";
+    }
 }

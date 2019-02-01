@@ -1,25 +1,76 @@
 #pragma once
 
-#include "RequiredItems.hpp"
-#include "XMDSDownloader.hpp"
+#include "utils/ResponseResult.hpp"
+#include "utils/Logger.hpp"
+#include "xmds/MediaInventoryItem.hpp"
 
 #include <boost/thread/future.hpp>
 
-using DownloadFilesResults = std::vector<boost::future<void>>;
+using DownloadResult = boost::future<bool>;
+using DownloadResults = std::vector<DownloadResult>;
+using ResponseContentResult = ResponseResult<std::string>;
+class XMDSDownloader;
 
 class RequiredFilesDownloader
 {
 public:
-    boost::future<void> download(const RegularFiles& files);
+    RequiredFilesDownloader();
+    ~RequiredFilesDownloader();
+
+    template<typename RequiredFileType>
+    boost::future<MediaInventoryItems> download(const FilesToDownload<RequiredFileType>& files)
+    {
+        return boost::async(boost::launch::async, [this, files = std::move(files)](){
+            auto downloadResults = downloadAll(files);
+            return retrieveDownloadResults(files, std::move(downloadResults));
+        });
+    }
 
 private:
-    DownloadFilesResults downloadAllFiles(const RegularFiles& files);
-    boost::future<void> downloadFile(const RegularFile& file);
-    boost::future<void> downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
-    boost::future<void> downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
-    void createFile(const std::string& fileName, const std::string& fileContent);
+    template<typename RequiredFileType>
+    DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
+    {
+        DownloadResults results;
+
+        for(auto&& file : requiredFiles)
+        {
+            Log::trace(file);
+
+            if(!isFileInCache(file))
+            {
+                results.emplace_back(downloadRequiredFile(file));
+            }
+        }
+
+        return results;
+    }
+
+    template<typename RequiredFileType>
+    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files, DownloadResults&& results)
+    {
+        MediaInventoryItems items;
+
+        for(std::size_t i = 0; i != results.size(); ++i)
+        {
+            bool downloadComplete = results[i].get();
+            auto&& downloadedFile = files[i];
+
+            items.emplace_back(downloadedFile, downloadComplete);
+        }
+
+        return items;
+    }
+
+    bool isFileInCache(const RegularFile& file) const;
+    bool isFileInCache(const ResourceFile& resource) const;
+
+    DownloadResult downloadRequiredFile(const ResourceFile& res);
+    DownloadResult downloadRequiredFile(const RegularFile& file);
+    DownloadResult downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
+    DownloadResult downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
+    bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName);
 
 private:
-    XMDSDownloader m_xmdsDownloader;
+    std::unique_ptr<XMDSDownloader> m_xmdsDownloader;
 
 };

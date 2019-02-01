@@ -1,5 +1,4 @@
-#ifndef PLAYERSETTINGS_HPP
-#define PLAYERSETTINGS_HPP
+#pragma once
 
 #include <string>
 #include <spdlog/common.h>
@@ -28,5 +27,3 @@ struct PlayerSettings
     std::string displayName;
     bool screenshotRequested;
 };
-
-#endif // PLAYERSETTINGS_HPP

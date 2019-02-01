@@ -16,7 +16,7 @@ SOAP::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soa
 {
 }
 
-GetResource::Result SOAP::ResponseParser<GetResource::Result>::doParse(const boost::property_tree::ptree& node)
+GetResource::Result SOAP::ResponseParser<GetResource::Result>::doParse(const xml_node& node)
 {
     GetResource::Result result;
     result.resource = node.get<std::string>(Resources::Resource);

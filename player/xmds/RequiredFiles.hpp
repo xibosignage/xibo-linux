@@ -11,15 +11,15 @@ namespace RequiredFiles
 {
     struct Result
     {
-        const RegularFiles& requiredFiles() const;
-        const ResourceFiles& requiredResources() const;
+        const FilesToDownload<RegularFile>& requiredFiles() const;
+        const FilesToDownload<ResourceFile>& requiredResources() const;
 
         void addFile(RegularFile&& file);
         void addResource(ResourceFile&& resource);
 
     private:
-        RegularFiles m_requiredFiles;
-        ResourceFiles m_requiredResources;
+        FilesToDownload<RegularFile> m_requiredFiles;
+        FilesToDownload<ResourceFile> m_requiredResources;
     };
 
     struct Request
@@ -45,11 +45,11 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result doParse(const boost::property_tree::ptree& node) override;
+    RequiredFiles::Result doParse(const xml_node& node) override;
 
 private:
-    RegularFile parseRegularFile(const boost::property_tree::ptree& attrs);
-    ResourceFile parseResourceFile(const boost::property_tree::ptree& attrs);
+    RegularFile parseRegularFile(const xml_node& attrs);
+    ResourceFile parseResourceFile(const xml_node& attrs);
     std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs);
 
     bool isLayout(std::string_view type) const;

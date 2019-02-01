@@ -41,7 +41,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 {
     m_workerThread = std::make_unique<JoinableThread>([=]()
     {
-        Log::debug("Collection started {}", std::this_thread::get_id());
+        Log::debug("Collection started");
 
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
@@ -107,21 +107,18 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if(!error)
     {
-        RequiredFilesDownloader filesDownloader;
-        RequiredResourcesDownloader resourcesDownloader;
+        RequiredFilesDownloader downloader;
 
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
 
-        Log::debug("{} files and {} resources to download {}", files.size(), resources.size(), std::this_thread::get_id());
+        Log::debug("{} files and {} resources to download", files.size(), resources.size());
 
-        auto resourcesResult = resourcesDownloader.download(resources);
-        auto filesResult = filesDownloader.download(files);
+        auto resourcesResult = downloader.download(resources);
+        auto filesResult = downloader.download(files);
 
-        filesResult.wait();
-        Log::debug("Files downloaded");
-        resourcesResult.wait();
-        Log::debug("Resources downloaded");
+        updateMediaInventory(filesResult.get());
+        updateMediaInventory(resourcesResult.get());
     }
     else
     {
@@ -141,4 +138,15 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     {
         sessionFinished(session, error);
     }
+}
+
+void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
+{
+    Utils::xmdsManager().mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+        auto [error, result] = future.get();
+        if(error)
+        {
+            Log::debug("MediaInventory update error: {}", error);
+        }
+    });
 }

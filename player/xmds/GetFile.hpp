@@ -1,5 +1,4 @@
-#ifndef GETFILE_HPP
-#define GETFILE_HPP
+#pragma once
 
 #include "Field.hpp"
 #include "SOAP.hpp"
@@ -40,8 +39,6 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetFile::Result doParse(const boost::property_tree::ptree& node) override;
+    GetFile::Result doParse(const xml_node& node) override;
 
 };
-
-#endif // GETFILE_HPP

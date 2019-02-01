@@ -5,12 +5,12 @@
 
 namespace Resources = XMDSResources::RequiredFiles;
 
-const RegularFiles& RequiredFiles::Result::requiredFiles() const
+const FilesToDownload<RegularFile>& RequiredFiles::Result::requiredFiles() const
 {
     return m_requiredFiles;
 }
 
-const ResourceFiles& RequiredFiles::Result::requiredResources() const
+const FilesToDownload<ResourceFile>& RequiredFiles::Result::requiredResources() const
 {
     return m_requiredResources;
 }

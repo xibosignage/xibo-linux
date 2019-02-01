@@ -1,5 +1,4 @@
-#ifndef SOAP_HPP
-#define SOAP_HPP
+#pragma once
 
 #include <string>
 
@@ -15,5 +14,3 @@ namespace SOAP
     class RequestSerializer;
 
 }
-
-#endif // SOAP_HPP

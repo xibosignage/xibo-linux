@@ -57,10 +57,10 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result doParse(const boost::property_tree::ptree& node) override;
+    RegisterDisplay::Result doParse(const xml_node& node) override;
 
 private:
-    void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
+    void fillPlayerSettings(PlayerSettings& settings, const xml_node& display);
     spdlog::level::level_enum toLogLevelEnum(const std::string& level);
 
 };

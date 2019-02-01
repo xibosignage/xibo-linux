@@ -39,11 +39,11 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Result doParse(const boost::property_tree::ptree& scheduleNode) override;
+    Schedule::Result doParse(const xml_node& scheduleNode) override;
 
 private:
-    ScheduledLayout parseScheduledLayout(const boost::property_tree::ptree& layoutNode);
-    DefaultScheduledLayout parseDefaultLayout(const boost::property_tree::ptree& layoutNode);
-    std::vector<std::string> parseDependants(const boost::property_tree::ptree& dependantsNode);
+    ScheduledLayout parseScheduledLayout(const xml_node& layoutNode);
+    DefaultScheduledLayout parseDefaultLayout(const xml_node& layoutNode);
+    std::vector<std::string> parseDependants(const xml_node& dependantsNode);
 
 };
