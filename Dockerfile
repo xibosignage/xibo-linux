@@ -23,7 +23,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   git \
   g++-8 \
   libffi-dev \
-  libmount-dev
+  libmount-dev \
+  libssl-dev
 
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
