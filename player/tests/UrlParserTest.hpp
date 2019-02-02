@@ -1,50 +1,53 @@
 #pragma once
 
 #include "test_utils.hpp"
-#include "managers/Url.hpp"
+#include "managers/Uri.hpp"
 
-struct UrlTest
+struct UriTest
 {
     std::string strUrl;
-    Url url;
+    Uri url;
 };
 
-class UrlParserValidTests : public testing::TestWithParam<UrlTest> { };
-class UrlParserInvalidTests : public testing::TestWithParam<UrlTest> { };
+class UriParserValidTests : public testing::TestWithParam<UriTest> { };
+class UriParserInvalidTests : public testing::TestWithParam<UriTest> { };
 
-const std::vector<UrlTest> validUrls =
-    {{"https://127.0.0.1/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 443, "/sadfsadf"}},
-     {"http://127.0.0.1/", Url{Url::Scheme::HTTP, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 80, "/"}},
-     {"https://127.0.0.1:1/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 1, "/sadfsadf"}},
-     {"https://127.0.0.1:12/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 12, "/sadfsadf"}},
-     {"https://127.0.0.1:123/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 123, "/sadfsadf"}},
-     {"https://127.0.0.1:1234/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 1234, "/sadfsadf"}},
-     {"https://127.0.0.1:12345/sadfsadf", Url{Url::Scheme::HTTPS, Url::Host{"127.0.0.1", Url::Host::Type::IP}, 12345, "/sadfsadf"}},
-     {"https://www.example.com/", Url{Url::Scheme::HTTPS, Url::Host{"www.example.com", Url::Host::Type::DNS}, 443, "/"}},
-     {"https://www.example.com/sub/", Url{Url::Scheme::HTTPS, Url::Host{"www.example.com/sub", Url::Host::Type::DNS}, 443, "/"}},
-     {"http://www.example.com/", Url{Url::Scheme::HTTP, Url::Host{"www.example.com", Url::Host::Type::DNS}, 80, "/"}},
-     {"http://blog.example.com/", Url{Url::Scheme::HTTP, Url::Host{"blog.example.com", Url::Host::Type::DNS}, 80, "/"}},
-     {"http://www.example.com/product", Url{Url::Scheme::HTTP, Url::Host{"www.example.com", Url::Host::Type::DNS}, 80, "/product"}},
-     {"http://www.example.com/products?id=1&page=2", Url{Url::Scheme::HTTP, Url::Host{"www.example.com", Url::Host::Type::DNS}, 80, "/products?id=1&page=2"}},
-     {"http://255.255.255.255/", Url{Url::Scheme::HTTP, Url::Host{"255.255.255.255", Url::Host::Type::IP}, 80, "/"}},
-     {"http://www.site.com:8008/", Url{Url::Scheme::HTTP, Url::Host{"www.site.com", Url::Host::Type::DNS}, 8008, "/"}},
-     {"http://www.site.com/xibo:8008/", Url{Url::Scheme::HTTP, Url::Host{"www.site.com/xibo", Url::Host::Type::DNS}, 8008, "/"}}};
+const std::vector<UriTest> validUrls =
+    {{"https://127.0.0.1/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 443}, "/testtarget"}},
+     {"https://username@127.0.0.1/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 443}, "/testtarget"}},
+     {"https://username@127.0.0.1:3434/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 3434}, "/testtarget"}},
+     {"https://username:password@127.0.0.1/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 443}, "/testtarget"}},
+     {"https://username:password@127.0.0.1:3434/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 3434}, "/testtarget"}},
+     {"http://127.0.0.1/", Uri{Uri::Scheme::HTTP, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 80}, "/"}},
+     {"https://127.0.0.1:1/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 1}, "/testtarget"}},
+     {"https://127.0.0.1:12/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 12}, "/testtarget"}},
+     {"https://127.0.0.1:123/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 123}, "/testtarget"}},
+     {"https://127.0.0.1:1234/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 1234}, "/testtarget"}},
+     {"https://127.0.0.1:12345/testtarget", Uri{Uri::Scheme::HTTPS, Uri::Authority{"127.0.0.1", Uri::Authority::HostType::IP, 12345}, "/testtarget"}},
+     {"https://www.example.com/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 443}, "/"}},
+     {"https://www.example.com:4343/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 4343}, "/"}},
+     {"https://username@www.example.com/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 443}, "/"}},
+     {"https://username@www.example.com:4343/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 4343}, "/"}},
+     {"https://username:password@www.example.com/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 443}, "/"}},
+     {"https://username:password@www.example.com:4343/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 4343}, "/"}},
+     {"https://www.example.com/sub/", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 443}, "/sub/"}},
+     {"http://www.example.com/", Uri{Uri::Scheme::HTTP, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 80}, "/"}},
+     {"http://blog.example.com/", Uri{Uri::Scheme::HTTP, Uri::Authority{"blog.example.com", Uri::Authority::HostType::DNS, 80}, "/"}},
+     {"http://www.example.com/product", Uri{Uri::Scheme::HTTP, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 80}, "/product"}},
+     {"http://www.example.com/products?id=1&page=2", Uri{Uri::Scheme::HTTP, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 80}, "/products?id=1&page=2"}},
+     {"http://255.255.255.255/", Uri{Uri::Scheme::HTTP, Uri::Authority{"255.255.255.255", Uri::Authority::HostType::IP, 80}, "/"}},
+     {"http://www.site.com:8008/", Uri{Uri::Scheme::HTTP, Uri::Authority{"www.site.com", Uri::Authority::HostType::DNS, 8008}, "/"}},
+     {"file:///home/test/folder/", Uri{Uri::Scheme::File, Uri::Authority{}, "/home/test/folder/"}},
+     {"https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top", Uri{Uri::Scheme::HTTPS, Uri::Authority{"www.example.com", Uri::Authority::HostType::DNS, 123}, "/forum/questions/?tag=networking&order=newest#top"}},
+     {"http://www.site.com/xibo:8008/", Uri{Uri::Scheme::HTTP, Uri::Authority{"www.site.com", Uri::Authority::HostType::DNS, 80}, "/xibo:8008/"}}};
 
-const std::vector<UrlTest> invalidUrls =
-    {{"http://127.0.0.1:/", Url{}},
-     {"file://127.0.0.1/", Url{}},
-     {"http://127.0.0.1:FDFDF/dfdf", Url{}},
-     {"https://127.0.0.1:123456/sadfsadf", Url{}},
-     {"127.0.0.1/sadfsadf:123456", Url{}},
-     {"www.example.com", Url{}},
-     {"example.com", Url{}},
-     {"http://www.example.com#up", Url{}},
-     {"255.255.255.255", Url{}},
-     {"http://www.site.com:8008", Url{}}};
-
-
-const std::vector<std::string> invalidColors =
-    {"#sss", "121", "asdfasdf", "11G", "#12H", "#111V",
-    "#11", "#1", "1", "#dfdsaw", "#11111", "#1111111"
-    "#111111111", "zzzzzz", "test me", "invalid",
-    "#dfdfd1s", "#1111d", "", " ", "   "};
+const std::vector<UriTest> invalidUrls =
+    {{"http://127.0.0.1:/", Uri{}},
+     {"http://127.0.0.1:FDFDF/dfdf", Uri{}},
+     {"https://127.0.0.1:123456/testtarget", Uri{}},
+     {"127.0.0.1/testtarget:123456", Uri{}},
+     {"www.example.com", Uri{}},
+     {"example.com", Uri{}},
+     {"http://www.example.com#up", Uri{}},
+     {"255.255.255.255", Uri{}},
+     {"http://www.site.com:8008", Uri{}}};

@@ -2,7 +2,7 @@
 
 #include "utils/Logger.hpp"
 
-#include "UrlParser.hpp"
+#include "UriParser.hpp"
 #include "HTTPSession.hpp"
 
 const int DEFAULT_CONCURRENT_REQUESTS = 4;
@@ -37,11 +37,12 @@ boost::future<HTTPResponseResult> HTTPManager::post(const std::string& url, cons
 
 boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const std::string& url, const std::string& body)
 {
-    auto parsedUrl = UrlParser{}.parse(url);
-    parsedUrl->print();
+    auto parsedUrl = UriParser{}.parse(url);
 
     if(parsedUrl)
     {
+        Log::debug(*parsedUrl);
+
         auto session = std::make_shared<RequestSession>(m_ioc);
         return session->send(method, *parsedUrl, body);
     }

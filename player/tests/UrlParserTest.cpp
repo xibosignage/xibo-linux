@@ -1,28 +1,28 @@
 #include "UrlParserTest.hpp"
 
-#include "managers/UrlParser.hpp"
+#include "managers/UriParser.hpp"
 
-TEST_P(UrlParserValidTests, UrlParser_Parse_ValidUrl)
+TEST_P(UriParserValidTests, UriParser_Parse_ValidUrl)
 {
-    UrlParser parser;
+    UriParser parser;
     auto urlToTest = parser.parse(GetParam().strUrl);
     auto comparedUrl = GetParam().url;
 
     ASSERT_EQ(urlToTest->scheme, comparedUrl.scheme);
-    ASSERT_EQ(urlToTest->host.host, comparedUrl.host.host);
-    ASSERT_EQ(urlToTest->host.type, comparedUrl.host.type);
-    ASSERT_EQ(urlToTest->port, comparedUrl.port);
-    ASSERT_EQ(urlToTest->target, comparedUrl.target);
+    ASSERT_EQ(urlToTest->authority.host, comparedUrl.authority.host);
+    ASSERT_EQ(urlToTest->authority.hostType, comparedUrl.authority.hostType);
+    ASSERT_EQ(urlToTest->authority.port, comparedUrl.authority.port);
+    ASSERT_EQ(urlToTest->path, comparedUrl.path);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, UrlParserValidTests, ::testing::ValuesIn(validUrls));
+INSTANTIATE_TEST_CASE_P(Suite, UriParserValidTests, ::testing::ValuesIn(validUrls));
 
-TEST_P(UrlParserInvalidTests, UrlParser_Parse_InvalidUrl)
+TEST_P(UriParserInvalidTests, UriParser_Parse_InvalidUrl)
 {
-    UrlParser parser;
+    UriParser parser;
     auto urlToTest = parser.parse(GetParam().strUrl);
 
     ASSERT_FALSE(urlToTest.has_value());
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, UrlParserInvalidTests, ::testing::ValuesIn(invalidUrls));
+INSTANTIATE_TEST_CASE_P(Suite, UriParserInvalidTests, ::testing::ValuesIn(invalidUrls));
