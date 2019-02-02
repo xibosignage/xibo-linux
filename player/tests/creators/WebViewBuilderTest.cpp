@@ -3,15 +3,15 @@
 
 using namespace testing;
 
-TEST(WebViewBuilderTest, Construct_Default_HandlerLoadShouldBeCalled)
-{
-    WebViewBuilderTest builder;
+//TEST(WebViewBuilderTest, Construct_Default_HandlerLoadShouldBeCalled)
+//{
+//    WebViewBuilderTest builder;
 
-    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
-    EXPECT_CALL(builder.adaptor(), load(path));
+//    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
+//    EXPECT_CALL(builder.adaptor(), load(path));
 
-    builder.build();
-}
+//    builder.build();
+//}
 
 TEST(WebViewBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {

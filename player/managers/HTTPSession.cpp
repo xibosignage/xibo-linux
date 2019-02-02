@@ -17,13 +17,13 @@ RequestSession::RequestSession(boost::asio::io_context& ioc) : m_resolver(ioc)
     m_response.body_limit(std::numeric_limits<std::uint64_t>::max());
 }
 
-boost::future<HTTPResponseResult> RequestSession::send(http::verb method, const Url& url, const std::string& body)
+boost::future<HTTPResponseResult> RequestSession::send(http::verb method, const Uri& uri, const std::string& body)
 {
-    m_request = createRequest(method, url.host, url.target, body);
-    m_scheme = url.scheme;
-    m_socket->set_verify_callback(ssl::rfc2818_verification(url.host));
+    m_request = createRequest(method, uri.host(), uri.path(), body);
+    m_scheme = uri.scheme();
+    m_socket->set_verify_callback(ssl::rfc2818_verification(uri.host()));
 
-    resolve(url.host, url.port, std::bind(&RequestSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+    resolve(uri.host(), uri.port(), std::bind(&RequestSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 
     return m_result.get_future();
 }
@@ -43,9 +43,9 @@ http::request<http::string_body> RequestSession::createRequest(http::verb method
 }
 
 template<typename Callback>
-void RequestSession::resolve(const Url::Host& host, unsigned short port, Callback callback)
+void RequestSession::resolve(const std::string& host, unsigned short port, Callback callback)
 {    
-    m_resolver.async_resolve(std::string{host}, std::to_string(port), ip::resolver_base::numeric_service, callback);
+    m_resolver.async_resolve(host, std::to_string(port), ip::resolver_base::numeric_service, callback);
 }
 
 void RequestSession::onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)
@@ -70,7 +70,7 @@ void RequestSession::onConnected(const boost::system::error_code& ec, ip::tcp::r
 {
     if(!ec)
     {
-        if(m_scheme == Url::Scheme::HTTPS)
+        if(m_scheme == Uri::Scheme::HTTPS)
         {
             handshake(std::bind(&RequestSession::onHandshaked, shared_from_this(), std::placeholders::_1));
         }
@@ -106,7 +106,7 @@ void RequestSession::onHandshaked(const boost::system::error_code& ec)
 template<typename Callback>
 void RequestSession::write(Callback callback)
 {
-    if(m_scheme == Url::Scheme::HTTPS)
+    if(m_scheme == Uri::Scheme::HTTPS)
     {
         http::async_write(*m_socket, m_request, callback);
     }
@@ -131,7 +131,7 @@ void RequestSession::onWritten(const boost::system::error_code& ec, std::size_t 
 template<typename Callback>
 void RequestSession::read(Callback callback)
 {
-    if(m_scheme == Url::Scheme::HTTPS)
+    if(m_scheme == Uri::Scheme::HTTPS)
     {
         http::async_read(*m_socket, m_buffer, m_response, callback);
     }
