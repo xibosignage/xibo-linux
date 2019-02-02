@@ -1,5 +1,5 @@
 name: xibo-player-test
-version: 0.5-alpha
+version: 0.6-alpha
 summary: Xibo Linux Player
 description: Test snap package for Xibo Linux Player
 grade: devel
