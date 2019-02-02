@@ -17,13 +17,13 @@ RequestSession::RequestSession(boost::asio::io_context& ioc) : m_resolver(ioc)
     m_response.body_limit(std::numeric_limits<std::uint64_t>::max());
 }
 
-boost::future<HTTPResponseResult> RequestSession::send(http::verb method, const Uri& url, const std::string& body)
+boost::future<HTTPResponseResult> RequestSession::send(http::verb method, const Uri& uri, const std::string& body)
 {
-    m_request = createRequest(method, url.authority.host, url.path, body);
-    m_scheme = url.scheme;
-    m_socket->set_verify_callback(ssl::rfc2818_verification(url.authority.host));
+    m_request = createRequest(method, uri.host(), uri.path(), body);
+    m_scheme = uri.scheme();
+    m_socket->set_verify_callback(ssl::rfc2818_verification(uri.host()));
 
-    resolve(url.authority, std::bind(&RequestSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+    resolve(uri.host(), uri.port(), std::bind(&RequestSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 
     return m_result.get_future();
 }
@@ -43,9 +43,9 @@ http::request<http::string_body> RequestSession::createRequest(http::verb method
 }
 
 template<typename Callback>
-void RequestSession::resolve(const Uri::Authority& authority, Callback callback)
+void RequestSession::resolve(const std::string& host, unsigned short port, Callback callback)
 {    
-    m_resolver.async_resolve(authority.host, std::to_string(authority.port), ip::resolver_base::numeric_service, callback);
+    m_resolver.async_resolve(host, std::to_string(port), ip::resolver_base::numeric_service, callback);
 }
 
 void RequestSession::onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)

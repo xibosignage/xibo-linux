@@ -34,7 +34,7 @@ private:
     void sessionFinished(const boost::system::error_code& ec);
 
     template<typename Callback>
-    void resolve(const Uri::Authority& authority, Callback callback);
+    void resolve(const std::string& host, unsigned short port, Callback callback);
     void onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results);
 
     template<typename Callback>
