@@ -62,6 +62,7 @@ namespace ResourcesXlf
         namespace WebView
         {
             const std::string Transparent = "transparency";
+            const std::string ModeId = "modeid";
         }
 
         namespace Image

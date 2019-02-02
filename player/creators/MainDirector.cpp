@@ -124,7 +124,7 @@ std::unique_ptr<Audio> MainDirector::buildAudio(const AudioOptions& opts)
 
 std::unique_ptr<WebView> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
 {
-    return WebViewBuilder().width(regionWidth).height(regionHeight).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+    return WebViewBuilder().width(regionWidth).height(regionHeight).modeId(opts.modeId()).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
 }
 
 void MainDirector::attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content)

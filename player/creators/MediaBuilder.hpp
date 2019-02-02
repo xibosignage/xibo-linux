@@ -58,7 +58,7 @@ private:
             throw std::runtime_error("Not valid path");
     }
 
-protected:
+protected: // FIXME
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     FilePath m_path;
     int m_id;

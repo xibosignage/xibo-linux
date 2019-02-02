@@ -27,10 +27,9 @@ void WebKitWebViewAdaptor::reload()
     webkit_web_view_reload(m_webView);
 }
 
-void WebKitWebViewAdaptor::load(const FilePath& page)
+void WebKitWebViewAdaptor::load(const FilePath& path)
 {
-    auto path = "file://" + page.string();
-    webkit_web_view_load_uri(m_webView, path.c_str());
+    webkit_web_view_load_uri(m_webView, path.string().c_str());
 }
 
 void WebKitWebViewAdaptor::enableTransparency()
