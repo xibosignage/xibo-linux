@@ -9,6 +9,7 @@
 #include <boost/beast/http/verb.hpp>
 
 using HTTPResponseResult = ResponseResult<std::string>;
+class Uri;
 
 class HTTPManager : private boost::noncopyable
 {
@@ -20,7 +21,7 @@ public:
     boost::future<HTTPResponseResult> post(const std::string& url, const std::string& body);
 
 private:
-    boost::future<HTTPResponseResult> send(boost::beast::http::verb method, const std::string& url, const std::string& body);
+    boost::future<HTTPResponseResult> send(boost::beast::http::verb method, const Uri& uri, const std::string& body);
 
 private:
     boost::asio::io_context m_ioc;

@@ -1,6 +1,8 @@
 #include "UriParser.hpp"
+#include "UriParseError.hpp"
 
 #include "utils/Logger.hpp"
+#include <boost/format.hpp>
 
 const std::regex URL_REGEX(R"(([^:\/?#]+:\/\/)(?:((?:.+(?::.+)?@)?([^\/:]+))(?::(\d{1,5}))?)?(\/.*))");
 const std::regex IP_REGEX("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
@@ -13,63 +15,63 @@ const std::size_t URL_PARTS_COUNT = 5;
 const std::size_t SCHEME_PART = 1;
 const std::size_t HOST_PART = 3;
 const std::size_t PORT_PART = 4;
-const std::size_t TARGET_PART = 5;
+const std::size_t PATH_PART = 5;
 
-boost::optional<Uri> UriParser::parse(const std::string& rawUrl)
+Uri UriParser::parse(const std::string& rawUri)
 {
-    auto urlPartsOpt = parseInternal(rawUrl);
+    auto urlParts = parseInternal(rawUri);
 
-    if(urlPartsOpt)
-    {
-        auto urlParts = *urlPartsOpt;
-        Uri url;
+    auto scheme = getScheme(urlParts[SCHEME_PART].str());
+    auto host = urlParts[HOST_PART].str();
+    auto port = getPortNumber(scheme, urlParts[PORT_PART].str());
+    auto path = urlParts[PATH_PART].str();
 
-        url.scheme = getScheme(urlParts[SCHEME_PART].str());
-        url.authority.host = urlParts[HOST_PART].str();
-        url.authority.hostType = getHostType(url.authority.host);
-        url.authority.port = getPortNumber(url.scheme, urlParts[PORT_PART].str());
-        url.path = urlParts[TARGET_PART].str();
-
-        return std::move(url);
-    }
-
-    return {};
+    return Uri{scheme, host, port, path};
 }
 
-boost::optional<std::smatch> UriParser::parseInternal(const std::string& rawUrl)
+std::smatch UriParser::parseInternal(const std::string& rawUri)
 {
     std::smatch urlMatch;
-
-    auto valid = std::regex_match(rawUrl, urlMatch, URL_REGEX) && urlMatch.size() > URL_PARTS_COUNT;
+    auto valid = std::regex_match(rawUri, urlMatch, URL_REGEX) && urlMatch.size() > URL_PARTS_COUNT;
     if(valid)
     {
-        return std::move(urlMatch);
+        return urlMatch;
     }
-    else
-    {
-        return {};
-    }
+
+    throw UriParseError{"Uri is not valid"};
 }
 
 Uri::Scheme UriParser::getScheme(const std::string& scheme)
 {
-    return DEFAULT_SCHEMES.at(scheme);
+    try
+    {
+        return DEFAULT_SCHEMES.at(scheme);
+    }
+    catch(std::out_of_range&)
+    {
+        auto formatted = boost::format("%1% scheme is not supported") % scheme;
+        throw UriParseError{formatted.str()};
+    }
 }
 
-unsigned short UriParser::getPortNumber(Uri::Scheme scheme, const std::string& port)
+boost::optional<unsigned short> UriParser::getPortNumber(Uri::Scheme scheme, const std::string& port)
 {
     if(!port.empty())
     {
         return static_cast<unsigned short>(std::stoi(port));
     }
-    else
+    else if(scheme == Uri::Scheme::HTTP || scheme == Uri::Scheme::HTTPS)
     {
         return DEFAULT_PORTS.at(scheme);
     }
+
+    return {};
 }
 
 Uri::Authority::HostType UriParser::getHostType(const std::string& host)
 {
+    if(host.empty()) return Uri::Authority::HostType::Invalid;
+
     std::smatch baseMatch;
     if(std::regex_match(host, baseMatch, IP_REGEX))
     {
