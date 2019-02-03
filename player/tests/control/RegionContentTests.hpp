@@ -7,7 +7,6 @@
 
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "mocks/MockMedia.hpp"
-#include "media/MediaVisitor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
 

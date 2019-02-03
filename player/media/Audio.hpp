@@ -13,7 +13,6 @@ public:
     void play() override;
     void stop() override;
 
-    void apply(MediaVisitor& visitor) override;
     void handleEvent(const Event& ev) override;
 
     void setVolume(int volume);
