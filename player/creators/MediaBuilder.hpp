@@ -2,10 +2,13 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
+#include "parsers/MediaOptions.hpp"
 
 #include <boost/optional/optional.hpp>
 
-template<typename Builder>
+#include "utils/Logger.hpp"
+
+template<typename Builder, typename MediaOptions>
 class BaseMediaBuilder
 {
 public:
@@ -14,29 +17,10 @@ public:
         m_filesystem = std::make_unique<FileSystemAdaptor>();
     }
 
-    Builder& id(int id)
+    Builder& options(const MediaOptions& opts)
     {
-        m_id = id;
-        return static_cast<Builder&>(*this);
-    }
-
-    virtual Builder& path(const boost::optional<std::string>& path)
-    {
-        if(path)
-        {
-            auto fullPath = Resources::directory() / path.value();
-
-            checkPath(fullPath);
-
-            m_path = fullPath;
-        }
-        return static_cast<Builder&>(*this);
-    }
-
-    virtual Builder& duration(int duration)
-    {
-        m_duration = duration;
-        return static_cast<Builder&>(*this);
+        parseBaseOptions(opts);
+        return mediaOptions(opts);
     }
 
 protected:
@@ -45,10 +29,42 @@ protected:
         return *m_filesystem;
     }
 
+    virtual Builder& mediaOptions(const MediaOptions& opts) = 0;
+
+    void parseBaseOptions(const ResourcesXlf::MediaOptions& opts)
+    {
+        m_id = id(opts.id());
+        m_path = getPathOption(opts.path());
+        m_duration = getDurationOption(opts.duration());
+    }
+
     template<typename Media>
     void prepareCommonParams(Media& media)
     {
         media.setDuration(m_duration);
+    }
+
+    virtual int id(int id)
+    {
+        return id;
+    }
+
+    virtual FilePath getPathOption(const boost::optional<std::string>& pathOpt)
+    {
+        if(pathOpt)
+        {
+            auto fullPath = Resources::directory() / pathOpt.value();
+
+            checkPath(fullPath);
+
+            return fullPath;
+        }
+        return {};
+    }
+
+    virtual int getDurationOption(int duration)
+    {
+        return duration;
     }
 
 private:

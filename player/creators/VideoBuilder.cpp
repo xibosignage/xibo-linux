@@ -7,8 +7,8 @@ std::unique_ptr<Video> VideoBuilder::build()
 {
     auto video = createVideo();
     prepareCommonParams(*video);
-    video->setMuted(m_muted);
-    video->setLooped(m_looped);
+    video->setMuted(m_mute);
+    video->setLooped(m_loop);
     return video;
 }
 
@@ -28,21 +28,26 @@ VideoBuilder& VideoBuilder::width(int width)
     return *this;
 }
 
+VideoBuilder& VideoBuilder::mediaOptions(const ResourcesXlf::VideoOptions& opts)
+{
+    m_mute = getMuteOption(opts.muted());
+    m_loop = getLoopOption(opts.looped());
+    return *this;
+}
+
 VideoBuilder& VideoBuilder::height(int height)
 {
     m_height = height;
     return *this;
 }
 
-VideoBuilder& VideoBuilder::muted(const boost::optional<bool>& muted)
+bool VideoBuilder::getMuteOption(const boost::optional<bool>& muteOpt)
 {
-    m_muted = muted.value_or(DEFAULT_VIDEO_MUTED);
-    return *this;
+    return muteOpt.value_or(DEFAULT_VIDEO_MUTED);
 }
 
-VideoBuilder& VideoBuilder::looped(const boost::optional<bool>& looped)
+bool VideoBuilder::getLoopOption(const boost::optional<bool>& loopOpt)
 {
-    m_looped = looped.value_or(DEFAULT_VIDEO_LOOPED);
-    return *this;
+    return loopOpt.value_or(DEFAULT_VIDEO_LOOPED);
 }
 

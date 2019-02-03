@@ -39,7 +39,7 @@ int ResourcesXlf::RegionOptions::top() const
     return m_top;
 }
 
-boost::optional<int> ResourcesXlf::RegionOptions::zindex() const
+boost::optional<int> ResourcesXlf::RegionOptions::zorder() const
 {
     return m_zindex;
 }

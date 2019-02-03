@@ -29,19 +29,6 @@ std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
     return std::make_unique<WebKitWebViewAdaptor>();
 }
 
-WebViewBuilder& WebViewBuilder::path(const boost::optional<std::string>&)
-{
-    auto filename = std::to_string(m_id) + DEFAULT_EXTENSION;
-    m_path = Resources::directory() / filename;
-    return *this;
-}
-
-WebViewBuilder& WebViewBuilder::duration(int duration)
-{
-    m_duration = parseDuration(m_path).value_or(duration);
-    return *this;
-}
-
 WebViewBuilder& WebViewBuilder::width(int width)
 {
     m_width = width;
@@ -54,10 +41,26 @@ WebViewBuilder& WebViewBuilder::height(int height)
     return *this;
 }
 
-WebViewBuilder& WebViewBuilder::transparent(const boost::optional<bool>& transparent)
+WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
 {
-    m_transparent = transparent.value_or(DEFAULT_TRANSPARENT);
+    m_transparent = getTransparentOption(opts.transparent());
     return *this;
+}
+
+FilePath WebViewBuilder::getPathOption(const boost::optional<std::string>&)
+{
+    auto filename = std::to_string(m_id) + DEFAULT_EXTENSION;
+    return Resources::directory() / filename;
+}
+
+int WebViewBuilder::getDurationOption(int duration)
+{
+    return parseDuration(m_path).value_or(duration);
+}
+
+bool WebViewBuilder::getTransparentOption(const boost::optional<bool>& transparentOpt)
+{
+    return transparentOpt.value_or(DEFAULT_TRANSPARENT);
 }
 
 boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)

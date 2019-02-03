@@ -28,26 +28,18 @@ ImageBuilder& ImageBuilder::height(int height)
     return *this;
 }
 
-ImageBuilder& ImageBuilder::scaleType(const boost::optional<std::string>& scaleType)
+ImageBuilder& ImageBuilder::mediaOptions(const ResourcesXlf::ImageOptions& opts)
 {
-    m_scaleType = toScaleType(scaleType.value_or(DEFAULT_SCALE_TYPE));
+    m_scaleType = getScaleTypeOption(opts.scaleType());
+    m_align = getAlignOption(opts.align());
+    m_valign = getValignOption(opts.valign());
     return *this;
 }
 
-ImageBuilder& ImageBuilder::align(const boost::optional<std::string>& align)
+ImageProperties::ScaleType ImageBuilder::getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt)
 {
-    m_align = toAlign(align.value_or(DEFAULT_ALIGN));
-    return *this;
-}
+    auto scaleType = scaleTypeOpt.value_or(DEFAULT_SCALE_TYPE);
 
-ImageBuilder& ImageBuilder::valign(const boost::optional<std::string>& valign)
-{
-    m_valign = toValign(valign.value_or(DEFAULT_VALIGN));
-    return *this;
-}
-
-ImageProperties::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
-{
     if(scaleType == "center")
         return ImageProperties::ScaleType::Scaled;
     else if(scaleType == "stretch")
@@ -56,8 +48,10 @@ ImageProperties::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
     throw std::invalid_argument("ScaleType is not valid");
 }
 
-ImageProperties::Align ImageBuilder::toAlign(std::string_view align)
+ImageProperties::Align ImageBuilder::getAlignOption(const boost::optional<std::string>& alignOpt)
 {
+    auto align = alignOpt.value_or(DEFAULT_ALIGN);
+
     if(align == "left")
         return ImageProperties::Align::Left;
     else if(align == "center")
@@ -68,8 +62,10 @@ ImageProperties::Align ImageBuilder::toAlign(std::string_view align)
     throw std::invalid_argument("Align is not valid");
 }
 
-ImageProperties::Valign ImageBuilder::toValign(std::string_view valign)
+ImageProperties::Valign ImageBuilder::getValignOption(const boost::optional<std::string>& valignOpt)
 {
+    auto valign = valignOpt.value_or(DEFAULT_VALIGN);
+
     if(valign == "top")
         return ImageProperties::Valign::Top;
     else if(valign == "middle")

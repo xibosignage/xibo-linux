@@ -21,11 +21,17 @@ namespace ResourcesXlf
 
     namespace Layout
     {
-        const std::string Width = "width";
         const std::string SchemaVersion = "schemaVersion";
+        const std::string Width = "width";
         const std::string Height = "height";
-        const std::string BackgroundPath = "background";
-        const std::string BackgroundColor = "bgcolor";
+    }
+
+    namespace Background
+    {
+        const std::string Width = "width";
+        const std::string Height = "height";
+        const std::string Path = "background";
+        const std::string Color = "bgcolor";
     }
 
     namespace Region

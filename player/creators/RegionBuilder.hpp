@@ -4,6 +4,8 @@
 #include <vector>
 #include <boost/optional/optional_fwd.hpp>
 
+#include "parsers/RegionOptions.hpp"
+
 class IRegion;
 class IRegionContent;
 class IFixedLayoutAdaptor;
@@ -24,11 +26,7 @@ class RegionBuilder
 public:
     std::unique_ptr<IRegion> build();
 
-    RegionBuilder& id(int id);
-    RegionBuilder& width(int width);
-    RegionBuilder& height(int height);
-    RegionBuilder& zorder(const boost::optional<int>& zorder);
-    RegionBuilder& loop(const boost::optional<bool>& loop);
+    RegionBuilder& options(const ResourcesXlf::RegionOptions& opts);
     RegionBuilder& content(std::vector<ContentWithPos>&& content);
 
 protected:
@@ -36,6 +34,12 @@ protected:
 
 private:
     std::unique_ptr<IRegion> createRegion();
+
+    int getIdOption(int id);
+    int getWidthOption(int width);
+    int getHeightOption(int height);
+    int getZorderOption(const boost::optional<int>& zorderOpt);
+    bool getLoopOption(const boost::optional<bool>& loopOpt);
 
     void loopContent(IRegion& region);
     void addAllContent(IRegion& region);

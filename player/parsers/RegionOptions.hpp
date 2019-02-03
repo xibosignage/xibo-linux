@@ -15,7 +15,7 @@ namespace ResourcesXlf
         int height() const;
         int left() const;
         int top() const;
-        boost::optional<int> zindex() const;
+        boost::optional<int> zorder() const;
         boost::optional<bool> loop() const;
 
     private:

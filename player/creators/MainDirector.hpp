@@ -3,6 +3,7 @@
 #include "constants.hpp"
 
 #include "parsers/LayoutOptions.hpp"
+#include "parsers/BackgroundOptions.hpp"
 #include "parsers/RegionOptions.hpp"
 #include "parsers/ImageOptions.hpp"
 #include "parsers/WebViewOptions.hpp"
@@ -34,7 +35,7 @@ public:
 private:
     std::unique_ptr<IMainLayout> buildLayout(const xml_node& layoutNode);
     std::string getLayoutXlfPath(int layoutId);
-    std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::LayoutOptions& opts);
+    std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::BackgroundOptions& opts);
     std::vector<RegionWithPos> collectRegions(const xml_node& layoutNode);
     std::unique_ptr<IRegion> buildRegion(const xml_node& regionNode);
     std::vector<ContentWithPos> collectContent(int regionWidth, int regionHeight, const xml_node& regionNode);
