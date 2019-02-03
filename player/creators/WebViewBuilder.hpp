@@ -2,12 +2,15 @@
 
 #include "adaptors/IWebViewAdaptor.hpp"
 #include "media/WebView.hpp"
+#include "managers/Uri.hpp"
 
 enum class WebViewMode
 {
     FileResource,
     WebBrowser
 };
+
+class Uri;
 
 class WebViewBuilder : public BaseMediaBuilder<WebViewBuilder>
 {
@@ -33,6 +36,7 @@ private:
 private:
     int m_width;
     int m_height;
+    std::unique_ptr<Uri> m_uri;
     WebViewMode m_mode;
     bool m_transparent;
 

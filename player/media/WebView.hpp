@@ -3,12 +3,12 @@
 #include "Media.hpp"
 
 class IWebViewAdaptor;
-class FilePath;
+class Uri;
 
 class WebView : public Media, public IVisible
 {
 public:
-    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
+    WebView(int id, int width, int height, const Uri& uri, std::unique_ptr<IWebViewAdaptor>&& handler);
 
     void show() override;
     void hide() override;

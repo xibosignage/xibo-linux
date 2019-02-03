@@ -7,35 +7,34 @@ using namespace testing;
 //{
 //    WebViewBuilderTest builder;
 
-//    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
-//    EXPECT_CALL(builder.adaptor(), load(path));
+//    EXPECT_CALL(builder.adaptor(), load(Uri{DEFAULT_URI}));
 
 //    builder.build();
 //}
 
-TEST(WebViewBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
-{
-    WebViewBuilderTest builder;
+//TEST(WebViewBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+//{
+//    WebViewBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+//    EXPECT_CALL(builder.adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
-    builder.build();
-}
+//    builder.build();
+//}
 
-TEST(WebViewBuilderTest, Construct_TransparentTrue_HandlerEnableTransparencyShouldBeCalled)
-{
-    WebViewBuilderTest builder;
+//TEST(WebViewBuilderTest, Construct_TransparentTrue_HandlerEnableTransparencyShouldBeCalled)
+//{
+//    WebViewBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), enableTransparency());
+//    EXPECT_CALL(builder.adaptor(), enableTransparency());
 
-    builder.transparent(true).build();
-}
+//    builder.transparent(true).build();
+//}
 
-TEST(WebViewBuilderTest, Construct_TransparentFalse_HandlerEnableTransparencyShouldNotBeCalled)
-{
-    WebViewBuilderTest builder;
+//TEST(WebViewBuilderTest, Construct_TransparentFalse_HandlerEnableTransparencyShouldNotBeCalled)
+//{
+//    WebViewBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), enableTransparency()).Times(0);
+//    EXPECT_CALL(builder.adaptor(), enableTransparency()).Times(0);
 
-    builder.transparent(false).build();
-}
+//    builder.transparent(false).build();
+//}

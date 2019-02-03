@@ -18,6 +18,7 @@ Uri::Authority::Authority(const std::string& host) :
 
 Uri::Uri(const std::string& rawUri) : Uri(UriParser().parse(rawUri))
 {
+    m_rawUri = rawUri;
 }
 
 Uri::Uri(Uri::Scheme scheme, const std::string& host, boost::optional<unsigned short> port, const std::string& path) :
@@ -36,6 +37,11 @@ Uri::Uri(Uri::Scheme scheme, const std::string& path) :
     Uri{scheme, {}, {}, path}
 {
 
+}
+
+std::string Uri::string() const
+{
+    return m_rawUri;
 }
 
 Uri::Scheme Uri::scheme() const
@@ -73,4 +79,9 @@ std::ostream& operator<<(std::ostream& out, const Uri& uri)
                << " Host: " << uri.host()
                << " Port: " << uri.port()
                << " Target: " << uri.path();
+}
+
+bool operator==(const Uri& first, const Uri& second)
+{
+    return first.string() == second.string();
 }

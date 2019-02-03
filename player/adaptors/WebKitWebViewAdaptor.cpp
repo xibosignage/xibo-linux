@@ -1,5 +1,5 @@
 #include "WebKitWebViewAdaptor.hpp"
-#include "utils/FilePath.hpp"
+#include "managers/Uri.hpp"
 
 #include <webkit/webkit.h>
 
@@ -27,9 +27,9 @@ void WebKitWebViewAdaptor::reload()
     webkit_web_view_reload(m_webView);
 }
 
-void WebKitWebViewAdaptor::load(const FilePath& path)
+void WebKitWebViewAdaptor::load(const Uri& uri)
 {
-    webkit_web_view_load_uri(m_webView, path.string().c_str());
+    webkit_web_view_load_uri(m_webView, uri.string().c_str());
 }
 
 void WebKitWebViewAdaptor::enableTransparency()

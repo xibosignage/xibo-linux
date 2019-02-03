@@ -10,7 +10,7 @@
 
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
-const std::string DEFAULT_LOCAL_SCHEME = "file://";
+const std::string DEFAULT_NATIVE_SCHEME = "file://";
 const std::regex DURATION_REGEX("DURATION=([0-9]+)");
 
 std::unique_ptr<WebView> WebViewBuilder::build()
@@ -23,7 +23,7 @@ std::unique_ptr<WebView> WebViewBuilder::build()
 
 std::unique_ptr<WebView> WebViewBuilder::createWebView()
 {
-    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createAdaptor());
+    return std::make_unique<WebView>(m_id, m_width, m_height, *m_uri, createAdaptor());
 }
 
 std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
@@ -36,12 +36,11 @@ WebViewBuilder& WebViewBuilder::path(const boost::optional<std::string>& uri)
     if(m_mode == WebViewMode::FileResource)
     {
         auto fileName = std::to_string(m_id) + DEFAULT_EXTENSION;
-        m_path += DEFAULT_LOCAL_SCHEME;
-        m_path += Resources::directory() / fileName;
+        m_uri = std::make_unique<Uri>(DEFAULT_NATIVE_SCHEME + (Resources::directory() / fileName).string());
     }
     else
     {
-        m_path = removeEscapedSymbolsFromUrl(uri.value());
+        m_uri = std::make_unique<Uri>(removeEscapedSymbolsFromUrl(uri.value()));
     }
     return *this;
 }

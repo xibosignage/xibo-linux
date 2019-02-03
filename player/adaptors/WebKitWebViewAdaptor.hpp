@@ -16,7 +16,7 @@ public:
     void show() override;
 
     void reload() override;
-    void load(const FilePath& path) override;
+    void load(const Uri& uri) override;
     void enableTransparency() override;
 
     Gtk::ScrolledWindow& get() override;

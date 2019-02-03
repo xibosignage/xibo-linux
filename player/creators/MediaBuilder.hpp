@@ -13,6 +13,7 @@ public:
     {
         m_filesystem = std::make_unique<FileSystemAdaptor>();
     }
+    virtual ~BaseMediaBuilder() = default;
 
     Builder& id(int id)
     {

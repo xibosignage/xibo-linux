@@ -40,6 +40,7 @@ public:
     Uri(Scheme scheme, const std::string& host, const std::string& path);
     Uri(Scheme scheme, const std::string& path);
 
+    std::string string() const;
     Scheme scheme() const;
     const std::string& host() const;
     unsigned short port() const;
@@ -50,6 +51,8 @@ private:
     Scheme m_scheme = Scheme::Invalid;
     Authority m_authority;
     std::string m_path;
+    std::string m_rawUri;
 };
 
 std::ostream& operator<<(std::ostream& out, const Uri& uri);
+bool operator==(const Uri& first, const Uri& second);

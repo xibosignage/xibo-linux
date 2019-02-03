@@ -15,7 +15,7 @@ auto constructMedia();
 template<>
 auto constructMedia<WebView>()
 {
-    auto webview = construct<WebView>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockWebViewAdaptor>>());
+    auto webview = construct<WebView>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_URI, std::make_unique<testing::NiceMock<MockWebViewAdaptor>>());
     webview->setDuration(DEFAULT_DURATION);
     return webview;
 }
