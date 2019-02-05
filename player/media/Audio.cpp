@@ -1,7 +1,6 @@
 #include "Audio.hpp"
 
 #include "IAudioHandler.hpp"
-#include "MediaVisitor.hpp"
 #include "utils/Logger.hpp"
 
 namespace ph = std::placeholders;
@@ -23,11 +22,6 @@ void Audio::play()
 void Audio::stop()
 {
     m_handler->stop();
-}
-
-void Audio::apply(MediaVisitor& visitor)
-{
-    visitor.visit(*this);
 }
 
 void Audio::onAudioFinished()

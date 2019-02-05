@@ -2,7 +2,6 @@
 
 #include "creators/MediaBuilderTest.hpp"
 #include "creators/ImageBuilder.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 
 class ImageBuilderTest : public MediaBuilderTest<ImageBuilder>

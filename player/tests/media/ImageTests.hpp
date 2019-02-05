@@ -3,13 +3,12 @@
 #include "BaseTestWithHandler.hpp"
 
 #include "media/Image.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockImageAdaptor.hpp"
 
-const ImageProperties::ScaleType DEFAULT_SCALE_TYPE = ImageProperties::ScaleType::Scaled;
-const ImageProperties::Align DEFAULT_ALIGN = ImageProperties::Align::Center;
-const ImageProperties::Valign DEFAULT_VALIGN = ImageProperties::Valign::Middle;
-const ImageProperties DEFAULT_PROPS{DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN};
+const MediaGeometry::ScaleType DEFAULT_SCALE_TYPE = MediaGeometry::ScaleType::Scaled;
+const MediaGeometry::Align DEFAULT_ALIGN = MediaGeometry::Align::Center;
+const MediaGeometry::Valign DEFAULT_VALIGN = MediaGeometry::Valign::Middle;
+const MediaGeometry DEFAULT_PROPS{DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN};
 
 class ImageTest : public BaseTestWithHandler<MockImageAdaptor>
 {

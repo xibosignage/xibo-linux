@@ -1,28 +1,22 @@
 #pragma once
 
-#include "MediaVisitor.hpp"
 #include "ImageProperties.hpp"
+#include "IMedia.hpp"
 
-class GetMediaPosition : public MediaVisitor
+#include <utility>
+
+class GetMediaPosition
 {
 public:
     GetMediaPosition(int regionWidth, int regionHeight);
 
-    int getMediaX() const;
-    int getMediaY() const;
-
-    void visit(Image& image) override;
-    void visit(Audio&) override;
-    void visit(Video&) override;
-    void visit(WebView&) override;
+    std::pair<int, int> getMediaPos(IMedia* media) const;
 
 private:
-    int getImageX(ImageProperties::Align align, int imageWidth);
-    int getImageY(ImageProperties::Valign valign, int imageHeight);
+    int getMediaX(IVisible* media) const;
+    int getMediaY(IVisible* media) const;
 
 private:
-    int m_mediaX;
-    int m_mediaY;
     int m_regionWidth;
     int m_regionHeight;
 

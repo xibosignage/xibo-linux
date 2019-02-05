@@ -1,7 +1,6 @@
 #include "MediaBuilder.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
-#include "media/ImageProperties.hpp"
 #include "media/Image.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
@@ -23,15 +22,15 @@ protected:
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
 
 private:
-    ImageProperties::ScaleType toScaleType(std::string_view scaleType);
-    ImageProperties::Align toAlign(std::string_view align);
-    ImageProperties::Valign toValign(std::string_view valign);
+    MediaGeometry::ScaleType toScaleType(std::string_view scaleType);
+    MediaGeometry::Align toAlign(std::string_view align);
+    MediaGeometry::Valign toValign(std::string_view valign);
 
 private:
     int m_width;
     int m_height;
-    ImageProperties::ScaleType m_scaleType;
-    ImageProperties::Align m_align;
-    ImageProperties::Valign m_valign;
+    MediaGeometry::ScaleType m_scaleType;
+    MediaGeometry::Align m_align;
+    MediaGeometry::Valign m_valign;
 
 };

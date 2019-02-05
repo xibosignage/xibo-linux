@@ -5,7 +5,7 @@
 
 std::unique_ptr<Image> ImageBuilder::build()
 {
-    ImageProperties props{m_scaleType, m_align, m_valign};
+    MediaGeometry props{m_scaleType, m_align, m_valign};
     auto image = std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
     prepareCommonParams(*image);
     return image;
@@ -46,36 +46,36 @@ ImageBuilder& ImageBuilder::valign(const boost::optional<std::string>& valign)
     return *this;
 }
 
-ImageProperties::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
+MediaGeometry::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
 {
     if(scaleType == "center")
-        return ImageProperties::ScaleType::Scaled;
+        return MediaGeometry::ScaleType::Scaled;
     else if(scaleType == "stretch")
-        return ImageProperties::ScaleType::Stretch;
+        return MediaGeometry::ScaleType::Stretch;
 
     throw std::invalid_argument("ScaleType is not valid");
 }
 
-ImageProperties::Align ImageBuilder::toAlign(std::string_view align)
+MediaGeometry::Align ImageBuilder::toAlign(std::string_view align)
 {
     if(align == "left")
-        return ImageProperties::Align::Left;
+        return MediaGeometry::Align::Left;
     else if(align == "center")
-        return ImageProperties::Align::Center;
+        return MediaGeometry::Align::Center;
     else if(align == "right")
-        return ImageProperties::Align::Right;
+        return MediaGeometry::Align::Right;
 
     throw std::invalid_argument("Align is not valid");
 }
 
-ImageProperties::Valign ImageBuilder::toValign(std::string_view valign)
+MediaGeometry::Valign ImageBuilder::toValign(std::string_view valign)
 {
     if(valign == "top")
-        return ImageProperties::Valign::Top;
+        return MediaGeometry::Valign::Top;
     else if(valign == "middle")
-        return ImageProperties::Valign::Middle;
+        return MediaGeometry::Valign::Middle;
     else if(valign == "bottom")
-        return ImageProperties::Valign::Bottom;
+        return MediaGeometry::Valign::Bottom;
 
     throw std::invalid_argument("Valign is not valid");
 }

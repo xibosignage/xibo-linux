@@ -18,8 +18,11 @@ public:
     int height() const override;
 
     IWidgetAdaptor& handler() override;
-    void apply(MediaVisitor& visitor) override;
     void handleEvent(const Event& ev) override;
+
+    MediaGeometry::Align align() const override;
+    MediaGeometry::Valign valign() const override;
+    MediaGeometry::ScaleType scaleType() const override;
 
     void setTransparent(bool transparent);
 
