@@ -35,11 +35,11 @@ int GetMediaPosition::getMediaY(IVisible* media) const
     switch(media->valign())
     {
     case MediaGeometry::Valign::Middle:
-        return (m_regionHeight - media->width()) / 2;
+        return (m_regionHeight - media->height()) / 2;
     case MediaGeometry::Valign::Top:
         return DEFAULT_YPOS;
     case MediaGeometry::Valign::Bottom:
-        return m_regionHeight - media->width();
+        return m_regionHeight - media->height();
     }
     return INVALID_POS;
 }
