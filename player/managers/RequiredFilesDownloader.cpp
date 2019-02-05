@@ -67,7 +67,7 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     }
     else
     {
-        Log::debug("[{}] Download error: ", fileName, error);
+        Log::debug("[{}] Download error: {}", fileName, error);
         return false;
     }
 }
