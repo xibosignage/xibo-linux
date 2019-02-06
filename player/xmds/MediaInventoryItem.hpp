@@ -5,21 +5,23 @@
 class MediaInventoryItem
 {
 public:
-    MediaInventoryItem(const RegularFile& file, bool downloadComplete_) :
-        type(file.type), id(file.id), downloadComplete(downloadComplete_), md5(file.md5), lastChecked("today")
-    {
-    }
+    MediaInventoryItem(const RegularFile& file, bool downloadComplete);
+    MediaInventoryItem(const ResourceFile& file, bool downloadComplete);
 
-    MediaInventoryItem(const ResourceFile& file, bool downloadComplete_) :
-        type("resource"), id(file.mediaId), downloadComplete(downloadComplete_), lastChecked("today")
-    {
-    }
+    const std::string& type() const;
+    int id() const;
+    bool downloadComplete() const;
+    const std::string& md5() const;
+    const std::string& lastChecked() const;
 
-    std::string type;
-    int id;
-    bool downloadComplete;
-    std::string md5;
-    std::string lastChecked;
+private:
+    MediaInventoryItem(bool downloadComplete);
+
+    std::string m_type;
+    int m_id;
+    bool m_downloadComplete;
+    std::string m_md5;
+    std::string m_lastChecked;
 };
 
 using MediaInventoryItems = std::vector<MediaInventoryItem>;
