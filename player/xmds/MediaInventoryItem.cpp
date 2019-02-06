@@ -23,7 +23,7 @@ MediaInventoryItem::MediaInventoryItem(const ResourceFile& file, bool downloadCo
 }
 
 MediaInventoryItem::MediaInventoryItem(bool downloadComplete) :
-    m_downloadComplete(downloadComplete), m_lastChecked("today")
+    m_downloadComplete(downloadComplete)
 {
     auto timepoint = std::chrono::system_clock::now();
     auto duration = timepoint.time_since_epoch();
