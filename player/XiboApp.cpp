@@ -160,43 +160,43 @@ bool XiboApp::processCallbackQueue()
 
 int XiboApp::initMainLoop()
 {
-    m_mainWindow = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
+    auto mainWindow = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
 
     m_parentApp->signal_shutdown().connect([this](){
         m_idleConnection.disconnect();
     });
 
-    m_parentApp->signal_startup().connect([this](){
-        auto&& windowHandler = static_cast<GtkWindowAdaptor&>(m_mainWindow->handler()).get();
+    m_parentApp->signal_startup().connect([this, &mainWindow](){
+        auto&& windowHandler = static_cast<GtkWindowAdaptor&>(mainWindow->handler()).get();
         m_parentApp->add_window(windowHandler);
     });
 
     if(m_options->credentials())
     {
         m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-        m_collectionInterval->collectOnce([this](const CollectionResult& result){
+        m_collectionInterval->collectOnce([this, &mainWindow](const CollectionResult& result){
             onCollectionFinished(result);
             m_collectionInterval->startRegularCollection();
-            runPlayer();
+            runPlayer(*mainWindow);
         });
     }
     else
     {
-        runPlayer();
+        runPlayer(*mainWindow);
     }
 
     return m_parentApp->run();
 }
 
-void XiboApp::runPlayer()
+void XiboApp::runPlayer(MainWindow& window)
 {
     try
     {
-        m_mainWindow->setSize(1366, 768);
+        window.setSize(1366, 768);
 //        m_mainWindow->setFullscreen(true);
-        m_mainWindow->setLayout(m_scheduler->nextLayout());
-        m_mainWindow->showLayout();
-        m_mainWindow->show();
+        window.setLayout(m_scheduler->nextLayout());
+        window.showLayout();
+        window.show();
 
         Log::info("Player started");
     }

@@ -32,7 +32,7 @@ private:
     XiboApp(const std::string& name);
 
     int initMainLoop();
-    void runPlayer();
+    void runPlayer(MainWindow& window);
     void onCollectionFinished(const CollectionResult& result);
     void updateSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
