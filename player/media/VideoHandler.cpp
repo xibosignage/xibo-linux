@@ -57,7 +57,7 @@ VideoHandler::VideoHandler() :
 
 VideoHandler::~VideoHandler()
 {
-    m_pipeline->setState(Gst::State::NULL_STATE);
+    stopPlayback();
 }
 
 IWidgetAdaptor& VideoHandler::videoWindow()

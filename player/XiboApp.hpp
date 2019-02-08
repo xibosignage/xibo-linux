@@ -1,7 +1,8 @@
 #pragma once
 
-#include <gtkmm/application.h>
+#include <memory>
 
+class MainLoop;
 class XMDSManager;
 class IMainLayout;
 class MainWindow;
@@ -31,23 +32,21 @@ public:
 private:
     XiboApp(const std::string& name);
 
-    int initMainLoop();
-    void runPlayer(MainWindow& window);
+    int runMainLoop();
+    void startWindow(MainWindow& window);
     void onCollectionFinished(const CollectionResult& result);
     void updateSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
     bool processCallbackQueue();
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parentApp;
-    std::unique_ptr<MainWindow> m_mainWindow;
+    std::unique_ptr<MainLoop> m_mainLoop;
     std::unique_ptr<XMDSManager> m_xmdsManager;
     std::unique_ptr<HTTPManager> m_downloadManager;
     std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<CommandLineParser> m_options;
-    sigc::connection m_idleConnection;
 
     static std::unique_ptr<XiboApp> m_app;
 };

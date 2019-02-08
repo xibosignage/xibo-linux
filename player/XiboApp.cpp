@@ -1,4 +1,5 @@
 ﻿#include "XiboApp.hpp"
+#include "MainLoop.hpp"
 #include "config.hpp"
 
 #include "utils/Resources.hpp"
@@ -38,25 +39,18 @@ XiboApp& XiboApp::create(const std::string& name)
 }
 
 XiboApp::XiboApp(const std::string& name) :
-    m_parentApp(Gtk::Application::create(name)),
+    m_mainLoop(std::make_unique<MainLoop>(name)),
     m_downloadManager(std::make_unique<HTTPManager>()),
     m_scheduler(std::make_unique<Scheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
     m_options(std::make_unique<CommandLineParser>())
-{        
-    m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect([this]{
-        return processCallbackQueue();
-    });
+{
+    m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
 
     m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
         auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
         onCollectionFinished(collectionEvent.result());
-    });
-
-    m_scheduler->subscribe(EventType::LayoutExpired, [this](const Event&){
-        m_mainWindow->setLayout(m_scheduler->nextLayout());
-        m_mainWindow->showLayout();
     });
 }
 
@@ -124,13 +118,9 @@ int XiboApp::run(int argc, char** argv)
         {
             Log::info("Project version: {}", getVersion());
         }
-        if(m_options->exampleDir())
+        if(m_options->credentials())
         {
-            Resources::setDirectory(m_options->getExampleDir());
-        }
-        if(m_options->credentials() || m_options->exampleDir())
-        {
-            return initMainLoop();
+            return runMainLoop();
         }
     }
     return 0;
@@ -158,37 +148,27 @@ bool XiboApp::processCallbackQueue()
     return true;
 }
 
-int XiboApp::initMainLoop()
+int XiboApp::runMainLoop()
 {
-    auto mainWindow = std::make_unique<MainWindow>(std::make_unique<GtkWindowAdaptor>());
+    auto mainWindow = std::make_shared<MainWindow>(std::make_unique<GtkWindowAdaptor>());
 
-    m_parentApp->signal_shutdown().connect([this](){
-        m_idleConnection.disconnect();
+    m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
+
+    m_scheduler->subscribe(EventType::LayoutExpired, [this, &mainWindow](const Event&){
+        mainWindow->setLayout(m_scheduler->nextLayout());
+        mainWindow->showLayout();
     });
 
-    m_parentApp->signal_startup().connect([this, &mainWindow](){
-        auto&& windowHandler = static_cast<GtkWindowAdaptor&>(mainWindow->handler()).get();
-        m_parentApp->add_window(windowHandler);
+    m_collectionInterval->collectOnce([this, &mainWindow](const CollectionResult& result){
+        onCollectionFinished(result);
+        m_collectionInterval->startRegularCollection();
+        startWindow(*mainWindow);
     });
 
-    if(m_options->credentials())
-    {
-        m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-        m_collectionInterval->collectOnce([this, &mainWindow](const CollectionResult& result){
-            onCollectionFinished(result);
-            m_collectionInterval->startRegularCollection();
-            runPlayer(*mainWindow);
-        });
-    }
-    else
-    {
-        runPlayer(*mainWindow);
-    }
-
-    return m_parentApp->run();
+    return m_mainLoop->run(mainWindow->handler());
 }
 
-void XiboApp::runPlayer(MainWindow& window)
+void XiboApp::startWindow(MainWindow& window)
 {
     try
     {

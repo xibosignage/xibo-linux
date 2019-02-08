@@ -28,9 +28,10 @@ file(GLOB WRAPPER_SOURCES ${CMAKE_SOURCE_DIR}/player/wrapper/*.cpp ${CMAKE_SOURC
 file(GLOB XMDS_SOURCES ${CMAKE_SOURCE_DIR}/player/xmds/*.cpp ${CMAKE_SOURCE_DIR}/player/xmds/*.hpp)
 file(GLOB EVENTS_SOURCES ${CMAKE_SOURCE_DIR}/player/events/*.cpp ${CMAKE_SOURCE_DIR}/player/events/*.hpp)
 
-add_library(player_lib STATIC XiboApp.cpp ${ADAPTORS_SOURCES} ${CONTROL_SOURCES} ${MEDIA_SOURCES}
-                                          ${UTILS_SOURCES} ${CREATORS_SOURCES} ${MANAGERS_SOURCES}
-                                          ${PARSERS_SOURCES} ${XMDS_SOURCES} ${EVENTS_SOURCES})
+add_library(player_lib STATIC MainLoop.hpp MainLoop.cpp XiboApp.cpp
+                              ${ADAPTORS_SOURCES} ${CONTROL_SOURCES} ${MEDIA_SOURCES}
+                              ${UTILS_SOURCES} ${CREATORS_SOURCES} ${MANAGERS_SOURCES}
+                              ${PARSERS_SOURCES} ${XMDS_SOURCES} ${EVENTS_SOURCES})
 target_link_libraries(player_lib stdc++fs ssl crypto)
 add_library(gst_wrapper SHARED ${WRAPPER_SOURCES})
 add_library(xibovideosink SHARED customsink/XiboVideoSink.cpp)
