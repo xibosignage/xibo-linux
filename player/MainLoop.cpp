@@ -9,17 +9,16 @@ MainLoop::MainLoop(const std::string& name) :
 {
 }
 
-void MainLoop::setIdleAction(std::function<bool()> action)
-{
-    m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect(action);
-}
-
 int MainLoop::run(IWindowAdaptor& adaptor)
 {
     auto&& windowHandler = static_cast<GtkWindowAdaptor&>(adaptor).get();
 
     m_parentApp->signal_shutdown().connect([this](){
         m_idleConnection.disconnect();
+        if(m_shutdownAction)
+        {
+            m_shutdownAction();
+        }
     });
 
     m_parentApp->signal_startup().connect([this, &windowHandler](){
@@ -29,3 +28,12 @@ int MainLoop::run(IWindowAdaptor& adaptor)
     return m_parentApp->run();
 }
 
+void MainLoop::setShutdownAction(const ShutdownAction& action)
+{
+    m_shutdownAction = action;
+}
+
+void MainLoop::setIdleAction(const IdleAction& action)
+{
+    m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect(action);
+}

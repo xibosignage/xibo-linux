@@ -62,12 +62,13 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     if(!error)
     {
         Utils::fileManager().saveFile(fileName, fileContent);
+
         Log::debug("[{}] Downloaded", fileName);
         return true;
     }
     else
     {
-        Log::debug("[{}] Download error: ", fileName, error);
+        Log::debug("[{}] Download error: {}", fileName, error);
         return false;
     }
 }

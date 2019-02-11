@@ -9,17 +9,9 @@
 class UrlParser
 {
 public:
-    boost::optional<Url> parse(const std::string& rawUrl);
+    Url parse(const std::string& rawUrl);
 
 private:
-    struct SplittedUrl
-    {
-        std::string scheme;
-        std::string host;
-        std::string port;
-        std::string target;
-    };
-
     boost::optional<std::smatch> parseInternal(const std::string& rawUrl);
 
     Url::Scheme getScheme(const std::string& scheme);

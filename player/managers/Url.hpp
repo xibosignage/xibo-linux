@@ -30,7 +30,7 @@ struct Url
     unsigned short port;
     std::string target;
 
-    void print()
+    void print() const
     {
         Log::debug("Scheme: {} HostType: {} Host: {} Port: {} Target: {}", static_cast<int>(scheme), static_cast<int>(host.type), host.host, port, target);
     }

@@ -15,7 +15,7 @@ const std::size_t HOST_PART = 2;
 const std::size_t PORT_PART = 3;
 const std::size_t TARGET_PART = 4;
 
-boost::optional<Url> UrlParser::parse(const std::string& rawUrl)
+Url UrlParser::parse(const std::string& rawUrl)
 {
     auto urlPartsOpt = parseInternal(rawUrl);
 
@@ -29,10 +29,10 @@ boost::optional<Url> UrlParser::parse(const std::string& rawUrl)
         url.port = getPortNumber(url.scheme, urlParts[PORT_PART].str());
         url.target = urlParts[TARGET_PART].str();
 
-        return std::move(url);
+        return url;
     }
 
-    return {};
+    throw std::runtime_error("URL parser error");
 }
 
 boost::optional<std::smatch> UrlParser::parseInternal(const std::string& rawUrl)

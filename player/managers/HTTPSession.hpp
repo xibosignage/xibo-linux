@@ -22,16 +22,19 @@ namespace ssl = boost::asio::ssl;
 
 using HTTPResponseResult = ResponseResult<std::string>;
 
-class RequestSession : public std::enable_shared_from_this<RequestSession>
+class HTTPSession : public std::enable_shared_from_this<HTTPSession>
 {
 public:
-    RequestSession(asio::io_context& ioc);
+    HTTPSession(asio::io_context& ioc);
+
     boost::future<HTTPResponseResult> send(http::verb method, const Url& url, const std::string& body);
+    void cancel();
 
 private:
     http::request<http::string_body> createRequest(http::verb method, const std::string& host, const std::string& target, const std::string& body);
 
     void sessionFinished(const boost::system::error_code& ec);
+    void setHttpResult(const HTTPResponseResult& result);
 
     template<typename Callback>
     void resolve(const Url::Host& host, unsigned short port, Callback callback);
@@ -54,11 +57,12 @@ private:
     void onRead(const boost::system::error_code& ec, std::size_t bytesTransferred);
 
 private:
-    Url::Scheme m_scheme;
-    std::unique_ptr<ssl::stream<ip::tcp::socket>> m_socket;
     ip::tcp::resolver m_resolver;
+    std::unique_ptr<ssl::stream<ip::tcp::socket>> m_socket;
+    Url::Scheme m_scheme;
     http::request<http::string_body> m_request;
     http::response_parser<http::string_body> m_response;
     beast::flat_buffer m_buffer;
     boost::promise<HTTPResponseResult> m_result;
+    std::atomic<bool> m_resultSet = false;
 };

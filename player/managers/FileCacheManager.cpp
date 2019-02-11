@@ -11,7 +11,7 @@ const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
 FileCacheManager::FileCacheManager() :
     m_cacheFilePath(Resources::directory() / DEFAULT_CACHE_FILE)
 {
-    loadCacheFromDrive(m_cacheFilePath);
+    //    loadCacheFromDrive(m_cacheFilePath);
 }
 
 bool FileCacheManager::isFileInCache(const std::string& fileHash) const
@@ -26,7 +26,7 @@ void FileCacheManager::saveFile(const std::string& fileName, const std::string& 
     std::ofstream out(filePath.string());
     out << fileContent;
 
-    addFileToCache(md5hash(fileContent));
+//    addFileToCache(md5hash(fileContent));
 }
 
 std::string FileCacheManager::md5hash(std::string_view data)

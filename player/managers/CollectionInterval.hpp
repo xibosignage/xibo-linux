@@ -27,6 +27,7 @@ public:
     CollectionInterval();
 
     void startRegularCollection();
+    void stop();
     void collectOnce(CollectionResultCallback callback);
 
 private:
