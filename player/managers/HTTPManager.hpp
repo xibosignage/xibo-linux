@@ -16,6 +16,7 @@ class HTTPManager : private boost::noncopyable
 {
 public:
     HTTPManager();
+    ~HTTPManager();
 
     void shutdown();
     boost::future<HTTPResponseResult> get(const std::string& url);

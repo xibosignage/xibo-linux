@@ -19,11 +19,15 @@ HTTPManager::HTTPManager() :
     }
 }
 
+HTTPManager::~HTTPManager()
+{
+    shutdown();
+}
+
 void HTTPManager::shutdown()
 {
     if(!m_ioc.stopped())
     {
-        Log::debug("HTTPManager shutdown");
         m_ioc.stop();
         cancelActiveSession();
     }
