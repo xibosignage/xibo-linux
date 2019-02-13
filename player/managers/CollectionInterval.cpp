@@ -75,9 +75,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
-
-            sessionFinished(session);
         }
+        sessionFinished(session);
     }
     else
     {
