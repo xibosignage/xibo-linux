@@ -2,7 +2,10 @@
 #include "SOAPManager.hpp"
 #include "Resources.hpp"
 
+#include "utils/MacAddressFetcher.hpp"
+
 const std::string DEFAULT_CLIENT_TYPE = "linux";
+const std::string UNDEFINED_MAC_ADDRESS = "undefined";
 
 XMDSManager::XMDSManager(std::string_view host, std::string_view serverKey, std::string_view hardwareKey) :
     m_soapManager(std::make_unique<SOAPManager>(host)), m_serverKey(serverKey), m_hardwareKey(hardwareKey)
@@ -17,7 +20,7 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XMDSManager::registerDisp
     request.clientType = DEFAULT_CLIENT_TYPE;
     request.clientCode = clientCode;
     request.clientVersion = clientVersion;
-    request.macAddress = "test";
+    request.macAddress = MacAddressFetcher{}.getMacAddress().value_or(UNDEFINED_MAC_ADDRESS);
     request.displayName = displayName;
 
     return m_soapManager->sendRequest<RegisterDisplay::Result>(request);
