@@ -1,7 +1,6 @@
 #include "MediaBuilder.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
-#include "media/ImageProperties.hpp"
 #include "media/Image.hpp"
 #include "parsers/ImageOptions.hpp"
 
@@ -31,15 +30,15 @@ protected:
     std::unique_ptr<IImageAdaptor> createHandler() override;
 
 private:    
-    ImageProperties::ScaleType getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt);
-    ImageProperties::Align getAlignOption(const boost::optional<std::string>& alignOpt);
-    ImageProperties::Valign getValignOption(const boost::optional<std::string>& valignOpt);
+    MediaGeometry::ScaleType getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt);
+    MediaGeometry::Align getAlignOption(const boost::optional<std::string>& alignOpt);
+    MediaGeometry::Valign getValignOption(const boost::optional<std::string>& valignOpt);
 
 private:
     int m_width;
     int m_height;
-    ImageProperties::ScaleType m_scaleType;
-    ImageProperties::Align m_align;
-    ImageProperties::Valign m_valign;
+    MediaGeometry::ScaleType m_scaleType;
+    MediaGeometry::Align m_align;
+    MediaGeometry::Valign m_valign;
 
 };

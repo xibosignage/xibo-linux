@@ -10,7 +10,6 @@ public:
     MOCK_CONST_METHOD0(duration, int());
     MOCK_METHOD1(setDuration, void(int duration));
     MOCK_CONST_METHOD0(id, int());
-    MOCK_METHOD1(apply, void(MediaVisitor& visitor));
     MOCK_METHOD2(subscribe, void(EventType type, const EventHandler& handler));
     MOCK_METHOD1(handleEvent, void(const Event& ev));
 
@@ -34,6 +33,9 @@ public:
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));
+    MOCK_CONST_METHOD0(align, MediaGeometry::Align());
+    MOCK_CONST_METHOD0(valign, MediaGeometry::Valign());
+    MOCK_CONST_METHOD0(scaleType, MediaGeometry::ScaleType());
 
 private:
     std::unique_ptr<IWidgetAdaptor> m_handler;

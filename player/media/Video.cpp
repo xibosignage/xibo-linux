@@ -1,6 +1,5 @@
 #include "Video.hpp"
 
-#include "MediaVisitor.hpp"
 #include "IVideoHandler.hpp"
 #include "utils/Logger.hpp"
 
@@ -69,14 +68,24 @@ void Video::setMuted(bool muted)
     m_handler->setVolume(muted ? MIN_VOLUME : MAX_VOLUME);
 }
 
+MediaGeometry::Align Video::align() const
+{
+    return MediaGeometry::Align::Left;
+}
+
+MediaGeometry::Valign Video::valign() const
+{
+    return MediaGeometry::Valign::Top;
+}
+
+MediaGeometry::ScaleType Video::scaleType() const
+{
+    return MediaGeometry::ScaleType::Scaled;
+}
+
 IWidgetAdaptor& Video::handler()
 {
     return m_handler->videoWindow();
-}
-
-void Video::apply(MediaVisitor& visitor)
-{
-    visitor.visit(*this);
 }
 
 void Video::handleEvent(const Event& ev)

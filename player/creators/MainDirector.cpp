@@ -72,20 +72,19 @@ std::unique_ptr<IRegion> MainDirector::buildRegion(const xml_node& regionNode)
 
 std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xml_node& regionNode)
 {
+    GetMediaPosition positionCalc(regionWidth, regionHeight);
     std::vector<ContentWithPos> media;
     for(auto [nodeName, mediaNode] : regionNode)
     {
         if(nodeName == ResourcesXlf::MediaNode)
         {
             auto builtMedia = buildMedia(regionWidth, regionHeight, mediaNode);
-
-            GetMediaPosition visitor(regionWidth, regionHeight);
-            builtMedia->apply(visitor);
+            auto [mediaXPos, mediaYPos] = positionCalc.getMediaPos(builtMedia.get());
 
             auto content = std::make_unique<RegionContent>(std::move(builtMedia), std::make_unique<TimerProvider>());
             attachAdditionalMedia(mediaNode, *content);
 
-            media.emplace_back(ContentWithPos{std::move(content), visitor.getMediaX(), visitor.getMediaY()});
+            media.emplace_back(ContentWithPos{std::move(content), mediaXPos, mediaYPos});
         }
     }
     return media;
