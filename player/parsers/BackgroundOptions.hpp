@@ -10,7 +10,6 @@ namespace ResourcesXlf
     public:
         BackgroundOptions(const xml_node& node);
 
-        int schemaVersion() const;
         int width() const;
         int height() const;
         boost::optional<std::string> path() const;

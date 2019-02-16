@@ -6,7 +6,7 @@
 ResourcesXlf::MediaOptions::MediaOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));
-    m_path = node.get_optional<std::string>(option(Media::Uri));
+    m_path = node.get_optional<std::string>(option(Media::Path));
     m_duration = node.get<int>(attr(Media::Duration));
 }
 

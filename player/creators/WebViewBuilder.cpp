@@ -11,22 +11,25 @@
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
 
-std::unique_ptr<WebView> WebViewBuilder::build()
+std::unique_ptr<WebView> WebViewBuilder::create()
 {
-    auto webview = createWebView();
-    prepareCommonParams(*webview);
-    webview->setTransparent(m_transparent);
-    return webview;
+    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createHandler());
 }
 
-std::unique_ptr<WebView> WebViewBuilder::createWebView()
-{
-    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createAdaptor());
-}
-
-std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createHandler()
 {
     return std::make_unique<WebKitWebViewAdaptor>();
+}
+
+void WebViewBuilder::doSetup(WebView& webview)
+{
+    webview.setTransparent(m_transparent);
+}
+
+WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
+{
+    m_transparent = getTransparentOption(opts.transparent());
+    return *this;
 }
 
 WebViewBuilder& WebViewBuilder::width(int width)
@@ -41,11 +44,6 @@ WebViewBuilder& WebViewBuilder::height(int height)
     return *this;
 }
 
-WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
-{
-    m_transparent = getTransparentOption(opts.transparent());
-    return *this;
-}
 
 FilePath WebViewBuilder::getPathOption(const boost::optional<std::string>&)
 {

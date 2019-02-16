@@ -11,7 +11,6 @@ namespace ResourcesXlf
     {
     public:
         MediaOptions(const xml_node& node);
-        virtual ~MediaOptions() = default;
 
         static std::string getType(const xml_node& node);
 

@@ -3,19 +3,6 @@
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<Image> ImageBuilder::build()
-{
-    ImageProperties props{m_scaleType, m_align, m_valign};
-    auto image = std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
-    prepareCommonParams(*image);
-    return image;
-}
-
-std::unique_ptr<IImageAdaptor> ImageBuilder::createAdaptor()
-{
-    return std::make_unique<GtkImageAdaptor>();
-}
-
 ImageBuilder& ImageBuilder::width(int width)
 {
     m_width = width;
@@ -26,6 +13,17 @@ ImageBuilder& ImageBuilder::height(int height)
 {
     m_height = height;
     return *this;
+}
+
+std::unique_ptr<Image> ImageBuilder::create()
+{
+    ImageProperties props{m_scaleType, m_align, m_valign};
+    return std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createHandler());
+}
+
+std::unique_ptr<IImageAdaptor> ImageBuilder::createHandler()
+{
+    return std::make_unique<GtkImageAdaptor>();
 }
 
 ImageBuilder& ImageBuilder::mediaOptions(const ResourcesXlf::ImageOptions& opts)

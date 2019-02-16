@@ -7,18 +7,25 @@
 const bool DEFAULT_AUDIO_LOOPED = false;
 const bool DEFAULT_AUDIO_MUTED = false;
 
-class AudioBuilder : public BaseMediaBuilder<AudioBuilder, ResourcesXlf::AudioOptions>
-{
-public:
-    std::unique_ptr<Audio> build();
+class AudioBuilder;
 
+template<>
+struct BuilderTraits<AudioBuilder>
+{
+    using Media = Audio;
+    using MediaHandler = IAudioHandler;
+    using Options = ResourcesXlf::AudioOptions;
+};
+
+class AudioBuilder : public BaseMediaBuilder<AudioBuilder>
+{
 protected:
-    virtual std::unique_ptr<IAudioHandler> createHandler();
     AudioBuilder& mediaOptions(const ResourcesXlf::AudioOptions& opts) override;
+    std::unique_ptr<Audio> create() override;
+    std::unique_ptr<IAudioHandler> createHandler() override;
+    void doSetup(Audio& audio) override;
 
 private:
-    std::unique_ptr<Audio> createAudio();
-
     bool getMuteOption(const boost::optional<bool>& muteOpt);
     bool getLoopOption(const boost::optional<bool>& loopOpt);
     int getVolumeOption(const boost::optional<int>& volumeOpt);

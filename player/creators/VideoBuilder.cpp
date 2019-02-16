@@ -3,16 +3,7 @@
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<Video> VideoBuilder::build()
-{
-    auto video = createVideo();
-    prepareCommonParams(*video);
-    video->setMuted(m_mute);
-    video->setLooped(m_loop);
-    return video;
-}
-
-std::unique_ptr<Video> VideoBuilder::createVideo()
+std::unique_ptr<Video> VideoBuilder::create()
 {
     return std::make_unique<Video>(m_id, m_width, m_height, m_path, createHandler());
 }
@@ -22,16 +13,22 @@ std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()
     return std::make_unique<VideoHandler>();
 }
 
-VideoBuilder& VideoBuilder::width(int width)
+void VideoBuilder::doSetup(Video& video)
 {
-    m_width = width;
-    return *this;
+    video.setMuted(m_mute);
+    video.setLooped(m_loop);
 }
 
 VideoBuilder& VideoBuilder::mediaOptions(const ResourcesXlf::VideoOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());
+    return *this;
+}
+
+VideoBuilder& VideoBuilder::width(int width)
+{
+    m_width = width;
     return *this;
 }
 

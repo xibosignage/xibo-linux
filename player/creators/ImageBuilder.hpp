@@ -9,17 +9,26 @@ const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
 const std::string DEFAULT_VALIGN = "middle";
 
-class ImageBuilder : public BaseMediaBuilder<ImageBuilder, ResourcesXlf::ImageOptions>
+class ImageBuilder;
+
+template<>
+struct BuilderTraits<ImageBuilder>
+{
+    using Media = Image;
+    using MediaHandler = IImageAdaptor;
+    using Options = ResourcesXlf::ImageOptions;
+};
+
+class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
 {
 public:
-    std::unique_ptr<Image> build();
-
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
 
 protected:
-    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
     ImageBuilder& mediaOptions(const ResourcesXlf::ImageOptions& opts) override;
+    std::unique_ptr<Image> create() override;
+    std::unique_ptr<IImageAdaptor> createHandler() override;
 
 private:    
     ImageProperties::ScaleType getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt);

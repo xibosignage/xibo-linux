@@ -11,11 +11,6 @@ ResourcesXlf::BackgroundOptions::BackgroundOptions(const xml_node& node)
     m_color = node.get_optional<std::string>(attr(Background::Color));
 }
 
-int ResourcesXlf::BackgroundOptions::schemaVersion() const
-{
-    return m_schemaVersion;
-}
-
 int ResourcesXlf::BackgroundOptions::width() const
 {
     return m_width;

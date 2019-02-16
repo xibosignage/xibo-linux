@@ -7,21 +7,29 @@
 const bool DEFAULT_VIDEO_LOOPED = false;
 const bool DEFAULT_VIDEO_MUTED = false;
 
-class VideoBuilder : public BaseMediaBuilder<VideoBuilder, ResourcesXlf::VideoOptions>
+class VideoBuilder;
+
+template<>
+struct BuilderTraits<VideoBuilder>
+{
+    using Media = Video;
+    using MediaHandler = IVideoHandler;
+    using Options = ResourcesXlf::VideoOptions;
+};
+
+class VideoBuilder : public BaseMediaBuilder<VideoBuilder>
 {
 public:
-    std::unique_ptr<Video> build();
-
     VideoBuilder& width(int width);
     VideoBuilder& height(int height);
 
 protected:
-    virtual std::unique_ptr<IVideoHandler> createHandler();
     VideoBuilder& mediaOptions(const ResourcesXlf::VideoOptions& opts) override;
+    std::unique_ptr<Video> create() override;
+    std::unique_ptr<IVideoHandler> createHandler() override;
+    void doSetup(Video& video) override;
 
 private:
-    std::unique_ptr<Video> createVideo();
-
     bool getMuteOption(const boost::optional<bool>& muteOpt);
     bool getLoopOption(const boost::optional<bool>& loopOpt);
 

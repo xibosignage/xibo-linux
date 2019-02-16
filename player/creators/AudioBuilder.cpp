@@ -3,16 +3,7 @@
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<Audio> AudioBuilder::build()
-{
-    auto audio = createAudio();
-    prepareCommonParams(*audio);
-    audio->setVolume(m_mute ? MIN_VOLUME : m_volume);
-    audio->setLooped(m_loop);
-    return audio;
-}
-
-std::unique_ptr<Audio> AudioBuilder::createAudio()
+std::unique_ptr<Audio> AudioBuilder::create()
 {
     return std::make_unique<Audio>(m_id, m_path, createHandler());
 }
@@ -20,6 +11,12 @@ std::unique_ptr<Audio> AudioBuilder::createAudio()
 std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
 {
     return std::make_unique<AudioHandler>();
+}
+
+void AudioBuilder::doSetup(Audio& audio)
+{
+    audio.setVolume(m_mute ? MIN_VOLUME : m_volume);
+    audio.setLooped(m_loop);
 }
 
 AudioBuilder& AudioBuilder::mediaOptions(const ResourcesXlf::AudioOptions& opts)
