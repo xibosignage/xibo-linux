@@ -17,13 +17,19 @@ BackgroundBuilder::BackgroundBuilder()
 
 std::unique_ptr<IBackground> BackgroundBuilder::build()
 {
-    if(m_hexColor && m_path.empty())
-        return createBackground(m_hexColor.value());
-
-    if(!m_path.empty())
+    if(m_path.empty())
+        return createBackground(m_hexColor);
+    else
         return createBackground(m_path);
+}
 
-    throw std::runtime_error("Background can't be created");
+BackgroundBuilder& BackgroundBuilder::options(const ResourcesXlf::BackgroundOptions& opts)
+{
+    m_width = getWidthOption(opts.width());
+    m_height = getHeightOption(opts.height());
+    m_path = getPathOption(opts.path());
+    m_hexColor = getColorOption(opts.color());
+    return *this;
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
@@ -46,12 +52,11 @@ IFileSystemAdaptor& BackgroundBuilder::filesystem()
     return *m_filesystem;
 }
 
-BackgroundBuilder& BackgroundBuilder::width(int width)
+int BackgroundBuilder::getWidthOption(int width)
 {
     checkWidth(width);
 
-    m_width = width;
-    return *this;
+    return width;
 }
 
 void BackgroundBuilder::checkWidth(int width)
@@ -60,12 +65,11 @@ void BackgroundBuilder::checkWidth(int width)
         throw std::invalid_argument("Width is too small/large");
 }
 
-BackgroundBuilder& BackgroundBuilder::height(int height)
+int BackgroundBuilder::getHeightOption(int height)
 {
     checkHeight(height);
 
-    m_height = height;
-    return *this;
+    return height;
 }
 
 void BackgroundBuilder::checkHeight(int height)
@@ -74,27 +78,26 @@ void BackgroundBuilder::checkHeight(int height)
         throw std::invalid_argument("Height is too small/large");
 }
 
-BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& color)
+uint32_t BackgroundBuilder::getColorOption(const boost::optional<std::string>& colorOpt)
 {
     ColorToHexConverter converter;
-    m_hexColor = converter.colorToHex(color.value_or(DEFAULT_COLOR));
-    return *this;
+    return converter.colorToHex(colorOpt.value_or(DEFAULT_COLOR));
 }
 
-BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
+FilePath BackgroundBuilder::getPathOption(const boost::optional<std::string>& pathOpt)
 {
-    if(path)
+    if(pathOpt)
     {
-        auto fullPath = Resources::directory() / path.value();
+        auto fullPath = Resources::directory() / pathOpt.value();
 
         checkPath(fullPath);
 
-        m_path = fullPath;
+        return fullPath;
     }
-    return *this;
+    return {};
 }
 
-void BackgroundBuilder::checkPath(FilePath path)
+void BackgroundBuilder::checkPath(const FilePath& path)
 {
     if(!filesystem().isRegularFile(path))
         throw std::runtime_error("Not valid path");

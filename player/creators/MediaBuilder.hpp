@@ -2,8 +2,12 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
+#include "parsers/MediaOptions.hpp"
 
 #include <boost/optional/optional.hpp>
+
+template<typename Builder>
+struct BuilderTraits;
 
 template<typename Builder>
 class BaseMediaBuilder
@@ -14,44 +18,65 @@ public:
         m_filesystem = std::make_unique<FileSystemAdaptor>();
     }
 
-    Builder& id(int id)
+    std::unique_ptr<typename BuilderTraits<Builder>::Media> build()
     {
-        m_id = id;
-        return static_cast<Builder&>(*this);
+        auto media = create();
+        media->setDuration(m_duration);
+        doSetup(*media);
+        return media;
     }
 
-    virtual Builder& path(const boost::optional<std::string>& path)
+    Builder& options(const typename BuilderTraits<Builder>::Options& opts)
     {
-        if(path)
-        {
-            auto fullPath = Resources::directory() / path.value();
-
-            checkPath(fullPath);
-
-            m_path = fullPath;
-        }
-        return static_cast<Builder&>(*this);
-    }
-
-    virtual Builder& duration(int duration)
-    {
-        m_duration = duration;
-        return static_cast<Builder&>(*this);
+        parseBaseOptions(opts);
+        return mediaOptions(opts);
     }
 
 protected:
+    virtual Builder& mediaOptions(const typename BuilderTraits<Builder>::Options& opts) = 0;
+    virtual std::unique_ptr<typename BuilderTraits<Builder>::Media> create() = 0;
+    virtual std::unique_ptr<typename BuilderTraits<Builder>::MediaHandler> createHandler() = 0;
+
+    virtual void doSetup(typename BuilderTraits<Builder>::Media&)
+    {
+    }
+
     virtual IFileSystemAdaptor& filesystem()
     {
         return *m_filesystem;
     }
 
-    template<typename Media>
-    void prepareCommonParams(Media& media)
+    virtual int getIdOption(int id)
     {
-        media.setDuration(m_duration);
+        return id;
+    }
+
+    virtual FilePath getPathOption(const boost::optional<std::string>& pathOpt)
+    {
+        if(pathOpt)
+        {
+            auto fullPath = Resources::directory() / pathOpt.value();
+
+            checkPath(fullPath);
+
+            return fullPath;
+        }
+        return {};
+    }
+
+    virtual int getDurationOption(int duration)
+    {
+        return duration;
     }
 
 private:
+    void parseBaseOptions(const ResourcesXlf::MediaOptions& opts)
+    {
+        m_id = getIdOption(opts.id());
+        m_path = getPathOption(opts.path());
+        m_duration = getDurationOption(opts.duration());
+    }
+
     void checkPath(FilePath path)
     {
         if(!filesystem().isRegularFile(path))

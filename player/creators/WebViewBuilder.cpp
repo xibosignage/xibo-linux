@@ -11,34 +11,24 @@
 const std::string DEFAULT_EXTENSION = ".html";
 const bool DEFAULT_TRANSPARENT = true;
 
-std::unique_ptr<WebView> WebViewBuilder::build()
+std::unique_ptr<WebView> WebViewBuilder::create()
 {
-    auto webview = createWebView();
-    prepareCommonParams(*webview);
-    webview->setTransparent(m_transparent);
-    return webview;
+    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createHandler());
 }
 
-std::unique_ptr<WebView> WebViewBuilder::createWebView()
-{
-    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createAdaptor());
-}
-
-std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createHandler()
 {
     return std::make_unique<WebKitWebViewAdaptor>();
 }
 
-WebViewBuilder& WebViewBuilder::path(const boost::optional<std::string>&)
+void WebViewBuilder::doSetup(WebView& webview)
 {
-    auto filename = std::to_string(m_id) + DEFAULT_EXTENSION;
-    m_path = Resources::directory() / filename;
-    return *this;
+    webview.setTransparent(m_transparent);
 }
 
-WebViewBuilder& WebViewBuilder::duration(int duration)
+WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
 {
-    m_duration = parseDuration(m_path).value_or(duration);
+    m_transparent = getTransparentOption(opts.transparent());
     return *this;
 }
 
@@ -54,10 +44,21 @@ WebViewBuilder& WebViewBuilder::height(int height)
     return *this;
 }
 
-WebViewBuilder& WebViewBuilder::transparent(const boost::optional<bool>& transparent)
+
+FilePath WebViewBuilder::getPathOption(const boost::optional<std::string>&)
 {
-    m_transparent = transparent.value_or(DEFAULT_TRANSPARENT);
-    return *this;
+    auto filename = std::to_string(m_id) + DEFAULT_EXTENSION;
+    return Resources::directory() / filename;
+}
+
+int WebViewBuilder::getDurationOption(int duration)
+{
+    return parseDuration(m_path).value_or(duration);
+}
+
+bool WebViewBuilder::getTransparentOption(const boost::optional<bool>& transparentOpt)
+{
+    return transparentOpt.value_or(DEFAULT_TRANSPARENT);
 }
 
 boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)

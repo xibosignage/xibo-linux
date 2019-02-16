@@ -1,54 +1,54 @@
-#include "AudioBuilderTest.hpp"
-#include "media/Audio.hpp"
+//#include "AudioBuilderTest.hpp"
+//#include "media/Audio.hpp"
 
-TEST(AudioBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
-{
-    AudioBuilderTest builder;
+//TEST(AudioBuilderTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+//{
+//    AudioBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), load(DEFAULT_FULL_PATH));
+//    EXPECT_CALL(builder.adaptor(), load(DEFAULT_FULL_PATH));
 
-    builder.build();
-}
+//    builder.build();
+//}
 
-TEST(AudioBuilderTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)
-{
-    AudioBuilderTest builder;
+//TEST(AudioBuilderTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)
+//{
+//    AudioBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), setVolume(MIN_VOLUME));
+//    EXPECT_CALL(builder.adaptor(), setVolume(MIN_VOLUME));
 
-    builder.muted(true).build();
-}
+//    builder.muted(true).build();
+//}
 
-TEST(AudioBuilderTest, Construct_MutedTrue_HandlerSetVolume100ShouldBeCalled)
-{
-    AudioBuilderTest builder;
+//TEST(AudioBuilderTest, Construct_MutedTrue_HandlerSetVolume100ShouldBeCalled)
+//{
+//    AudioBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), setVolume(MAX_VOLUME));
+//    EXPECT_CALL(builder.adaptor(), setVolume(MAX_VOLUME));
 
-    builder.volume({}).muted(false).build();
-}
+//    builder.volume({}).muted(false).build();
+//}
 
-TEST(AudioBuilderTest, Construct_Volume50_HandlerSetVolume50ShouldBeCalled)
-{
-    AudioBuilderTest builder;
+//TEST(AudioBuilderTest, Construct_Volume50_HandlerSetVolume50ShouldBeCalled)
+//{
+//    AudioBuilderTest builder;
 
-    EXPECT_CALL(builder.adaptor(), setVolume(50));
+//    EXPECT_CALL(builder.adaptor(), setVolume(50));
 
-    builder.volume(50).muted(false).build();
-}
+//    builder.volume(50).muted(false).build();
+//}
 
-TEST(AudioBuilderTest, Construct_LoopTrue_AudioLoopedEqualsTrue)
-{
-    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(true).build();
+//TEST(AudioBuilderTest, Construct_LoopTrue_AudioLoopedEqualsTrue)
+//{
+//    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(true).build();
 
-    ASSERT_EQ(audio->looped(), true);
-}
+//    ASSERT_EQ(audio->looped(), true);
+//}
 
-TEST(AudioBuilderTest, Construct_LoopFalse_AudioLoopedEqualsFalse)
-{
-    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(false).build();
+//TEST(AudioBuilderTest, Construct_LoopFalse_AudioLoopedEqualsFalse)
+//{
+//    auto audio = AudioBuilderTest().volume({}).muted(DEFAULT_AUDIO_MUTED).looped(false).build();
 
-    ASSERT_EQ(audio->looped(), false);
-}
+//    ASSERT_EQ(audio->looped(), false);
+//}
 
 

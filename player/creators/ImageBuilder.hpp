@@ -2,29 +2,37 @@
 
 #include "adaptors/IImageAdaptor.hpp"
 #include "media/Image.hpp"
+#include "parsers/ImageOptions.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
 const std::string DEFAULT_VALIGN = "middle";
 
+class ImageBuilder;
+
+template<>
+struct BuilderTraits<ImageBuilder>
+{
+    using Media = Image;
+    using MediaHandler = IImageAdaptor;
+    using Options = ResourcesXlf::ImageOptions;
+};
+
 class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
 {
 public:
-    std::unique_ptr<Image> build();
-
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
-    ImageBuilder& scaleType(const boost::optional<std::string>& scaleType);
-    ImageBuilder& align(const boost::optional<std::string>& align);
-    ImageBuilder& valign(const boost::optional<std::string>& valign);
 
 protected:
-    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
+    ImageBuilder& mediaOptions(const ResourcesXlf::ImageOptions& opts) override;
+    std::unique_ptr<Image> create() override;
+    std::unique_ptr<IImageAdaptor> createHandler() override;
 
-private:
-    MediaGeometry::ScaleType toScaleType(std::string_view scaleType);
-    MediaGeometry::Align toAlign(std::string_view align);
-    MediaGeometry::Valign toValign(std::string_view valign);
+private:    
+    MediaGeometry::ScaleType getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt);
+    MediaGeometry::Align getAlignOption(const boost::optional<std::string>& alignOpt);
+    MediaGeometry::Valign getValignOption(const boost::optional<std::string>& valignOpt);
 
 private:
     int m_width;

@@ -11,6 +11,13 @@
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
 
+
+
+
+
+
+#include "creators/RegionBuilder.hpp"
+
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:

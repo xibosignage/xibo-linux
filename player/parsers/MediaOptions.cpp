@@ -6,7 +6,7 @@
 ResourcesXlf::MediaOptions::MediaOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));
-    m_uri = node.get_optional<std::string>(option(Media::Uri));
+    m_path = node.get_optional<std::string>(option(Media::Path));
     m_duration = node.get<int>(attr(Media::Duration));
 }
 
@@ -20,9 +20,9 @@ int ResourcesXlf::MediaOptions::id() const
     return m_id;
 }
 
-boost::optional<std::string> ResourcesXlf::MediaOptions::uri() const
+boost::optional<std::string> ResourcesXlf::MediaOptions::path() const
 {
-    return m_uri;
+    return m_path;
 }
 
 int ResourcesXlf::MediaOptions::duration() const
@@ -37,7 +37,7 @@ void ResourcesXlf::MediaOptions::setId(int id)
 
 void ResourcesXlf::MediaOptions::setUri(const boost::optional<std::string>& uri)
 {
-    m_uri = uri;
+    m_path = uri;
 }
 
 void ResourcesXlf::MediaOptions::setDuration(int duration)

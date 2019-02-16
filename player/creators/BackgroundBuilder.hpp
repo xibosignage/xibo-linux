@@ -5,6 +5,7 @@
 
 #include "utils/IFileSystemAdaptor.hpp"
 #include "utils/FilePath.hpp"
+#include "parsers/BackgroundOptions.hpp"
 
 class IBackground;
 class IImageAdaptor;
@@ -15,10 +16,7 @@ public:
     BackgroundBuilder();
     std::unique_ptr<IBackground> build();
 
-    BackgroundBuilder& width(int width);
-    BackgroundBuilder& height(int height);
-    BackgroundBuilder& color(const boost::optional<std::string>& color);
-    BackgroundBuilder& path(const boost::optional<std::string>& path);
+    BackgroundBuilder& options(const ResourcesXlf::BackgroundOptions& opts);
 
 protected:
     virtual std::unique_ptr<IImageAdaptor> createAdaptor();
@@ -28,15 +26,20 @@ private:
     std::unique_ptr<IBackground> createBackground(uint32_t color);
     std::unique_ptr<IBackground> createBackground(const FilePath& path);
 
+    int getWidthOption(int width);
+    int getHeightOption(int height);
+    uint32_t getColorOption(const boost::optional<std::string>& colorOpt);
+    FilePath getPathOption(const boost::optional<std::string>& pathOpt);
+
     void checkWidth(int width);
     void checkHeight(int height);
-    void checkPath(FilePath path);
+    void checkPath(const FilePath& pathOpt);
 
 private:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     int m_width;
     int m_height;
-    boost::optional<uint32_t> m_hexColor;
+    uint32_t m_hexColor;
     FilePath m_path;
 
 };

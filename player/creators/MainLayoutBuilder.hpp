@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "parsers/LayoutOptions.hpp"
+
 class IOverlayAdaptor;
 class IMainLayout;
 class IBackground;
@@ -20,8 +22,7 @@ class MainLayoutBuilder
 public:
     std::unique_ptr<IMainLayout> build();
 
-    MainLayoutBuilder& width(int width);
-    MainLayoutBuilder& height(int height);
+    MainLayoutBuilder& options(const ResourcesXlf::LayoutOptions& opts);
     MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
     MainLayoutBuilder& regions(std::vector<RegionWithPos>&& regions);
 
@@ -31,12 +32,16 @@ protected:
 private:
     std::unique_ptr<IMainLayout> createLayout();
 
+    int getWidthOption(int width);
+    int getHeightOption(int height);
+
     void prepareLayout(IMainLayout& layout);
     void checkWidth(int width);
     void checkHeight(int height);
     void checkRegionsCount(size_t regionsCount);
 
 private:
+    int m_schemeVersion;
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;
