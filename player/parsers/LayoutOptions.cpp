@@ -3,6 +3,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::LayoutOptions::LayoutOptions(int schemaVersion, int width, int height) :
+    m_schemaVersion(schemaVersion), m_width(width), m_height(height)
+{
+}
+
 ResourcesXlf::LayoutOptions::LayoutOptions(const xml_node& node)
 {
     m_schemaVersion = node.get<int>(attr(Layout::SchemaVersion));

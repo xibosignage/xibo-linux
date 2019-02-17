@@ -5,7 +5,7 @@
 
 std::unique_ptr<Audio> AudioBuilder::create()
 {
-    return std::make_unique<Audio>(m_id, m_path, createHandler());
+    return std::unique_ptr<Audio>(new Audio{m_id, m_path, createHandler()});
 }
 
 std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()

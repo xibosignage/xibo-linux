@@ -18,7 +18,7 @@ std::unique_ptr<IRegion> RegionBuilder::build()
 }
 std::unique_ptr<IRegion> RegionBuilder::createRegion()
 {
-    return std::make_unique<Region>(m_id, m_width, m_height, m_zorder, createAdaptor());
+    return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createAdaptor()});
 }
 
 std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()

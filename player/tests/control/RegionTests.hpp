@@ -16,16 +16,18 @@ const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
 
 
 
-#include "creators/RegionBuilder.hpp"
+#include "creators/RegionBuilderTests.hpp"
 
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:
     auto constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
     {
-        auto region = construct<Region>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, unique(&adaptor()));
-        addContentItemsToRegion(*region, contentItemsCount);
-        return region;
+        RegionBuilderTest builder;
+        ResourcesXlf::RegionOptions opts{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, DEFAULT_ZORDER, false};
+        builder.adaptor(unique(&adaptor())).options(opts);
+        addContentItemsToRegion(builder, contentItemsCount);
+        return builder.build();
     }
 
 protected:
@@ -40,16 +42,18 @@ protected:
     }
 
 private:
-    void addContentItemsToRegion(Region& region, std::size_t contentItemsCount)
+    void addContentItemsToRegion(RegionBuilder& builder, std::size_t contentItemsCount)
     {
+        std::vector<ContentWithPos> allcontent;
         for(size_t i = 0; i != contentItemsCount; ++i)
         {
             auto content = createRegionContent();
 
             m_contentItems.push_back(content.get());
 
-            region.addContent(std::move(content), DEFAULT_XPOS, DEFAULT_YPOS);
+            allcontent.emplace_back(ContentWithPos{std::move(content), DEFAULT_XPOS, DEFAULT_YPOS});
         }
+        builder.content(std::move(allcontent));
     }
 
 private:

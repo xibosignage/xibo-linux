@@ -8,6 +8,7 @@ namespace ResourcesXlf
     class LayoutOptions
     {
     public:
+        LayoutOptions(int schemaVersion, int width, int height);
         LayoutOptions(const xml_node& node);
 
         int schemaVersion() const;

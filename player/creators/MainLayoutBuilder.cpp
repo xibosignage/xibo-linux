@@ -25,7 +25,7 @@ MainLayoutBuilder& MainLayoutBuilder::options(const ResourcesXlf::LayoutOptions&
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::createLayout()
 {
-    return std::make_unique<MainLayout>(m_width, m_height, createAdaptor());
+    return std::unique_ptr<MainLayout>(new MainLayout{m_width, m_height, createAdaptor()});
 }
 
 std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createAdaptor()

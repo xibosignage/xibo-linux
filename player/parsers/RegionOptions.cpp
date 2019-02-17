@@ -3,6 +3,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::RegionOptions::RegionOptions(int id, int width, int height, int left, int top, int zorder, bool loop) :
+    m_id(id), m_width(width), m_height(height), m_left(left), m_top(top), m_zindex(zorder), m_loop(loop)
+{
+}
+
 ResourcesXlf::RegionOptions::RegionOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Region::Id));

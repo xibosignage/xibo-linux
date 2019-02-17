@@ -21,19 +21,22 @@ const std::vector<std::vector<int>> zorders = {
     {4,3,2,1,0}
 };
 
+#include "creators/MainLayoutBuilderTests.hpp"
+
 class MainLayoutTest : public BaseTestWithHandler<MockOverlayAdaptor>
 {
 public:
     auto constructLayout()
     {
-        auto layout = construct<MainLayout>(DEFAULT_WIDTH, DEFAULT_HEIGHT, unique(&adaptor()));
+        MainLayoutBuilderTest builder;
+        builder.adaptor(unique(&adaptor())).options(ResourcesXlf::LayoutOptions{5, DEFAULT_WIDTH, DEFAULT_HEIGHT});
 
         ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
         ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
 
-        addBackgroundAndRegions(*layout);
+        addBackgroundAndRegions(builder);
 
-        return layout;
+        return builder.build();
     }
 
 protected:
@@ -67,27 +70,29 @@ protected:
         return region;
     }
 
-    virtual void addBackground(MainLayout& layout)
+    virtual void addBackground(MainLayoutBuilder& builder)
     {
         auto background = createBackground();
         m_background = background.get();
 
-        layout.setBackground(std::move(background));
+        builder.background(std::move(background));
     }
 
-    virtual void addRegions(MainLayout& layout)
+    virtual void addRegions(MainLayoutBuilder& builder)
     {
         auto region = createRegion();
         m_region = region.get();
 
-        layout.addRegion(std::move(region), DEFAULT_XPOS, DEFAULT_XPOS);
+        std::vector<RegionWithPos> regions;
+        regions.emplace_back(RegionWithPos{std::move(region), DEFAULT_XPOS, DEFAULT_XPOS});
+        builder.regions(std::move(regions));
     }
 
 private:
-    void addBackgroundAndRegions(MainLayout& layout)
+    void addBackgroundAndRegions(MainLayoutBuilder& builder)
     {
-        addBackground(layout);
-        addRegions(layout);
+        addBackground(builder);
+        addRegions(builder);
     }
 
 private:
@@ -99,8 +104,9 @@ private:
 class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
 {
 protected:
-    void addRegions(MainLayout& layout) override
+    void addRegions(MainLayoutBuilder& builder) override
     {
+        std::vector<RegionWithPos> regions;
         for(int zorder : GetParam())
         {
             auto region = createRegion();
@@ -108,8 +114,9 @@ protected:
             ON_CALL(*region, zorder()).WillByDefault(testing::Return(zorder));
             pushRegionAndSort(region.get());
 
-            layout.addRegion(std::move(region), DEFAULT_XPOS, DEFAULT_YPOS);
+            regions.emplace_back(RegionWithPos{std::move(region), DEFAULT_XPOS, DEFAULT_YPOS});
         }
+        builder.regions(std::move(regions));
     }
 
     testing::NiceMock<MockRegion>* region(size_t index)

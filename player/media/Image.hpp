@@ -8,8 +8,6 @@ class FilePath;
 class Image : public Media, public IVisible
 {
 public:
-    Image(int id, int width, int height, const FilePath& path, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler);
-
     MediaGeometry::Align align() const override;
     MediaGeometry::Valign valign() const override;
     MediaGeometry::ScaleType scaleType() const override;
@@ -25,6 +23,10 @@ public:
     void handleEvent(const Event& ev) override;
 
 private:
+    friend class ImageBuilder;
+
+    Image(int id, int width, int height, const FilePath& path, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler);
+
     void loadImage(const FilePath& path);
 
 private:

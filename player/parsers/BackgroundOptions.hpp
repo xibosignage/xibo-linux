@@ -8,6 +8,7 @@ namespace ResourcesXlf
     class BackgroundOptions
     {
     public:
+        BackgroundOptions(int width, int height, boost::optional<std::string> path, boost::optional<std::string> color);
         BackgroundOptions(const xml_node& node);
 
         int width() const;

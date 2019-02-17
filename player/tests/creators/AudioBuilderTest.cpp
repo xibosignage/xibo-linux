@@ -50,5 +50,3 @@
 
 //    ASSERT_EQ(audio->looped(), false);
 //}
-
-

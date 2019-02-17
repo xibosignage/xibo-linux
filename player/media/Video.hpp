@@ -8,8 +8,6 @@ class FilePath;
 class Video : public Media, public IVisible, public IPlayable
 {
 public:
-    Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
-
     void play() override;
     void stop() override;
 
@@ -33,6 +31,10 @@ protected:
     void hide() override { }
 
 private:
+    friend class VideoBuilder;
+
+    Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
+
     void onVideoFinished();
 
 private:

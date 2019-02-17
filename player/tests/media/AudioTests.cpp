@@ -2,14 +2,12 @@
 
 using namespace testing;
 
-const int DEFAULT_VOLUME = 100;
+//TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
+//{
+//    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
-
-    constructAudio();
-}
+//    constructAudio();
+//}
 
 TEST_F(AudioTest, Play_Default_HandlerPlayShouldBeCalled)
 {

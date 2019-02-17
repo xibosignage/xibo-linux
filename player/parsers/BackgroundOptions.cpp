@@ -3,6 +3,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::BackgroundOptions::BackgroundOptions(int width, int height, boost::optional<std::string> path, boost::optional<std::string> color) :
+    m_width(width), m_height(height), m_path(path), m_color(color)
+{
+}
+
 ResourcesXlf::BackgroundOptions::BackgroundOptions(const xml_node& node)
 {
     m_width = node.get<int>(attr(Background::Width));

@@ -20,11 +20,11 @@ protected:
         doTearDown();
     }
 
-    Handler& adaptor()
+    testing::NiceMock<Handler>& adaptor()
     {
         return *m_adaptor;
     }
 
 private:
-    Handler* m_adaptor = nullptr;
+    testing::NiceMock<Handler>* m_adaptor = nullptr;
 };

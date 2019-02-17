@@ -3,6 +3,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::MediaOptions::MediaOptions(int id, boost::optional<std::string> path, int duration) :
+    m_id(id), m_path(path), m_duration(duration)
+{
+}
+
 ResourcesXlf::MediaOptions::MediaOptions(const xml_node& node)
 {
     m_id = node.get<int>(attr(Media::Id));

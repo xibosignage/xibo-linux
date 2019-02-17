@@ -12,7 +12,6 @@ class ITimerProvider;
 class Region : public Observable<IRegion>, private boost::noncopyable
 {
 public:
-    Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
     ~Region() override;
 
     int width() const override;
@@ -29,8 +28,11 @@ public:
     IFixedLayoutAdaptor& handler() override;
 
 private:
-    void scaleContent(double scaleX, double scaleY);
+    friend class RegionBuilder;
 
+    Region(int id, int width, int height, int zorder, std::unique_ptr<IFixedLayoutAdaptor>&& handler);
+
+    void scaleContent(double scaleX, double scaleY);
     void placeContent(size_t mediaIndex);
     void removeContent(size_t mediaIndex);
     void onContentDurationTimeout();

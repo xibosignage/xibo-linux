@@ -9,6 +9,12 @@ namespace ResourcesXlf
     class AudioOptions : public MediaOptions
     {
     public:
+        AudioOptions(int id,
+                     boost::optional<std::string> path,
+                     int duration,
+                     boost::optional<bool> muted,
+                     boost::optional<bool> looped,
+                     boost::optional<int> volume);
         AudioOptions(const xml_node& node);
         AudioOptions(const xml_node& node, AudioNodeTag);
 

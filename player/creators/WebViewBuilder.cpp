@@ -13,7 +13,7 @@ const bool DEFAULT_TRANSPARENT = true;
 
 std::unique_ptr<WebView> WebViewBuilder::create()
 {
-    return std::make_unique<WebView>(m_id, m_width, m_height, m_path, createHandler());
+    return std::unique_ptr<WebView>(new WebView{m_id, m_width, m_height, m_path, createHandler()});
 }
 
 std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createHandler()

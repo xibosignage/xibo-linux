@@ -3,6 +3,15 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::VideoOptions::VideoOptions(int id,
+                                         boost::optional<std::string> path,
+                                         int duration,
+                                         boost::optional<bool> muted,
+                                         boost::optional<bool> looped) :
+    MediaOptions(id, path, duration), m_muted(muted), m_looped(looped)
+{
+}
+
 ResourcesXlf::VideoOptions::VideoOptions(const xml_node& node) :
     MediaOptions(node)
 {

@@ -1,11 +1,11 @@
-//#pragma once
+#pragma once
 
-//#include "test_utils.hpp"
+#include "test_utils.hpp"
 
-//#include "creators/BackgroundBuilder.hpp"
+#include "creators/BackgroundBuilder.hpp"
 
-//#include "mocks/MockImageAdaptor.hpp"
-//#include "mocks/MockFileSystemAdaptor.hpp"
+#include "mocks/MockImageAdaptor.hpp"
+#include "mocks/MockFileSystemAdaptor.hpp"
 
 //struct Color
 //{
@@ -33,42 +33,34 @@
 
 //const std::string DEFAULT_COLOR = "#000";
 
-//class BackgroundBuilderTest : public BackgroundBuilder
-//{
-//public:
-//    BackgroundBuilderTest() :
-//        m_fakeFilesystem(std::make_unique<testing::NiceMock<MockFileSystemAdaptor>>())
-//    {
-//        ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
-//    }
+class BackgroundBuilderTest : public BackgroundBuilder
+{
+public:
+    BackgroundBuilderTest() :
+        m_fakeFilesystem(std::make_unique<testing::NiceMock<MockFileSystemAdaptor>>())
+    {
+        ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
+    }
 
-//    BackgroundBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockImageAdaptor>>&& adaptor)
-//    {
-//        m_adaptor = std::move(adaptor);
-//        return static_cast<BackgroundBuilderTest&>(*this);
-//    }
+    BackgroundBuilderTest& adaptor(std::unique_ptr<testing::NiceMock<MockImageAdaptor>>&& adaptor)
+    {
+        m_adaptor = std::move(adaptor);
+        return *this;
+    }
 
-//    BackgroundBuilderTest& defaultSize()
-//    {
-//        return static_cast<BackgroundBuilderTest&>(width(DEFAULT_WIDTH).height(DEFAULT_HEIGHT));
-//    }
+protected:
+    std::unique_ptr<IImageAdaptor> createAdaptor() override
+    {
+        return std::move(m_adaptor);
+    }
 
-//    MockFileSystemAdaptor& filesystem() override
-//    {
-//        return *m_fakeFilesystem;
-//    }
+    MockFileSystemAdaptor& filesystem() override
+    {
+        return *m_fakeFilesystem;
+    }
 
-//protected:
-//    std::unique_ptr<IImageAdaptor> createAdaptor() override
-//    {
-//        if(m_adaptor)
-//            return std::move(m_adaptor);
+private:
+    std::unique_ptr<testing::NiceMock<MockImageAdaptor>> m_adaptor;
+    std::unique_ptr<MockFileSystemAdaptor> m_fakeFilesystem;
 
-//        return std::make_unique<testing::NiceMock<MockImageAdaptor>>();
-//    }
-
-//private:
-//    std::unique_ptr<testing::NiceMock<MockImageAdaptor>> m_adaptor;
-//    std::unique_ptr<MockFileSystemAdaptor> m_fakeFilesystem;
-
-//};
+};
