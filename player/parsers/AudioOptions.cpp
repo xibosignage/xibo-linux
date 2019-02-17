@@ -5,6 +5,16 @@
 
 const int DEFAULT_DURATION = 0;
 
+ResourcesXlf::AudioOptions::AudioOptions(int id,
+                                         boost::optional<std::string> path,
+                                         int duration,
+                                         boost::optional<bool> muted,
+                                         boost::optional<bool> looped,
+                                         boost::optional<int> volume) :
+    MediaOptions(id, path, duration), m_muted(muted), m_looped(looped), m_volume(volume)
+{
+}
+
 ResourcesXlf::AudioOptions::AudioOptions(const xml_node& node) :
     MediaOptions(node)
 {

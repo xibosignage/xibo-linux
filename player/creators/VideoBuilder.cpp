@@ -5,7 +5,7 @@
 
 std::unique_ptr<Video> VideoBuilder::create()
 {
-    return std::make_unique<Video>(m_id, m_width, m_height, m_path, createHandler());
+    return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
 }
 
 std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()

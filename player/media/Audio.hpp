@@ -8,8 +8,6 @@ class IAudioHandler;
 class Audio : public Media, public IPlayable
 {
 public:
-    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
-
     void play() override;
     void stop() override;
 
@@ -20,6 +18,10 @@ public:
     bool looped() const;
 
 private:
+    friend class AudioBuilder;
+
+    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
+
     void onAudioFinished();
 
 private:

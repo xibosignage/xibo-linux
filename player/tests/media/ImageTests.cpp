@@ -40,21 +40,21 @@ TEST_F(ImageTest, ScaleType_Default_EqualsDefault)
 {
     auto image = constructImage();
 
-    ASSERT_EQ(image->scaleType(), DEFAULT_SCALE_TYPE);
+    ASSERT_EQ(image->scaleType(), MediaGeometry::ScaleType::Scaled);
 }
 
 TEST_F(ImageTest, Align_Default_EqualsDefault)
 {
     auto image = constructImage();
 
-    ASSERT_EQ(image->align(), DEFAULT_ALIGN);
+    ASSERT_EQ(image->align(), MediaGeometry::Align::Center);
 }
 
 TEST_F(ImageTest, Valign_Default_EqualsDefault)
 {
     auto image = constructImage();
 
-    ASSERT_EQ(image->valign(), DEFAULT_VALIGN);
+    ASSERT_EQ(image->valign(), MediaGeometry::Valign::Middle);
 }
 
 TEST_F(ImageTest, Show_Default_HandlerShowShouldBeCalled)

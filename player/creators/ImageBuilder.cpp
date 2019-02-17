@@ -18,7 +18,7 @@ ImageBuilder& ImageBuilder::height(int height)
 std::unique_ptr<Image> ImageBuilder::create()
 {
     MediaGeometry props{m_scaleType, m_align, m_valign};
-    return std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createHandler());
+    return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_path, props, createHandler()});
 }
 
 std::unique_ptr<IImageAdaptor> ImageBuilder::createHandler()

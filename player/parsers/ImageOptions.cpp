@@ -3,6 +3,16 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::ImageOptions::ImageOptions(int id,
+                                         boost::optional<std::string> path,
+                                         int duration,
+                                         boost::optional<std::string> scaleType,
+                                         boost::optional<std::string> align,
+                                         boost::optional<std::string> valign) :
+    MediaOptions(id, path, duration), m_scaleType(scaleType), m_align(align), m_valign(valign)
+{
+}
+
 ResourcesXlf::ImageOptions::ImageOptions(const xml_node& node) :
     MediaOptions(node)
 {

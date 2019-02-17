@@ -9,12 +9,12 @@ TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
     constructWebView();
 }
 
-TEST_F(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
+//TEST_F(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
+//{
+//    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-    constructWebView();
-}
+//    constructWebView();
+//}
 
 TEST_F(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {

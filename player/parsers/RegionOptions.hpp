@@ -8,6 +8,7 @@ namespace ResourcesXlf
     class RegionOptions
     {
     public:
+        RegionOptions(int id, int width, int height, int left, int top, int zorder, bool loop);
         RegionOptions(const xml_node& node);
 
         int id() const;

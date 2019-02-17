@@ -8,8 +8,6 @@ class FilePath;
 class WebView : public Media, public IVisible
 {
 public:
-    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
-
     void show() override;
     void hide() override;
 
@@ -25,6 +23,11 @@ public:
     MediaGeometry::ScaleType scaleType() const override;
 
     void setTransparent(bool transparent);
+
+private:
+    friend class WebViewBuilder;
+
+    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
 
 private:
     std::unique_ptr<IWebViewAdaptor> m_handler;

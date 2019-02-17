@@ -10,12 +10,12 @@ TEST_F(VideoTest, Construct_Default_HandlerSetSizeShouldBeCalled)
     constructVideo();
 }
 
-TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
-{
-    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
+//TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
+//{
+//    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
 
-    constructVideo();
-}
+//    constructVideo();
+//}
 
 TEST_F(VideoTest, Play_Default_HandlerPlayShouldBeCalled)
 {

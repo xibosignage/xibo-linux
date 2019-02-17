@@ -34,12 +34,12 @@ BackgroundBuilder& BackgroundBuilder::options(const ResourcesXlf::BackgroundOpti
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
 {
-    return std::make_unique<OneColorBackground>(m_width, m_height, color, createAdaptor());
+    return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createAdaptor()});
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
 {
-    return std::make_unique<ImageBackground>(m_width, m_height, path, createAdaptor());
+    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, path, createAdaptor()});
 }
 
 std::unique_ptr<IImageAdaptor> BackgroundBuilder::createAdaptor()

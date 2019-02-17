@@ -9,7 +9,6 @@
 class MainLayout : public Observable<IMainLayout>, private boost::noncopyable
 {
 public:
-    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
     ~MainLayout() override;
 
     void scale(double scaleX, double scaleY) override;
@@ -24,6 +23,10 @@ public:
     void show() override;
 
 private:
+    friend class MainLayoutBuilder;
+
+    MainLayout(int width, int height, std::unique_ptr<IOverlayAdaptor>&& handler);
+
     void sortReorderAndShowRegions();
     void sortAndReorderRegions();
     void sortRegionsByZorder();

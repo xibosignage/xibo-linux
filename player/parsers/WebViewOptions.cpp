@@ -3,6 +3,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+ResourcesXlf::WebViewOptions::WebViewOptions(int id, boost::optional<std::string> path, int duration, bool transparent) :
+    MediaOptions(id, path, duration), m_transparent(transparent)
+{
+}
+
 ResourcesXlf::WebViewOptions::WebViewOptions(const xml_node& node) :
     MediaOptions(node)
 {
