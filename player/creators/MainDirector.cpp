@@ -40,7 +40,10 @@ std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xml_node& layoutNod
 {
     LayoutOptions opts{layoutNode};
 
-    return MainLayoutBuilder().options(opts).background(buildBackground(layoutNode)).regions(collectRegions(layoutNode)).build();
+    return MainLayoutBuilder{}.options(opts)
+                              .background(buildBackground(layoutNode))
+                              .regions(collectRegions(layoutNode))
+                              .build();
 }
 
 std::unique_ptr<IBackground> MainDirector::buildBackground(const ResourcesXlf::BackgroundOptions& opts)
@@ -67,7 +70,7 @@ std::unique_ptr<IRegion> MainDirector::buildRegion(const xml_node& regionNode)
     RegionOptions opts{regionNode};
     auto allContent = collectContent(opts.width(), opts.height(), regionNode);
 
-    return RegionBuilder().options(opts).content(std::move(allContent)).build();
+    return RegionBuilder{}.options(opts).content(std::move(allContent)).build();
 }
 
 std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xml_node& regionNode)
@@ -106,22 +109,22 @@ std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeig
 
 std::unique_ptr<Image> MainDirector::buildImage(int regionWidth, int regionHeight, const ImageOptions& opts)
 {
-    return ImageBuilder().options(opts).width(regionWidth).height(regionHeight).build();
+    return ImageBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 std::unique_ptr<Video> MainDirector::buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts)
 {
-    return VideoBuilder().options(opts).width(regionWidth).height(regionHeight).build();
+    return VideoBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 std::unique_ptr<Audio> MainDirector::buildAudio(const AudioOptions& opts)
 {
-    return AudioBuilder().options(opts).build();
+    return AudioBuilder{}.options(opts).build();
 }
 
 std::unique_ptr<WebView> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
 {
-    return WebViewBuilder().options(opts).width(regionWidth).height(regionHeight).build();
+    return WebViewBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 void MainDirector::attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content)

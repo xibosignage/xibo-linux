@@ -2,19 +2,35 @@
 
 using namespace ::testing;
 
+TEST_F(WebViewTest, Construct_Default_HandlerLoadShouldBeCalled)
+{
+    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
+
+    EXPECT_CALL(adaptor(), load(path));
+
+    constructWebView();
+}
+
+TEST_F(WebViewTest, Construct_TransparentTrue_HandlerEnableTransparencyShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), enableTransparency());
+
+    constructWebView(true);
+}
+
+TEST_F(WebViewTest, Construct_TransparentFalse_HandlerEnableTransparencyShouldNotBeCalled)
+{
+    EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
+
+    constructWebView(false);
+}
+
 TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
     constructWebView();
 }
-
-//TEST_F(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
-//{
-//    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
-
-//    constructWebView();
-//}
 
 TEST_F(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
 {
@@ -75,24 +91,6 @@ TEST_F(WebViewTest, Hide_Default_HandlerHideShouldBeCalled)
     EXPECT_CALL(adaptor(), hide());
 
     webview->hide();
-}
-
-TEST_F(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
-{
-    auto webview = constructWebView();
-
-    EXPECT_CALL(adaptor(), enableTransparency());
-
-    webview->setTransparent(true);
-}
-
-TEST_F(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCalled)
-{
-    auto webview = constructWebView();
-
-    EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
-
-    webview->setTransparent(false);
 }
 
 TEST_F(WebViewTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)

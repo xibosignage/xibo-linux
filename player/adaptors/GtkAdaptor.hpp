@@ -16,6 +16,8 @@ class GtkAdaptor : public Interface, public IGtkAdaptor
     static_assert(std::is_base_of_v<IWidgetAdaptor, Interface>, "Interface should implement IWidgetAdaptor");
 
 public:
+    using interface = Interface;
+
     GtkAdaptor(Gtk::Widget& handler) : m_handler(handler)
     {
     }

@@ -23,7 +23,9 @@ std::unique_ptr<IRegion> RegionBuilder::createRegion()
 
 std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()
 {
-    return std::make_unique<GtkFixedLayoutAdaptor>();
+    if(!m_adaptor) return std::make_unique<GtkFixedLayoutAdaptor>();
+
+    return std::move(m_adaptor);
 }
 
 RegionBuilder& RegionBuilder::options(const ResourcesXlf::RegionOptions& opts)
@@ -76,6 +78,12 @@ bool RegionBuilder::getLoopOption(const boost::optional<bool>& loop)
 RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia)
 {
     m_content = std::move(visibleMedia);
+    return *this;
+}
+
+RegionBuilder& RegionBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
+{
+    m_adaptor = std::move(adaptor);
     return *this;
 }
 

@@ -17,14 +17,13 @@ public:
     std::unique_ptr<IBackground> build();
 
     BackgroundBuilder& options(const ResourcesXlf::BackgroundOptions& opts);
-
-protected:
-    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
-    virtual IFileSystemAdaptor& filesystem();
+    BackgroundBuilder& createAdaptor(std::unique_ptr<IImageAdaptor>&& createAdaptor);
+    BackgroundBuilder& filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem);
 
 private:
     std::unique_ptr<IBackground> createBackground(uint32_t color);
     std::unique_ptr<IBackground> createBackground(const FilePath& path);
+    std::unique_ptr<IImageAdaptor> createAdaptor();
 
     int getWidthOption(int width);
     int getHeightOption(int height);
@@ -37,6 +36,7 @@ private:
 
 private:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
+    std::unique_ptr<IImageAdaptor> m_adaptor;
     int m_width;
     int m_height;
     uint32_t m_hexColor;

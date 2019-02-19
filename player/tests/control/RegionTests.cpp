@@ -3,6 +3,36 @@
 using namespace ::testing;
 
 const std::size_t FIRST_CONTENT_INDEX = 0;
+const int MIN_WIDTH = 1;
+const int MIN_HEIGHT = 1;
+
+const auto invalidRegionSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
+
+TEST_P(RegionConstructSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
+{
+    ResourcesXlf::RegionOptions opts{DEFAULT_ID, GetParam().width, GetParam().height, DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
+
+    ASSERT_THROW(RegionBuilder{}.adaptor(unique(&adaptor()))
+                                .content(createContentItems(DEFAULT_CONTENT_ITEMS_COUNT))
+                                .options(opts)
+                                .build(), std::invalid_argument);
+}
+
+INSTANTIATE_TEST_CASE_P(Suite, RegionConstructSizeTest, ::testing::ValuesIn(invalidRegionSizes));
+
+TEST_F(RegionTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+
+    constructRegion();
+}
+
+TEST_F(RegionTest, Construct_WithContent_HandlerAddContentWithPosShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), addChild(_, DEFAULT_XPOS, DEFAULT_YPOS));
+
+    constructRegion();
+}
 
 TEST_F(RegionTest, Constructor_Default_HandlerSetSizeShouldBeCalled)
 {
@@ -66,15 +96,6 @@ TEST_F(RegionTest, ContentLooped_LoopedContent_RegionContentLoopedEqualsFalse)
     ASSERT_EQ(region->contentLooped(), true);
 }
 
-TEST_F(RegionTest, AddContentWithCoords_Valid_HandlerAddChildShouldBeCalled)
-{
-    auto region = constructRegion();
-
-    EXPECT_CALL(adaptor(), addChild(_, DEFAULT_XPOS, DEFAULT_YPOS));
-
-    region->addContent(createRegionContent(), DEFAULT_XPOS, DEFAULT_YPOS);
-}
-
 TEST_F(RegionTest, AddContentWithCoords_Valid_RegionShouldSubcribeToDurationExpiredEvent)
 {
     auto region = constructRegion();
@@ -85,19 +106,11 @@ TEST_F(RegionTest, AddContentWithCoords_Valid_RegionShouldSubcribeToDurationExpi
     region->addContent(std::move(mockContent), DEFAULT_XPOS, DEFAULT_YPOS);
 }
 
-TEST_F(RegionTest, Scale_Default_HandlerScaleShouldBeCalled)
+TEST_F(RegionTest, Scale_Default_HandlerRegionContentScaleShouldBeCalled)
 {
     auto region = constructRegion();
 
     EXPECT_CALL(adaptor(), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
-
-    region->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
-}
-
-TEST_F(RegionTest, Scale_MediaWithPos_ContentScaleShouldBeCalled)
-{
-    auto region = constructRegion();
-
     EXPECT_CALL(regionContent(FIRST_CONTENT_INDEX), scale(DEFAULT_XSCALE, DEFAULT_YSCALE));
 
     region->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);

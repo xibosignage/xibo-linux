@@ -10,6 +10,8 @@ using SignalAudioFinished = sigc::signal<void()>;
 class AudioHandler : public IAudioHandler
 {
 public:
+    using interface = IAudioHandler;
+
     AudioHandler();
 
     void load(const FilePath& path) override;

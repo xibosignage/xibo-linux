@@ -2,12 +2,47 @@
 
 using namespace testing;
 
-//TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
-//{
-//    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
+TEST_F(AudioTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), load(DEFAULT_FULL_PATH));
 
-//    constructAudio();
-//}
+    constructAudio();
+}
+
+TEST_F(AudioTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MIN_VOLUME));
+
+    constructAudio(true, DEFAULT_AUDIO_LOOPED, MAX_VOLUME);
+}
+
+TEST_F(AudioTest, Construct_MutedFalseNoVolume_HandlerSetVolume100ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
+
+    constructAudio(false, DEFAULT_AUDIO_LOOPED, {});
+}
+
+TEST_F(AudioTest, Construct_Volume50_HandlerSetVolume50ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(50));
+
+    constructAudio(DEFAULT_AUDIO_MUTED, DEFAULT_AUDIO_LOOPED, 50);
+}
+
+TEST_F(AudioTest, Construct_LoopTrue_AudioLoopedEqualsTrue)
+{
+    auto audio = constructAudio(DEFAULT_AUDIO_MUTED, true, MAX_VOLUME);
+
+    ASSERT_EQ(audio->looped(), true);
+}
+
+TEST_F(AudioTest, Construct_LoopFalse_AudioLoopedEqualsFalse)
+{
+    auto audio = constructAudio(DEFAULT_AUDIO_MUTED, false, MAX_VOLUME);
+
+    ASSERT_EQ(audio->looped(), false);
+}
 
 TEST_F(AudioTest, Play_Default_HandlerPlayShouldBeCalled)
 {
@@ -25,33 +60,6 @@ TEST_F(AudioTest, Stop_Default_HandlerStopShouldBeCalled)
     EXPECT_CALL(adaptor(), stop());
 
     audio->stop();
-}
-
-TEST_F(AudioTest, SetVolume_Default_HandlerSetVolumeShouldBeCalled)
-{
-    auto audio = constructAudio();
-
-    EXPECT_CALL(adaptor(), setVolume(DEFAULT_VOLUME));
-
-    audio->setVolume(DEFAULT_VOLUME);
-}
-
-TEST_F(AudioTest, SetLooped_True_LoopedEqualsTrue)
-{
-    auto audio = constructAudio();
-
-    audio->setLooped(true);
-
-    ASSERT_EQ(audio->looped(), true);
-}
-
-TEST_F(AudioTest, SetLooped_False_LoopedEqualsFalse)
-{
-    auto audio = constructAudio();
-
-    audio->setLooped(false);
-
-    ASSERT_EQ(audio->looped(), false);
 }
 
 TEST_F(AudioTest, HandlerEvent_StartMediaEvent_HandlerPlayShouldBeCalled)

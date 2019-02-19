@@ -1,22 +1,29 @@
 #pragma once
 
-#include "BaseTestWithHandler.hpp"
+#include "MediaTests.hpp"
 
+#include "creators/AudioBuilder.hpp"
 #include "media/Audio.hpp"
 #include "mocks/MockAudioHandler.hpp"
 
-const int DEFAULT_VOLUME = 100;
-
-#include "creators/AudioBuilderTest.hpp"
-
-class AudioTest : public BaseTestWithHandler<MockAudioHandler>
+class AudioTest : public MediaTest<MockAudioHandler>
 {
 public:
     auto constructAudio()
     {
-        ResourcesXlf::AudioOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, DEFAULT_AUDIO_MUTED, DEFAULT_AUDIO_LOOPED, DEFAULT_VOLUME};
+        return constructAudio(DEFAULT_AUDIO_MUTED, DEFAULT_AUDIO_LOOPED, MAX_VOLUME);
+    }
 
-        return AudioBuilderTest{}.adaptor(unique(&adaptor())).options(opts).build();
+    std::unique_ptr<Audio> constructAudio(boost::optional<bool> muted,
+                                          boost::optional<bool> looped,
+                                          boost::optional<int> volume)
+    {
+        ResourcesXlf::AudioOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, muted, looped, volume};
+
+        return AudioBuilder{}.adaptor(unique(&adaptor()))
+                             .filesystem(unique(&filesystem()))
+                             .options(opts)
+                             .build();
     }
 
 };

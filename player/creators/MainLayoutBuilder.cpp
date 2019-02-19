@@ -4,9 +4,14 @@
 #include "control/MainLayout.hpp"
 #include "control/IBackground.hpp"
 #include "control/IRegion.hpp"
+
 #include "adaptors/GtkOverlayAdaptor.hpp"
 
 #include <cassert>
+
+MainLayoutBuilder::MainLayoutBuilder()
+{
+}
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::build()
 {
@@ -25,12 +30,16 @@ MainLayoutBuilder& MainLayoutBuilder::options(const ResourcesXlf::LayoutOptions&
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::createLayout()
 {
-    return std::unique_ptr<MainLayout>(new MainLayout{m_width, m_height, createAdaptor()});
+    assert(m_adaptor);
+
+    return std::unique_ptr<MainLayout>(new MainLayout{m_width, m_height, std::move(m_adaptor)});
 }
 
 std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createAdaptor()
 {
-    return std::make_unique<GtkOverlayAdaptor>();
+    if(!m_adaptor) return std::make_unique<GtkOverlayAdaptor>();
+
+    return std::move(m_adaptor);
 }
 
 MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& background)
@@ -42,6 +51,12 @@ MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& 
 MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regions)
 {
     m_regions = std::move(regions);
+    return *this;
+}
+
+MainLayoutBuilder& MainLayoutBuilder::adaptor(std::unique_ptr<IOverlayAdaptor>&& adaptor)
+{
+    m_adaptor = std::move(adaptor);
     return *this;
 }
 
