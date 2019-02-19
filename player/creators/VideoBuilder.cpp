@@ -1,16 +1,10 @@
 #include "VideoBuilder.hpp"
-#include "media/VideoHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
 std::unique_ptr<Video> VideoBuilder::create()
 {
     return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
-}
-
-std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()
-{
-    return std::make_unique<VideoHandler>();
 }
 
 void VideoBuilder::doSetup(Video& video)

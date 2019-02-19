@@ -11,6 +11,8 @@ class GtkDrawingAreaAdaptor;
 class VideoHandler : public IVideoHandler
 {
 public:
+    using interface = IVideoHandler;
+
     VideoHandler();
     ~VideoHandler() override;
 

@@ -5,6 +5,7 @@
 #include <boost/optional/optional_fwd.hpp>
 
 #include "parsers/RegionOptions.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
 
 class IRegion;
 class IRegionContent;
@@ -28,12 +29,11 @@ public:
 
     RegionBuilder& options(const ResourcesXlf::RegionOptions& opts);
     RegionBuilder& content(std::vector<ContentWithPos>&& content);
-
-protected:
-    virtual std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
+    RegionBuilder& adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor);
 
 private:
     std::unique_ptr<IRegion> createRegion();
+    std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
 
     int getIdOption(int id);
     int getWidthOption(int width);
@@ -47,6 +47,7 @@ private:
     void checkHeight(int height);
 
 private:
+    std::unique_ptr<IFixedLayoutAdaptor> m_adaptor;
     int m_id;
     int m_width;
     int m_height;

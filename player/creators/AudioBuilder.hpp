@@ -1,6 +1,6 @@
 #include "MediaBuilder.hpp"
 
-#include "media/IAudioHandler.hpp"
+#include "media/AudioHandler.hpp"
 #include "media/Audio.hpp"
 #include "parsers/AudioOptions.hpp"
 
@@ -13,7 +13,7 @@ template<>
 struct BuilderTraits<AudioBuilder>
 {
     using Media = Audio;
-    using MediaHandler = IAudioHandler;
+    using DefaultMediaHandler = AudioHandler;
     using Options = ResourcesXlf::AudioOptions;
 };
 
@@ -22,7 +22,6 @@ class AudioBuilder : public BaseMediaBuilder<AudioBuilder>
 protected:
     AudioBuilder& mediaOptions(const ResourcesXlf::AudioOptions& opts) override;
     std::unique_ptr<Audio> create() override;
-    std::unique_ptr<IAudioHandler> createHandler() override;
     void doSetup(Audio& audio) override;
 
 private:

@@ -2,8 +2,10 @@
 
 #include "BaseTestWithHandler.hpp"
 
+#include "creators/MainLayoutBuilder.hpp"
 #include "control/MainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
+#include "parsers/LayoutOptions.hpp"
 
 #include "mocks/MockBackground.hpp"
 #include "mocks/MockImageAdaptor.hpp"
@@ -21,25 +23,34 @@ const std::vector<std::vector<int>> zorders = {
     {4,3,2,1,0}
 };
 
-#include "creators/MainLayoutBuilderTests.hpp"
+const int DEFAULT_SCHEME = 5;
+const ResourcesXlf::LayoutOptions DEFAULT_LAYOUT_OPTIONS{DEFAULT_SCHEME, DEFAULT_WIDTH, DEFAULT_HEIGHT};
 
 class MainLayoutTest : public BaseTestWithHandler<MockOverlayAdaptor>
 {
 public:
     auto constructLayout()
     {
-        MainLayoutBuilderTest builder;
-        builder.adaptor(unique(&adaptor())).options(ResourcesXlf::LayoutOptions{5, DEFAULT_WIDTH, DEFAULT_HEIGHT});
+        auto background = createBackground();
+        auto regions = createRegions();
 
-        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
-        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+        m_background = background.get();
+        m_region = dynamic_cast<MockRegion*>(regions.back().region.get());
 
-        addBackgroundAndRegions(builder);
-
-        return builder.build();
+        return MainLayoutBuilder{}.adaptor(unique(&adaptor()))
+                                  .regions(std::move(regions))
+                                  .background(std::move(background))
+                                  .options(DEFAULT_LAYOUT_OPTIONS)
+                                  .build();
     }
 
 protected:
+    void doSetUp() override
+    {
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+    }
+
     MockBackground& background()
     {
         return *m_background;
@@ -50,7 +61,7 @@ protected:
         return *m_region;
     }
 
-    auto createBackground()
+    virtual std::unique_ptr<MockBackground> createBackground()
     {
         auto background = constructMock<MockBackground, MockImageAdaptor>();
 
@@ -70,29 +81,11 @@ protected:
         return region;
     }
 
-    virtual void addBackground(MainLayoutBuilder& builder)
+    virtual std::vector<RegionWithPos> createRegions()
     {
-        auto background = createBackground();
-        m_background = background.get();
-
-        builder.background(std::move(background));
-    }
-
-    virtual void addRegions(MainLayoutBuilder& builder)
-    {
-        auto region = createRegion();
-        m_region = region.get();
-
         std::vector<RegionWithPos> regions;
-        regions.emplace_back(RegionWithPos{std::move(region), DEFAULT_XPOS, DEFAULT_XPOS});
-        builder.regions(std::move(regions));
-    }
-
-private:
-    void addBackgroundAndRegions(MainLayoutBuilder& builder)
-    {
-        addBackground(builder);
-        addRegions(builder);
+        regions.emplace_back(RegionWithPos{createRegion(), DEFAULT_XPOS, DEFAULT_XPOS});
+        return regions;
     }
 
 private:
@@ -104,7 +97,7 @@ private:
 class MainLayoutReorderTest : public MainLayoutTest, public testing::WithParamInterface<std::vector<int>>
 {
 protected:
-    void addRegions(MainLayoutBuilder& builder) override
+    std::vector<RegionWithPos> createRegions() override
     {
         std::vector<RegionWithPos> regions;
         for(int zorder : GetParam())
@@ -116,7 +109,7 @@ protected:
 
             regions.emplace_back(RegionWithPos{std::move(region), DEFAULT_XPOS, DEFAULT_YPOS});
         }
-        builder.regions(std::move(regions));
+        return regions;
     }
 
     testing::NiceMock<MockRegion>* region(size_t index)
@@ -137,3 +130,5 @@ private:
     std::vector<testing::NiceMock<MockRegion>*> m_regions;
 
 };
+
+class MainLayoutConstructSizeTest : public MainLayoutTest, public testing::WithParamInterface<Size> { };

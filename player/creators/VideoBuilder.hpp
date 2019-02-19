@@ -1,6 +1,6 @@
 #include "MediaBuilder.hpp"
 
-#include "media/IVideoHandler.hpp"
+#include "media/VideoHandler.hpp"
 #include "media/Video.hpp"
 #include "parsers/VideoOptions.hpp"
 
@@ -13,7 +13,7 @@ template<>
 struct BuilderTraits<VideoBuilder>
 {
     using Media = Video;
-    using MediaHandler = IVideoHandler;
+    using DefaultMediaHandler = VideoHandler;
     using Options = ResourcesXlf::VideoOptions;
 };
 
@@ -26,7 +26,6 @@ public:
 protected:
     VideoBuilder& mediaOptions(const ResourcesXlf::VideoOptions& opts) override;
     std::unique_ptr<Video> create() override;
-    std::unique_ptr<IVideoHandler> createHandler() override;
     void doSetup(Video& video) override;
 
 private:

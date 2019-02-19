@@ -1,16 +1,10 @@
 #include "AudioBuilder.hpp"
-#include "media/AudioHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
 std::unique_ptr<Audio> AudioBuilder::create()
 {
     return std::unique_ptr<Audio>(new Audio{m_id, m_path, createHandler()});
-}
-
-std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
-{
-    return std::make_unique<AudioHandler>();
 }
 
 void AudioBuilder::doSetup(Audio& audio)

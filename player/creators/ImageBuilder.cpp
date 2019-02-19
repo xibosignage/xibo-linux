@@ -1,5 +1,4 @@
 #include "ImageBuilder.hpp"
-#include "adaptors/GtkImageAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
 
@@ -19,11 +18,6 @@ std::unique_ptr<Image> ImageBuilder::create()
 {
     MediaGeometry props{m_scaleType, m_align, m_valign};
     return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_path, props, createHandler()});
-}
-
-std::unique_ptr<IImageAdaptor> ImageBuilder::createHandler()
-{
-    return std::make_unique<GtkImageAdaptor>();
 }
 
 ImageBuilder& ImageBuilder::mediaOptions(const ResourcesXlf::ImageOptions& opts)

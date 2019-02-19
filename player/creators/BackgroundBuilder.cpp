@@ -32,6 +32,18 @@ BackgroundBuilder& BackgroundBuilder::options(const ResourcesXlf::BackgroundOpti
     return *this;
 }
 
+BackgroundBuilder&BackgroundBuilder::createAdaptor(std::unique_ptr<IImageAdaptor>&& adaptor)
+{
+    m_adaptor = std::move(adaptor);
+    return *this;
+}
+
+BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem)
+{
+    m_filesystem = std::move(filesystem);
+    return *this;
+}
+
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
 {
     return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createAdaptor()});
@@ -44,12 +56,9 @@ std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath&
 
 std::unique_ptr<IImageAdaptor> BackgroundBuilder::createAdaptor()
 {
-    return std::make_unique<GtkImageAdaptor>();
-}
+    if(!m_adaptor) return std::make_unique<GtkImageAdaptor>();
 
-IFileSystemAdaptor& BackgroundBuilder::filesystem()
-{
-    return *m_filesystem;
+    return std::move(m_adaptor);
 }
 
 int BackgroundBuilder::getWidthOption(int width)
@@ -99,6 +108,6 @@ FilePath BackgroundBuilder::getPathOption(const boost::optional<std::string>& pa
 
 void BackgroundBuilder::checkPath(const FilePath& path)
 {
-    if(!filesystem().isRegularFile(path))
+    if(!m_filesystem->isRegularFile(path))
         throw std::runtime_error("Not valid path");
 }

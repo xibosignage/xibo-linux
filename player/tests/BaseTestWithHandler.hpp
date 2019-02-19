@@ -12,6 +12,7 @@ protected:
     void SetUp() final
     {
         m_adaptor = new testing::NiceMock<Handler>;
+
         doSetUp();
     }
 

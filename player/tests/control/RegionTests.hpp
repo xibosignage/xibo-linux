@@ -2,7 +2,7 @@
 
 #include "BaseTestWithHandler.hpp"
 
-#include "creators/RegionBuilderTests.hpp" // FIXME zorder from here
+#include "creators/RegionBuilder.hpp" // FIXME zorder from here
 #include "control/Region.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
@@ -10,24 +10,18 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
-
-
-
-
-
-
-#include "creators/RegionBuilderTests.hpp"
+const ResourcesXlf::RegionOptions DEFAULT_REGION_OPTIONS{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT,
+                                                         DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
 
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:
     auto constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
     {
-        RegionBuilderTest builder;
-        ResourcesXlf::RegionOptions opts{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0, 0, DEFAULT_ZORDER, false};
-        builder.adaptor(unique(&adaptor())).options(opts);
-        addContentItemsToRegion(builder, contentItemsCount);
-        return builder.build();
+        return RegionBuilder{}.adaptor(unique(&adaptor()))
+                              .content(createContentItems(contentItemsCount))
+                              .options(DEFAULT_REGION_OPTIONS)
+                              .build();
     }
 
 protected:
@@ -41,19 +35,20 @@ protected:
         return constructMock<MockRegionContent, MockWidgetAdaptor>();
     }
 
-private:
-    void addContentItemsToRegion(RegionBuilder& builder, std::size_t contentItemsCount)
+    std::vector<ContentWithPos> createContentItems(std::size_t contentItemsCount)
     {
-        std::vector<ContentWithPos> allcontent;
+        std::vector<ContentWithPos> allContent;
+
         for(size_t i = 0; i != contentItemsCount; ++i)
         {
             auto content = createRegionContent();
 
             m_contentItems.push_back(content.get());
 
-            allcontent.emplace_back(ContentWithPos{std::move(content), DEFAULT_XPOS, DEFAULT_YPOS});
+            allContent.emplace_back(ContentWithPos{std::move(content), DEFAULT_XPOS, DEFAULT_YPOS});
         }
-        builder.content(std::move(allcontent));
+
+        return allContent;
     }
 
 private:
@@ -61,3 +56,4 @@ private:
 
 };
 
+class RegionConstructSizeTest : public RegionTest, public testing::WithParamInterface<Size> { };

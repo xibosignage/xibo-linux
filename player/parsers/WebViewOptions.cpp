@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::WebViewOptions::WebViewOptions(int id, boost::optional<std::string> path, int duration, bool transparent) :
+ResourcesXlf::WebViewOptions::WebViewOptions(int id, boost::optional<std::string> path, int duration, boost::optional<bool> transparent) :
     MediaOptions(id, path, duration), m_transparent(transparent)
 {
 }
