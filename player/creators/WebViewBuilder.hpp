@@ -9,21 +9,21 @@ class WebViewBuilder;
 template<>
 struct BuilderTraits<WebViewBuilder>
 {
-    using Media = WebView;
-    using DefaultMediaHandler = WebKitWebViewAdaptor;
+    using Component = WebView;
+    using DefaultHandler = WebKitWebViewAdaptor;
     using Options = ResourcesXlf::WebViewOptions;
 };
 
-class WebViewBuilder : public BaseMediaBuilder<WebViewBuilder>
+class WebViewBuilder : public AbstractMediaBuilder<WebViewBuilder>
 {
 public:
     WebViewBuilder& width(int width);
     WebViewBuilder& height(int height);
 
 protected:
-    WebViewBuilder& mediaOptions(const ResourcesXlf::WebViewOptions& opts) override;
+    WebViewBuilder& retrieveMediaOptions(const ResourcesXlf::WebViewOptions& opts) override;
     std::unique_ptr<WebView> create() override;
-    void doSetup(WebView& webview) override;
+    void doMediaSetup(WebView& webview) override;
 
 private:
     FilePath getPathOption(const boost::optional<std::string>& pathOpt) override;

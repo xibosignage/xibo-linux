@@ -7,13 +7,13 @@ std::unique_ptr<Video> VideoBuilder::create()
     return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
 }
 
-void VideoBuilder::doSetup(Video& video)
+void VideoBuilder::doMediaSetup(Video& video)
 {
     video.setMuted(m_mute);
     video.setLooped(m_loop);
 }
 
-VideoBuilder& VideoBuilder::mediaOptions(const ResourcesXlf::VideoOptions& opts)
+VideoBuilder& VideoBuilder::retrieveMediaOptions(const ResourcesXlf::VideoOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());

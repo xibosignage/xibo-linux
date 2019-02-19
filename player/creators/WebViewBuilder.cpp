@@ -15,12 +15,12 @@ std::unique_ptr<WebView> WebViewBuilder::create()
     return std::unique_ptr<WebView>(new WebView{m_id, m_width, m_height, m_path, createHandler()});
 }
 
-void WebViewBuilder::doSetup(WebView& webview)
+void WebViewBuilder::doMediaSetup(WebView& webview)
 {
     webview.setTransparent(m_transparent);
 }
 
-WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
+WebViewBuilder& WebViewBuilder::retrieveMediaOptions(const ResourcesXlf::WebViewOptions& opts)
 {
     m_transparent = getTransparentOption(opts.transparent());
     return *this;

@@ -27,7 +27,7 @@ public:
     auto constructBackground(int width, int height, boost::optional<std::string> path, boost::optional<std::string> color)
     {
         BackgroundBuilder builder;
-        builder.createAdaptor(unique(&this->adaptor())).filesystem(unique(&this->filesystem()));
+        builder.adaptor(unique(&this->adaptor())).filesystem(unique(&this->filesystem()));
 
         if constexpr(std::is_same_v<T, OneColorBackground>)
         {

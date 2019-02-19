@@ -2,41 +2,31 @@
 
 #include "control/Region.hpp"
 #include "control/IRegionContent.hpp"
-#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
-std::unique_ptr<IRegion> RegionBuilder::build()
-{
-    auto region = createRegion();
-    loopContent(*region);
-    addAllContent(*region);
-    return region;
-}
-std::unique_ptr<IRegion> RegionBuilder::createRegion()
-{
-    return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createAdaptor()});
-}
-
-std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()
-{
-    if(!m_adaptor) return std::make_unique<GtkFixedLayoutAdaptor>();
-
-    return std::move(m_adaptor);
-}
-
-RegionBuilder& RegionBuilder::options(const ResourcesXlf::RegionOptions& opts)
+RegionBuilder& RegionBuilder::retrieveOptions(const ResourcesXlf::RegionOptions& opts)
 {
     m_id = opts.id();
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
     m_zorder = getZorderOption(opts.zorder());
     m_loop = getLoopOption(opts.loop());
-
     return *this;
+}
+
+std::unique_ptr<IRegion> RegionBuilder::create()
+{
+    return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createHandler()});
+}
+
+void RegionBuilder::doSetup(IRegion& region)
+{
+    loopContent(region);
+    addAllContent(region);
 }
 
 int RegionBuilder::getWidthOption(int width)
@@ -78,12 +68,6 @@ bool RegionBuilder::getLoopOption(const boost::optional<bool>& loop)
 RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia)
 {
     m_content = std::move(visibleMedia);
-    return *this;
-}
-
-RegionBuilder& RegionBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
-{
-    m_adaptor = std::move(adaptor);
     return *this;
 }
 

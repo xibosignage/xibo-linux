@@ -3,13 +3,15 @@
 #include <memory>
 #include <vector>
 
-#include "parsers/LayoutOptions.hpp"
-#include "adaptors/IOverlayAdaptor.hpp"
+#include "AbstractBuilder.hpp"
 
-class IOverlayAdaptor;
-class IMainLayout;
+#include "control/IMainLayout.hpp"
+#include "parsers/LayoutOptions.hpp"
+#include "adaptors/GtkOverlayAdaptor.hpp"
+
 class IBackground;
 class IRegion;
+class MainLayoutBuilder;
 
 struct RegionWithPos
 {
@@ -18,25 +20,31 @@ struct RegionWithPos
     int y;
 };
 
-class MainLayoutBuilder
+template<>
+struct BuilderTraits<MainLayoutBuilder>
+{
+    using Component = IMainLayout;
+    using DefaultHandler = GtkOverlayAdaptor;
+    using Options = ResourcesXlf::LayoutOptions;
+};
+
+class MainLayoutBuilder : public AbstractBuilder<MainLayoutBuilder>
 {
 public:
     MainLayoutBuilder();
-    std::unique_ptr<IMainLayout> build();
 
-    MainLayoutBuilder& options(const ResourcesXlf::LayoutOptions& opts);
     MainLayoutBuilder& background(std::unique_ptr<IBackground>&& background);
     MainLayoutBuilder& regions(std::vector<RegionWithPos>&& regions);
-    MainLayoutBuilder& adaptor(std::unique_ptr<IOverlayAdaptor>&& adaptor);
+
+protected:
+    MainLayoutBuilder& retrieveOptions(const ResourcesXlf::LayoutOptions& opts) override;
+    std::unique_ptr<IMainLayout> create() override;
+    void doSetup(IMainLayout& layout) override;
 
 private:
-    std::unique_ptr<IMainLayout> createLayout();
-    std::unique_ptr<IOverlayAdaptor> createAdaptor();
-
     int getWidthOption(int width);
     int getHeightOption(int height);
 
-    void prepareLayout(IMainLayout& layout);
     void checkWidth(int width);
     void checkHeight(int height);
     void checkRegionsCount(size_t regionsCount);
@@ -46,7 +54,6 @@ private:
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;
-    std::unique_ptr<IOverlayAdaptor> m_adaptor;
     std::vector<RegionWithPos> m_regions;
 
 };

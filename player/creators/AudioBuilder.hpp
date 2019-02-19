@@ -12,17 +12,17 @@ class AudioBuilder;
 template<>
 struct BuilderTraits<AudioBuilder>
 {
-    using Media = Audio;
-    using DefaultMediaHandler = AudioHandler;
+    using Component = Audio;
+    using DefaultHandler = AudioHandler;
     using Options = ResourcesXlf::AudioOptions;
 };
 
-class AudioBuilder : public BaseMediaBuilder<AudioBuilder>
+class AudioBuilder : public AbstractMediaBuilder<AudioBuilder>
 {
 protected:
-    AudioBuilder& mediaOptions(const ResourcesXlf::AudioOptions& opts) override;
+    AudioBuilder& retrieveMediaOptions(const ResourcesXlf::AudioOptions& opts) override;
     std::unique_ptr<Audio> create() override;
-    void doSetup(Audio& audio) override;
+    void doMediaSetup(Audio& audio) override;
 
 private:
     bool getMuteOption(const boost::optional<bool>& muteOpt);

@@ -13,19 +13,19 @@ class ImageBuilder;
 template<>
 struct BuilderTraits<ImageBuilder>
 {
-    using Media = Image;
-    using DefaultMediaHandler = GtkImageAdaptor;
+    using Component = Image;
+    using DefaultHandler = GtkImageAdaptor;
     using Options = ResourcesXlf::ImageOptions;
 };
 
-class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
+class ImageBuilder : public AbstractMediaBuilder<ImageBuilder>
 {
 public:
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
 
 protected:
-    ImageBuilder& mediaOptions(const ResourcesXlf::ImageOptions& opts) override;
+    ImageBuilder& retrieveMediaOptions(const ResourcesXlf::ImageOptions& opts) override;
     std::unique_ptr<Image> create() override;
 
 private:    

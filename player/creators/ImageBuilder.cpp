@@ -20,7 +20,7 @@ std::unique_ptr<Image> ImageBuilder::create()
     return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_path, props, createHandler()});
 }
 
-ImageBuilder& ImageBuilder::mediaOptions(const ResourcesXlf::ImageOptions& opts)
+ImageBuilder& ImageBuilder::retrieveMediaOptions(const ResourcesXlf::ImageOptions& opts)
 {
     m_scaleType = getScaleTypeOption(opts.scaleType());
     m_align = getAlignOption(opts.align());

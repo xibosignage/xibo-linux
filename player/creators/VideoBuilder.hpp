@@ -12,21 +12,21 @@ class VideoBuilder;
 template<>
 struct BuilderTraits<VideoBuilder>
 {
-    using Media = Video;
-    using DefaultMediaHandler = VideoHandler;
+    using Component = Video;
+    using DefaultHandler = VideoHandler;
     using Options = ResourcesXlf::VideoOptions;
 };
 
-class VideoBuilder : public BaseMediaBuilder<VideoBuilder>
+class VideoBuilder : public AbstractMediaBuilder<VideoBuilder>
 {
 public:
     VideoBuilder& width(int width);
     VideoBuilder& height(int height);
 
 protected:
-    VideoBuilder& mediaOptions(const ResourcesXlf::VideoOptions& opts) override;
+    VideoBuilder& retrieveMediaOptions(const ResourcesXlf::VideoOptions& opts) override;
     std::unique_ptr<Video> create() override;
-    void doSetup(Video& video) override;
+    void doMediaSetup(Video& video) override;
 
 private:
     bool getMuteOption(const boost::optional<bool>& muteOpt);

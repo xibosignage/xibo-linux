@@ -1,12 +1,10 @@
 #include "BackgroundBuilder.hpp"
 
 #include "control/Background.hpp"
-#include "adaptors/GtkImageAdaptor.hpp"
 
 #include "utils/Resources.hpp"
 #include "utils/ColorToHexConverter.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-#include "constants.hpp"
 
 const std::string DEFAULT_COLOR = "#000";
 
@@ -15,15 +13,13 @@ BackgroundBuilder::BackgroundBuilder()
     m_filesystem = std::make_unique<FileSystemAdaptor>();
 }
 
-std::unique_ptr<IBackground> BackgroundBuilder::build()
+BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem)
 {
-    if(m_path.empty())
-        return createBackground(m_hexColor);
-    else
-        return createBackground(m_path);
+    m_filesystem = std::move(filesystem);
+    return *this;
 }
 
-BackgroundBuilder& BackgroundBuilder::options(const ResourcesXlf::BackgroundOptions& opts)
+BackgroundBuilder& BackgroundBuilder::retrieveOptions(const ResourcesXlf::BackgroundOptions& opts)
 {
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
@@ -32,33 +28,22 @@ BackgroundBuilder& BackgroundBuilder::options(const ResourcesXlf::BackgroundOpti
     return *this;
 }
 
-BackgroundBuilder&BackgroundBuilder::createAdaptor(std::unique_ptr<IImageAdaptor>&& adaptor)
+std::unique_ptr<IBackground> BackgroundBuilder::create()
 {
-    m_adaptor = std::move(adaptor);
-    return *this;
-}
-
-BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem)
-{
-    m_filesystem = std::move(filesystem);
-    return *this;
+    if(m_path.empty())
+        return createBackground(m_hexColor);
+    else
+        return createBackground(m_path);
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
 {
-    return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createAdaptor()});
+    return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createHandler()});
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
 {
-    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, path, createAdaptor()});
-}
-
-std::unique_ptr<IImageAdaptor> BackgroundBuilder::createAdaptor()
-{
-    if(!m_adaptor) return std::make_unique<GtkImageAdaptor>();
-
-    return std::move(m_adaptor);
+    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, path, createHandler()});
 }
 
 int BackgroundBuilder::getWidthOption(int width)
