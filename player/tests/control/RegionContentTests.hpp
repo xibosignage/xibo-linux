@@ -34,9 +34,10 @@ public:
     template<typename Media = MockMedia>
     auto constructRegionContent()
     {
-        m_media = createMedia<Media>();
+        auto media = constructMock<Media>();
+        m_media = media.get();
 
-        return construct<RegionContentUnderTest>(unique(m_media), unique(m_timer));
+        return construct<RegionContentUnderTest>(std::move(media), unique(m_timer));
     }
 
 protected:
@@ -53,15 +54,6 @@ protected:
     auto eventHandler()
     {
         return [](const Event& ev) { return ev.type(); };
-    }
-
-    template<typename Media>
-    auto createMedia()
-    {
-        if constexpr(std::is_same_v<Media, MockVisibleMedia>)
-            return new MockVisibleMedia(std::make_unique<MockWidgetAdaptor>());
-        else
-            return new MockMedia;
     }
 
 private:

@@ -3,49 +3,49 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::MediaOptions::MediaOptions(int id, boost::optional<std::string> path, int duration) :
+MediaOptions::MediaOptions(int id, boost::optional<std::string> path, int duration) :
     m_id(id), m_path(path), m_duration(duration)
 {
 }
 
-ResourcesXlf::MediaOptions::MediaOptions(const xml_node& node)
+MediaOptions::MediaOptions(const xml_node& node)
 {
-    m_id = node.get<int>(attr(Media::Id));
-    m_path = node.get_optional<std::string>(option(Media::Path));
-    m_duration = node.get<int>(attr(Media::Duration));
+    m_id = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Id));
+    m_path = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Path));
+    m_duration = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Duration));
 }
 
-std::string ResourcesXlf::MediaOptions::getType(const xml_node& node)
+std::string MediaOptions::getType(const xml_node& node)
 {
-    return node.get<std::string>(attr(Media::Type));
+    return node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Type));
 }
 
-int ResourcesXlf::MediaOptions::id() const
+int MediaOptions::id() const
 {
     return m_id;
 }
 
-boost::optional<std::string> ResourcesXlf::MediaOptions::path() const
+boost::optional<std::string> MediaOptions::path() const
 {
     return m_path;
 }
 
-int ResourcesXlf::MediaOptions::duration() const
+int MediaOptions::duration() const
 {
     return m_duration;
 }
 
-void ResourcesXlf::MediaOptions::setId(int id)
+void MediaOptions::setId(int id)
 {
     m_id = id;
 }
 
-void ResourcesXlf::MediaOptions::setUri(const boost::optional<std::string>& uri)
+void MediaOptions::setUri(const boost::optional<std::string>& uri)
 {
     m_path = uri;
 }
 
-void ResourcesXlf::MediaOptions::setDuration(int duration)
+void MediaOptions::setDuration(int duration)
 {
     m_duration = duration;
 }

@@ -14,8 +14,7 @@ class AbstractMediaBuilder : public AbstractBuilder<Builder>
 public:
     using Options = typename AbstractBuilder<Builder>::Options;
     using Component = typename AbstractBuilder<Builder>::Component;
-    using DefaultHandler = typename AbstractBuilder<Builder>::DefaultHandler;
-    using IDefaultHandler = typename AbstractBuilder<Builder>::IDefaultHandler;
+    using Handler = typename AbstractBuilder<Builder>::Handler;
 
     AbstractMediaBuilder()
     {
@@ -73,7 +72,7 @@ private:
         return retrieveMediaOptions(opts);
     }
 
-    void parseBaseOptions(const ResourcesXlf::MediaOptions& opts)
+    void parseBaseOptions(const MediaOptions& opts)
     {
         m_id = getIdOption(opts.id());
         m_path = getPathOption(opts.path());
@@ -87,7 +86,7 @@ private:
     }
 
 protected:
-    std::unique_ptr<IDefaultHandler> m_adaptor;
+    std::unique_ptr<Handler> m_adaptor;
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     FilePath m_path;
     int m_id;

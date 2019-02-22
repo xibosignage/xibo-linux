@@ -2,13 +2,14 @@
 
 #include "control/Region.hpp"
 #include "control/IRegionContent.hpp"
+#include "adaptors/GtkFixedLayoutAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
 
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
-RegionBuilder& RegionBuilder::retrieveOptions(const ResourcesXlf::RegionOptions& opts)
+RegionBuilder& RegionBuilder::retrieveOptions(const RegionOptions& opts)
 {
     m_id = opts.id();
     m_width = getWidthOption(opts.width());
@@ -21,6 +22,11 @@ RegionBuilder& RegionBuilder::retrieveOptions(const ResourcesXlf::RegionOptions&
 std::unique_ptr<IRegion> RegionBuilder::create()
 {
     return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createHandler()});
+}
+
+std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkFixedLayoutAdaptor>();
 }
 
 void RegionBuilder::doSetup(IRegion& region)

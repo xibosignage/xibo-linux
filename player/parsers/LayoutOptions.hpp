@@ -3,21 +3,18 @@
 #include "constants.hpp"
 #include <boost/optional/optional.hpp>
 
-namespace ResourcesXlf
+class LayoutOptions
 {
-    class LayoutOptions
-    {
-    public:
-        LayoutOptions(int schemaVersion, int width, int height);
-        LayoutOptions(const xml_node& node);
+public:
+    LayoutOptions(int schemaVersion, int width, int height);
+    LayoutOptions(const xml_node& node);
 
-        int schemaVersion() const;
-        int width() const;
-        int height() const;
+    int schemaVersion() const;
+    int width() const;
+    int height() const;
 
-    private:
-        int m_schemaVersion;
-        int m_width;
-        int m_height;
-    };
-}
+private:
+    int m_schemaVersion;
+    int m_width;
+    int m_height;
+};

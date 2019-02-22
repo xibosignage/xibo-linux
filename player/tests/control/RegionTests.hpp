@@ -10,7 +10,7 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
-const ResourcesXlf::RegionOptions DEFAULT_REGION_OPTIONS{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT,
+const RegionOptions DEFAULT_REGION_OPTIONS{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT,
                                                          DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
 
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
@@ -32,7 +32,7 @@ protected:
 
     auto createRegionContent()
     {
-        return constructMock<MockRegionContent, MockWidgetAdaptor>();
+        return constructMock<MockRegionContent>();
     }
 
     std::vector<ContentWithPos> createContentItems(std::size_t contentItemsCount)

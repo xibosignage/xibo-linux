@@ -1,12 +1,11 @@
 #include "BackgroundBuilder.hpp"
 
 #include "control/Background.hpp"
+#include "adaptors/GtkImageAdaptor.hpp"
 
 #include "utils/Resources.hpp"
 #include "utils/ColorToHexConverter.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-
-const std::string DEFAULT_COLOR = "#000";
 
 BackgroundBuilder::BackgroundBuilder()
 {
@@ -19,7 +18,7 @@ BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdap
     return *this;
 }
 
-BackgroundBuilder& BackgroundBuilder::retrieveOptions(const ResourcesXlf::BackgroundOptions& opts)
+BackgroundBuilder& BackgroundBuilder::retrieveOptions(const BackgroundOptions& opts)
 {
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
@@ -34,6 +33,11 @@ std::unique_ptr<IBackground> BackgroundBuilder::create()
         return createBackground(m_hexColor);
     else
         return createBackground(m_path);
+}
+
+std::unique_ptr<IImageAdaptor> BackgroundBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkImageAdaptor>();
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)

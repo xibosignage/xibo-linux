@@ -14,8 +14,6 @@ struct Color
     uint numberColor;
 };
 
-const std::string DEFAULT_COLOR = "#fff";
-
 template<typename T>
 class BackgroundTest : public BaseTestWithHandler<MockImageAdaptor>
 {
@@ -31,12 +29,12 @@ public:
 
         if constexpr(std::is_same_v<T, OneColorBackground>)
         {
-            ResourcesXlf::BackgroundOptions opts{width, height, {}, color.value()};
+            BackgroundOptions opts{width, height, {}, color.value()};
             return builder.options(opts).build();
         }
         else
         {
-            ResourcesXlf::BackgroundOptions opts{width, height, path.value(), {}};
+            BackgroundOptions opts{width, height, path.value(), {}};
             return builder.options(opts).build();
         }
     }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "MockWidgetAdaptor.hpp"
+#include "test_constants.hpp"
+
 #include "media/IMedia.hpp"
 
 #include <gmock/gmock.h>
@@ -18,16 +21,15 @@ public:
 class MockVisibleMedia : public MockMedia, public IVisible
 {
 public:
-    MockVisibleMedia(std::unique_ptr<IWidgetAdaptor>&& handler) :
-        m_handler(std::move(handler))
+    MockVisibleMedia() :
+        m_handler(std::make_unique<MockWidgetAdaptor>())
     {
+        ON_CALL(*this, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(*this, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+        ON_CALL(*this, handler()).WillByDefault(testing::ReturnRef(*m_handler));
     }
 
-    IWidgetAdaptor& handler()
-    {
-        return *m_handler;
-    }
-
+    MOCK_METHOD0(handler, IWidgetAdaptor&());
     MOCK_METHOD0(show, void());
     MOCK_METHOD0(hide, void());
     MOCK_CONST_METHOD0(width, int());

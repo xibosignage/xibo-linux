@@ -25,7 +25,7 @@ MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regio
     return *this;
 }
 
-MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const ResourcesXlf::LayoutOptions& opts)
+MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const LayoutOptions& opts)
 {
     m_schemeVersion = opts.schemaVersion();
     m_width = getWidthOption(opts.width());
@@ -36,6 +36,11 @@ MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const ResourcesXlf::Layout
 std::unique_ptr<IMainLayout> MainLayoutBuilder::create()
 {
     return std::unique_ptr<MainLayout>(new MainLayout{m_width, m_height, createHandler()});
+}
+
+std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkOverlayAdaptor>();
 }
 
 void MainLayoutBuilder::doSetup(IMainLayout& layout)

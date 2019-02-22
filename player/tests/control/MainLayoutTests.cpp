@@ -7,30 +7,29 @@ const int MIN_HEIGHT = 1;
 
 const auto invalidMainLayoutSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
 
-TEST_F(MainLayoutTest, Construct_WithoutRegions_ShouldThrowRunTimeError)
-{
-    ASSERT_THROW(MainLayoutBuilder{}.adaptor(unique(&adaptor()))
-                                    .options(DEFAULT_LAYOUT_OPTIONS)
-                                    .background(createBackground())
-                                    .build(), std::runtime_error);
-}
-
 TEST_P(MainLayoutConstructSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
-    ResourcesXlf::LayoutOptions opts{DEFAULT_SCHEME, GetParam().width, GetParam().height};
+    LayoutOptions opts{DEFAULT_SCHEME, GetParam().width, GetParam().height};
 
     ASSERT_THROW(MainLayoutBuilder{}.adaptor(unique(&adaptor()))
                                     .options(opts)
                                     .background(createBackground())
-                                    .regions(createRegions())
+                                    .regions(createRegions(DEFAULT_REGIONS_COUNT))
                                     .build(), std::invalid_argument);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, MainLayoutConstructSizeTest, ::testing::ValuesIn(invalidMainLayoutSizes));
 
+TEST_F(MainLayoutTest, Construct_WithoutRegions_ShouldThrowRunTimeError)
+{
+    const int regionsCount = 0;
+
+    ASSERT_THROW(constructLayout(regionsCount), std::runtime_error);
+}
+
 TEST_F(MainLayoutTest, Construct_WithContinaer_HandlerAddRegionWithPos)
 {
-    EXPECT_CALL(adaptor(), addChild(_, _, _, _, _));
+    EXPECT_CALL(adaptor(), addChild(_, _, _, _, _)).Times(DEFAULT_REGIONS_COUNT);
 
     constructLayout();
 }
@@ -156,7 +155,7 @@ TEST_P(MainLayoutReorderTest, Show_With3Regions_HandlerReorderChildShouldBeCalle
 
     for(size_t index = 0; index != GetParam().size(); ++index)
     {
-        EXPECT_CALL(adaptor(), reorderChild(Ref(region(index)->handler()), static_cast<int>(index)));
+        EXPECT_CALL(adaptor(), reorderChild(Ref(region(index).handler()), static_cast<int>(index)));
     }
 
     layout->show();

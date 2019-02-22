@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
+#include "parsers/AudioOptions.hpp"
 
 class FilePath;
 class IAudioHandler;
@@ -14,8 +15,8 @@ public:
     void handleEvent(const Event& ev) override;
 
     void setVolume(int volume);
-    void setLooped(bool looped);
-    bool looped() const;
+    void setLooped(AudioOptions::Loop looped);
+    AudioOptions::Loop looped() const;
 
 private:
     friend class AudioBuilder;
@@ -26,6 +27,6 @@ private:
 
 private:
     std::unique_ptr<IAudioHandler> m_handler;
-    bool m_looped = false;
+    AudioOptions::Loop m_looped;
 
 };

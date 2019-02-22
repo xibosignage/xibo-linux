@@ -27,7 +27,7 @@ std::unique_ptr<IMainLayout> MainDirector::buildLayoutWithChildren(int layoutId)
 {
     auto tree = Utils::parseXmlFromPath(getLayoutXlfPath(layoutId));
 
-    return buildLayout(tree.get_child(ResourcesXlf::LayoutNode));
+    return buildLayout(tree.get_child(LayoutNode));
 }
 
 std::string MainDirector::getLayoutXlfPath(int layoutId)
@@ -46,7 +46,7 @@ std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xml_node& layoutNod
                               .build();
 }
 
-std::unique_ptr<IBackground> MainDirector::buildBackground(const ResourcesXlf::BackgroundOptions& opts)
+std::unique_ptr<IBackground> MainDirector::buildBackground(const BackgroundOptions& opts)
 {
     return BackgroundBuilder().options(opts).build();
 }
@@ -56,7 +56,7 @@ std::vector<RegionWithPos> MainDirector::collectRegions(const xml_node& layoutNo
     std::vector<RegionWithPos> regions;
     for(auto [nodeName, regionNode] : layoutNode)
     {
-        if(nodeName == ResourcesXlf::RegionNode)
+        if(nodeName == RegionNode)
         {
             RegionOptions opts{regionNode};
             regions.emplace_back(RegionWithPos{buildRegion(regionNode), opts.left(), opts.top()});
@@ -79,7 +79,7 @@ std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int re
     std::vector<ContentWithPos> media;
     for(auto [nodeName, mediaNode] : regionNode)
     {
-        if(nodeName == ResourcesXlf::MediaNode)
+        if(nodeName == MediaNode)
         {
             auto builtMedia = buildMedia(regionWidth, regionHeight, mediaNode);
             auto [mediaXPos, mediaYPos] = positionCalc.getMediaPos(builtMedia.get());
@@ -97,11 +97,11 @@ std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeig
 {
     auto type = MediaOptions::getType(mediaNode);
 
-    if(type == ResourcesXlf::ImageType)
+    if(type == ImageType)
         return buildImage(regionWidth, regionHeight, mediaNode);
-    else if(type == ResourcesXlf::VideoType)
+    else if(type == VideoType)
         return buildVideo(regionWidth, regionHeight, mediaNode);
-    else if(type == ResourcesXlf::AudioType)
+    else if(type == AudioType)
         return buildAudio(mediaNode);
     else // NOTE DataSetView, Embedded, Text and Ticker can be rendered via webview
         return buildWebView(regionWidth, regionHeight, mediaNode);
@@ -131,7 +131,7 @@ void MainDirector::attachAdditionalMedia(const xml_node& mediaNode, IRegionConte
 {
     for(auto [nodeName, additionalMediaNode] : mediaNode)
     {
-        if(nodeName == ResourcesXlf::AudioType)
+        if(nodeName == AudioType)
         {
             content.attachMedia(buildAudio(AudioOptions{additionalMediaNode, AudioNodeTag{}}));
         }

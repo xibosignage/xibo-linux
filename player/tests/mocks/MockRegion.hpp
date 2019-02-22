@@ -1,5 +1,8 @@
 #pragma once
 
+#include "MockFixedLayoutAdaptor.hpp"
+#include "test_constants.hpp"
+
 #include "control/IRegion.hpp"
 #include "control/IRegionContent.hpp"
 
@@ -8,16 +11,15 @@
 class MockRegion : public IRegion
 {
 public:
-    MockRegion(std::unique_ptr<IFixedLayoutAdaptor>&& handler) :
-        m_handler(std::move(handler))
+    MockRegion() :
+        m_handler(std::make_unique<MockFixedLayoutAdaptor>())
     {
+        ON_CALL(*this, width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(*this, height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+        ON_CALL(*this, handler()).WillByDefault(testing::ReturnRef(*m_handler));
     }
 
-    IFixedLayoutAdaptor& handler()
-    {
-        return *m_handler;
-    }
-
+    MOCK_METHOD0(handler, IFixedLayoutAdaptor&());
     MOCK_CONST_METHOD0(width, int());
     MOCK_CONST_METHOD0(height, int());
     MOCK_METHOD2(scale, void(double scaleX, double scaleY));

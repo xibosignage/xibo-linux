@@ -1,6 +1,6 @@
 #include "MediaBuilder.hpp"
 
-#include "adaptors/GtkImageAdaptor.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 #include "media/Image.hpp"
 #include "parsers/ImageOptions.hpp"
 
@@ -14,8 +14,8 @@ template<>
 struct BuilderTraits<ImageBuilder>
 {
     using Component = Image;
-    using DefaultHandler = GtkImageAdaptor;
-    using Options = ResourcesXlf::ImageOptions;
+    using Handler = IImageAdaptor;
+    using Options = ImageOptions;
 };
 
 class ImageBuilder : public AbstractMediaBuilder<ImageBuilder>
@@ -25,7 +25,8 @@ public:
     ImageBuilder& height(int height);
 
 protected:
-    ImageBuilder& retrieveMediaOptions(const ResourcesXlf::ImageOptions& opts) override;
+    ImageBuilder& retrieveMediaOptions(const ImageOptions& opts) override;
+    std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
     std::unique_ptr<Image> create() override;
 
 private:    

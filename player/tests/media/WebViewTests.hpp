@@ -18,7 +18,7 @@ public:
 
     std::unique_ptr<WebView> constructWebView(boost::optional<bool> transparent)
     {
-        ResourcesXlf::WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparent};
+        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparent};
 
         return WebViewBuilder{}.adaptor(unique(&adaptor()))
                                .filesystem(unique(&filesystem()))

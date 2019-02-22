@@ -1,6 +1,6 @@
 #include "MediaBuilder.hpp"
 
-#include "adaptors/WebKitWebViewAdaptor.hpp"
+#include "adaptors/IWebViewAdaptor.hpp"
 #include "media/WebView.hpp"
 #include "parsers/WebViewOptions.hpp"
 
@@ -10,8 +10,8 @@ template<>
 struct BuilderTraits<WebViewBuilder>
 {
     using Component = WebView;
-    using DefaultHandler = WebKitWebViewAdaptor;
-    using Options = ResourcesXlf::WebViewOptions;
+    using Handler = IWebViewAdaptor;
+    using Options = WebViewOptions;
 };
 
 class WebViewBuilder : public AbstractMediaBuilder<WebViewBuilder>
@@ -21,8 +21,9 @@ public:
     WebViewBuilder& height(int height);
 
 protected:
-    WebViewBuilder& retrieveMediaOptions(const ResourcesXlf::WebViewOptions& opts) override;
+    WebViewBuilder& retrieveMediaOptions(const WebViewOptions& opts) override;
     std::unique_ptr<WebView> create() override;
+    std::unique_ptr<IWebViewAdaptor> createDefaultHandler() override;
     void doMediaSetup(WebView& webview) override;
 
 private:

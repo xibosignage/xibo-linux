@@ -2,6 +2,7 @@
 
 #include "utils/Resources.hpp"
 #include "utils/Logger.hpp"
+#include "adaptors/WebKitWebViewAdaptor.hpp"
 
 #include <fstream>
 #include <regex>
@@ -15,12 +16,17 @@ std::unique_ptr<WebView> WebViewBuilder::create()
     return std::unique_ptr<WebView>(new WebView{m_id, m_width, m_height, m_path, createHandler()});
 }
 
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createDefaultHandler()
+{
+    return std::make_unique<WebKitWebViewAdaptor>();
+}
+
 void WebViewBuilder::doMediaSetup(WebView& webview)
 {
     webview.setTransparent(m_transparent);
 }
 
-WebViewBuilder& WebViewBuilder::retrieveMediaOptions(const ResourcesXlf::WebViewOptions& opts)
+WebViewBuilder& WebViewBuilder::retrieveMediaOptions(const WebViewOptions& opts)
 {
     m_transparent = getTransparentOption(opts.transparent());
     return *this;

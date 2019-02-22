@@ -4,7 +4,7 @@
 
 #include "control/IRegion.hpp"
 #include "parsers/RegionOptions.hpp"
-#include "adaptors/GtkFixedLayoutAdaptor.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
 
 #include <vector>
 #include <boost/optional/optional_fwd.hpp>
@@ -24,8 +24,8 @@ template<>
 struct BuilderTraits<RegionBuilder>
 {
     using Component = IRegion;
-    using DefaultHandler = GtkFixedLayoutAdaptor;
-    using Options = ResourcesXlf::RegionOptions;
+    using Handler = IFixedLayoutAdaptor;
+    using Options = RegionOptions;
 };
 
 const int DEFAULT_ZORDER = 0;
@@ -37,8 +37,9 @@ public:
     RegionBuilder& content(std::vector<ContentWithPos>&& content);
 
 protected:
-    RegionBuilder& retrieveOptions(const ResourcesXlf::RegionOptions& opts) override;
+    RegionBuilder& retrieveOptions(const RegionOptions& opts) override;
     std::unique_ptr<IRegion> create() override;
+    std::unique_ptr<IFixedLayoutAdaptor> createDefaultHandler() override;
     void doSetup(IRegion& region) override;
 
 private:

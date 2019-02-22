@@ -7,7 +7,7 @@
 
 #include "control/IMainLayout.hpp"
 #include "parsers/LayoutOptions.hpp"
-#include "adaptors/GtkOverlayAdaptor.hpp"
+#include "adaptors/IOverlayAdaptor.hpp"
 
 class IBackground;
 class IRegion;
@@ -24,8 +24,8 @@ template<>
 struct BuilderTraits<MainLayoutBuilder>
 {
     using Component = IMainLayout;
-    using DefaultHandler = GtkOverlayAdaptor;
-    using Options = ResourcesXlf::LayoutOptions;
+    using Handler = IOverlayAdaptor;
+    using Options = LayoutOptions;
 };
 
 class MainLayoutBuilder : public AbstractBuilder<MainLayoutBuilder>
@@ -37,8 +37,9 @@ public:
     MainLayoutBuilder& regions(std::vector<RegionWithPos>&& regions);
 
 protected:
-    MainLayoutBuilder& retrieveOptions(const ResourcesXlf::LayoutOptions& opts) override;
+    MainLayoutBuilder& retrieveOptions(const LayoutOptions& opts) override;
     std::unique_ptr<IMainLayout> create() override;
+    std::unique_ptr<IOverlayAdaptor> createDefaultHandler() override;
     void doSetup(IMainLayout& layout) override;
 
 private:

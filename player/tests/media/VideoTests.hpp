@@ -14,9 +14,9 @@ public:
         return constructVideo(DEFAULT_VIDEO_MUTED, DEFAULT_VIDEO_LOOPED);
     }
 
-    std::unique_ptr<Video> constructVideo(boost::optional<bool> muted, boost::optional<bool> looped)
+    std::unique_ptr<Video> constructVideo(boost::optional<VideoOptions::Mute> muted, boost::optional<VideoOptions::Loop> looped)
     {
-        ResourcesXlf::VideoOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, muted, looped};
+        VideoOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, muted, looped};
 
         return VideoBuilder{}.adaptor(unique(&adaptor()))
                              .filesystem(unique(&filesystem()))

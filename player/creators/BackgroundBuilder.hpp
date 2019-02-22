@@ -4,7 +4,7 @@
 
 #include "control/IBackground.hpp"
 #include "parsers/BackgroundOptions.hpp"
-#include "adaptors/GtkImageAdaptor.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 
 #include "utils/IFileSystemAdaptor.hpp"
 #include "utils/FilePath.hpp"
@@ -15,9 +15,11 @@ template<>
 struct BuilderTraits<BackgroundBuilder>
 {
     using Component = IBackground;
-    using DefaultHandler = GtkImageAdaptor;
-    using Options = ResourcesXlf::BackgroundOptions;
+    using Handler = IImageAdaptor;
+    using Options = BackgroundOptions;
 };
+
+const std::string DEFAULT_COLOR = "#000";
 
 class BackgroundBuilder : public AbstractBuilder<BackgroundBuilder>
 {
@@ -27,8 +29,9 @@ public:
     BackgroundBuilder& filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem);
 
 protected:
-    BackgroundBuilder& retrieveOptions(const ResourcesXlf::BackgroundOptions& opts) override;
+    BackgroundBuilder& retrieveOptions(const BackgroundOptions& opts) override;
     std::unique_ptr<IBackground> create() override;
+    std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
 
 private:
     std::unique_ptr<IBackground> createBackground(uint32_t color);

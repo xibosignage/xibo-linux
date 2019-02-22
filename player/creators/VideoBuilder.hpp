@@ -1,11 +1,11 @@
 #include "MediaBuilder.hpp"
 
-#include "media/VideoHandler.hpp"
+#include "media/IVideoHandler.hpp"
 #include "media/Video.hpp"
 #include "parsers/VideoOptions.hpp"
 
-const bool DEFAULT_VIDEO_LOOPED = false;
-const bool DEFAULT_VIDEO_MUTED = false;
+const VideoOptions::Mute DEFAULT_VIDEO_MUTED = VideoOptions::Mute::Disable;
+const VideoOptions::Loop DEFAULT_VIDEO_LOOPED = VideoOptions::Loop::Disable;
 
 class VideoBuilder;
 
@@ -13,8 +13,8 @@ template<>
 struct BuilderTraits<VideoBuilder>
 {
     using Component = Video;
-    using DefaultHandler = VideoHandler;
-    using Options = ResourcesXlf::VideoOptions;
+    using Handler = IVideoHandler;
+    using Options = VideoOptions;
 };
 
 class VideoBuilder : public AbstractMediaBuilder<VideoBuilder>
@@ -24,18 +24,19 @@ public:
     VideoBuilder& height(int height);
 
 protected:
-    VideoBuilder& retrieveMediaOptions(const ResourcesXlf::VideoOptions& opts) override;
+    VideoBuilder& retrieveMediaOptions(const VideoOptions& opts) override;
     std::unique_ptr<Video> create() override;
+    std::unique_ptr<IVideoHandler> createDefaultHandler() override;
     void doMediaSetup(Video& video) override;
 
 private:
-    bool getMuteOption(const boost::optional<bool>& muteOpt);
-    bool getLoopOption(const boost::optional<bool>& loopOpt);
+    VideoOptions::Mute getMuteOption(const boost::optional<VideoOptions::Mute>& muteOpt);
+    VideoOptions::Loop getLoopOption(const boost::optional<VideoOptions::Loop>& loopOpt);
 
 private:
     int m_width;
     int m_height;
-    bool m_loop;
-    bool m_mute;
+    VideoOptions::Mute m_mute;
+    VideoOptions::Loop m_loop;
 
 };

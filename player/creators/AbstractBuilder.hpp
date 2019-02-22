@@ -11,8 +11,7 @@ class AbstractBuilder
 public:
     using Options = typename BuilderTraits<Builder>::Options;
     using Component = typename BuilderTraits<Builder>::Component;
-    using DefaultHandler = typename BuilderTraits<Builder>::DefaultHandler;
-    using IDefaultHandler = typename DefaultHandler::interface; // FIXME temporarily
+    using Handler = typename BuilderTraits<Builder>::Handler;
 
     AbstractBuilder() = default;
     virtual ~AbstractBuilder() = default;
@@ -29,7 +28,7 @@ public:
         return retrieveOptions(opts);
     }
 
-    Builder& adaptor(std::unique_ptr<IDefaultHandler>&& adaptor)
+    Builder& adaptor(std::unique_ptr<Handler>&& adaptor)
     {
         m_adaptor = std::move(adaptor);
         return static_cast<Builder&>(*this);
@@ -38,16 +37,17 @@ public:
 protected:
     virtual Builder& retrieveOptions(const typename BuilderTraits<Builder>::Options& opts) = 0;
     virtual std::unique_ptr<Component> create() = 0;
+    virtual std::unique_ptr<Handler> createDefaultHandler() = 0;
     virtual void doSetup(typename BuilderTraits<Builder>::Component&) { }
 
-    std::unique_ptr<IDefaultHandler> createHandler()
+    std::unique_ptr<Handler> createHandler()
     {
-        if(!m_adaptor) return std::make_unique<DefaultHandler>();
+        if(!m_adaptor) return createDefaultHandler();
 
         return std::move(m_adaptor);
     }
 
 protected:
-    std::unique_ptr<IDefaultHandler> m_adaptor;
+    std::unique_ptr<Handler> m_adaptor;
 
 };

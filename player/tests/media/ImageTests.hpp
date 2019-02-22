@@ -18,7 +18,7 @@ public:
                                           boost::optional<std::string> align,
                                           boost::optional<std::string> valign)
     {
-        ResourcesXlf::ImageOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, scaleType, align, valign};
+        ImageOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, scaleType, align, valign};
 
         return ImageBuilder{}.adaptor(unique(&adaptor()))
                              .filesystem(unique(&filesystem()))

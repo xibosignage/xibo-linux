@@ -21,28 +21,28 @@ TEST_F(VideoTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), setVolume(MIN_VOLUME));
 
-    constructVideo(true, DEFAULT_VIDEO_LOOPED);
+    constructVideo(VideoOptions::Mute::Enable, DEFAULT_VIDEO_LOOPED);
 }
 
 TEST_F(VideoTest, Construct_MutedTrue_HandlerSetVolume100ShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
 
-    constructVideo(false, DEFAULT_VIDEO_LOOPED);
+    constructVideo(VideoOptions::Mute::Disable, DEFAULT_VIDEO_LOOPED);
 }
 
 TEST_F(VideoTest, Construct_LoopTrue_VideoLoopedEqualsTrue)
 {
-    auto video = constructVideo(DEFAULT_VIDEO_MUTED, true);
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, VideoOptions::Loop::Enable);
 
-    ASSERT_EQ(video->looped(), true);
+    ASSERT_EQ(video->looped(), VideoOptions::Loop::Enable);
 }
 
 TEST_F(VideoTest, Construct_LoopFalse_VideoLoopedEqualsFalse)
 {
-    auto video = constructVideo(DEFAULT_VIDEO_MUTED, false);
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, VideoOptions::Loop::Disable);
 
-    ASSERT_EQ(video->looped(), false);
+    ASSERT_EQ(video->looped(), VideoOptions::Loop::Disable);
 }
 
 TEST_F(VideoTest, Play_Default_HandlerPlayShouldBeCalled)

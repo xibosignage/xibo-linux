@@ -10,7 +10,7 @@ const auto invalidRegionSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
 
 TEST_P(RegionConstructSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 {
-    ResourcesXlf::RegionOptions opts{DEFAULT_ID, GetParam().width, GetParam().height, DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
+    RegionOptions opts{DEFAULT_ID, GetParam().width, GetParam().height, DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
 
     ASSERT_THROW(RegionBuilder{}.adaptor(unique(&adaptor()))
                                 .content(createContentItems(DEFAULT_CONTENT_ITEMS_COUNT))
