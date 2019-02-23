@@ -19,7 +19,7 @@ public:
     void scale(double scaleX, double scaleY) override;
 
     void loopContent() override;
-    bool contentLooped() const override;
+    RegionOptions::Loop contentLoop() const override;
     int id() const override;
     int zorder() const override;
     void show() override;
@@ -45,7 +45,7 @@ private:
     std::unique_ptr<IFixedLayoutAdaptor> m_handler;
     int m_id;
     int m_zorder;
-    bool m_contentLooped = false;
+    RegionOptions::Loop m_contentLoop = RegionOptions::Loop::Disable;
 
     std::vector<std::unique_ptr<IRegionContent>> m_content;
     size_t m_currentContentIndex = 0;

@@ -63,12 +63,12 @@ void RegionBuilder::checkHeight(int height)
 
 int RegionBuilder::getZorderOption(const boost::optional<int>& zorder)
 {
-    return zorder.value_or(DEFAULT_ZORDER);
+    return zorder.value_or(DEFAULT_REGION_ZORDER);
 }
 
-bool RegionBuilder::getLoopOption(const boost::optional<bool>& loop)
+RegionOptions::Loop RegionBuilder::getLoopOption(const boost::optional<RegionOptions::Loop>& loop)
 {
-    return loop.value_or(DEFAULT_LOOP);
+    return loop.value_or(DEFAULT_REGION_LOOP);
 }
 
 RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia)
@@ -79,7 +79,7 @@ RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia
 
 void RegionBuilder::loopContent(IRegion& region)
 {
-    if(m_loop)
+    if(m_loop == RegionOptions::Loop::Enable)
     {
         region.loopContent();
     }

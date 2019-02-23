@@ -2,13 +2,13 @@
 
 #include "constants.hpp"
 
-#include "parsers/LayoutOptions.hpp"
-#include "parsers/BackgroundOptions.hpp"
-#include "parsers/RegionOptions.hpp"
-#include "parsers/ImageOptions.hpp"
-#include "parsers/WebViewOptions.hpp"
-#include "parsers/VideoOptions.hpp"
-#include "parsers/AudioOptions.hpp"
+#include "options/LayoutOptions.hpp"
+#include "options/BackgroundOptions.hpp"
+#include "options/RegionOptions.hpp"
+#include "options/ImageOptions.hpp"
+#include "options/WebViewOptions.hpp"
+#include "options/VideoOptions.hpp"
+#include "options/AudioOptions.hpp"
 
 class IMainLayout;
 class IRegion;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MockImageAdaptor.hpp"
 #include "test_constants.hpp"
+#include "MockImageAdaptor.hpp"
 
 #include "control/IBackground.hpp"
 

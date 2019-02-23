@@ -2,7 +2,7 @@
 
 #include "media/IVideoHandler.hpp"
 #include "media/Video.hpp"
-#include "parsers/VideoOptions.hpp"
+#include "options/VideoOptions.hpp"
 
 const VideoOptions::Mute DEFAULT_VIDEO_MUTED = VideoOptions::Mute::Disable;
 const VideoOptions::Loop DEFAULT_VIDEO_LOOPED = VideoOptions::Loop::Disable;

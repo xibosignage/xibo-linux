@@ -5,34 +5,19 @@
 #include "creators/MainLayoutBuilder.hpp"
 #include "control/MainLayout.hpp"
 #include "mocks/MockOverlayAdaptor.hpp"
-#include "parsers/LayoutOptions.hpp"
+#include "options/LayoutOptions.hpp"
 
-#include "creators/BackgroundBuilder.hpp"
 #include "mocks/MockBackground.hpp"
-#include "mocks/MockImageAdaptor.hpp"
-
 #include "mocks/MockRegion.hpp"
-#include "mocks/MockFixedLayoutAdaptor.hpp"
 
-const std::vector<std::vector<int>> zorders = {
-    {10,9,8},
-    {1,2,4,10},
-    {10,7,9,1},
-    {5,4},
-    {1},
-    {4,1,5,2},
-    {4,3,2,1,0}
-};
-
-const int DEFAULT_SCHEME = 5;
 const int DEFAULT_REGIONS_COUNT = 3;
-const LayoutOptions DEFAULT_LAYOUT_OPTIONS{DEFAULT_SCHEME, DEFAULT_WIDTH, DEFAULT_HEIGHT};
 
 class MainLayoutTest : public BaseTestWithHandler<MockOverlayAdaptor>
 {
 public:
     auto constructLayout(size_t regionsCount = DEFAULT_REGIONS_COUNT)
     {
+        const LayoutOptions opts{DEFAULT_WIDTH, DEFAULT_HEIGHT};
         auto background = createBackground();
         auto regions = createRegions(regionsCount);
 
@@ -41,7 +26,7 @@ public:
         return MainLayoutBuilder{}.adaptor(unique(&adaptor()))
                                   .regions(std::move(regions))
                                   .background(std::move(background))
-                                  .options(DEFAULT_LAYOUT_OPTIONS)
+                                  .options(opts)
                                   .build();
     }
 
@@ -67,7 +52,7 @@ protected:
         return constructMock<MockBackground>();
     }
 
-    auto createRegion()
+    std::unique_ptr<MockRegion> createRegion()
     {
         return constructMock<MockRegion>();
     }
@@ -110,7 +95,7 @@ protected:
     }
 
 private:
-    void pushRegionAndSort(testing::NiceMock<MockRegion>* region)
+    void pushRegionAndSort(MockRegion* region)
     {
         m_regions.push_back(region);
         std::sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
@@ -120,4 +105,4 @@ private:
 
 };
 
-class MainLayoutConstructSizeTest : public MainLayoutTest, public testing::WithParamInterface<Size> { };
+class MainLayoutSizeTest : public MainLayoutTest, public testing::WithParamInterface<Size> { };

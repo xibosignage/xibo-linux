@@ -4,7 +4,7 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-#include "parsers/MediaOptions.hpp"
+#include "options/MediaOptions.hpp"
 
 #include <boost/optional/optional.hpp>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
-#include "parsers/VideoOptions.hpp"
+#include "options/VideoOptions.hpp"
 
 class IVideoHandler;
 class FilePath;

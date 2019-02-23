@@ -39,6 +39,15 @@ TEST_F(ImageTest, Construct_Scaled_HandlerLoadImageWithoutPreserveAspectRatioSho
     constructImage("stretch"s, DEFAULT_ALIGN, DEFAULT_VALIGN);
 }
 
+TEST_F(ImageTest, Construct_NoAlignValignScaleType_AlignValignScaleTypeEqualsDefault)
+{
+    auto image = constructImage({}, {}, {});
+
+    ASSERT_EQ(image->scaleType(), MediaGeometry::ScaleType::Scaled);
+    ASSERT_EQ(image->align(), MediaGeometry::Align::Center);
+    ASSERT_EQ(image->valign(), MediaGeometry::Valign::Middle);
+}
+
 TEST_F(ImageTest, Construct_ScaleTypeCenter_ImageScaleTypeEqualsScaled)
 {
     auto image = constructImage("center"s, DEFAULT_ALIGN, DEFAULT_VALIGN);
@@ -95,32 +104,25 @@ TEST_F(ImageTest, Construct_ValignBottom_ImageValignEqualsBottom)
     ASSERT_EQ(image->valign(), MediaGeometry::Valign::Bottom);
 }
 
-TEST_F(ImageTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
+TEST_F(ImageTest, Handler_Default_EqualsToPassedAdaptor)
 {
     auto image = constructImage();
 
     ASSERT_EQ(&image->handler(), &adaptor());
 }
 
-TEST_F(ImageTest, Width_HandlerReturnsDefaultWidth_ImageWidthEqualsDefault)
+TEST_F(ImageTest, WidthHeight_Default_ImageWidthHeightEqualsDefault)
 {
     auto image = constructImage();
 
-    ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
+    ON_CALL(this->adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+    ON_CALL(this->adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
 
     ASSERT_EQ(image->width(), DEFAULT_WIDTH);
-}
-
-TEST_F(ImageTest, Height_HandlerReturnsDefaultHeight_ImageHeightEqualsDefault)
-{
-    auto image = constructImage();
-
-    ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
-
     ASSERT_EQ(image->height(), DEFAULT_HEIGHT);
 }
 
-TEST_F(ImageTest, Scale_Default_ImageScaleShouldBeCalled)
+TEST_F(ImageTest, Scale_Default_HandlerScaleShouldBeCalled)
 {
     auto image = constructImage();
 

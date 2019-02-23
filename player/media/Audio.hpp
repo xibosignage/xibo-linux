@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
-#include "parsers/AudioOptions.hpp"
+#include "options/AudioOptions.hpp"
 
 class FilePath;
 class IAudioHandler;

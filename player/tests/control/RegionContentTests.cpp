@@ -10,7 +10,7 @@ TEST_F(RegionContentTest, Handler_VisibleMedia_EqualsToVisibleMediaHandler)
     ASSERT_EQ(&content->handler(), &visibleMedia.handler());
 }
 
-TEST_F(RegionContentTest, Handler_InvisibleMedia_EqualsToDefaultBlankHandler)
+TEST_F(RegionContentTest, Handler_InvisibleMedia_EqualsToBlankHandler)
 {
     auto content = constructRegionContent();
 

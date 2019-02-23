@@ -3,7 +3,7 @@
 #include "AbstractBuilder.hpp"
 
 #include "control/IRegion.hpp"
-#include "parsers/RegionOptions.hpp"
+#include "options/RegionOptions.hpp"
 #include "adaptors/IFixedLayoutAdaptor.hpp"
 
 #include <vector>
@@ -28,8 +28,8 @@ struct BuilderTraits<RegionBuilder>
     using Options = RegionOptions;
 };
 
-const int DEFAULT_ZORDER = 0;
-const bool DEFAULT_LOOP = false;
+const int DEFAULT_REGION_ZORDER = 0;
+const RegionOptions::Loop DEFAULT_REGION_LOOP = RegionOptions::Loop::Disable;
 
 class RegionBuilder : public AbstractBuilder<RegionBuilder>
 {
@@ -47,7 +47,7 @@ private:
     int getWidthOption(int width);
     int getHeightOption(int height);
     int getZorderOption(const boost::optional<int>& zorderOpt);
-    bool getLoopOption(const boost::optional<bool>& loopOpt);
+    RegionOptions::Loop getLoopOption(const boost::optional<RegionOptions::Loop>& loopOpt);
 
     void loopContent(IRegion& region);
     void addAllContent(IRegion& region);
@@ -59,7 +59,7 @@ private:
     int m_width;
     int m_height;
     int m_zorder;
-    bool m_loop;
+    RegionOptions::Loop m_loop;
     std::vector<ContentWithPos> m_content;
 
 };

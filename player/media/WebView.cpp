@@ -75,9 +75,9 @@ MediaGeometry::ScaleType WebView::scaleType() const
     return MediaGeometry::ScaleType::Scaled;
 }
 
-void WebView::setTransparent(bool transparent)
+void WebView::setTransparent(WebViewOptions::Transparency transparency)
 {
-    if(transparent)
+    if(transparency == WebViewOptions::Transparency::Enable)
     {
         m_handler->enableTransparency();
     }

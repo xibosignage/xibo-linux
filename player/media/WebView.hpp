@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
+#include "options/WebViewOptions.hpp"
 
 class IWebViewAdaptor;
 class FilePath;
@@ -22,7 +23,7 @@ public:
     MediaGeometry::Valign valign() const override;
     MediaGeometry::ScaleType scaleType() const override;
 
-    void setTransparent(bool transparent);
+    void setTransparent(WebViewOptions::Transparency transparency);
 
 private:
     friend class WebViewBuilder;

@@ -6,7 +6,7 @@
 #include "AbstractBuilder.hpp"
 
 #include "control/IMainLayout.hpp"
-#include "parsers/LayoutOptions.hpp"
+#include "options/LayoutOptions.hpp"
 #include "adaptors/IOverlayAdaptor.hpp"
 
 class IBackground;
@@ -51,7 +51,6 @@ private:
     void checkRegionsCount(size_t regionsCount);
 
 private:
-    int m_schemeVersion;
     int m_width;
     int m_height;
     std::unique_ptr<IBackground> m_background;

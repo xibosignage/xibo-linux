@@ -3,7 +3,7 @@
 #include "AbstractBuilder.hpp"
 
 #include "control/IBackground.hpp"
-#include "parsers/BackgroundOptions.hpp"
+#include "options/BackgroundOptions.hpp"
 #include "adaptors/IImageAdaptor.hpp"
 
 #include "utils/IFileSystemAdaptor.hpp"

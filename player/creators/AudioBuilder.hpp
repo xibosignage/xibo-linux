@@ -2,7 +2,7 @@
 
 #include "media/IAudioHandler.hpp"
 #include "media/Audio.hpp"
-#include "parsers/AudioOptions.hpp"
+#include "options/AudioOptions.hpp"
 
 const AudioOptions::Mute DEFAULT_AUDIO_MUTED = AudioOptions::Mute::Disable;
 const AudioOptions::Loop DEFAULT_AUDIO_LOOPED = AudioOptions::Loop::Disable;

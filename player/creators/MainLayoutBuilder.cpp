@@ -27,7 +27,6 @@ MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regio
 
 MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const LayoutOptions& opts)
 {
-    m_schemeVersion = opts.schemaVersion();
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
     return *this;

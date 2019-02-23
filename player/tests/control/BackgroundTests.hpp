@@ -29,12 +29,12 @@ public:
 
         if constexpr(std::is_same_v<T, OneColorBackground>)
         {
-            BackgroundOptions opts{width, height, {}, color.value()};
+            BackgroundOptions opts{width, height, {}, color};
             return builder.options(opts).build();
         }
         else
         {
-            BackgroundOptions opts{width, height, path.value(), {}};
+            BackgroundOptions opts{width, height, path, {}};
             return builder.options(opts).build();
         }
     }
@@ -50,6 +50,8 @@ protected:
         m_fakeFilesystem = new testing::NiceMock<MockFileSystemAdaptor>();
 
         ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
     }
 
     MockFileSystemAdaptor& filesystem()

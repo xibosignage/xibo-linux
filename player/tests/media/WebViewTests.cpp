@@ -4,25 +4,32 @@ using namespace ::testing;
 
 TEST_F(WebViewTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    FilePath path = DEFAULT_RESOURCES_DIR / FilePath("0.html");
+    FilePath path = DEFAULT_RESOURCES_DIR / FilePath(std::to_string(DEFAULT_ID) + ".html");
 
     EXPECT_CALL(adaptor(), load(path));
 
     constructWebView();
 }
 
-TEST_F(WebViewTest, Construct_TransparentTrue_HandlerEnableTransparencyShouldBeCalled)
+TEST_F(WebViewTest, Construct_NoTransparency_HandlerEnableTransparencyShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), enableTransparency());
 
-    constructWebView(true);
+    constructWebView({});
 }
 
-TEST_F(WebViewTest, Construct_TransparentFalse_HandlerEnableTransparencyShouldNotBeCalled)
+TEST_F(WebViewTest, Construct_TransparencyEnabled_HandlerEnableTransparencyShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), enableTransparency());
+
+    constructWebView(WebViewOptions::Transparency::Enable);
+}
+
+TEST_F(WebViewTest, Construct_TransparentDisabled_HandlerEnableTransparencyShouldNotBeCalled)
 {
     EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
 
-    constructWebView(false);
+    constructWebView(WebViewOptions::Transparency::Disable);
 }
 
 TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
@@ -39,21 +46,23 @@ TEST_F(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
     ASSERT_EQ(&webview->handler(), &adaptor());
 }
 
+TEST_F(WebViewTest, Construct_Default_ScaleTypeScaledAlignLeftValignTop)
+{
+    auto webview = constructWebView();
+
+    ASSERT_EQ(webview->scaleType(), MediaGeometry::ScaleType::Scaled);
+    ASSERT_EQ(webview->align(), MediaGeometry::Align::Left);
+    ASSERT_EQ(webview->valign(), MediaGeometry::Valign::Top);
+}
+
 TEST_F(WebViewTest, Width_HandlerReturnsDefaultWidth_WebViewWidthEqualsDefault)
 {
     auto webview = constructWebView();
 
     ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
-
-    ASSERT_EQ(webview->width(), DEFAULT_WIDTH);
-}
-
-TEST_F(WebViewTest, Height_HandlerReturnsDefaultHeight_WebViewHeightEqualsDefault)
-{
-    auto webview = constructWebView();
-
     ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
+    ASSERT_EQ(webview->width(), DEFAULT_WIDTH);
     ASSERT_EQ(webview->height(), DEFAULT_HEIGHT);
 }
 

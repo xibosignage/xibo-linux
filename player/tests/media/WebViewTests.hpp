@@ -6,19 +6,17 @@
 #include "mocks/MockWebViewAdaptor.hpp"
 #include "creators/WebViewBuilder.hpp"
 
-const bool DEFAULT_TRANSPARENT = false;
-
 class WebViewTest : public MediaTest<MockWebViewAdaptor>
 {
 public:
     auto constructWebView()
     {
-        return constructWebView(DEFAULT_TRANSPARENT);
+        return constructWebView(DEFAULT_TRANSPARENCY);
     }
 
-    std::unique_ptr<WebView> constructWebView(boost::optional<bool> transparent)
+    std::unique_ptr<WebView> constructWebView(boost::optional<WebViewOptions::Transparency> transparency)
     {
-        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparent};
+        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparency};
 
         return WebViewBuilder{}.adaptor(unique(&adaptor()))
                                .filesystem(unique(&filesystem()))

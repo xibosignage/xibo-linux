@@ -2,11 +2,32 @@
 
 using namespace testing;
 
-TEST_F(AudioTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), load(DEFAULT_FULL_PATH));
 
     constructAudio();
+}
+
+TEST_F(AudioTest, Construct_NoMute_HandlerSetVolume100ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
+
+    constructAudio({}, DEFAULT_AUDIO_LOOPED, MAX_VOLUME);
+}
+
+TEST_F(AudioTest, Construct_NoLoop_LoopEqualsDefault)
+{
+    auto audio = constructAudio(DEFAULT_AUDIO_MUTED, {}, MAX_VOLUME);
+
+    ASSERT_EQ(audio->looped(), DEFAULT_AUDIO_LOOPED);
+}
+
+TEST_F(AudioTest, Construct_NoVolume_HandlerSetVolume100ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
+
+    constructAudio(DEFAULT_AUDIO_MUTED, DEFAULT_AUDIO_LOOPED, {});
 }
 
 TEST_F(AudioTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)

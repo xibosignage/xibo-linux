@@ -26,11 +26,6 @@ public:
 class RegionContentTest : public testing::Test
 {
 public:
-    RegionContentTest()
-    {
-        m_timer = new testing::NiceMock<MockTimerProvider>();
-    }
-
     template<typename Media = MockMedia>
     auto constructRegionContent()
     {
@@ -41,6 +36,11 @@ public:
     }
 
 protected:
+    void SetUp() override
+    {
+        m_timer = new testing::NiceMock<MockTimerProvider>();
+    }
+
     MockTimerProvider& timer()
     {
         return *m_timer;

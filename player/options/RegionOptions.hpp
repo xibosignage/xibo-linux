@@ -6,7 +6,13 @@
 class RegionOptions
 {
 public:
-    RegionOptions(int id, int width, int height, int left, int top, int zorder, bool loop);
+    enum class Loop
+    {
+        Disable,
+        Enable
+    };
+
+    RegionOptions(int id, int width, int height, int left, int top, boost::optional<int> zorder, boost::optional<Loop> loop);
     RegionOptions(const xml_node& node);
 
     int id() const;
@@ -15,7 +21,7 @@ public:
     int left() const;
     int top() const;
     boost::optional<int> zorder() const;
-    boost::optional<bool> loop() const;
+    boost::optional<Loop> loop() const;
 
 private:
     int m_id;
@@ -24,5 +30,7 @@ private:
     int m_left;
     int m_top;
     boost::optional<int> m_zindex;
-    boost::optional<bool> m_loop;
+    boost::optional<Loop> m_loop;
 };
+
+std::istream& operator >>(std::istream& in, RegionOptions::Loop& loop);

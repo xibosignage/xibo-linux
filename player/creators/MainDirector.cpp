@@ -15,7 +15,7 @@
 #include "creators/WebViewBuilder.hpp"
 
 #include "media/GetMediaPosition.hpp"
-#include "parsers/XlfResources.hpp"
+#include "options/XlfResources.hpp"
 #include "utils/TimerProvider.hpp"
 #include "utils/Utilities.hpp"
 

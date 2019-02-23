@@ -2,7 +2,7 @@
 
 #include "adaptors/IImageAdaptor.hpp"
 #include "media/Image.hpp"
-#include "parsers/ImageOptions.hpp"
+#include "options/ImageOptions.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
