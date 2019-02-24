@@ -9,34 +9,30 @@
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
-std::unique_ptr<IRegion> RegionBuilder::build()
-{
-    auto region = createRegion();
-    loopContent(*region);
-    addAllContent(*region);
-    return region;
-}
-std::unique_ptr<IRegion> RegionBuilder::createRegion()
-{
-    return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createAdaptor()});
-}
-
-std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createAdaptor()
-{
-    if(!m_adaptor) return std::make_unique<GtkFixedLayoutAdaptor>();
-
-    return std::move(m_adaptor);
-}
-
-RegionBuilder& RegionBuilder::options(const ResourcesXlf::RegionOptions& opts)
+RegionBuilder& RegionBuilder::retrieveOptions(const RegionOptions& opts)
 {
     m_id = opts.id();
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
     m_zorder = getZorderOption(opts.zorder());
     m_loop = getLoopOption(opts.loop());
-
     return *this;
+}
+
+std::unique_ptr<IRegion> RegionBuilder::create()
+{
+    return std::unique_ptr<Region>(new Region{m_id, m_width, m_height, m_zorder, createHandler()});
+}
+
+std::unique_ptr<IFixedLayoutAdaptor> RegionBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkFixedLayoutAdaptor>();
+}
+
+void RegionBuilder::doSetup(IRegion& region)
+{
+    loopContent(region);
+    addAllContent(region);
 }
 
 int RegionBuilder::getWidthOption(int width)
@@ -67,12 +63,12 @@ void RegionBuilder::checkHeight(int height)
 
 int RegionBuilder::getZorderOption(const boost::optional<int>& zorder)
 {
-    return zorder.value_or(DEFAULT_ZORDER);
+    return zorder.value_or(DEFAULT_REGION_ZORDER);
 }
 
-bool RegionBuilder::getLoopOption(const boost::optional<bool>& loop)
+RegionOptions::Loop RegionBuilder::getLoopOption(const boost::optional<RegionOptions::Loop>& loop)
 {
-    return loop.value_or(DEFAULT_LOOP);
+    return loop.value_or(DEFAULT_REGION_LOOP);
 }
 
 RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia)
@@ -81,15 +77,9 @@ RegionBuilder& RegionBuilder::content(std::vector<ContentWithPos>&& visibleMedia
     return *this;
 }
 
-RegionBuilder& RegionBuilder::adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor)
-{
-    m_adaptor = std::move(adaptor);
-    return *this;
-}
-
 void RegionBuilder::loopContent(IRegion& region)
 {
-    if(m_loop)
+    if(m_loop == RegionOptions::Loop::Enable)
     {
         region.loopContent();
     }

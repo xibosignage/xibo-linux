@@ -14,11 +14,11 @@ public:
         return constructAudio(DEFAULT_AUDIO_MUTED, DEFAULT_AUDIO_LOOPED, MAX_VOLUME);
     }
 
-    std::unique_ptr<Audio> constructAudio(boost::optional<bool> muted,
-                                          boost::optional<bool> looped,
+    std::unique_ptr<Audio> constructAudio(boost::optional<AudioOptions::Mute> muted,
+                                          boost::optional<AudioOptions::Loop> looped,
                                           boost::optional<int> volume)
     {
-        ResourcesXlf::AudioOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, muted, looped, volume};
+        AudioOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, muted, looped, volume};
 
         return AudioBuilder{}.adaptor(unique(&adaptor()))
                              .filesystem(unique(&filesystem()))

@@ -1,16 +1,17 @@
 #pragma once
 
-#include <memory>
+#include "AbstractBuilder.hpp"
+
+#include "control/IRegion.hpp"
+#include "options/RegionOptions.hpp"
+#include "adaptors/IFixedLayoutAdaptor.hpp"
+
 #include <vector>
 #include <boost/optional/optional_fwd.hpp>
 
-#include "parsers/RegionOptions.hpp"
-#include "adaptors/IFixedLayoutAdaptor.hpp"
-
-class IRegion;
 class IRegionContent;
-class IFixedLayoutAdaptor;
 class ITimerProvider;
+class RegionBuilder;
 
 struct ContentWithPos
 {
@@ -19,27 +20,34 @@ struct ContentWithPos
     int y;
 };
 
-const int DEFAULT_ZORDER = 0;
-const bool DEFAULT_LOOP = false;
+template<>
+struct BuilderTraits<RegionBuilder>
+{
+    using Component = IRegion;
+    using Handler = IFixedLayoutAdaptor;
+    using Options = RegionOptions;
+};
 
-class RegionBuilder
+const int DEFAULT_REGION_ZORDER = 0;
+const RegionOptions::Loop DEFAULT_REGION_LOOP = RegionOptions::Loop::Disable;
+
+class RegionBuilder : public AbstractBuilder<RegionBuilder>
 {
 public:
-    std::unique_ptr<IRegion> build();
-
-    RegionBuilder& options(const ResourcesXlf::RegionOptions& opts);
     RegionBuilder& content(std::vector<ContentWithPos>&& content);
-    RegionBuilder& adaptor(std::unique_ptr<IFixedLayoutAdaptor>&& adaptor);
+
+protected:
+    RegionBuilder& retrieveOptions(const RegionOptions& opts) override;
+    std::unique_ptr<IRegion> create() override;
+    std::unique_ptr<IFixedLayoutAdaptor> createDefaultHandler() override;
+    void doSetup(IRegion& region) override;
 
 private:
-    std::unique_ptr<IRegion> createRegion();
-    std::unique_ptr<IFixedLayoutAdaptor> createAdaptor();
-
     int getIdOption(int id);
     int getWidthOption(int width);
     int getHeightOption(int height);
     int getZorderOption(const boost::optional<int>& zorderOpt);
-    bool getLoopOption(const boost::optional<bool>& loopOpt);
+    RegionOptions::Loop getLoopOption(const boost::optional<RegionOptions::Loop>& loopOpt);
 
     void loopContent(IRegion& region);
     void addAllContent(IRegion& region);
@@ -47,12 +55,11 @@ private:
     void checkHeight(int height);
 
 private:
-    std::unique_ptr<IFixedLayoutAdaptor> m_adaptor;
     int m_id;
     int m_width;
     int m_height;
     int m_zorder;
-    bool m_loop;
+    RegionOptions::Loop m_loop;
     std::vector<ContentWithPos> m_content;
 
 };

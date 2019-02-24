@@ -1,5 +1,7 @@
 #include "VideoBuilder.hpp"
 
+#include "media/VideoHandler.hpp"
+
 #include <boost/optional/optional.hpp>
 
 std::unique_ptr<Video> VideoBuilder::create()
@@ -7,13 +9,18 @@ std::unique_ptr<Video> VideoBuilder::create()
     return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
 }
 
-void VideoBuilder::doSetup(Video& video)
+std::unique_ptr<IVideoHandler> VideoBuilder::createDefaultHandler()
+{
+    return std::make_unique<VideoHandler>();
+}
+
+void VideoBuilder::doMediaSetup(Video& video)
 {
     video.setMuted(m_mute);
     video.setLooped(m_loop);
 }
 
-VideoBuilder& VideoBuilder::mediaOptions(const ResourcesXlf::VideoOptions& opts)
+VideoBuilder& VideoBuilder::retrieveMediaOptions(const VideoOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());
@@ -32,12 +39,12 @@ VideoBuilder& VideoBuilder::height(int height)
     return *this;
 }
 
-bool VideoBuilder::getMuteOption(const boost::optional<bool>& muteOpt)
+VideoOptions::Mute VideoBuilder::getMuteOption(const boost::optional<VideoOptions::Mute>& muteOpt)
 {
     return muteOpt.value_or(DEFAULT_VIDEO_MUTED);
 }
 
-bool VideoBuilder::getLoopOption(const boost::optional<bool>& loopOpt)
+VideoOptions::Loop VideoBuilder::getLoopOption(const boost::optional<VideoOptions::Loop>& loopOpt)
 {
     return loopOpt.value_or(DEFAULT_VIDEO_LOOPED);
 }

@@ -10,29 +10,42 @@
 #include "mocks/MockWidgetAdaptor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
-const ResourcesXlf::RegionOptions DEFAULT_REGION_OPTIONS{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT,
-                                                         DEFAULT_XPOS, DEFAULT_YPOS, DEFAULT_ZORDER, DEFAULT_LOOP};
 
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:
-    auto constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
+    std::unique_ptr<IRegion> constructRegion(boost::optional<RegionOptions::Loop> contentLooped,
+                                             boost::optional<int> zorder,
+                                             std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
     {
+        const RegionOptions opts{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_XPOS, DEFAULT_YPOS, zorder, contentLooped};
+
         return RegionBuilder{}.adaptor(unique(&adaptor()))
                               .content(createContentItems(contentItemsCount))
-                              .options(DEFAULT_REGION_OPTIONS)
+                              .options(opts)
                               .build();
     }
 
+    std::unique_ptr<IRegion> constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
+    {
+        return constructRegion(DEFAULT_REGION_LOOP, DEFAULT_REGION_ZORDER, contentItemsCount);
+    }
+
 protected:
-    MockRegionContent& regionContent(size_t index)
+    void doSetUp() override
+    {
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+    }
+
+    MockRegionContent& regionContent(size_t index = 0)
     {
         return *m_contentItems.at(index);
     }
 
-    auto createRegionContent()
+    std::unique_ptr<MockRegionContent> createRegionContent()
     {
-        return constructMock<MockRegionContent, MockWidgetAdaptor>();
+        return constructMock<MockRegionContent>();
     }
 
     std::vector<ContentWithPos> createContentItems(std::size_t contentItemsCount)

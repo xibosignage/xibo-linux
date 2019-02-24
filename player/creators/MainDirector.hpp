@@ -2,13 +2,13 @@
 
 #include "constants.hpp"
 
-#include "parsers/LayoutOptions.hpp"
-#include "parsers/BackgroundOptions.hpp"
-#include "parsers/RegionOptions.hpp"
-#include "parsers/ImageOptions.hpp"
-#include "parsers/WebViewOptions.hpp"
-#include "parsers/VideoOptions.hpp"
-#include "parsers/AudioOptions.hpp"
+#include "options/LayoutOptions.hpp"
+#include "options/BackgroundOptions.hpp"
+#include "options/RegionOptions.hpp"
+#include "options/ImageOptions.hpp"
+#include "options/WebViewOptions.hpp"
+#include "options/VideoOptions.hpp"
+#include "options/AudioOptions.hpp"
 
 class IMainLayout;
 class IRegion;
@@ -35,17 +35,17 @@ public:
 private:
     std::unique_ptr<IMainLayout> buildLayout(const xml_node& layoutNode);
     std::string getLayoutXlfPath(int layoutId);
-    std::unique_ptr<IBackground> buildBackground(const ResourcesXlf::BackgroundOptions& opts);
+    std::unique_ptr<IBackground> buildBackground(const BackgroundOptions& opts);
     std::vector<RegionWithPos> collectRegions(const xml_node& layoutNode);
     std::unique_ptr<IRegion> buildRegion(const xml_node& regionNode);
     std::vector<ContentWithPos> collectContent(int regionWidth, int regionHeight, const xml_node& regionNode);
     std::vector<std::unique_ptr<IMedia>> collectInvisibleMedia(const xml_node& regionNode);
 
     std::unique_ptr<IMedia> buildMedia(int regionWidth, int regionHeight, const xml_node& mediaNode);
-    std::unique_ptr<Image> buildImage(int regionWidth, int regionHeight, const ResourcesXlf::ImageOptions& opts);
-    std::unique_ptr<Video> buildVideo(int regionWidth, int regionHeight, const ResourcesXlf::VideoOptions& opts);
-    std::unique_ptr<Audio> buildAudio(const ResourcesXlf::AudioOptions& opts);
-    std::unique_ptr<WebView> buildWebView(int regionWidth, int regionHeight, const ResourcesXlf::WebViewOptions& opts);
+    std::unique_ptr<Image> buildImage(int regionWidth, int regionHeight, const ImageOptions& opts);
+    std::unique_ptr<Video> buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts);
+    std::unique_ptr<Audio> buildAudio(const AudioOptions& opts);
+    std::unique_ptr<WebView> buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts);
     void attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content);
 
 

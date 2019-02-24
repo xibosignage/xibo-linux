@@ -1,29 +1,41 @@
 #pragma once
 
-#include <memory>
-#include <boost/optional/optional.hpp>
+#include "AbstractBuilder.hpp"
+
+#include "control/IBackground.hpp"
+#include "options/BackgroundOptions.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 
 #include "utils/IFileSystemAdaptor.hpp"
 #include "utils/FilePath.hpp"
-#include "parsers/BackgroundOptions.hpp"
 
-class IBackground;
-class IImageAdaptor;
+class BackgroundBuilder;
 
-class BackgroundBuilder
+template<>
+struct BuilderTraits<BackgroundBuilder>
+{
+    using Component = IBackground;
+    using Handler = IImageAdaptor;
+    using Options = BackgroundOptions;
+};
+
+const std::string DEFAULT_COLOR = "#000";
+
+class BackgroundBuilder : public AbstractBuilder<BackgroundBuilder>
 {
 public:
     BackgroundBuilder();
-    std::unique_ptr<IBackground> build();
 
-    BackgroundBuilder& options(const ResourcesXlf::BackgroundOptions& opts);
-    BackgroundBuilder& createAdaptor(std::unique_ptr<IImageAdaptor>&& createAdaptor);
     BackgroundBuilder& filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem);
+
+protected:
+    BackgroundBuilder& retrieveOptions(const BackgroundOptions& opts) override;
+    std::unique_ptr<IBackground> create() override;
+    std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
 
 private:
     std::unique_ptr<IBackground> createBackground(uint32_t color);
     std::unique_ptr<IBackground> createBackground(const FilePath& path);
-    std::unique_ptr<IImageAdaptor> createAdaptor();
 
     int getWidthOption(int width);
     int getHeightOption(int height);
@@ -36,7 +48,6 @@ private:
 
 private:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    std::unique_ptr<IImageAdaptor> m_adaptor;
     int m_width;
     int m_height;
     uint32_t m_hexColor;

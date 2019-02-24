@@ -1,8 +1,8 @@
 #include "MediaBuilder.hpp"
 
-#include "adaptors/GtkImageAdaptor.hpp"
+#include "adaptors/IImageAdaptor.hpp"
 #include "media/Image.hpp"
-#include "parsers/ImageOptions.hpp"
+#include "options/ImageOptions.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
@@ -13,19 +13,20 @@ class ImageBuilder;
 template<>
 struct BuilderTraits<ImageBuilder>
 {
-    using Media = Image;
-    using DefaultMediaHandler = GtkImageAdaptor;
-    using Options = ResourcesXlf::ImageOptions;
+    using Component = Image;
+    using Handler = IImageAdaptor;
+    using Options = ImageOptions;
 };
 
-class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
+class ImageBuilder : public AbstractMediaBuilder<ImageBuilder>
 {
 public:
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
 
 protected:
-    ImageBuilder& mediaOptions(const ResourcesXlf::ImageOptions& opts) override;
+    ImageBuilder& retrieveMediaOptions(const ImageOptions& opts) override;
+    std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
     std::unique_ptr<Image> create() override;
 
 private:    

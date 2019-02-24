@@ -1,5 +1,7 @@
 #include "AudioBuilder.hpp"
 
+#include "media/AudioHandler.hpp"
+
 #include <boost/optional/optional.hpp>
 
 std::unique_ptr<Audio> AudioBuilder::create()
@@ -7,13 +9,18 @@ std::unique_ptr<Audio> AudioBuilder::create()
     return std::unique_ptr<Audio>(new Audio{m_id, m_path, createHandler()});
 }
 
-void AudioBuilder::doSetup(Audio& audio)
+std::unique_ptr<IAudioHandler> AudioBuilder::createDefaultHandler()
 {
-    audio.setVolume(m_mute ? MIN_VOLUME : m_volume);
+    return std::make_unique<AudioHandler>();
+}
+
+void AudioBuilder::doMediaSetup(Audio& audio)
+{
+    audio.setVolume(m_mute == AudioOptions::Mute::Enable ? MIN_VOLUME : m_volume);
     audio.setLooped(m_loop);
 }
 
-AudioBuilder& AudioBuilder::mediaOptions(const ResourcesXlf::AudioOptions& opts)
+AudioBuilder& AudioBuilder::retrieveMediaOptions(const AudioOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());
@@ -21,12 +28,12 @@ AudioBuilder& AudioBuilder::mediaOptions(const ResourcesXlf::AudioOptions& opts)
     return *this;
 }
 
-bool AudioBuilder::getMuteOption(const boost::optional<bool>& muteOpt)
+AudioOptions::Mute AudioBuilder::getMuteOption(const boost::optional<AudioOptions::Mute>& muteOpt)
 {
     return muteOpt.value_or(DEFAULT_AUDIO_MUTED);
 }
 
-bool AudioBuilder::getLoopOption(const boost::optional<bool>& loopOpt)
+AudioOptions::Loop AudioBuilder::getLoopOption(const boost::optional<AudioOptions::Loop>& loopOpt)
 {
    return loopOpt.value_or(DEFAULT_AUDIO_LOOPED);
 }

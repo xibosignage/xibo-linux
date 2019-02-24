@@ -1,5 +1,7 @@
 #include "ImageBuilder.hpp"
 
+#include "adaptors/GtkImageAdaptor.hpp"
+
 #include <boost/optional/optional.hpp>
 
 ImageBuilder& ImageBuilder::width(int width)
@@ -20,12 +22,17 @@ std::unique_ptr<Image> ImageBuilder::create()
     return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_path, props, createHandler()});
 }
 
-ImageBuilder& ImageBuilder::mediaOptions(const ResourcesXlf::ImageOptions& opts)
+ImageBuilder& ImageBuilder::retrieveMediaOptions(const ImageOptions& opts)
 {
     m_scaleType = getScaleTypeOption(opts.scaleType());
     m_align = getAlignOption(opts.align());
     m_valign = getValignOption(opts.valign());
     return *this;
+}
+
+std::unique_ptr<IImageAdaptor> ImageBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkImageAdaptor>();
 }
 
 MediaGeometry::ScaleType ImageBuilder::getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt)

@@ -2,27 +2,32 @@
 
 #include "utils/Resources.hpp"
 #include "utils/Logger.hpp"
+#include "adaptors/WebKitWebViewAdaptor.hpp"
 
 #include <fstream>
 #include <regex>
 #include <boost/optional/optional.hpp>
 
 const std::string DEFAULT_EXTENSION = ".html";
-const bool DEFAULT_TRANSPARENT = true;
 
 std::unique_ptr<WebView> WebViewBuilder::create()
 {
     return std::unique_ptr<WebView>(new WebView{m_id, m_width, m_height, m_path, createHandler()});
 }
 
-void WebViewBuilder::doSetup(WebView& webview)
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createDefaultHandler()
 {
-    webview.setTransparent(m_transparent);
+    return std::make_unique<WebKitWebViewAdaptor>();
 }
 
-WebViewBuilder& WebViewBuilder::mediaOptions(const ResourcesXlf::WebViewOptions& opts)
+void WebViewBuilder::doMediaSetup(WebView& webview)
 {
-    m_transparent = getTransparentOption(opts.transparent());
+    webview.setTransparent(m_transparency);
+}
+
+WebViewBuilder& WebViewBuilder::retrieveMediaOptions(const WebViewOptions& opts)
+{
+    m_transparency = getTransparentOption(opts.transparency());
     return *this;
 }
 
@@ -50,9 +55,9 @@ int WebViewBuilder::getDurationOption(int duration)
     return parseDuration(m_path).value_or(duration);
 }
 
-bool WebViewBuilder::getTransparentOption(const boost::optional<bool>& transparentOpt)
+WebViewOptions::Transparency WebViewBuilder::getTransparentOption(const boost::optional<WebViewOptions::Transparency>& transparentOpt)
 {
-    return transparentOpt.value_or(DEFAULT_TRANSPARENT);
+    return transparentOpt.value_or(DEFAULT_TRANSPARENCY);
 }
 
 boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)

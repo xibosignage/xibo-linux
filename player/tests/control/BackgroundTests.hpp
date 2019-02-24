@@ -14,8 +14,6 @@ struct Color
     uint numberColor;
 };
 
-const std::string DEFAULT_COLOR = "#fff";
-
 template<typename T>
 class BackgroundTest : public BaseTestWithHandler<MockImageAdaptor>
 {
@@ -27,16 +25,16 @@ public:
     auto constructBackground(int width, int height, boost::optional<std::string> path, boost::optional<std::string> color)
     {
         BackgroundBuilder builder;
-        builder.createAdaptor(unique(&this->adaptor())).filesystem(unique(&this->filesystem()));
+        builder.adaptor(unique(&this->adaptor())).filesystem(unique(&this->filesystem()));
 
         if constexpr(std::is_same_v<T, OneColorBackground>)
         {
-            ResourcesXlf::BackgroundOptions opts{width, height, {}, color.value()};
+            BackgroundOptions opts{width, height, {}, color};
             return builder.options(opts).build();
         }
         else
         {
-            ResourcesXlf::BackgroundOptions opts{width, height, path.value(), {}};
+            BackgroundOptions opts{width, height, path, {}};
             return builder.options(opts).build();
         }
     }
@@ -52,6 +50,8 @@ protected:
         m_fakeFilesystem = new testing::NiceMock<MockFileSystemAdaptor>();
 
         ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
     }
 
     MockFileSystemAdaptor& filesystem()

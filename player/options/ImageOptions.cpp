@@ -3,7 +3,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-ResourcesXlf::ImageOptions::ImageOptions(int id,
+ImageOptions::ImageOptions(int id,
                                          boost::optional<std::string> path,
                                          int duration,
                                          boost::optional<std::string> scaleType,
@@ -13,25 +13,25 @@ ResourcesXlf::ImageOptions::ImageOptions(int id,
 {
 }
 
-ResourcesXlf::ImageOptions::ImageOptions(const xml_node& node) :
+ImageOptions::ImageOptions(const xml_node& node) :
     MediaOptions(node)
 {
-    m_scaleType = node.get_optional<std::string>(option(Media::Image::ScaleType));
-    m_align = node.get_optional<std::string>(option(Media::Image::Align));
-    m_valign = node.get_optional<std::string>(option(Media::Image::Valign));
+    m_scaleType = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Image::ScaleType));
+    m_align = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Image::Align));
+    m_valign = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Image::Valign));
 }
 
-boost::optional<std::string> ResourcesXlf::ImageOptions::scaleType() const
+boost::optional<std::string> ImageOptions::scaleType() const
 {
     return m_scaleType;
 }
 
-boost::optional<std::string> ResourcesXlf::ImageOptions::align() const
+boost::optional<std::string> ImageOptions::align() const
 {
     return m_align;
 }
 
-boost::optional<std::string> ResourcesXlf::ImageOptions::valign() const
+boost::optional<std::string> ImageOptions::valign() const
 {
     return m_valign;
 }

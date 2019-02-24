@@ -7,35 +7,44 @@ const int MIN_HEIGHT = 1;
 
 const auto invalidMainLayoutSizes = invalidSizes<MIN_WIDTH, MIN_HEIGHT>;
 
-TEST_F(MainLayoutTest, Construct_WithoutRegions_ShouldThrowRunTimeError)
-{
-    ASSERT_THROW(MainLayoutBuilder{}.adaptor(unique(&adaptor()))
-                                    .options(DEFAULT_LAYOUT_OPTIONS)
-                                    .background(createBackground())
-                                    .build(), std::runtime_error);
-}
+const std::vector<std::vector<int>> zorders = {
+    {10,9,8},
+    {1,2,4,10},
+    {10,7,9,1},
+    {5,4},
+    {1},
+    {4,1,5,2},
+    {4,3,2,1,0}
+};
 
-TEST_P(MainLayoutConstructSizeTest, SetSize_InvalidSize_ShouldThrowInvalidArgError)
+TEST_P(MainLayoutSizeTest, Construct_InvalidSize_ShouldThrowInvalidArgError)
 {
-    ResourcesXlf::LayoutOptions opts{DEFAULT_SCHEME, GetParam().width, GetParam().height};
+    LayoutOptions opts{GetParam().width, GetParam().height};
 
     ASSERT_THROW(MainLayoutBuilder{}.adaptor(unique(&adaptor()))
                                     .options(opts)
                                     .background(createBackground())
-                                    .regions(createRegions())
+                                    .regions(createRegions(DEFAULT_REGIONS_COUNT))
                                     .build(), std::invalid_argument);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, MainLayoutConstructSizeTest, ::testing::ValuesIn(invalidMainLayoutSizes));
+INSTANTIATE_TEST_CASE_P(Suite, MainLayoutSizeTest, ::testing::ValuesIn(invalidMainLayoutSizes));
 
-TEST_F(MainLayoutTest, Construct_WithContinaer_HandlerAddRegionWithPos)
+TEST_F(MainLayoutTest, Construct_WithoutRegions_ShouldThrowRunTimeError)
 {
-    EXPECT_CALL(adaptor(), addChild(_, _, _, _, _));
+    const int regionsCount = 0;
+
+    ASSERT_THROW(constructLayout(regionsCount), std::runtime_error);
+}
+
+TEST_F(MainLayoutTest, Construct_Default_HandlerAddChildShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), addChild(_, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_XPOS, DEFAULT_YPOS)).Times(DEFAULT_REGIONS_COUNT);
 
     constructLayout();
 }
 
-TEST_F(MainLayoutTest, Construct_WithBackground_HandlerSetBackground)
+TEST_F(MainLayoutTest, Construct_Default_HandlerAddMainChildShouldCalled)
 {
     EXPECT_CALL(adaptor(), addMainChild(_));
 
@@ -49,14 +58,14 @@ TEST_F(MainLayoutTest, Construct_Default_HandlerSetSizeShouldBeCalled)
     constructLayout();
 }
 
-TEST_F(MainLayoutTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
+TEST_F(MainLayoutTest, Handler_Default_EqualsToPassedAdaptor)
 {
     auto layout = constructLayout();
 
     ASSERT_EQ(&layout->handler(), &adaptor());
 }
 
-TEST_F(MainLayoutTest, Width_HandlerReturnsDefaulSize_LayoutWidthSizeDefault)
+TEST_F(MainLayoutTest, WidthAndHeight_Default_LayoutWidthAndHeightEqualsDefault)
 {
     auto layout = constructLayout();
 
@@ -64,7 +73,7 @@ TEST_F(MainLayoutTest, Width_HandlerReturnsDefaulSize_LayoutWidthSizeDefault)
     ASSERT_EQ(layout->height(), DEFAULT_HEIGHT);
 }
 
-TEST_F(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidArgErrorShouldBeCalled)
+TEST_F(MainLayoutTest, SetBackground_BackgroundWidthNotEqualsLayoutWidth_InvalidArgErrorShouldBeThrown)
 {
     auto layout = constructLayout();
     auto stubBackground = createBackground();
@@ -74,7 +83,7 @@ TEST_F(MainLayoutTest, SetBackground_BackgroundWidthNotEqualLayoutWidth_InvalidA
     ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::invalid_argument);
 }
 
-TEST_F(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_InvalidArgErrorShouldBeCalled)
+TEST_F(MainLayoutTest, SetBackground_BackgroundHeightNotEqualsLayoutHeight_InvalidArgErrorShouldBeThrown)
 {
     auto layout = constructLayout();
     auto stubBackground = createBackground();
@@ -84,7 +93,7 @@ TEST_F(MainLayoutTest, SetBackground_BackgroundHeightNotEqualLayoutHeight_Invali
     ASSERT_THROW(layout->setBackground(std::move(stubBackground)), std::invalid_argument);
 }
 
-TEST_F(MainLayoutTest, SetBackground_AlreadySetBefore_HandlerAddMainChild1TimeCalledRemoveMainChild1TimeCalled)
+TEST_F(MainLayoutTest, SetBackground_AlreadySetBefore_HandlerAddMainChildCalledOnceRemoveMainChildCalledOnce)
 {
     auto layout = constructLayout();
 
@@ -104,7 +113,7 @@ TEST_F(MainLayoutTest, AddRegion_RegionWidthGreaterThanLayoutWidth_InvalidArgErr
     ASSERT_THROW(layout->addRegion(std::move(stubRegion), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
-TEST_F(MainLayoutTest, AddRegion_RegionHeightGreaterThanLayoutWidth_InvalidArgErrorShouldBeThrown)
+TEST_F(MainLayoutTest, AddRegion_RegionHeightGreaterThanLayoutHeight_InvalidArgErrorShouldBeThrown)
 {
     auto layout = constructLayout();
     auto stubRegion = createRegion();
@@ -114,7 +123,7 @@ TEST_F(MainLayoutTest, AddRegion_RegionHeightGreaterThanLayoutWidth_InvalidArgEr
     ASSERT_THROW(layout->addRegion(std::move(stubRegion), DEFAULT_XPOS, DEFAULT_YPOS), std::invalid_argument);
 }
 
-TEST_F(MainLayoutTest, Scale_Default_AdaptorRegionBackgroundScaleShouldBeCalled)
+TEST_F(MainLayoutTest, Scale_Default_HandlerRegionBackgroundScaleShouldBeCalled)
 {
     auto layout = constructLayout();
 
@@ -125,38 +134,39 @@ TEST_F(MainLayoutTest, Scale_Default_AdaptorRegionBackgroundScaleShouldBeCalled)
     layout->scale(DEFAULT_XSCALE, DEFAULT_YSCALE);
 }
 
-TEST_F(MainLayoutTest, Show_Once_AdaptorRegionBackgroundShowShouldBeCalled)
+TEST_F(MainLayoutTest, Show_NotShownBefore_HandlerRegionBackgroundShowShouldBeCalled)
 {
     auto layout = constructLayout();
+
+    ON_CALL(adaptor(), isShown()).WillByDefault(Return(false));
 
     EXPECT_CALL(adaptor(), show());
     EXPECT_CALL(background(), show());
     EXPECT_CALL(region(), show());
 
-    ON_CALL(adaptor(), isShown()).WillByDefault(Return(false));
     layout->show();
 }
 
-TEST_F(MainLayoutTest, Show_Twice_AdaptorRegionBackgroundShowShouldBeCalledOnce)
+TEST_F(MainLayoutTest, Show_ShownBefore_HandlerRegionBackgroundShowShouldNotBeCalled)
 {
     auto layout = constructLayout();
 
-    EXPECT_CALL(background(), show()).Times(1);
-    EXPECT_CALL(region(), show()).Times(1);
-    EXPECT_CALL(adaptor(), show()).Times(1);
-
-    layout->show();
     ON_CALL(adaptor(), isShown()).WillByDefault(Return(true));
+
+    EXPECT_CALL(background(), show()).Times(0);
+    EXPECT_CALL(region(), show()).Times(0);
+    EXPECT_CALL(adaptor(), show()).Times(0);
+
     layout->show();
 }
 
-TEST_P(MainLayoutReorderTest, Show_With3Regions_HandlerReorderChildShouldBeCalledWithCorrectOrder)
+TEST_P(MainLayoutReorderTest, Show_Default_HandlerReorderChildShouldBeCalledWithCorrectOrder)
 {
     auto layout = constructLayout();
 
-    for(size_t index = 0; index != GetParam().size(); ++index)
+    for(size_t i = 0; i != GetParam().size(); ++i)
     {
-        EXPECT_CALL(adaptor(), reorderChild(Ref(region(index)->handler()), static_cast<int>(index)));
+        EXPECT_CALL(adaptor(), reorderChild(Ref(region(i).handler()), static_cast<int>(i)));
     }
 
     layout->show();

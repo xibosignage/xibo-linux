@@ -11,7 +11,7 @@
 #include "control/MainWindow.hpp"
 #include "control/IMainLayout.hpp"
 
-#include "parsers/CommandLineParser.hpp"
+#include "options/CommandLineParser.hpp"
 #include "managers/HTTPManager.hpp"
 #include "managers/CollectionInterval.hpp"
 #include "managers/Scheduler.hpp"
