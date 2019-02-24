@@ -26,7 +26,7 @@ void Audio::stop()
 
 void Audio::onAudioFinished()
 {
-    if(m_looped)
+    if(m_looped == AudioOptions::Loop::Enable)
     {
         Log::debug("Looping enabled. Restarting...");
         m_handler->play();
@@ -38,12 +38,12 @@ void Audio::setVolume(int volume)
     m_handler->setVolume(volume);
 }
 
-void Audio::setLooped(bool looped)
+void Audio::setLooped(AudioOptions::Loop looped)
 {
     m_looped = looped;
 }
 
-bool Audio::looped() const
+AudioOptions::Loop Audio::looped() const
 {
     return m_looped;
 }

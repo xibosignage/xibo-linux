@@ -14,6 +14,7 @@ public:
     WebKitWebViewAdaptor();
 
     void show() override;
+    void setSize(int width, int height) override;
 
     void reload() override;
     void load(const FilePath& page) override;

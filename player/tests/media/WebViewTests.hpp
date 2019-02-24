@@ -1,18 +1,29 @@
 #pragma once
 
-#include "BaseTestWithHandler.hpp"
+#include "MediaTests.hpp"
 
 #include "media/WebView.hpp"
 #include "mocks/MockWebViewAdaptor.hpp"
+#include "creators/WebViewBuilder.hpp"
 
-class WebViewTest : public BaseTestWithHandler<MockWebViewAdaptor>
+class WebViewTest : public MediaTest<MockWebViewAdaptor>
 {
 public:
     auto constructWebView()
     {
-        auto webview = construct<WebView>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, unique(&adaptor()));
-        webview->setDuration(DEFAULT_DURATION);
-        return webview;
+        return constructWebView(DEFAULT_TRANSPARENCY);
+    }
+
+    std::unique_ptr<WebView> constructWebView(boost::optional<WebViewOptions::Transparency> transparency)
+    {
+        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparency};
+
+        return WebViewBuilder{}.adaptor(unique(&adaptor()))
+                               .filesystem(unique(&filesystem()))
+                               .width(DEFAULT_WIDTH)
+                               .height(DEFAULT_HEIGHT)
+                               .options(opts)
+                               .build();
     }
 
 };

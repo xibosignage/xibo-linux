@@ -2,29 +2,41 @@
 
 #include "adaptors/IWebViewAdaptor.hpp"
 #include "media/WebView.hpp"
+#include "options/WebViewOptions.hpp"
 
-class WebViewBuilder : public BaseMediaBuilder<WebViewBuilder>
+class WebViewBuilder;
+
+template<>
+struct BuilderTraits<WebViewBuilder>
+{
+    using Component = WebView;
+    using Handler = IWebViewAdaptor;
+    using Options = WebViewOptions;
+};
+
+const WebViewOptions::Transparency DEFAULT_TRANSPARENCY = WebViewOptions::Transparency::Enable;
+
+class WebViewBuilder : public AbstractMediaBuilder<WebViewBuilder>
 {
 public:
-    std::unique_ptr<WebView> build();
-
-    WebViewBuilder& path(const boost::optional<std::string>& path) override;
-    WebViewBuilder& duration(int duration) override;
-
     WebViewBuilder& width(int width);
     WebViewBuilder& height(int height);
-    WebViewBuilder& transparent(const boost::optional<bool>& transparent);
 
 protected:
-    virtual std::unique_ptr<IWebViewAdaptor> createAdaptor();
+    WebViewBuilder& retrieveMediaOptions(const WebViewOptions& opts) override;
+    std::unique_ptr<WebView> create() override;
+    std::unique_ptr<IWebViewAdaptor> createDefaultHandler() override;
+    void doMediaSetup(WebView& webview) override;
 
 private:
-    std::unique_ptr<WebView> createWebView();
+    FilePath getPathOption(const boost::optional<std::string>& pathOpt) override;
+    int getDurationOption(int duration) override;
     boost::optional<int> parseDuration(const FilePath& path);
+    WebViewOptions::Transparency getTransparentOption(const boost::optional<WebViewOptions::Transparency>& transparentOpt);
 
 private:
     int m_width;
     int m_height;
-    bool m_transparent;
+    WebViewOptions::Transparency m_transparency;
 
 };

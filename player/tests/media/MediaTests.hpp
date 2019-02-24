@@ -1,57 +1,28 @@
 #pragma once
 
 #include "test_utils.hpp"
+#include "BaseTestWithHandler.hpp"
 
-#include "WebViewTests.hpp"
-#include "ImageTests.hpp"
-#include "AudioTests.hpp"
-#include "VideoTests.hpp"
-
-#include "mocks/MockMedia.hpp"
+#include "mocks/MockFileSystemAdaptor.hpp"
 
 template<typename T>
-auto constructMedia();
-
-template<>
-auto constructMedia<WebView>()
+class MediaTest : public BaseTestWithHandler<T>
 {
-    auto webview = construct<WebView>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockWebViewAdaptor>>());
-    webview->setDuration(DEFAULT_DURATION);
-    return webview;
-}
+protected:
+    MockFileSystemAdaptor& filesystem()
+    {
+        return *m_filesystem;
+    }
 
-template<>
-auto constructMedia<Image>()
-{
-    auto image = construct<Image>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, std::make_unique<testing::NiceMock<MockImageAdaptor>>());
-    image->setDuration(DEFAULT_DURATION);
-    return image;
-}
+    void doSetUp() override
+    {
+        m_filesystem = new testing::NiceMock<MockFileSystemAdaptor>();
 
-template<>
-auto constructMedia<Audio>()
-{
-    auto audio = construct<Audio>(DEFAULT_ID, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockAudioHandler>>());
-    audio->setDuration(DEFAULT_DURATION);
-    return audio;
-}
+        ON_CALL(filesystem(), isRegularFile(testing::_)).WillByDefault(testing::Return(true));
+    }
 
-template<>
-auto constructMedia<Video>()
-{
-    auto video = construct<Video>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, std::make_unique<testing::NiceMock<MockVideoHandler>>());
-    video->setDuration(DEFAULT_DURATION);
-    return video;
-}
+private:
+    MockFileSystemAdaptor* m_filesystem = nullptr;
 
-inline testing::NiceMock<MockMedia>* createMedia()
-{
-    return new testing::NiceMock<MockMedia>;
-}
-
-
-template<typename T>
-class MediaTest : public testing::Test
-{
 
 };

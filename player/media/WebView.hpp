@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
+#include "options/WebViewOptions.hpp"
 
 class IWebViewAdaptor;
 class FilePath;
@@ -8,8 +9,6 @@ class FilePath;
 class WebView : public Media, public IVisible
 {
 public:
-    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
-
     void show() override;
     void hide() override;
 
@@ -24,7 +23,12 @@ public:
     MediaGeometry::Valign valign() const override;
     MediaGeometry::ScaleType scaleType() const override;
 
-    void setTransparent(bool transparent);
+    void setTransparent(WebViewOptions::Transparency transparency);
+
+private:
+    friend class WebViewBuilder;
+
+    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
 
 private:
     std::unique_ptr<IWebViewAdaptor> m_handler;

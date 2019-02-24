@@ -6,52 +6,55 @@
 #include "utils/Resources.hpp"
 #include "utils/ColorToHexConverter.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-#include "constants.hpp"
-
-const std::string DEFAULT_COLOR = "#000";
 
 BackgroundBuilder::BackgroundBuilder()
 {
     m_filesystem = std::make_unique<FileSystemAdaptor>();
 }
 
-std::unique_ptr<IBackground> BackgroundBuilder::build()
+BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem)
 {
-    if(m_hexColor && m_path.empty())
-        return createBackground(m_hexColor.value());
+    m_filesystem = std::move(filesystem);
+    return *this;
+}
 
-    if(!m_path.empty())
+BackgroundBuilder& BackgroundBuilder::retrieveOptions(const BackgroundOptions& opts)
+{
+    m_width = getWidthOption(opts.width());
+    m_height = getHeightOption(opts.height());
+    m_path = getPathOption(opts.path());
+    m_hexColor = getColorOption(opts.color());
+    return *this;
+}
+
+std::unique_ptr<IBackground> BackgroundBuilder::create()
+{
+    if(m_path.empty())
+        return createBackground(m_hexColor);
+    else
         return createBackground(m_path);
-
-    throw std::runtime_error("Background can't be created");
 }
 
-std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
-{
-    return std::make_unique<OneColorBackground>(m_width, m_height, color, createAdaptor());
-}
-
-std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
-{
-    return std::make_unique<ImageBackground>(m_width, m_height, path, createAdaptor());
-}
-
-std::unique_ptr<IImageAdaptor> BackgroundBuilder::createAdaptor()
+std::unique_ptr<IImageAdaptor> BackgroundBuilder::createDefaultHandler()
 {
     return std::make_unique<GtkImageAdaptor>();
 }
 
-IFileSystemAdaptor& BackgroundBuilder::filesystem()
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
 {
-    return *m_filesystem;
+    return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createHandler()});
 }
 
-BackgroundBuilder& BackgroundBuilder::width(int width)
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
+{
+    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, path, createHandler()});
+}
+
+int BackgroundBuilder::getWidthOption(int width)
 {
     checkWidth(width);
 
-    m_width = width;
-    return *this;
+    return width;
 }
 
 void BackgroundBuilder::checkWidth(int width)
@@ -60,12 +63,11 @@ void BackgroundBuilder::checkWidth(int width)
         throw std::invalid_argument("Width is too small/large");
 }
 
-BackgroundBuilder& BackgroundBuilder::height(int height)
+int BackgroundBuilder::getHeightOption(int height)
 {
     checkHeight(height);
 
-    m_height = height;
-    return *this;
+    return height;
 }
 
 void BackgroundBuilder::checkHeight(int height)
@@ -74,28 +76,27 @@ void BackgroundBuilder::checkHeight(int height)
         throw std::invalid_argument("Height is too small/large");
 }
 
-BackgroundBuilder& BackgroundBuilder::color(const boost::optional<std::string>& color)
+uint32_t BackgroundBuilder::getColorOption(const boost::optional<std::string>& colorOpt)
 {
     ColorToHexConverter converter;
-    m_hexColor = converter.colorToHex(color.value_or(DEFAULT_COLOR));
-    return *this;
+    return converter.colorToHex(colorOpt.value_or(DEFAULT_COLOR));
 }
 
-BackgroundBuilder& BackgroundBuilder::path(const boost::optional<std::string>& path)
+FilePath BackgroundBuilder::getPathOption(const boost::optional<std::string>& pathOpt)
 {
-    if(path)
+    if(pathOpt)
     {
-        auto fullPath = Resources::directory() / path.value();
+        auto fullPath = Resources::directory() / pathOpt.value();
 
         checkPath(fullPath);
 
-        m_path = fullPath;
+        return fullPath;
     }
-    return *this;
+    return {};
 }
 
-void BackgroundBuilder::checkPath(FilePath path)
+void BackgroundBuilder::checkPath(const FilePath& path)
 {
-    if(!filesystem().isRegularFile(path))
+    if(!m_filesystem->isRegularFile(path))
         throw std::runtime_error("Not valid path");
 }

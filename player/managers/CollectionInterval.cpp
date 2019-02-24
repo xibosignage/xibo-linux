@@ -72,7 +72,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         displayMessage(result.status);
         if(result.status.code == RegisterDisplay::Result::Status::Code::Ready) // FIXME handle Activated/Waiting
         {
-//            updateTimer(result.playerSettings.collectInterval);
+            updateTimer(result.playerSettings.collectInterval);
             session->result.settings = result.playerSettings;
 
             auto requiredFilesResult = Utils::xmdsManager().requiredFiles().get();
@@ -80,9 +80,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
-
-            sessionFinished(session);
         }
+        sessionFinished(session);
     }
     else
     {

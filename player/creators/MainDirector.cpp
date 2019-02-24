@@ -3,25 +3,18 @@
 #include "creators/BackgroundBuilder.hpp"
 #include "creators/MainLayoutBuilder.hpp"
 #include "creators/RegionBuilder.hpp"
-
-#include "control/IRegion.hpp"
-#include "control/IBackground.hpp"
-#include "control/IMainLayout.hpp"
-#include "control/RegionContent.hpp"
-
 #include "creators/ImageBuilder.hpp"
 #include "creators/VideoBuilder.hpp"
 #include "creators/AudioBuilder.hpp"
 #include "creators/WebViewBuilder.hpp"
 
+#include "control/RegionContent.hpp"
 #include "media/GetMediaPosition.hpp"
-#include "parsers/XlfResources.hpp"
+#include "options/XlfResources.hpp"
 #include "utils/TimerProvider.hpp"
 #include "utils/Utilities.hpp"
 
 #include <boost/property_tree/ptree.hpp>
-
-using namespace ResourcesXlf;
 
 std::unique_ptr<IMainLayout> MainDirector::buildLayoutWithChildren(int layoutId)
 {
@@ -40,14 +33,15 @@ std::unique_ptr<IMainLayout> MainDirector::buildLayout(const xml_node& layoutNod
 {
     LayoutOptions opts{layoutNode};
 
-    return MainLayoutBuilder().width(opts.width()).height(opts.height()).background(buildBackground(opts))
-                              .regions(collectRegions(layoutNode)).build();
+    return MainLayoutBuilder{}.options(opts)
+                              .background(buildBackground(layoutNode))
+                              .regions(collectRegions(layoutNode))
+                              .build();
 }
 
-std::unique_ptr<IBackground> MainDirector::buildBackground(const ResourcesXlf::LayoutOptions& opts)
+std::unique_ptr<IBackground> MainDirector::buildBackground(const BackgroundOptions& opts)
 {
-    return BackgroundBuilder().width(opts.width()).height(opts.height())
-                              .path(opts.backgroundPath()).color(opts.backgroundColor()).build();
+    return BackgroundBuilder().options(opts).build();
 }
 
 std::vector<RegionWithPos> MainDirector::collectRegions(const xml_node& layoutNode)
@@ -69,7 +63,7 @@ std::unique_ptr<IRegion> MainDirector::buildRegion(const xml_node& regionNode)
     RegionOptions opts{regionNode};
     auto allContent = collectContent(opts.width(), opts.height(), regionNode);
 
-    return RegionBuilder().id(opts.id()).width(opts.width()).height(opts.height()).zorder(opts.zindex()).loop(opts.loop()).content(std::move(allContent)).build();
+    return RegionBuilder{}.options(opts).content(std::move(allContent)).build();
 }
 
 std::vector<ContentWithPos> MainDirector::collectContent(int regionWidth, int regionHeight, const xml_node& regionNode)
@@ -108,22 +102,22 @@ std::unique_ptr<IMedia> MainDirector::buildMedia(int regionWidth, int regionHeig
 
 std::unique_ptr<Image> MainDirector::buildImage(int regionWidth, int regionHeight, const ImageOptions& opts)
 {
-    return ImageBuilder().width(regionWidth).height(regionHeight).scaleType(opts.scaleType()).align(opts.align()).valign(opts.valign()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+    return ImageBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 std::unique_ptr<Video> MainDirector::buildVideo(int regionWidth, int regionHeight, const VideoOptions& opts)
 {
-    return VideoBuilder().width(regionWidth).height(regionHeight).muted(opts.muted()).looped(opts.looped()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+    return VideoBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 std::unique_ptr<Audio> MainDirector::buildAudio(const AudioOptions& opts)
 {
-    return AudioBuilder().muted(opts.muted()).looped(opts.looped()).volume(opts.volume()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+    return AudioBuilder{}.options(opts).build();
 }
 
 std::unique_ptr<WebView> MainDirector::buildWebView(int regionWidth, int regionHeight, const WebViewOptions& opts)
 {
-    return WebViewBuilder().width(regionWidth).height(regionHeight).transparent(opts.transparent()).id(opts.id()).path(opts.uri()).duration(opts.duration()).build();
+    return WebViewBuilder{}.options(opts).width(regionWidth).height(regionHeight).build();
 }
 
 void MainDirector::attachAdditionalMedia(const xml_node& mediaNode, IRegionContent& content)

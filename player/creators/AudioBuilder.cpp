@@ -1,41 +1,44 @@
 #include "AudioBuilder.hpp"
+
 #include "media/AudioHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<Audio> AudioBuilder::build()
+std::unique_ptr<Audio> AudioBuilder::create()
 {
-    auto audio = createAudio();
-    prepareCommonParams(*audio);
-    audio->setVolume(m_muted ? MIN_VOLUME : m_volume);
-    audio->setLooped(m_looped);
-    return audio;
+    return std::unique_ptr<Audio>(new Audio{m_id, m_path, createHandler()});
 }
 
-std::unique_ptr<Audio> AudioBuilder::createAudio()
-{
-    return std::make_unique<Audio>(m_id, m_path, createHandler());
-}
-
-std::unique_ptr<IAudioHandler> AudioBuilder::createHandler()
+std::unique_ptr<IAudioHandler> AudioBuilder::createDefaultHandler()
 {
     return std::make_unique<AudioHandler>();
 }
 
-AudioBuilder& AudioBuilder::muted(const boost::optional<bool>& muted)
+void AudioBuilder::doMediaSetup(Audio& audio)
 {
-    m_muted = muted.value_or(DEFAULT_AUDIO_MUTED);
+    audio.setVolume(m_mute == AudioOptions::Mute::Enable ? MIN_VOLUME : m_volume);
+    audio.setLooped(m_loop);
+}
+
+AudioBuilder& AudioBuilder::retrieveMediaOptions(const AudioOptions& opts)
+{
+    m_mute = getMuteOption(opts.muted());
+    m_loop = getLoopOption(opts.looped());
+    m_volume = getVolumeOption(opts.volume());
     return *this;
 }
 
-AudioBuilder& AudioBuilder::looped(const boost::optional<bool>& looped)
+AudioOptions::Mute AudioBuilder::getMuteOption(const boost::optional<AudioOptions::Mute>& muteOpt)
 {
-    m_looped = looped.value_or(DEFAULT_AUDIO_LOOPED);
-    return *this;
+    return muteOpt.value_or(DEFAULT_AUDIO_MUTED);
 }
 
-AudioBuilder& AudioBuilder::volume(const boost::optional<int>& volume)
+AudioOptions::Loop AudioBuilder::getLoopOption(const boost::optional<AudioOptions::Loop>& loopOpt)
 {
-    m_volume = volume.value_or(MAX_VOLUME);
-    return *this;
+   return loopOpt.value_or(DEFAULT_AUDIO_LOOPED);
+}
+
+int AudioBuilder::getVolumeOption(const boost::optional<int>& volumeOpt)
+{
+    return volumeOpt.value_or(MAX_VOLUME);
 }

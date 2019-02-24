@@ -2,28 +2,37 @@
 
 #include "media/IAudioHandler.hpp"
 #include "media/Audio.hpp"
+#include "options/AudioOptions.hpp"
 
-const bool DEFAULT_AUDIO_LOOPED = false;
-const bool DEFAULT_AUDIO_MUTED = false;
+const AudioOptions::Mute DEFAULT_AUDIO_MUTED = AudioOptions::Mute::Disable;
+const AudioOptions::Loop DEFAULT_AUDIO_LOOPED = AudioOptions::Loop::Disable;
 
-class AudioBuilder : public BaseMediaBuilder<AudioBuilder>
+class AudioBuilder;
+
+template<>
+struct BuilderTraits<AudioBuilder>
 {
-public:
-    std::unique_ptr<Audio> build();
+    using Component = Audio;
+    using Handler = IAudioHandler;
+    using Options = AudioOptions;
+};
 
-    AudioBuilder& muted(const boost::optional<bool>& muted);
-    AudioBuilder& looped(const boost::optional<bool>& looped);
-    AudioBuilder& volume(const boost::optional<int>& volume);
-
+class AudioBuilder : public AbstractMediaBuilder<AudioBuilder>
+{
 protected:
-    virtual std::unique_ptr<IAudioHandler> createHandler();
+    AudioBuilder& retrieveMediaOptions(const AudioOptions& opts) override;
+    std::unique_ptr<Audio> create() override;
+    std::unique_ptr<IAudioHandler> createDefaultHandler() override;
+    void doMediaSetup(Audio& audio) override;
 
 private:
-    std::unique_ptr<Audio> createAudio();
+    AudioOptions::Mute getMuteOption(const boost::optional<AudioOptions::Mute>& muteOpt);
+    AudioOptions::Loop getLoopOption(const boost::optional<AudioOptions::Loop>& loopOpt);
+    int getVolumeOption(const boost::optional<int>& volumeOpt);
 
 private:
     int m_volume;
-    bool m_looped;
-    bool m_muted;
+    AudioOptions::Mute m_mute;
+    AudioOptions::Loop m_loop;
 
 };

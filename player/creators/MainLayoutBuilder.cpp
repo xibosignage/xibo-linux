@@ -4,53 +4,13 @@
 #include "control/MainLayout.hpp"
 #include "control/IBackground.hpp"
 #include "control/IRegion.hpp"
+
 #include "adaptors/GtkOverlayAdaptor.hpp"
 
 #include <cassert>
 
-std::unique_ptr<IMainLayout> MainLayoutBuilder::build()
+MainLayoutBuilder::MainLayoutBuilder()
 {
-    auto layout = createLayout();
-    prepareLayout(*layout);
-    return layout;
-}
-
-std::unique_ptr<IMainLayout> MainLayoutBuilder::createLayout()
-{
-    return std::make_unique<MainLayout>(m_width, m_height, createAdaptor());
-}
-
-std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createAdaptor()
-{
-    return std::make_unique<GtkOverlayAdaptor>();
-}
-
-MainLayoutBuilder& MainLayoutBuilder::width(int width)
-{
-    checkWidth(width);
-
-    m_width = width;
-    return *this;
-}
-
-void MainLayoutBuilder::checkWidth(int width)
-{
-    if(width < MIN_DISPLAY_WIDTH)
-        throw std::invalid_argument("Width or height is too small");
-}
-
-MainLayoutBuilder& MainLayoutBuilder::height(int height)
-{
-    checkHeight(height);
-
-    m_height = height;
-    return *this;
-}
-
-void MainLayoutBuilder::checkHeight(int height)
-{
-    if(height < MIN_DISPLAY_HEIGHT)
-        throw std::invalid_argument("Width or height is too small");
 }
 
 MainLayoutBuilder& MainLayoutBuilder::background(std::unique_ptr<IBackground>&& background)
@@ -65,7 +25,24 @@ MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regio
     return *this;
 }
 
-void MainLayoutBuilder::prepareLayout(IMainLayout& layout)
+MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const LayoutOptions& opts)
+{
+    m_width = getWidthOption(opts.width());
+    m_height = getHeightOption(opts.height());
+    return *this;
+}
+
+std::unique_ptr<IMainLayout> MainLayoutBuilder::create()
+{
+    return std::unique_ptr<MainLayout>(new MainLayout{m_width, m_height, createHandler()});
+}
+
+std::unique_ptr<IOverlayAdaptor> MainLayoutBuilder::createDefaultHandler()
+{
+    return std::make_unique<GtkOverlayAdaptor>();
+}
+
+void MainLayoutBuilder::doSetup(IMainLayout& layout)
 {
     assert(m_background);
     checkRegionsCount(m_regions.size());
@@ -76,6 +53,32 @@ void MainLayoutBuilder::prepareLayout(IMainLayout& layout)
     {
         layout.addRegion(std::move(ct.region), ct.x, ct.y);
     }
+}
+
+int MainLayoutBuilder::getWidthOption(int width)
+{
+    checkWidth(width);
+
+    return width;
+}
+
+void MainLayoutBuilder::checkWidth(int width)
+{
+    if(width < MIN_DISPLAY_WIDTH)
+        throw std::invalid_argument("Width or height is too small");
+}
+
+int MainLayoutBuilder::getHeightOption(int height)
+{
+    checkHeight(height);
+
+    return height;
+}
+
+void MainLayoutBuilder::checkHeight(int height)
+{
+    if(height < MIN_DISPLAY_HEIGHT)
+        throw std::invalid_argument("Width or height is too small");
 }
 
 void MainLayoutBuilder::checkRegionsCount(size_t regionsCount)

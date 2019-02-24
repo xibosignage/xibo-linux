@@ -43,11 +43,11 @@ std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)
         auto&& fileNode = filesNode.add_child("file", {});
         auto&& fileAttrs = fileNode.put_child("<xmlattr>", {});
 
-        fileAttrs.put("type", item.type);
-        fileAttrs.put("id", item.id);
-        fileAttrs.put("complete", static_cast<int>(item.downloadComplete));
-        fileAttrs.put("md5", item.md5);
-        fileAttrs.put("lastChecked", item.lastChecked);
+        fileAttrs.put("type", item.type());
+        fileAttrs.put("id", item.id());
+        fileAttrs.put("complete", static_cast<int>(item.downloadComplete()));
+        fileAttrs.put("md5", item.md5());
+        fileAttrs.put("lastChecked", item.lastChecked());
     }
 
     return Utils::xmlTreeToEscapedString(root);

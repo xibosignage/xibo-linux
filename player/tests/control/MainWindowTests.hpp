@@ -42,7 +42,7 @@ public:
 
     auto constructLayout()
     {
-        return constructMock<MockMainLayout, MockOverlayAdaptor>();
+        return constructMock<MockMainLayout>();
     }
 
     MockMainLayout& layout()

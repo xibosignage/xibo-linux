@@ -12,6 +12,7 @@ protected:
     void SetUp() final
     {
         m_adaptor = new testing::NiceMock<Handler>;
+
         doSetUp();
     }
 
@@ -20,11 +21,11 @@ protected:
         doTearDown();
     }
 
-    Handler& adaptor()
+    testing::NiceMock<Handler>& adaptor()
     {
         return *m_adaptor;
     }
 
 private:
-    Handler* m_adaptor = nullptr;
+    testing::NiceMock<Handler>* m_adaptor = nullptr;
 };

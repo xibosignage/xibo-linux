@@ -1,25 +1,30 @@
 #include "VideoBuilder.hpp"
+
 #include "media/VideoHandler.hpp"
 
 #include <boost/optional/optional.hpp>
 
-std::unique_ptr<Video> VideoBuilder::build()
+std::unique_ptr<Video> VideoBuilder::create()
 {
-    auto video = createVideo();
-    prepareCommonParams(*video);
-    video->setMuted(m_muted);
-    video->setLooped(m_looped);
-    return video;
+    return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
 }
 
-std::unique_ptr<Video> VideoBuilder::createVideo()
-{
-    return std::make_unique<Video>(m_id, m_width, m_height, m_path, createHandler());
-}
-
-std::unique_ptr<IVideoHandler> VideoBuilder::createHandler()
+std::unique_ptr<IVideoHandler> VideoBuilder::createDefaultHandler()
 {
     return std::make_unique<VideoHandler>();
+}
+
+void VideoBuilder::doMediaSetup(Video& video)
+{
+    video.setMuted(m_mute);
+    video.setLooped(m_loop);
+}
+
+VideoBuilder& VideoBuilder::retrieveMediaOptions(const VideoOptions& opts)
+{
+    m_mute = getMuteOption(opts.muted());
+    m_loop = getLoopOption(opts.looped());
+    return *this;
 }
 
 VideoBuilder& VideoBuilder::width(int width)
@@ -34,15 +39,13 @@ VideoBuilder& VideoBuilder::height(int height)
     return *this;
 }
 
-VideoBuilder& VideoBuilder::muted(const boost::optional<bool>& muted)
+VideoOptions::Mute VideoBuilder::getMuteOption(const boost::optional<VideoOptions::Mute>& muteOpt)
 {
-    m_muted = muted.value_or(DEFAULT_VIDEO_MUTED);
-    return *this;
+    return muteOpt.value_or(DEFAULT_VIDEO_MUTED);
 }
 
-VideoBuilder& VideoBuilder::looped(const boost::optional<bool>& looped)
+VideoOptions::Loop VideoBuilder::getLoopOption(const boost::optional<VideoOptions::Loop>& loopOpt)
 {
-    m_looped = looped.value_or(DEFAULT_VIDEO_LOOPED);
-    return *this;
+    return loopOpt.value_or(DEFAULT_VIDEO_LOOPED);
 }
 

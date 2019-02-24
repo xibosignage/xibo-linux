@@ -3,6 +3,13 @@
 
 using namespace testing;
 
+TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), load(DEFAULT_FULL_PATH));
+
+    constructVideo();
+}
+
 TEST_F(VideoTest, Construct_Default_HandlerSetSizeShouldBeCalled)
 {
     EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
@@ -10,11 +17,62 @@ TEST_F(VideoTest, Construct_Default_HandlerSetSizeShouldBeCalled)
     constructVideo();
 }
 
-TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
+TEST_F(VideoTest, Construct_NoMute_HandlerSetVolume100ShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
 
-    constructVideo();
+    constructVideo({}, DEFAULT_VIDEO_LOOPED);
+}
+
+TEST_F(VideoTest, Construct_NoLoop_LoopEqualsDefault)
+{
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, {});
+
+    ASSERT_EQ(video->looped(), DEFAULT_VIDEO_LOOPED);
+}
+
+TEST_F(VideoTest, Construct_MutedTrue_HandlerSetVolume0ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MIN_VOLUME));
+
+    constructVideo(VideoOptions::Mute::Enable, DEFAULT_VIDEO_LOOPED);
+}
+
+TEST_F(VideoTest, Construct_MutedTrue_HandlerSetVolume100ShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
+
+    constructVideo(VideoOptions::Mute::Disable, DEFAULT_VIDEO_LOOPED);
+}
+
+TEST_F(VideoTest, Construct_NoLoop_VideoLoopedEqualsDefault)
+{
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, {});
+
+    ASSERT_EQ(video->looped(), DEFAULT_VIDEO_LOOPED);
+}
+
+TEST_F(VideoTest, Construct_LoopTrue_VideoLoopedEqualsTrue)
+{
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, VideoOptions::Loop::Enable);
+
+    ASSERT_EQ(video->looped(), VideoOptions::Loop::Enable);
+}
+
+TEST_F(VideoTest, Construct_LoopFalse_VideoLoopedEqualsFalse)
+{
+    auto video = constructVideo(DEFAULT_VIDEO_MUTED, VideoOptions::Loop::Disable);
+
+    ASSERT_EQ(video->looped(), VideoOptions::Loop::Disable);
+}
+
+TEST_F(VideoTest, Construct_Default_ScaleTypeScaledAlignLeftValignTop)
+{
+    auto video = constructVideo();
+
+    ASSERT_EQ(video->scaleType(), MediaGeometry::ScaleType::Scaled);
+    ASSERT_EQ(video->align(), MediaGeometry::Align::Left);
+    ASSERT_EQ(video->valign(), MediaGeometry::Valign::Top);
 }
 
 TEST_F(VideoTest, Play_Default_HandlerPlayShouldBeCalled)
@@ -35,57 +93,14 @@ TEST_F(VideoTest, Stop_Default_HandlerStopShouldBeCalled)
     video->stop();
 }
 
-TEST_F(VideoTest, SetMuted_True_HandlerSetVolume0ShouldBeCalled)
-{
-    auto video = constructVideo();
-
-    EXPECT_CALL(adaptor(), setVolume(MIN_VOLUME));
-
-    video->setMuted(true);
-}
-
-TEST_F(VideoTest, SetMuted_False_HandlerSetVolume100ShouldBeCalled)
-{
-    auto video = constructVideo();
-
-    EXPECT_CALL(adaptor(), setVolume(MAX_VOLUME));
-
-    video->setMuted(false);
-}
-
-TEST_F(VideoTest, SetLooped_True_LoopedEqualsTrue)
-{
-    auto video = constructVideo();
-
-    video->setLooped(true);
-
-    ASSERT_EQ(video->looped(), true);
-}
-
-TEST_F(VideoTest, SetLooped_False_LoopedEqualsFalse)
-{
-    auto video = constructVideo();
-
-    video->setLooped(false);
-
-    ASSERT_EQ(video->looped(), false);
-}
-
 TEST_F(VideoTest, Width_HandlerReturnsDefaultWidth_VideoWidthEqualsDefault)
 {
     auto video = constructVideo();
 
     ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
-
-    ASSERT_EQ(video->width(), DEFAULT_WIDTH);
-}
-
-TEST_F(VideoTest, Height_HandlerReturnsDefaultHeight_VideoHeightEqualsDefault)
-{
-    auto video = constructVideo();
-
     ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
+    ASSERT_EQ(video->width(), DEFAULT_WIDTH);
     ASSERT_EQ(video->height(), DEFAULT_HEIGHT);
 }
 

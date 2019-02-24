@@ -23,7 +23,7 @@ file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp ${CMAKE_SOURCE_DI
 file(GLOB UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp ${CMAKE_SOURCE_DIR}/player/utils/*.hpp)
 file(GLOB CREATORS_SOURCES ${CMAKE_SOURCE_DIR}/player/creators/*.cpp ${CMAKE_SOURCE_DIR}/player/creators/*.hpp)
 file(GLOB MANAGERS_SOURCES ${CMAKE_SOURCE_DIR}/player/managers/*.cpp ${CMAKE_SOURCE_DIR}/player/managers/*.hpp)
-file(GLOB PARSERS_SOURCES ${CMAKE_SOURCE_DIR}/player/parsers/*.cpp ${CMAKE_SOURCE_DIR}/player/parsers/*.hpp)
+file(GLOB PARSERS_SOURCES ${CMAKE_SOURCE_DIR}/player/options/*.cpp ${CMAKE_SOURCE_DIR}/player/options/*.hpp)
 file(GLOB WRAPPER_SOURCES ${CMAKE_SOURCE_DIR}/player/wrapper/*.cpp ${CMAKE_SOURCE_DIR}/player/wrapper/*.hpp)
 file(GLOB XMDS_SOURCES ${CMAKE_SOURCE_DIR}/player/xmds/*.cpp ${CMAKE_SOURCE_DIR}/player/xmds/*.hpp)
 file(GLOB EVENTS_SOURCES ${CMAKE_SOURCE_DIR}/player/events/*.cpp ${CMAKE_SOURCE_DIR}/player/events/*.hpp)

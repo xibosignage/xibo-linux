@@ -148,9 +148,20 @@ void HTTPSession::onRead(const boost::system::error_code& ec, std::size_t /*byte
 
 void HTTPSession::sessionFinished(const boost::system::error_code& ec)
 {
-    PlayerError error = ec ? PlayerError{PlayerError::Type::HTTP, ec.message()} : PlayerError{};
+    if(!ec)
+    {
+        setHttpResult(HTTPResponseResult{PlayerError{}, m_response.get().body()});
+    }
+    else
+    {
+        PlayerError error{PlayerError::Type::HTTP, ec.message()};
+        setHttpResult(HTTPResponseResult{error, {}});
+    }
+}
 
-    setHttpResult(HTTPResponseResult{error, m_response.get().body()});
+void HTTPSession::cancel()
+{
+    setHttpResult(HTTPResponseResult{PlayerError{PlayerError::Type::HTTP, "Operation Aborted"}, {}});
 }
 
 void HTTPSession::setHttpResult(const HTTPResponseResult& result)
@@ -162,7 +173,4 @@ void HTTPSession::setHttpResult(const HTTPResponseResult& result)
     }
 }
 
-void HTTPSession::cancel()
-{
-    setHttpResult(HTTPResponseResult{PlayerError{PlayerError::Type::HTTP, "Operation Aborted"}, {}});
-}
+

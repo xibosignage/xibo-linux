@@ -2,16 +2,39 @@
 
 using namespace ::testing;
 
-TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+TEST_F(WebViewTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    FilePath path = DEFAULT_RESOURCES_DIR / FilePath(std::to_string(DEFAULT_ID) + ".html");
+
+    EXPECT_CALL(adaptor(), load(path));
 
     constructWebView();
 }
 
-TEST_F(WebViewTest, Construct_Default_HandlerSetImageShouldBeCalled)
+TEST_F(WebViewTest, Construct_NoTransparency_HandlerEnableTransparencyShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), load(DEFAULT_PATH));
+    EXPECT_CALL(adaptor(), enableTransparency());
+
+    constructWebView({});
+}
+
+TEST_F(WebViewTest, Construct_TransparencyEnabled_HandlerEnableTransparencyShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), enableTransparency());
+
+    constructWebView(WebViewOptions::Transparency::Enable);
+}
+
+TEST_F(WebViewTest, Construct_TransparentDisabled_HandlerEnableTransparencyShouldNotBeCalled)
+{
+    EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
+
+    constructWebView(WebViewOptions::Transparency::Disable);
+}
+
+TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)
+{
+    EXPECT_CALL(adaptor(), setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 
     constructWebView();
 }
@@ -23,21 +46,23 @@ TEST_F(WebViewTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
     ASSERT_EQ(&webview->handler(), &adaptor());
 }
 
+TEST_F(WebViewTest, Construct_Default_ScaleTypeScaledAlignLeftValignTop)
+{
+    auto webview = constructWebView();
+
+    ASSERT_EQ(webview->scaleType(), MediaGeometry::ScaleType::Scaled);
+    ASSERT_EQ(webview->align(), MediaGeometry::Align::Left);
+    ASSERT_EQ(webview->valign(), MediaGeometry::Valign::Top);
+}
+
 TEST_F(WebViewTest, Width_HandlerReturnsDefaultWidth_WebViewWidthEqualsDefault)
 {
     auto webview = constructWebView();
 
     ON_CALL(adaptor(), width()).WillByDefault(Return(DEFAULT_WIDTH));
-
-    ASSERT_EQ(webview->width(), DEFAULT_WIDTH);
-}
-
-TEST_F(WebViewTest, Height_HandlerReturnsDefaultHeight_WebViewHeightEqualsDefault)
-{
-    auto webview = constructWebView();
-
     ON_CALL(adaptor(), height()).WillByDefault(Return(DEFAULT_HEIGHT));
 
+    ASSERT_EQ(webview->width(), DEFAULT_WIDTH);
     ASSERT_EQ(webview->height(), DEFAULT_HEIGHT);
 }
 
@@ -75,24 +100,6 @@ TEST_F(WebViewTest, Hide_Default_HandlerHideShouldBeCalled)
     EXPECT_CALL(adaptor(), hide());
 
     webview->hide();
-}
-
-TEST_F(WebViewTest, SetTransparent_True_HandlerEnableTransparencyShouldBeCalled)
-{
-    auto webview = constructWebView();
-
-    EXPECT_CALL(adaptor(), enableTransparency());
-
-    webview->setTransparent(true);
-}
-
-TEST_F(WebViewTest, SetTransparent_False_HandlerEnableTransparencyShouldNotBeCalled)
-{
-    auto webview = constructWebView();
-
-    EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
-
-    webview->setTransparent(false);
 }
 
 TEST_F(WebViewTest, HandlerEvent_StartMediaEvent_HandlerShowShouldBeCalled)
