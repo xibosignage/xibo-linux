@@ -28,8 +28,8 @@ public:
     }
 
 protected:
-    virtual Builder& retrieveMediaOptions(const typename BuilderTraits<Builder>::Options& opts) = 0;
-    virtual void doMediaSetup(typename BuilderTraits<Builder>::Component&) { }
+    virtual Builder& retrieveMediaOptions(const Options& opts) = 0;
+    virtual void doMediaSetup(Component&) { }
 
     IFileSystemAdaptor& filesystem()
     {
@@ -60,13 +60,13 @@ protected:
     }
 
 private:
-    void doSetup(typename BuilderTraits<Builder>::Component& media) final
+    void doSetup(Component& media) final
     {
         media.setDuration(m_duration);
         doMediaSetup(media);
     }
 
-    Builder& retrieveOptions(const typename BuilderTraits<Builder>::Options& opts) final
+    Builder& retrieveOptions(const Options& opts) final
     {
         parseBaseOptions(opts);
         return retrieveMediaOptions(opts);

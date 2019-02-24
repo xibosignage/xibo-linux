@@ -2,28 +2,24 @@
 
 #include "constants.hpp"
 
-#include "options/LayoutOptions.hpp"
-#include "options/BackgroundOptions.hpp"
-#include "options/RegionOptions.hpp"
-#include "options/ImageOptions.hpp"
-#include "options/WebViewOptions.hpp"
-#include "options/VideoOptions.hpp"
-#include "options/AudioOptions.hpp"
+class BackgroundOptions;
+class ImageOptions;
+class VideoOptions;
+class AudioOptions;
+class WebViewOptions;
 
 class IMainLayout;
 class IRegion;
 class IMedia;
 class IBackground;
 class IRegionContent;
-
-struct RegionWithPos;
-struct ContentWithPos;
-class MediaBuilder;
-
 class Image;
 class Video;
 class Audio;
 class WebView;
+
+struct RegionWithPos;
+struct ContentWithPos;
 
 class MainDirector
 {
