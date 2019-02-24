@@ -173,7 +173,7 @@ void XiboApp::startWindow(MainWindow& window)
     try
     {
         window.setSize(1366, 768);
-//        m_mainWindow->setFullscreen(true);
+//        window.setFullscreen(true);
         window.setLayout(m_scheduler->nextLayout());
         window.showLayout();
         window.show();
