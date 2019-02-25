@@ -4,7 +4,7 @@ using namespace testing;
 
 TEST_F(AudioTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), load(DEFAULT_FULL_PATH));
+    EXPECT_CALL(adaptor(), load(DEFAULT_URI));
 
     constructAudio();
 }

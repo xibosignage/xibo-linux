@@ -20,7 +20,7 @@ public:
     };
 
     AudioOptions(int id,
-                 boost::optional<std::string> path,
+                 boost::optional<std::string> uri,
                  int duration,
                  boost::optional<Mute> muted,
                  boost::optional<Loop> looped,

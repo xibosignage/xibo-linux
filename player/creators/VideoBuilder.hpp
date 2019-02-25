@@ -1,4 +1,4 @@
-#include "MediaBuilder.hpp"
+#include "AbstractMediaBuilder.hpp"
 
 #include "media/IVideoHandler.hpp"
 #include "media/Video.hpp"
@@ -24,7 +24,7 @@ public:
     VideoBuilder& height(int height);
 
 protected:
-    VideoBuilder& retrieveMediaOptions(const VideoOptions& opts) override;
+    void retrieveMediaOptions(const VideoOptions& opts) override;
     std::unique_ptr<Video> create() override;
     std::unique_ptr<IVideoHandler> createDefaultHandler() override;
     void doMediaSetup(Video& video) override;

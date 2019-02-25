@@ -2,7 +2,6 @@
 
 #include "MediaTests.hpp"
 
-#include "media/WebView.hpp"
 #include "mocks/MockWebViewAdaptor.hpp"
 #include "creators/WebViewBuilder.hpp"
 
@@ -11,12 +10,13 @@ class WebViewTest : public MediaTest<MockWebViewAdaptor>
 public:
     auto constructWebView()
     {
-        return constructWebView(DEFAULT_TRANSPARENCY);
+        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, DEFAULT_TRANSPARENCY, DEFAULT_WEBVIEW_MODE};
+
+        return constructWebView(opts);
     }
 
-    std::unique_ptr<WebView> constructWebView(boost::optional<WebViewOptions::Transparency> transparency)
+    std::unique_ptr<WebView> constructWebView(const WebViewOptions& opts)
     {
-        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, transparency};
 
         return WebViewBuilder{}.adaptor(unique(&adaptor()))
                                .filesystem(unique(&filesystem()))

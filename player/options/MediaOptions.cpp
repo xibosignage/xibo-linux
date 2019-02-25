@@ -4,14 +4,14 @@
 #include <boost/property_tree/ptree.hpp>
 
 MediaOptions::MediaOptions(int id, boost::optional<std::string> path, int duration) :
-    m_id(id), m_path(path), m_duration(duration)
+    m_id(id), m_uri(path), m_duration(duration)
 {
 }
 
 MediaOptions::MediaOptions(const xml_node& node)
 {
     m_id = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Id));
-    m_path = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Path));
+    m_uri = node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Uri));
     m_duration = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Duration));
 }
 
@@ -25,9 +25,9 @@ int MediaOptions::id() const
     return m_id;
 }
 
-boost::optional<std::string> MediaOptions::path() const
+boost::optional<std::string> MediaOptions::uri() const
 {
-    return m_path;
+    return m_uri;
 }
 
 int MediaOptions::duration() const
@@ -42,7 +42,7 @@ void MediaOptions::setId(int id)
 
 void MediaOptions::setUri(const boost::optional<std::string>& uri)
 {
-    m_path = uri;
+    m_uri = uri;
 }
 
 void MediaOptions::setDuration(int duration)

@@ -19,15 +19,14 @@ ImageBuilder& ImageBuilder::height(int height)
 std::unique_ptr<Image> ImageBuilder::create()
 {
     MediaGeometry props{m_scaleType, m_align, m_valign};
-    return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_path, props, createHandler()});
+    return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_uri, props, createHandler()});
 }
 
-ImageBuilder& ImageBuilder::retrieveMediaOptions(const ImageOptions& opts)
+void ImageBuilder::retrieveMediaOptions(const ImageOptions& opts)
 {
     m_scaleType = getScaleTypeOption(opts.scaleType());
     m_align = getAlignOption(opts.align());
     m_valign = getValignOption(opts.valign());
-    return *this;
 }
 
 std::unique_ptr<IImageAdaptor> ImageBuilder::createDefaultHandler()

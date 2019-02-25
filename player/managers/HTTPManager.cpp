@@ -1,8 +1,9 @@
 #include "HTTPManager.hpp"
 
 #include "utils/Logger.hpp"
+#include "utils/Uri.hpp"
+#include "utils/UriParseError.hpp"
 
-#include "UrlParser.hpp"
 #include "HTTPSession.hpp"
 
 const int DEFAULT_CONCURRENT_REQUESTS = 4;
@@ -35,16 +36,8 @@ boost::future<HTTPResponseResult> HTTPManager::post(const std::string& url, cons
     return send(http::verb::post, url, body);
 }
 
-boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const std::string& url, const std::string& body)
+boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const Uri& uri, const std::string& body)
 {
-    auto parsedUrl = UrlParser{}.parse(url);
-    parsedUrl->print();
-
-    if(parsedUrl)
-    {
-        auto session = std::make_shared<RequestSession>(m_ioc);
-        return session->send(method, *parsedUrl, body);
-    }
-
-    throw std::runtime_error("URL is wrong"); // FIXME
+    auto session = std::make_shared<RequestSession>(m_ioc);
+    return session->send(method, uri, body);
 }

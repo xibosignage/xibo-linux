@@ -1,11 +1,12 @@
 #include "VideoTests.hpp"
+
 #include "adaptors/IWidgetAdaptor.hpp"
 
 using namespace testing;
 
 TEST_F(VideoTest, Construct_Default_HandlerLoadShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), load(DEFAULT_FULL_PATH));
+    EXPECT_CALL(adaptor(), load(DEFAULT_URI));
 
     constructVideo();
 }

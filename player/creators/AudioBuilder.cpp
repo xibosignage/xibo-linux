@@ -6,7 +6,7 @@
 
 std::unique_ptr<Audio> AudioBuilder::create()
 {
-    return std::unique_ptr<Audio>(new Audio{m_id, m_path, createHandler()});
+    return std::unique_ptr<Audio>(new Audio{m_id, m_uri, createHandler()});
 }
 
 std::unique_ptr<IAudioHandler> AudioBuilder::createDefaultHandler()
@@ -20,12 +20,11 @@ void AudioBuilder::doMediaSetup(Audio& audio)
     audio.setLooped(m_loop);
 }
 
-AudioBuilder& AudioBuilder::retrieveMediaOptions(const AudioOptions& opts)
+void AudioBuilder::retrieveMediaOptions(const AudioOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());
     m_volume = getVolumeOption(opts.volume());
-    return *this;
 }
 
 AudioOptions::Mute AudioBuilder::getMuteOption(const boost::optional<AudioOptions::Mute>& muteOpt)

@@ -49,7 +49,7 @@ namespace ResourcesXlf
     {
         const std::string Id = "id";
         const std::string Type = "type";
-        const std::string Path = "uri";
+        const std::string Uri = "uri";
         const std::string Duration = "duration";
 
         namespace Audio
@@ -68,6 +68,7 @@ namespace ResourcesXlf
         namespace WebView
         {
             const std::string Transparent = "transparency";
+            const std::string ModeId = "modeid";
         }
 
         namespace Image

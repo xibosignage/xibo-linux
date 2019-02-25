@@ -3,7 +3,7 @@
 #include "Media.hpp"
 #include "options/AudioOptions.hpp"
 
-class FilePath;
+class Uri;
 class IAudioHandler;
 
 class Audio : public Media, public IPlayable
@@ -21,7 +21,7 @@ public:
 private:
     friend class AudioBuilder;
 
-    Audio(int id, const FilePath& path, std::unique_ptr<IAudioHandler>&& handler);
+    Audio(int id, const Uri& uri, std::unique_ptr<IAudioHandler>&& handler);
 
     void onAudioFinished();
 

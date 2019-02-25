@@ -1,35 +1,71 @@
 #include "WebViewTests.hpp"
 
+#include "utils/UriParseError.hpp"
+
 using namespace ::testing;
 
-TEST_F(WebViewTest, Construct_Default_HandlerLoadShouldBeCalled)
+const FilePath DEFAULT_WEBVIEW_PATH = DEFAULT_RESOURCES_DIR / FilePath(std::to_string(DEFAULT_ID) + DEFAULT_WEBVIEW_EXTENSION);
+const Uri DEFAULT_WEBSITE_URI{Uri::Scheme::HTTP, "test.com", "/test"};
+
+TEST_F(WebViewTest, Construct_NoWebViewMode_HandlerLoadFileResourceShouldBeCalled)
 {
-    FilePath path = DEFAULT_RESOURCES_DIR / FilePath(std::to_string(DEFAULT_ID) + ".html");
+    WebViewOptions opts{DEFAULT_ID, std::string{}, DEFAULT_DURATION, DEFAULT_TRANSPARENCY, {}};
 
-    EXPECT_CALL(adaptor(), load(path));
+    EXPECT_CALL(adaptor(), load(Uri{Uri::Scheme::File, DEFAULT_WEBVIEW_PATH}));
 
-    constructWebView();
+    constructWebView(opts);
+}
+
+TEST_F(WebViewTest, Construct_FileResourceMode_HandlerLoadFileResourceShouldBeCalled)
+{
+    WebViewOptions opts{DEFAULT_ID, std::string{}, DEFAULT_DURATION, DEFAULT_TRANSPARENCY, WebViewOptions::Mode::FileResource};
+
+    EXPECT_CALL(adaptor(), load(Uri{Uri::Scheme::File, DEFAULT_WEBVIEW_PATH}));
+
+    constructWebView(opts);
+}
+
+TEST_F(WebViewTest, Construct_WebBrowserModeValidUrl_HandlerLoadFileResourceShouldBeCalled)
+{
+    WebViewOptions opts{DEFAULT_ID, DEFAULT_WEBSITE_URI.string(), DEFAULT_DURATION, DEFAULT_TRANSPARENCY, WebViewOptions::Mode::WebBrowser};
+
+    EXPECT_CALL(adaptor(), load(DEFAULT_WEBSITE_URI));
+
+    constructWebView(opts);
+}
+
+TEST_F(WebViewTest, Construct_WebBrowserInvalidUrl_HandlerLoadFileResourceShouldBeCalled)
+{
+    WebViewOptions opts{DEFAULT_ID, std::string{"invalid"}, DEFAULT_DURATION, DEFAULT_TRANSPARENCY, WebViewOptions::Mode::WebBrowser};
+
+    ASSERT_THROW(constructWebView(opts), UriParseError);
 }
 
 TEST_F(WebViewTest, Construct_NoTransparency_HandlerEnableTransparencyShouldBeCalled)
 {
+    WebViewOptions opts{DEFAULT_ID, DEFAULT_URI.string(), DEFAULT_DURATION, {}, DEFAULT_WEBVIEW_MODE};
+
     EXPECT_CALL(adaptor(), enableTransparency());
 
-    constructWebView({});
+    constructWebView(opts);
 }
 
 TEST_F(WebViewTest, Construct_TransparencyEnabled_HandlerEnableTransparencyShouldBeCalled)
 {
+    WebViewOptions opts{DEFAULT_ID, DEFAULT_URI.string(), DEFAULT_DURATION, WebViewOptions::Transparency::Enable, DEFAULT_WEBVIEW_MODE};
+
     EXPECT_CALL(adaptor(), enableTransparency());
 
-    constructWebView(WebViewOptions::Transparency::Enable);
+    constructWebView(opts);
 }
 
 TEST_F(WebViewTest, Construct_TransparentDisabled_HandlerEnableTransparencyShouldNotBeCalled)
 {
+    WebViewOptions opts{DEFAULT_ID, DEFAULT_URI.string(), DEFAULT_DURATION, WebViewOptions::Transparency::Disable, DEFAULT_WEBVIEW_MODE};
+
     EXPECT_CALL(adaptor(), enableTransparency()).Times(0);
 
-    constructWebView(WebViewOptions::Transparency::Disable);
+    constructWebView(opts);
 }
 
 TEST_F(WebViewTest, Construct_Default_HandlerSetSizeShouldBeCalled)

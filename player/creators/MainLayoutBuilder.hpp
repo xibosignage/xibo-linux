@@ -37,7 +37,7 @@ public:
     MainLayoutBuilder& regions(std::vector<RegionWithPos>&& regions);
 
 protected:
-    MainLayoutBuilder& retrieveOptions(const LayoutOptions& opts) override;
+    void retrieveOptions(const LayoutOptions& opts) override;
     std::unique_ptr<IMainLayout> create() override;
     std::unique_ptr<IOverlayAdaptor> createDefaultHandler() override;
     void doSetup(IMainLayout& layout) override;

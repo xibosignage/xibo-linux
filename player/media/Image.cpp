@@ -4,13 +4,13 @@
 
 #include <cassert>
 
-Image::Image(int id, int width, int height, const FilePath& path, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler) :
+Image::Image(int id, int width, int height, const Uri& uri, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler) :
     Media(id), m_handler(std::move(handler)), m_scaleType(props.scaleType), m_align(props.align), m_valign(props.valign)
 {
     assert(m_handler);
 
     m_handler->setSize(width, height);
-    loadImage(path);
+    loadImage(uri);
 }
 
 void Image::show()
@@ -23,10 +23,10 @@ void Image::hide()
     m_handler->hide();
 }
 
-void Image::loadImage(const FilePath& path)
+void Image::loadImage(const Uri& uri)
 {
     bool preserveAspectRatio = (m_scaleType == MediaGeometry::ScaleType::Scaled) ? true : false;
-    m_handler->loadImage(path, preserveAspectRatio);
+    m_handler->loadImage(uri, preserveAspectRatio);
 }
 
 int Image::width() const

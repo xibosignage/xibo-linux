@@ -7,7 +7,7 @@
 #include "adaptors/IImageAdaptor.hpp"
 
 #include "utils/IFileSystemAdaptor.hpp"
-#include "utils/FilePath.hpp"
+#include "utils/Uri.hpp"
 
 class BackgroundBuilder;
 
@@ -29,18 +29,18 @@ public:
     BackgroundBuilder& filesystem(std::unique_ptr<IFileSystemAdaptor>&& filesystem);
 
 protected:
-    BackgroundBuilder& retrieveOptions(const BackgroundOptions& opts) override;
+    void retrieveOptions(const BackgroundOptions& opts) override;
     std::unique_ptr<IBackground> create() override;
     std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
 
 private:
     std::unique_ptr<IBackground> createBackground(uint32_t color);
-    std::unique_ptr<IBackground> createBackground(const FilePath& path);
+    std::unique_ptr<IBackground> createBackground(const Uri& uri);
 
     int getWidthOption(int width);
     int getHeightOption(int height);
     uint32_t getColorOption(const boost::optional<std::string>& colorOpt);
-    FilePath getPathOption(const boost::optional<std::string>& pathOpt);
+    Uri getUriOption(const boost::optional<std::string>& pathOpt);
 
     void checkWidth(int width);
     void checkHeight(int height);
@@ -51,6 +51,6 @@ private:
     int m_width;
     int m_height;
     uint32_t m_hexColor;
-    FilePath m_path;
+    Uri m_uri;
 
 };

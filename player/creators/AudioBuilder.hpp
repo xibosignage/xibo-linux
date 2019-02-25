@@ -1,4 +1,4 @@
-#include "MediaBuilder.hpp"
+#include "AbstractMediaBuilder.hpp"
 
 #include "media/IAudioHandler.hpp"
 #include "media/Audio.hpp"
@@ -20,7 +20,7 @@ struct BuilderTraits<AudioBuilder>
 class AudioBuilder : public AbstractMediaBuilder<AudioBuilder>
 {
 protected:
-    AudioBuilder& retrieveMediaOptions(const AudioOptions& opts) override;
+    void retrieveMediaOptions(const AudioOptions& opts) override;
     std::unique_ptr<Audio> create() override;
     std::unique_ptr<IAudioHandler> createDefaultHandler() override;
     void doMediaSetup(Audio& audio) override;

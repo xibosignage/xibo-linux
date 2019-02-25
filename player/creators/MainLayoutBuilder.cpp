@@ -25,11 +25,10 @@ MainLayoutBuilder& MainLayoutBuilder::regions(std::vector<RegionWithPos>&& regio
     return *this;
 }
 
-MainLayoutBuilder& MainLayoutBuilder::retrieveOptions(const LayoutOptions& opts)
+void MainLayoutBuilder::retrieveOptions(const LayoutOptions& opts)
 {
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
-    return *this;
 }
 
 std::unique_ptr<IMainLayout> MainLayoutBuilder::create()

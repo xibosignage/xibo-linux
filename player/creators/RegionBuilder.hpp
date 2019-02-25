@@ -37,7 +37,7 @@ public:
     RegionBuilder& content(std::vector<ContentWithPos>&& content);
 
 protected:
-    RegionBuilder& retrieveOptions(const RegionOptions& opts) override;
+    void retrieveOptions(const RegionOptions& opts) override;
     std::unique_ptr<IRegion> create() override;
     std::unique_ptr<IFixedLayoutAdaptor> createDefaultHandler() override;
     void doSetup(IRegion& region) override;

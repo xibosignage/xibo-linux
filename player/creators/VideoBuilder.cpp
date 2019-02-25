@@ -6,7 +6,7 @@
 
 std::unique_ptr<Video> VideoBuilder::create()
 {
-    return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_path, createHandler()});
+    return std::unique_ptr<Video>(new Video{m_id, m_width, m_height, m_uri, createHandler()});
 }
 
 std::unique_ptr<IVideoHandler> VideoBuilder::createDefaultHandler()
@@ -20,11 +20,10 @@ void VideoBuilder::doMediaSetup(Video& video)
     video.setLooped(m_loop);
 }
 
-VideoBuilder& VideoBuilder::retrieveMediaOptions(const VideoOptions& opts)
+void VideoBuilder::retrieveMediaOptions(const VideoOptions& opts)
 {
     m_mute = getMuteOption(opts.muted());
     m_loop = getLoopOption(opts.looped());
-    return *this;
 }
 
 VideoBuilder& VideoBuilder::width(int width)

@@ -3,8 +3,8 @@
 #include "HTTPManager.hpp"
 #include "XMDSDownloader.hpp"
 #include "FileCacheManager.hpp"
-#include "xmds/XMDSManager.hpp"
 
+#include "xmds/XMDSManager.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
 
