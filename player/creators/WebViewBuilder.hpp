@@ -1,43 +1,49 @@
-#include "MediaBuilder.hpp"
+#include "AbstractMediaBuilder.hpp"
 
 #include "adaptors/IWebViewAdaptor.hpp"
 #include "media/WebView.hpp"
-#include "managers/Uri.hpp"
+#include "options/WebViewOptions.hpp"
+#include "utils/Uri.hpp"
 
-enum class WebViewMode
+class WebViewBuilder;
+
+template<>
+struct BuilderTraits<WebViewBuilder>
 {
-    FileResource,
-    WebBrowser
+    using Component = WebView;
+    using Handler = IWebViewAdaptor;
+    using Options = WebViewOptions;
 };
 
-class Uri;
+const WebViewOptions::Transparency DEFAULT_TRANSPARENCY = WebViewOptions::Transparency::Enable;
+const WebViewOptions::Mode DEFAULT_WEBVIEW_MODE = WebViewOptions::Mode::FileResource;
+const std::string DEFAULT_WEBVIEW_EXTENSION = ".html";
 
-class WebViewBuilder : public BaseMediaBuilder<WebViewBuilder>
+class WebViewBuilder : public AbstractMediaBuilder<WebViewBuilder>
 {
 public:
-    std::unique_ptr<WebView> build();
-
-    WebViewBuilder& path(const boost::optional<std::string>& path) override;
-    WebViewBuilder& duration(int duration) override;
-
     WebViewBuilder& width(int width);
     WebViewBuilder& height(int height);
-    WebViewBuilder& modeId(boost::optional<int> modeId);
-    WebViewBuilder& transparent(const boost::optional<bool>& transparent);
 
 protected:
-    virtual std::unique_ptr<IWebViewAdaptor> createAdaptor();
+    void retrieveMediaOptions(const WebViewOptions& opts) override;
+    std::unique_ptr<WebView> create() override;
+    std::unique_ptr<IWebViewAdaptor> createDefaultHandler() override;
+    void doMediaSetup(WebView& webview) override;
 
 private:
-    std::unique_ptr<WebView> createWebView();
+    Uri getUriOption(const boost::optional<std::string>& uriOpt) override;
+    int getDurationOption(int duration) override;
+    WebViewOptions::Transparency getTransparentOption(const boost::optional<WebViewOptions::Transparency>& transparentOpt);
+    WebViewOptions::Mode getModeOption(const boost::optional<WebViewOptions::Mode>& modeOpt);
+
     boost::optional<int> parseDuration(const FilePath& path);
-    std::string removeEscapedSymbolsFromUrl(std::string url);
+    std::string removeEscapedSymbolsFromUri(std::string url);
 
 private:
     int m_width;
     int m_height;
-    std::unique_ptr<Uri> m_uri;
-    WebViewMode m_mode;
-    bool m_transparent;
+    WebViewOptions::Mode m_mode;
+    WebViewOptions::Transparency m_transparency;
 
 };

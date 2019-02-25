@@ -12,7 +12,7 @@
 #include <boost/thread/future.hpp>
 
 #include "utils/ResponseResult.hpp"
-#include "Uri.hpp"
+#include "utils/Uri.hpp"
 
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -26,7 +26,7 @@ class RequestSession : public std::enable_shared_from_this<RequestSession>
 {
 public:
     RequestSession(asio::io_context& ioc);
-    boost::future<HTTPResponseResult> send(http::verb method, const Uri& url, const std::string& body);
+    boost::future<HTTPResponseResult> send(http::verb method, const Uri& uri, const std::string& body);
 
 private:
     http::request<http::string_body> createRequest(http::verb method, const std::string& host, const std::string& target, const std::string& body);

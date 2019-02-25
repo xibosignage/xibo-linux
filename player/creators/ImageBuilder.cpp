@@ -1,20 +1,8 @@
 #include "ImageBuilder.hpp"
+
 #include "adaptors/GtkImageAdaptor.hpp"
 
 #include <boost/optional/optional.hpp>
-
-std::unique_ptr<Image> ImageBuilder::build()
-{
-    ImageProperties props{m_scaleType, m_align, m_valign};
-    auto image = std::make_unique<Image>(m_id, m_width, m_height, m_path, props, createAdaptor());
-    prepareCommonParams(*image);
-    return image;
-}
-
-std::unique_ptr<IImageAdaptor> ImageBuilder::createAdaptor()
-{
-    return std::make_unique<GtkImageAdaptor>();
-}
 
 ImageBuilder& ImageBuilder::width(int width)
 {
@@ -28,54 +16,60 @@ ImageBuilder& ImageBuilder::height(int height)
     return *this;
 }
 
-ImageBuilder& ImageBuilder::scaleType(const boost::optional<std::string>& scaleType)
+std::unique_ptr<Image> ImageBuilder::create()
 {
-    m_scaleType = toScaleType(scaleType.value_or(DEFAULT_SCALE_TYPE));
-    return *this;
+    MediaGeometry props{m_scaleType, m_align, m_valign};
+    return std::unique_ptr<Image>(new Image{m_id, m_width, m_height, m_uri, props, createHandler()});
 }
 
-ImageBuilder& ImageBuilder::align(const boost::optional<std::string>& align)
+void ImageBuilder::retrieveMediaOptions(const ImageOptions& opts)
 {
-    m_align = toAlign(align.value_or(DEFAULT_ALIGN));
-    return *this;
+    m_scaleType = getScaleTypeOption(opts.scaleType());
+    m_align = getAlignOption(opts.align());
+    m_valign = getValignOption(opts.valign());
 }
 
-ImageBuilder& ImageBuilder::valign(const boost::optional<std::string>& valign)
+std::unique_ptr<IImageAdaptor> ImageBuilder::createDefaultHandler()
 {
-    m_valign = toValign(valign.value_or(DEFAULT_VALIGN));
-    return *this;
+    return std::make_unique<GtkImageAdaptor>();
 }
 
-ImageProperties::ScaleType ImageBuilder::toScaleType(std::string_view scaleType)
+MediaGeometry::ScaleType ImageBuilder::getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt)
 {
+    auto scaleType = scaleTypeOpt.value_or(DEFAULT_SCALE_TYPE);
+
     if(scaleType == "center")
-        return ImageProperties::ScaleType::Scaled;
+        return MediaGeometry::ScaleType::Scaled;
     else if(scaleType == "stretch")
-        return ImageProperties::ScaleType::Stretch;
+        return MediaGeometry::ScaleType::Stretch;
 
     throw std::invalid_argument("ScaleType is not valid");
 }
 
-ImageProperties::Align ImageBuilder::toAlign(std::string_view align)
+MediaGeometry::Align ImageBuilder::getAlignOption(const boost::optional<std::string>& alignOpt)
 {
+    auto align = alignOpt.value_or(DEFAULT_ALIGN);
+
     if(align == "left")
-        return ImageProperties::Align::Left;
+        return MediaGeometry::Align::Left;
     else if(align == "center")
-        return ImageProperties::Align::Center;
+        return MediaGeometry::Align::Center;
     else if(align == "right")
-        return ImageProperties::Align::Right;
+        return MediaGeometry::Align::Right;
 
     throw std::invalid_argument("Align is not valid");
 }
 
-ImageProperties::Valign ImageBuilder::toValign(std::string_view valign)
+MediaGeometry::Valign ImageBuilder::getValignOption(const boost::optional<std::string>& valignOpt)
 {
+    auto valign = valignOpt.value_or(DEFAULT_VALIGN);
+
     if(valign == "top")
-        return ImageProperties::Valign::Top;
+        return MediaGeometry::Valign::Top;
     else if(valign == "middle")
-        return ImageProperties::Valign::Middle;
+        return MediaGeometry::Valign::Middle;
     else if(valign == "bottom")
-        return ImageProperties::Valign::Bottom;
+        return MediaGeometry::Valign::Bottom;
 
     throw std::invalid_argument("Valign is not valid");
 }

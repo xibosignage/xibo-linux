@@ -5,7 +5,7 @@
 #include <memory>
 #include <boost/noncopyable.hpp>
 
-class FilePath;
+class Uri;
 
 class Background : public IBackground, private boost::noncopyable
 {
@@ -30,14 +30,15 @@ private:
 
 class OneColorBackground : public Background
 {
-public:
+    friend class BackgroundBuilder;
+
     OneColorBackground(int width, int height, uint32_t color, std::unique_ptr<IImageAdaptor>&& handler);
 
 };
 
 class ImageBackground : public Background
 {
-public:
-    ImageBackground(int width, int height, const FilePath& path, std::unique_ptr<IImageAdaptor>&& handler);
+    friend class BackgroundBuilder;
 
+    ImageBackground(int width, int height, const Uri& uri, std::unique_ptr<IImageAdaptor>&& handler);
 };

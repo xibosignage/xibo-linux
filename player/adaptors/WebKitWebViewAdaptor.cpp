@@ -1,5 +1,5 @@
 #include "WebKitWebViewAdaptor.hpp"
-#include "managers/Uri.hpp"
+#include "utils/Uri.hpp"
 
 #include <webkit/webkit.h>
 
@@ -14,12 +14,17 @@ WebKitWebViewAdaptor::WebKitWebViewAdaptor() :
        webkit_web_view_reload(m_webView);
        m_sizeAllocateConnection.disconnect();
     });
-
 }
 
 void WebKitWebViewAdaptor::show()
 {
     m_handler.show_all();
+}
+
+void WebKitWebViewAdaptor::setSize(int width, int height)
+{
+    m_handler.set_size_request(width, height);
+    reload();
 }
 
 void WebKitWebViewAdaptor::reload()

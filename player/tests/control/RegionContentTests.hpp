@@ -7,7 +7,6 @@
 
 #include "mocks/MockWidgetAdaptor.hpp"
 #include "mocks/MockMedia.hpp"
-#include "media/MediaVisitor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
 
@@ -27,20 +26,21 @@ public:
 class RegionContentTest : public testing::Test
 {
 public:
-    RegionContentTest()
+    template<typename Media = MockMedia>
+    auto constructRegionContent()
+    {
+        auto media = constructMock<Media>();
+        m_media = media.get();
+
+        return construct<RegionContentUnderTest>(std::move(media), unique(m_timer));
+    }
+
+protected:
+    void SetUp() override
     {
         m_timer = new testing::NiceMock<MockTimerProvider>();
     }
 
-    template<typename Media = MockMedia>
-    auto constructRegionContent()
-    {
-        m_media = createMedia<Media>();
-
-        return construct<RegionContentUnderTest>(unique(m_media), unique(m_timer));
-    }
-
-protected:
     MockTimerProvider& timer()
     {
         return *m_timer;
@@ -54,15 +54,6 @@ protected:
     auto eventHandler()
     {
         return [](const Event& ev) { return ev.type(); };
-    }
-
-    template<typename Media>
-    auto createMedia()
-    {
-        if constexpr(std::is_same_v<Media, MockVisibleMedia>)
-            return new MockVisibleMedia(std::make_unique<MockWidgetAdaptor>());
-        else
-            return new MockMedia;
     }
 
 private:

@@ -37,6 +37,7 @@ private:
 private:
     Gtk::Window m_handler;
     sigc::signal<void()> m_resizeSignal;
+    sigc::connection m_windowState;
     int m_originalWidth;
     int m_originalHeight;
     bool m_cursorVisible = true;

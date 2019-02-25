@@ -1,19 +1,29 @@
 #pragma once
 
-#include "BaseTestWithHandler.hpp"
+#include "MediaTests.hpp"
 
-#include "media/WebView.hpp"
 #include "mocks/MockWebViewAdaptor.hpp"
-#include "managers/Uri.hpp"
+#include "creators/WebViewBuilder.hpp"
 
-class WebViewTest : public BaseTestWithHandler<MockWebViewAdaptor>
+class WebViewTest : public MediaTest<MockWebViewAdaptor>
 {
 public:
     auto constructWebView()
     {
-        auto webview = construct<WebView>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_URI, unique(&adaptor()));
-        webview->setDuration(DEFAULT_DURATION);
-        return webview;
+        WebViewOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, DEFAULT_TRANSPARENCY, DEFAULT_WEBVIEW_MODE};
+
+        return constructWebView(opts);
+    }
+
+    std::unique_ptr<WebView> constructWebView(const WebViewOptions& opts)
+    {
+
+        return WebViewBuilder{}.adaptor(unique(&adaptor()))
+                               .filesystem(unique(&filesystem()))
+                               .width(DEFAULT_WIDTH)
+                               .height(DEFAULT_HEIGHT)
+                               .options(opts)
+                               .build();
     }
 
 };

@@ -1,9 +1,9 @@
 #include "HTTPManager.hpp"
 
 #include "utils/Logger.hpp"
+#include "utils/Uri.hpp"
+#include "utils/UriParseError.hpp"
 
-#include "Uri.hpp"
-#include "UriParseError.hpp"
 #include "HTTPSession.hpp"
 
 const int DEFAULT_CONCURRENT_REQUESTS = 4;

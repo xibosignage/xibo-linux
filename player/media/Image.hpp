@@ -1,19 +1,16 @@
 #pragma once
 
 #include "Media.hpp"
-#include "ImageProperties.hpp"
 
 class IImageAdaptor;
-class FilePath;
+class Uri;
 
 class Image : public Media, public IVisible
 {
 public:
-    Image(int id, int width, int height, const FilePath& path, ImageProperties props, std::unique_ptr<IImageAdaptor>&& handler);
-
-    ImageProperties::ScaleType scaleType() const;
-    ImageProperties::Align align() const;
-    ImageProperties::Valign valign() const;
+    MediaGeometry::Align align() const override;
+    MediaGeometry::Valign valign() const override;
+    MediaGeometry::ScaleType scaleType() const override;
 
     void show() override;
     void hide() override;
@@ -23,16 +20,19 @@ public:
     void scale(double, double) override;
 
     IWidgetAdaptor& handler() override;
-    void apply(MediaVisitor& visitor) override;
     void handleEvent(const Event& ev) override;
 
 private:
-    void loadImage(const FilePath& path);
+    friend class ImageBuilder;
+
+    Image(int id, int width, int height, const Uri& uri, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler);
+
+    void loadImage(const Uri& uri);
 
 private:
     std::unique_ptr<IImageAdaptor> m_handler;
-    ImageProperties::ScaleType m_scaleType;
-    ImageProperties::Align m_align;
-    ImageProperties::Valign m_valign;
+    MediaGeometry::ScaleType m_scaleType;
+    MediaGeometry::Align m_align;
+    MediaGeometry::Valign m_valign;
 
 };

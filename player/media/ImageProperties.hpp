@@ -1,6 +1,6 @@
 #pragma once
 
-struct ImageProperties
+struct MediaGeometry
 {
     enum class ScaleType
     {

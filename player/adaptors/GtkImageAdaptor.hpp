@@ -15,7 +15,7 @@ public:
     void setSize(int width, int height) override;
 
     void setColor(uint32_t hex_color_number) override;
-    void loadImage(const FilePath& path, bool preserveAspectRatio) override;
+    void loadImage(const Uri& uri, bool preserveAspectRatio) override;
 
     Gtk::Image& get() override;
 

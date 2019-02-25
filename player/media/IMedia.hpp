@@ -2,8 +2,8 @@
 
 #include "events/IObserver.hpp"
 #include "events/IObservable.hpp"
+#include "ImageProperties.hpp"
 
-class MediaVisitor;
 class IWidgetAdaptor;
 
 class IMedia : public IObserver, public IObservable
@@ -11,11 +11,9 @@ class IMedia : public IObserver, public IObservable
 public:
     virtual ~IMedia() = default;
 
+    virtual int id() const = 0;
     virtual int duration() const = 0;
     virtual void setDuration(int duration) = 0;
-
-    virtual int id() const = 0;
-    virtual void apply(MediaVisitor& visitor) = 0;
 };
 
 class IVisible
@@ -29,6 +27,10 @@ public:
     virtual int width() const = 0;
     virtual int height() const = 0;
     virtual void scale(double scaleX, double scaleY) = 0;
+
+    virtual MediaGeometry::Align align() const = 0;
+    virtual MediaGeometry::Valign valign() const = 0;
+    virtual MediaGeometry::ScaleType scaleType() const =0;
 
     virtual IWidgetAdaptor& handler() = 0;
 

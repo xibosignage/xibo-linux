@@ -2,48 +2,66 @@
 
 #include "BaseTestWithHandler.hpp"
 
-#include "creators/RegionBuilderTests.hpp" // FIXME zorder from here
+#include "creators/RegionBuilder.hpp" // FIXME zorder from here
 #include "control/Region.hpp"
 #include "mocks/MockFixedLayoutAdaptor.hpp"
 
 #include "mocks/MockRegionContent.hpp"
 #include "mocks/MockWidgetAdaptor.hpp"
-#include "media/MediaVisitor.hpp"
 
 const int DEFAULT_CONTENT_ITEMS_COUNT = 1;
 
 class RegionTest : public BaseTestWithHandler<MockFixedLayoutAdaptor>
 {
 public:
-    auto constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
+    std::unique_ptr<IRegion> constructRegion(boost::optional<RegionOptions::Loop> contentLooped,
+                                             boost::optional<int> zorder,
+                                             std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
     {
-        auto region = construct<Region>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_ZORDER, unique(&adaptor()));
-        addContentItemsToRegion(*region, contentItemsCount);
-        return region;
+        const RegionOptions opts{DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_XPOS, DEFAULT_YPOS, zorder, contentLooped};
+
+        return RegionBuilder{}.adaptor(unique(&adaptor()))
+                              .content(createContentItems(contentItemsCount))
+                              .options(opts)
+                              .build();
+    }
+
+    std::unique_ptr<IRegion> constructRegion(std::size_t contentItemsCount = DEFAULT_CONTENT_ITEMS_COUNT)
+    {
+        return constructRegion(DEFAULT_REGION_LOOP, DEFAULT_REGION_ZORDER, contentItemsCount);
     }
 
 protected:
-    MockRegionContent& regionContent(size_t index)
+    void doSetUp() override
+    {
+        ON_CALL(adaptor(), width()).WillByDefault(testing::Return(DEFAULT_WIDTH));
+        ON_CALL(adaptor(), height()).WillByDefault(testing::Return(DEFAULT_HEIGHT));
+    }
+
+    MockRegionContent& regionContent(size_t index = 0)
     {
         return *m_contentItems.at(index);
     }
 
-    auto createRegionContent()
+    std::unique_ptr<MockRegionContent> createRegionContent()
     {
-        return constructMock<MockRegionContent, MockWidgetAdaptor>();
+        return constructMock<MockRegionContent>();
     }
 
-private:
-    void addContentItemsToRegion(Region& region, std::size_t contentItemsCount)
+    std::vector<ContentWithPos> createContentItems(std::size_t contentItemsCount)
     {
+        std::vector<ContentWithPos> allContent;
+
         for(size_t i = 0; i != contentItemsCount; ++i)
         {
             auto content = createRegionContent();
 
             m_contentItems.push_back(content.get());
 
-            region.addContent(std::move(content), DEFAULT_XPOS, DEFAULT_YPOS);
+            allContent.emplace_back(ContentWithPos{std::move(content), DEFAULT_XPOS, DEFAULT_YPOS});
         }
+
+        return allContent;
     }
 
 private:
@@ -51,3 +69,4 @@ private:
 
 };
 
+class RegionConstructSizeTest : public RegionTest, public testing::WithParamInterface<Size> { };

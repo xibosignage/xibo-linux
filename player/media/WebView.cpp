@@ -1,6 +1,5 @@
 #include "WebView.hpp"
 
-#include "MediaVisitor.hpp"
 #include "adaptors/IWebViewAdaptor.hpp"
 
 #include <cassert>
@@ -40,11 +39,6 @@ int WebView::height() const
     return m_handler->height();
 }
 
-void WebView::apply(MediaVisitor& visitor)
-{
-    visitor.visit(*this);
-}
-
 void WebView::handleEvent(const Event& ev)
 {
     switch(ev.type())
@@ -66,9 +60,24 @@ void WebView::handleEvent(const Event& ev)
     }
 }
 
-void WebView::setTransparent(bool transparent)
+MediaGeometry::Align WebView::align() const
 {
-    if(transparent)
+    return MediaGeometry::Align::Left;
+}
+
+MediaGeometry::Valign WebView::valign() const
+{
+    return MediaGeometry::Valign::Top;
+}
+
+MediaGeometry::ScaleType WebView::scaleType() const
+{
+    return MediaGeometry::ScaleType::Scaled;
+}
+
+void WebView::setTransparent(WebViewOptions::Transparency transparency)
+{
+    if(transparency == WebViewOptions::Transparency::Enable)
     {
         m_handler->enableTransparency();
     }

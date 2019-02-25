@@ -43,7 +43,6 @@ void GtkWindowAdaptor::setSize(int width, int height)
     m_originalHeight = height;
 
     setWindowSize(width, height);
-    m_handler.resize(width, height);
 }
 
 int GtkWindowAdaptor::width() const
@@ -68,7 +67,7 @@ void GtkWindowAdaptor::connectToHandlerResize(std::function<void ()> handler)
 void GtkWindowAdaptor::add(IWidgetAdaptor& child)
 {
     auto&& handler = getHandler(child);
-    m_handler.add(handler);
+    m_handler.Gtk::Bin::add(handler);
 }
 
 void GtkWindowAdaptor::remove()
@@ -93,11 +92,11 @@ void GtkWindowAdaptor::disableWindowDecoration()
 
 void GtkWindowAdaptor::fullscreen()
 {
-    m_handler.fullscreen();
 
     auto area = getCurrentMonitorGeometry();
 
     setWindowSize(area.get_width(), area.get_height());
+    m_handler.fullscreen();
 }
 
 Gdk::Rectangle GtkWindowAdaptor::getCurrentMonitorGeometry() const
@@ -114,7 +113,14 @@ Gdk::Rectangle GtkWindowAdaptor::getCurrentMonitorGeometry() const
 void GtkWindowAdaptor::unfullscreen()
 {
     m_handler.unfullscreen();
-    setWindowSize(m_originalWidth, m_originalHeight);
+    m_windowState = m_handler.signal_window_state_event().connect([=](GdkEventWindowState* ev){
+        if(ev->new_window_state != GDK_WINDOW_STATE_FULLSCREEN)
+        {
+            m_windowState.disconnect();
+            setWindowSize(m_originalWidth, m_originalHeight);
+        }
+        return true;
+    });
 }
 
 void GtkWindowAdaptor::setCursorVisible(bool cursorVisible)
@@ -135,5 +141,6 @@ Gtk::Window& GtkWindowAdaptor::get()
 void GtkWindowAdaptor::setWindowSize(int width, int height)
 {
     m_handler.set_default_size(width, height);
+    m_handler.resize(width, height);
     m_resizeSignal.emit();
 }

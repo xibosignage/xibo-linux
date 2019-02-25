@@ -1,5 +1,6 @@
 #include "GtkImageAdaptor.hpp"
-#include "utils/FilePath.hpp"
+
+#include "utils/Uri.hpp"
 
 const int DEFAULT_WIDTH = 1;
 const int DEFAULT_HEIGHT = 1;
@@ -31,9 +32,9 @@ void GtkImageAdaptor::setColor(uint32_t hex_color_number)
     pixbuf()->fill(hex_color_number);
 }
 
-void GtkImageAdaptor::loadImage(const FilePath& path, bool preserveAspectRatio)
+void GtkImageAdaptor::loadImage(const Uri& uri, bool preserveAspectRatio)
 {
-    m_handler.set(Gdk::Pixbuf::create_from_file(path.string(), width(), height(), preserveAspectRatio));
+    m_handler.set(Gdk::Pixbuf::create_from_file(uri.path(), width(), height(), preserveAspectRatio));
 }
 
 Gtk::Image& GtkImageAdaptor::get()

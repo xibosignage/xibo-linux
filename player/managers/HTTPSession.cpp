@@ -148,7 +148,13 @@ void RequestSession::onRead(const boost::system::error_code& ec, std::size_t /*b
 
 void RequestSession::sessionFinished(const boost::system::error_code& ec)
 {
-    PlayerError error = ec ? PlayerError{PlayerError::Type::HTTP, ec.message()} : PlayerError{};
-
-    m_result.set_value(HTTPResponseResult{error, m_response.get().body()});
+    if(!ec)
+    {
+        m_result.set_value(HTTPResponseResult{PlayerError{}, m_response.get().body()});
+    }
+    else
+    {
+        PlayerError error{PlayerError::Type::HTTP, ec.message()};
+        m_result.set_value(HTTPResponseResult{error, {}});
+    }
 }

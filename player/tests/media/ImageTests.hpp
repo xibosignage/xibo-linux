@@ -1,24 +1,31 @@
 #pragma once
 
-#include "BaseTestWithHandler.hpp"
+#include "MediaTests.hpp"
 
 #include "media/Image.hpp"
-#include "media/MediaVisitor.hpp"
 #include "mocks/MockImageAdaptor.hpp"
+#include "creators/ImageBuilder.hpp"
 
-const ImageProperties::ScaleType DEFAULT_SCALE_TYPE = ImageProperties::ScaleType::Scaled;
-const ImageProperties::Align DEFAULT_ALIGN = ImageProperties::Align::Center;
-const ImageProperties::Valign DEFAULT_VALIGN = ImageProperties::Valign::Middle;
-const ImageProperties DEFAULT_PROPS{DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN};
-
-class ImageTest : public BaseTestWithHandler<MockImageAdaptor>
+class ImageTest : public MediaTest<MockImageAdaptor>
 {
 public:
     auto constructImage()
     {
-        auto image = construct<Image>(DEFAULT_ID, DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_PATH, DEFAULT_PROPS, unique(&adaptor()));
-        image->setDuration(DEFAULT_DURATION);
-        return image;
+        return constructImage(DEFAULT_SCALE_TYPE, DEFAULT_ALIGN, DEFAULT_VALIGN);
+    }
+
+    std::unique_ptr<Image> constructImage(boost::optional<std::string> scaleType,
+                                          boost::optional<std::string> align,
+                                          boost::optional<std::string> valign)
+    {
+        ImageOptions opts{DEFAULT_ID, DEFAULT_PATH.string(), DEFAULT_DURATION, scaleType, align, valign};
+
+        return ImageBuilder{}.adaptor(unique(&adaptor()))
+                             .filesystem(unique(&filesystem()))
+                             .options(opts)
+                             .width(DEFAULT_WIDTH)
+                             .height(DEFAULT_HEIGHT)
+                             .build();
     }
 
 };

@@ -1,4 +1,5 @@
 #include "Background.hpp"
+
 #include "adaptors/IImageAdaptor.hpp"
 
 #include <cassert>
@@ -11,10 +12,10 @@ OneColorBackground::OneColorBackground(int width, int height, uint32_t color, st
     this->handler().setColor(color);
 }
 
-ImageBackground::ImageBackground(int width, int height, const FilePath& path, std::unique_ptr<IImageAdaptor>&& handler) :
+ImageBackground::ImageBackground(int width, int height, const Uri& uri, std::unique_ptr<IImageAdaptor>&& handler) :
     Background(width, height, std::move(handler))
 {
-    this->handler().loadImage(path, DEFAULT_BACKGROUND_SCALED);
+    this->handler().loadImage(uri, DEFAULT_BACKGROUND_SCALED);
 }
 
 Background::Background(int width, int height, std::unique_ptr<IImageAdaptor>&& handler) :

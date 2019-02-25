@@ -1,16 +1,15 @@
 #include "Video.hpp"
 
-#include "MediaVisitor.hpp"
 #include "IVideoHandler.hpp"
 #include "utils/Logger.hpp"
 
-Video::Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
+Video::Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVideoHandler>&& handler) :
     Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 
     m_handler->setSize(width, height);
-    m_handler->load(path);
+    m_handler->load(uri);
     m_handler->connect(std::bind(&Video::onVideoFinished, this)); // FIXME change to subscribe
 }
 
@@ -22,7 +21,7 @@ void Video::onVideoFinished()
         return;
     }
 
-    if(m_looped)
+    if(m_looped == VideoOptions::Loop::Enable)
     {
         Log::debug("Looping enabled. Restarting...");
         m_handler->play();
@@ -54,29 +53,39 @@ int Video::height() const
     return m_handler->height();
 }
 
-void Video::setLooped(bool looped)
+void Video::setLooped(VideoOptions::Loop looped)
 {
     m_looped = looped;
 }
 
-bool Video::looped() const
+VideoOptions::Loop Video::looped() const
 {
     return m_looped;
 }
 
-void Video::setMuted(bool muted)
+void Video::setMuted(VideoOptions::Mute muted)
 {
-    m_handler->setVolume(muted ? MIN_VOLUME : MAX_VOLUME);
+    m_handler->setVolume(muted == VideoOptions::Mute::Enable ? MIN_VOLUME : MAX_VOLUME);
+}
+
+MediaGeometry::Align Video::align() const
+{
+    return MediaGeometry::Align::Left;
+}
+
+MediaGeometry::Valign Video::valign() const
+{
+    return MediaGeometry::Valign::Top;
+}
+
+MediaGeometry::ScaleType Video::scaleType() const
+{
+    return MediaGeometry::ScaleType::Scaled;
 }
 
 IWidgetAdaptor& Video::handler()
 {
     return m_handler->videoWindow();
-}
-
-void Video::apply(MediaVisitor& visitor)
-{
-    visitor.visit(*this);
 }
 
 void Video::handleEvent(const Event& ev)

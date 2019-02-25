@@ -1,62 +1,56 @@
 #include "WebViewBuilder.hpp"
 
-#include "adaptors/WebKitWebViewAdaptor.hpp"
 #include "utils/Resources.hpp"
 #include "utils/Logger.hpp"
+#include "adaptors/WebKitWebViewAdaptor.hpp"
 
 #include <fstream>
 #include <regex>
 #include <boost/optional/optional.hpp>
 
-const std::string DEFAULT_EXTENSION = ".html";
-const bool DEFAULT_TRANSPARENT = true;
 const std::string DEFAULT_NATIVE_SCHEME = "file://";
 const std::regex DURATION_REGEX("DURATION=([0-9]+)");
 
-std::unique_ptr<WebView> WebViewBuilder::build()
+std::unique_ptr<WebView> WebViewBuilder::create()
 {
-    auto webview = createWebView();
-    prepareCommonParams(*webview);
-    webview->setTransparent(m_transparent);
-    return webview;
+    return std::unique_ptr<WebView>(new WebView{m_id, m_width, m_height, m_uri, createHandler()});
 }
 
-std::unique_ptr<WebView> WebViewBuilder::createWebView()
-{
-    return std::make_unique<WebView>(m_id, m_width, m_height, *m_uri, createAdaptor());
-}
-
-std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createAdaptor()
+std::unique_ptr<IWebViewAdaptor> WebViewBuilder::createDefaultHandler()
 {
     return std::make_unique<WebKitWebViewAdaptor>();
 }
 
-WebViewBuilder& WebViewBuilder::path(const boost::optional<std::string>& uri)
+void WebViewBuilder::doMediaSetup(WebView& webview)
 {
-    if(m_mode == WebViewMode::FileResource)
+    webview.setTransparent(m_transparency);
+}
+
+Uri WebViewBuilder::getUriOption(const boost::optional<std::string>& uriOpt)
+{
+    if(getModeOption(m_options->mode()) == WebViewOptions::Mode::FileResource)
     {
-        auto fileName = std::to_string(m_id) + DEFAULT_EXTENSION;
-        m_uri = std::make_unique<Uri>(DEFAULT_NATIVE_SCHEME + (Resources::directory() / fileName).string());
+        auto fileName = std::to_string(m_id) + DEFAULT_WEBVIEW_EXTENSION;
+        return Uri(DEFAULT_NATIVE_SCHEME + (Resources::directory() / fileName).string());
     }
     else
     {
-        m_uri = std::make_unique<Uri>(removeEscapedSymbolsFromUrl(uri.value()));
+        return Uri{removeEscapedSymbolsFromUri(uriOpt.value())};
     }
-    return *this;
 }
 
-std::string WebViewBuilder::removeEscapedSymbolsFromUrl(std::string url)
+void WebViewBuilder::retrieveMediaOptions(const WebViewOptions& opts)
+{
+    m_transparency = getTransparentOption(opts.transparency());
+    m_mode = getModeOption(opts.mode());
+}
+
+std::string WebViewBuilder::removeEscapedSymbolsFromUri(std::string url)
 {
     boost::replace_all(url, "%2F", "/");
     boost::replace_all(url, "%3A", ":");
 
     return url;
-}
-
-WebViewBuilder& WebViewBuilder::duration(int duration)
-{
-    m_duration = parseDuration(m_path).value_or(duration);
-    return *this;
 }
 
 WebViewBuilder& WebViewBuilder::width(int width)
@@ -71,28 +65,19 @@ WebViewBuilder& WebViewBuilder::height(int height)
     return *this;
 }
 
-WebViewBuilder& WebViewBuilder::modeId(boost::optional<int> modeId)
+int WebViewBuilder::getDurationOption(int duration)
 {
-    const int DEFAULT_MODEID = 0;
-    const int NATIVE_MODEID = 1;
-
-    int mode = modeId.value_or(DEFAULT_MODEID);
-    if(mode == NATIVE_MODEID)
-    {
-        m_mode = WebViewMode::WebBrowser;
-    }
-    else
-    {
-        m_mode = WebViewMode::FileResource;
-    }
-
-    return *this;
+    return parseDuration(m_uri.path()).value_or(duration);
 }
 
-WebViewBuilder& WebViewBuilder::transparent(const boost::optional<bool>& transparent)
+WebViewOptions::Transparency WebViewBuilder::getTransparentOption(const boost::optional<WebViewOptions::Transparency>& transparentOpt)
 {
-    m_transparent = transparent.value_or(DEFAULT_TRANSPARENT);
-    return *this;
+    return transparentOpt.value_or(DEFAULT_TRANSPARENCY);
+}
+
+WebViewOptions::Mode WebViewBuilder::getModeOption(const boost::optional<WebViewOptions::Mode>& modeOpt)
+{
+    return modeOpt.value_or(DEFAULT_WEBVIEW_MODE);
 }
 
 boost::optional<int> WebViewBuilder::parseDuration(const FilePath& path)

@@ -39,12 +39,12 @@ void Region::scale(double scaleX, double scaleY)
 
 void Region::loopContent()
 {
-    m_contentLooped = true;
+    m_contentLoop = RegionOptions::Loop::Enable;
 }
 
-bool Region::contentLooped() const
+RegionOptions::Loop Region::contentLoop() const
 {
-    return m_contentLooped;
+    return m_contentLoop;
 }
 
 int Region::id() const
@@ -118,7 +118,7 @@ bool Region::isExpired() const
 
 bool Region::shouldBeContentReplaced() const
 {
-    return m_content.size() > 1 || m_contentLooped;
+    return m_content.size() > 1 || m_contentLoop == RegionOptions::Loop::Enable;
 }
 
 size_t Region::getNextContentIndex() const

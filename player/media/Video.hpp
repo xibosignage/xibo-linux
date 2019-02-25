@@ -1,15 +1,14 @@
 #pragma once
 
 #include "Media.hpp"
+#include "options/VideoOptions.hpp"
 
 class IVideoHandler;
-class FilePath;
+class Uri;
 
 class Video : public Media, public IVisible, public IPlayable
 {
 public:
-    Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
-
     void play() override;
     void stop() override;
 
@@ -17,12 +16,15 @@ public:
     int width() const override;
     int height() const override;
 
-    void setLooped(bool looped);
-    bool looped() const;
-    void setMuted(bool muted);
+    void setLooped(VideoOptions::Loop looped);
+    VideoOptions::Loop looped() const;
+    void setMuted(VideoOptions::Mute muted);
+
+    MediaGeometry::Align align() const override;
+    MediaGeometry::Valign valign() const override;
+    MediaGeometry::ScaleType scaleType() const override;
 
     IWidgetAdaptor& handler() override;
-    void apply(MediaVisitor& visitor) override;
     void handleEvent(const Event& ev) override;
 
 protected:
@@ -30,10 +32,14 @@ protected:
     void hide() override { }
 
 private:
+    friend class VideoBuilder;
+
+    Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVideoHandler>&& handler);
+
     void onVideoFinished();
 
 private:
     std::unique_ptr<IVideoHandler> m_handler;
-    bool m_looped = false;
+    VideoOptions::Loop m_looped;
 
 };

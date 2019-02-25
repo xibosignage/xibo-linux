@@ -1,37 +1,44 @@
-#include "MediaBuilder.hpp"
+#include "AbstractMediaBuilder.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
-#include "media/ImageProperties.hpp"
 #include "media/Image.hpp"
+#include "options/ImageOptions.hpp"
 
 const std::string DEFAULT_SCALE_TYPE = "center";
 const std::string DEFAULT_ALIGN = "center";
 const std::string DEFAULT_VALIGN = "middle";
 
-class ImageBuilder : public BaseMediaBuilder<ImageBuilder>
+class ImageBuilder;
+
+template<>
+struct BuilderTraits<ImageBuilder>
+{
+    using Component = Image;
+    using Handler = IImageAdaptor;
+    using Options = ImageOptions;
+};
+
+class ImageBuilder : public AbstractMediaBuilder<ImageBuilder>
 {
 public:
-    std::unique_ptr<Image> build();
-
     ImageBuilder& width(int width);
     ImageBuilder& height(int height);
-    ImageBuilder& scaleType(const boost::optional<std::string>& scaleType);
-    ImageBuilder& align(const boost::optional<std::string>& align);
-    ImageBuilder& valign(const boost::optional<std::string>& valign);
 
 protected:
-    virtual std::unique_ptr<IImageAdaptor> createAdaptor();
+    void retrieveMediaOptions(const ImageOptions& opts) override;
+    std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
+    std::unique_ptr<Image> create() override;
 
-private:
-    ImageProperties::ScaleType toScaleType(std::string_view scaleType);
-    ImageProperties::Align toAlign(std::string_view align);
-    ImageProperties::Valign toValign(std::string_view valign);
+private:    
+    MediaGeometry::ScaleType getScaleTypeOption(const boost::optional<std::string>& scaleTypeOpt);
+    MediaGeometry::Align getAlignOption(const boost::optional<std::string>& alignOpt);
+    MediaGeometry::Valign getValignOption(const boost::optional<std::string>& valignOpt);
 
 private:
     int m_width;
     int m_height;
-    ImageProperties::ScaleType m_scaleType;
-    ImageProperties::Align m_align;
-    ImageProperties::Valign m_valign;
+    MediaGeometry::ScaleType m_scaleType;
+    MediaGeometry::Align m_align;
+    MediaGeometry::Valign m_valign;
 
 };

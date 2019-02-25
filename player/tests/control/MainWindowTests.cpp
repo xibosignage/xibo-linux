@@ -34,7 +34,7 @@ TEST_P(MainWindowTestSize, SetSize_InvalidSize_ShouldThrowInvalidArgError)
 
 INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestSize, ::testing::ValuesIn(invalidMainWindowSizes));
 
-TEST_F(MainWindowTest, Handler_Default_EqualsToPreviouslyPassedAdaptor)
+TEST_F(MainWindowTest, Handler_Default_EqualsToPassedAdaptor)
 {
     auto window = constructWindow();
 
@@ -125,7 +125,7 @@ TEST_F(MainWindowTest, SetPos_ValidPos_HandlerMoveWithValidPosShouldBeCalled)
     window->setPos(DEFAULT_WINDOW_POS, DEFAULT_WINDOW_POS);
 }
 
-TEST_P(MainWindowTestScale, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
+TEST_P(MainWindowTestScale, AddLayout_Default_LayoutScaleShouldBeCalled)
 {
     auto window = constructWindow();
     auto layout = constructLayout();
@@ -146,7 +146,7 @@ TEST_P(MainWindowTestScale, AddLayout_ValidLayout_AdaptorScaleShouldBeCalled)
 
 INSTANTIATE_TEST_CASE_P(Suite, MainWindowTestScale, ::testing::ValuesIn(scalesForResolutions));
 
-TEST_F(MainWindowTest, AddLayout_ValidLayout_AdaptorAddShouldBeCalled)
+TEST_F(MainWindowTest, AddLayout_Default_HandlerAddShouldBeCalled)
 {
     auto window = constructWindow();
 

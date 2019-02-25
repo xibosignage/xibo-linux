@@ -1,7 +1,7 @@
 #include "UriParserTest.hpp"
 
-#include "managers/UriParser.hpp"
-#include "managers/UriParseError.hpp"
+#include "utils/UriParser.hpp"
+#include "utils/UriParseError.hpp"
 
 TEST_P(UriParserValidHttpTests, UriParser_ParseValidHttpUri_EqualsGivenUri)
 {
@@ -13,6 +13,7 @@ TEST_P(UriParserValidHttpTests, UriParser_ParseValidHttpUri_EqualsGivenUri)
     ASSERT_EQ(uriToTest.hostType(), GetParam().hostType);
     ASSERT_EQ(uriToTest.port(), GetParam().port.value());
     ASSERT_EQ(uriToTest.path(), GetParam().path);
+    ASSERT_EQ(uriToTest.string(), GetParam().strUrl);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, UriParserValidHttpTests, ::testing::ValuesIn(validHttpUris));
@@ -26,8 +27,7 @@ TEST_P(UriParserValidFileTests, UriParser_ParseValidFileUri_EqualsGivenUri)
     ASSERT_EQ(uriToTest.host(), GetParam().host);
     ASSERT_EQ(uriToTest.hostType(), GetParam().hostType);
     ASSERT_EQ(uriToTest.path(), GetParam().path);
-
-    ASSERT_THROW(uriToTest.port(), std::logic_error);
+    ASSERT_EQ(uriToTest.string(), GetParam().strUrl);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, UriParserValidFileTests, ::testing::ValuesIn(validFileUris));

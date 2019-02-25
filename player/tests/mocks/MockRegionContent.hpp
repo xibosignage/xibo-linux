@@ -1,5 +1,7 @@
 #pragma once
 
+#include "MockWidgetAdaptor.hpp"
+
 #include "control/IRegionContent.hpp"
 #include "media/IMedia.hpp"
 
@@ -8,16 +10,13 @@
 class MockRegionContent : public IRegionContent
 {
 public:
-    MockRegionContent(std::unique_ptr<IWidgetAdaptor>&& handler) :
-        m_handler(std::move(handler))
+    MockRegionContent() :
+        m_handler(std::make_unique<MockWidgetAdaptor>())
     {
+        ON_CALL(*this, handler()).WillByDefault(testing::ReturnRef(*m_handler));
     }
 
-    IWidgetAdaptor& handler()
-    {
-        return *m_handler;
-    }
-
+    MOCK_METHOD0(handler, IWidgetAdaptor&());
     MOCK_METHOD0(start, void());
     MOCK_METHOD0(stop, void());
     MOCK_METHOD1(attachMedia, void(std::unique_ptr<IMedia>&& content));

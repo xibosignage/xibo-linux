@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Media.hpp"
+#include "options/WebViewOptions.hpp"
 
 class IWebViewAdaptor;
 class Uri;
@@ -8,8 +9,6 @@ class Uri;
 class WebView : public Media, public IVisible
 {
 public:
-    WebView(int id, int width, int height, const Uri& uri, std::unique_ptr<IWebViewAdaptor>&& handler);
-
     void show() override;
     void hide() override;
 
@@ -18,10 +17,18 @@ public:
     int height() const override;
 
     IWidgetAdaptor& handler() override;
-    void apply(MediaVisitor& visitor) override;
     void handleEvent(const Event& ev) override;
 
-    void setTransparent(bool transparent);
+    MediaGeometry::Align align() const override;
+    MediaGeometry::Valign valign() const override;
+    MediaGeometry::ScaleType scaleType() const override;
+
+    void setTransparent(WebViewOptions::Transparency transparency);
+
+private:
+    friend class WebViewBuilder;
+
+    WebView(int id, int width, int height, const Uri& uri, std::unique_ptr<IWebViewAdaptor>&& handler);
 
 private:
     std::unique_ptr<IWebViewAdaptor> m_handler;

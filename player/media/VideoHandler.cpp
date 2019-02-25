@@ -17,7 +17,7 @@
 #include "customsink/XiboVideoSink.hpp"
 
 #include "utils/Logger.hpp"
-#include "utils/FilePath.hpp"
+#include "utils/Uri.hpp"
 #include "adaptors/GtkDrawingAreaAdaptor.hpp"
 
 #include <boost/format.hpp>
@@ -57,7 +57,7 @@ VideoHandler::VideoHandler() :
 
 VideoHandler::~VideoHandler()
 {
-    m_pipeline->setState(Gst::State::NULL_STATE);
+    stopPlayback();
 }
 
 IWidgetAdaptor& VideoHandler::videoWindow()
@@ -98,9 +98,9 @@ void VideoHandler::checkGstElements()
     }
 }
 
-void VideoHandler::inspectVideo(const FilePath& path)
+void VideoHandler::inspectVideo(const Uri& uri)
 {
-    auto result = m_inspector->discover("file://" + path.string());
+    auto result = m_inspector->discover(uri.string());
 
     if(result.hasVideoStream())
     {
@@ -179,11 +179,11 @@ void VideoHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
     }
 }
 
-void VideoHandler::load(const FilePath& path)
+void VideoHandler::load(const Uri& uri)
 {
-    m_source->setLocation(path.string());
+    m_source->setLocation(uri.path());
 
-    inspectVideo(path);
+    inspectVideo(uri);
 }
 
 void VideoHandler::play()
