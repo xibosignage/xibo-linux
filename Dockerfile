@@ -46,7 +46,7 @@ RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archiv
 
 RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     export ACLOCAL_PATH && \
-    curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/GNOME/libsigcplusplus/archive/${SIGC}.tar.gz && \
+    curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/libsigcplusplus/libsigcplusplus/archive/${SIGC}.tar.gz && \
     cd /root && \
     tar -zxvf libsigcplusplus.tar.gz && \
     cd libsigcplusplus-${SIGC} && \
