@@ -7,7 +7,7 @@
 
 const std::string DEFAULT_RESOURCES_DIR = "fakedir";
 const FilePath DEFAULT_PATH = "fakepath";
-const Uri DEFAULT_URI = Uri{Uri::Scheme::File, DEFAULT_RESOURCES_DIR / DEFAULT_PATH};
+const Uri DEFAULT_URI{Uri::Scheme::File, DEFAULT_RESOURCES_DIR / DEFAULT_PATH};
 const int DEFAULT_DURATION = 10;
 const int DEFAULT_ID = 0;
 

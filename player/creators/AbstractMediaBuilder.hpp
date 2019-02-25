@@ -53,8 +53,7 @@ protected:
 
             return Uri{Uri::Scheme::File, fullPath};
         }
-
-        throw std::runtime_error("No uri given");
+        return {};
     }
 
     virtual int getDurationOption(int duration)
