@@ -24,7 +24,7 @@ public:
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
     XMDSManager& xmdsManager();
-    HTTPManager& downloadManager();
+    HTTPManager& httpManager();
     FileCacheManager& fileManager();
 
     int run(int argc, char** argv);
@@ -41,11 +41,11 @@ private:
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
-    std::unique_ptr<XMDSManager> m_xmdsManager;
-    std::unique_ptr<HTTPManager> m_downloadManager;
     std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
+    std::unique_ptr<XMDSManager> m_xmdsManager;
+    std::unique_ptr<HTTPManager> m_httpManager;
     std::unique_ptr<CommandLineParser> m_options;
 
     static std::unique_ptr<XiboApp> m_app;

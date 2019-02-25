@@ -22,6 +22,11 @@ void CollectionInterval::startRegularCollection()
     startTimer();
 }
 
+void CollectionInterval::stop()
+{
+    m_workerThread.reset();
+}
+
 void CollectionInterval::startTimer()
 {
     m_intervalTimer->startOnceSeconds(static_cast<unsigned int>(m_collectInterval), [=](){
@@ -145,7 +150,7 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         auto [error, result] = future.get();
         if(error)
         {
-            Log::debug("MediaInventory update error: {}", error);
+            Log::error("MediaInventory: {}", error);
         }
     });
 }

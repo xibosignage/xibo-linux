@@ -40,13 +40,18 @@ XiboApp& XiboApp::create(const std::string& name)
 
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_downloadManager(std::make_unique<HTTPManager>()),
     m_scheduler(std::make_unique<Scheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_collectionInterval(std::make_unique<CollectionInterval>()),
+    m_httpManager(std::make_unique<HTTPManager>()),
     m_options(std::make_unique<CommandLineParser>())
 {
     m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
+
+    m_mainLoop->setShutdownAction([this](){
+        m_httpManager->shutdown();
+        m_collectionInterval->stop();
+    });
 
     m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
         auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
@@ -94,9 +99,9 @@ XMDSManager& XiboApp::xmdsManager()
     return *m_xmdsManager;
 }
 
-HTTPManager& XiboApp::downloadManager()
+HTTPManager& XiboApp::httpManager()
 {
-    return *m_downloadManager;
+    return *m_httpManager;
 }
 
 FileCacheManager& XiboApp::fileManager()

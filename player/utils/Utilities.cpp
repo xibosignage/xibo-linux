@@ -7,14 +7,13 @@
 
 HTTPManager& Utils::httpManager()
 {
-    return XiboApp::app().downloadManager();
+    return XiboApp::app().httpManager();
 }
 
 XMDSManager& Utils::xmdsManager()
 {
     return XiboApp::app().xmdsManager();
 }
-
 
 FileCacheManager& Utils::fileManager()
 {
