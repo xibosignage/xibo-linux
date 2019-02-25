@@ -4,7 +4,7 @@
 #include "options/WebViewOptions.hpp"
 
 class IWebViewAdaptor;
-class FilePath;
+class Uri;
 
 class WebView : public Media, public IVisible
 {
@@ -28,7 +28,7 @@ public:
 private:
     friend class WebViewBuilder;
 
-    WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler);
+    WebView(int id, int width, int height, const Uri& uri, std::unique_ptr<IWebViewAdaptor>&& handler);
 
 private:
     std::unique_ptr<IWebViewAdaptor> m_handler;

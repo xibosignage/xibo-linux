@@ -25,7 +25,9 @@ public:
 
     Builder& options(const Options& opts)
     {
-        return retrieveOptions(opts);
+        m_options = std::make_unique<Options>(opts);
+        retrieveOptions(opts);
+        return static_cast<Builder&>(*this);
     }
 
     Builder& adaptor(std::unique_ptr<Handler>&& adaptor)
@@ -35,7 +37,7 @@ public:
     }
 
 protected:
-    virtual Builder& retrieveOptions(const typename BuilderTraits<Builder>::Options& opts) = 0;
+    virtual void retrieveOptions(const typename BuilderTraits<Builder>::Options& opts) = 0;
     virtual std::unique_ptr<Component> create() = 0;
     virtual std::unique_ptr<Handler> createDefaultHandler() = 0;
     virtual void doSetup(typename BuilderTraits<Builder>::Component&) { }
@@ -47,7 +49,8 @@ protected:
         return std::move(m_adaptor);
     }
 
-protected:
+protected: // FIXME
+    std::unique_ptr<Options> m_options;
     std::unique_ptr<Handler> m_adaptor;
 
 };

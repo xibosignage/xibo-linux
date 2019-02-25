@@ -1,4 +1,4 @@
-#include "MediaBuilder.hpp"
+#include "AbstractMediaBuilder.hpp"
 
 #include "adaptors/IImageAdaptor.hpp"
 #include "media/Image.hpp"
@@ -25,7 +25,7 @@ public:
     ImageBuilder& height(int height);
 
 protected:
-    ImageBuilder& retrieveMediaOptions(const ImageOptions& opts) override;
+    void retrieveMediaOptions(const ImageOptions& opts) override;
     std::unique_ptr<IImageAdaptor> createDefaultHandler() override;
     std::unique_ptr<Image> create() override;
 

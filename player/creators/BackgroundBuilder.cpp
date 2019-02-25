@@ -18,21 +18,20 @@ BackgroundBuilder& BackgroundBuilder::filesystem(std::unique_ptr<IFileSystemAdap
     return *this;
 }
 
-BackgroundBuilder& BackgroundBuilder::retrieveOptions(const BackgroundOptions& opts)
+void BackgroundBuilder::retrieveOptions(const BackgroundOptions& opts)
 {
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
-    m_path = getPathOption(opts.path());
+    m_uri = getUriOption(opts.path());
     m_hexColor = getColorOption(opts.color());
-    return *this;
 }
 
 std::unique_ptr<IBackground> BackgroundBuilder::create()
 {
-    if(m_path.empty())
+    if(!m_uri.isValid())
         return createBackground(m_hexColor);
     else
-        return createBackground(m_path);
+        return createBackground(m_uri);
 }
 
 std::unique_ptr<IImageAdaptor> BackgroundBuilder::createDefaultHandler()
@@ -45,9 +44,9 @@ std::unique_ptr<IBackground> BackgroundBuilder::createBackground(uint32_t color)
     return std::unique_ptr<OneColorBackground>(new OneColorBackground{m_width, m_height, color, createHandler()});
 }
 
-std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const FilePath& path)
+std::unique_ptr<IBackground> BackgroundBuilder::createBackground(const Uri& uri)
 {
-    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, path, createHandler()});
+    return std::unique_ptr<ImageBackground>(new ImageBackground{m_width, m_height, uri, createHandler()});
 }
 
 int BackgroundBuilder::getWidthOption(int width)
@@ -82,7 +81,7 @@ uint32_t BackgroundBuilder::getColorOption(const boost::optional<std::string>& c
     return converter.colorToHex(colorOpt.value_or(DEFAULT_COLOR));
 }
 
-FilePath BackgroundBuilder::getPathOption(const boost::optional<std::string>& pathOpt)
+Uri BackgroundBuilder::getUriOption(const boost::optional<std::string>& pathOpt)
 {
     if(pathOpt)
     {
@@ -90,7 +89,7 @@ FilePath BackgroundBuilder::getPathOption(const boost::optional<std::string>& pa
 
         checkPath(fullPath);
 
-        return fullPath;
+        return Uri{Uri::Scheme::File, fullPath};
     }
     return {};
 }

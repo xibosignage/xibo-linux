@@ -4,6 +4,8 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
+#include "utils/Uri.hpp"
+
 #include "options/MediaOptions.hpp"
 
 #include <boost/optional/optional.hpp>
@@ -28,7 +30,7 @@ public:
     }
 
 protected:
-    virtual Builder& retrieveMediaOptions(const Options& opts) = 0;
+    virtual void retrieveMediaOptions(const Options& opts) = 0;
     virtual void doMediaSetup(Component&) { }
 
     IFileSystemAdaptor& filesystem()
@@ -41,7 +43,7 @@ protected:
         return id;
     }
 
-    virtual FilePath getPathOption(const boost::optional<std::string>& pathOpt)
+    virtual Uri getUriOption(const boost::optional<std::string>& pathOpt)
     {
         if(pathOpt)
         {
@@ -49,7 +51,7 @@ protected:
 
             checkPath(fullPath);
 
-            return fullPath;
+            return Uri{Uri::Scheme::File, fullPath};
         }
         return {};
     }
@@ -66,29 +68,28 @@ private:
         doMediaSetup(media);
     }
 
-    Builder& retrieveOptions(const Options& opts) final
+    void retrieveOptions(const Options& opts) final
     {
         parseBaseOptions(opts);
-        return retrieveMediaOptions(opts);
+        retrieveMediaOptions(opts);
     }
 
     void parseBaseOptions(const MediaOptions& opts)
     {
         m_id = getIdOption(opts.id());
-        m_path = getPathOption(opts.path());
+        m_uri = getUriOption(opts.uri());
         m_duration = getDurationOption(opts.duration());
     }
 
-    void checkPath(FilePath path)
+    void checkPath(const FilePath& path)
     {
         if(!filesystem().isRegularFile(path))
             throw std::runtime_error("Not valid path");
     }
 
-protected:
-    std::unique_ptr<Handler> m_adaptor;
+protected: // FIXME
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
-    FilePath m_path;
+    Uri m_uri;
     int m_id;
     int m_duration;
 

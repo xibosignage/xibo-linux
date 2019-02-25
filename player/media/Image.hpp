@@ -3,7 +3,7 @@
 #include "Media.hpp"
 
 class IImageAdaptor;
-class FilePath;
+class Uri;
 
 class Image : public Media, public IVisible
 {
@@ -25,9 +25,9 @@ public:
 private:
     friend class ImageBuilder;
 
-    Image(int id, int width, int height, const FilePath& path, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler);
+    Image(int id, int width, int height, const Uri& uri, MediaGeometry props, std::unique_ptr<IImageAdaptor>&& handler);
 
-    void loadImage(const FilePath& path);
+    void loadImage(const Uri& uri);
 
 private:
     std::unique_ptr<IImageAdaptor> m_handler;

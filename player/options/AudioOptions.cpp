@@ -25,7 +25,7 @@ AudioOptions::AudioOptions(const xml_node& node) :
 
 AudioOptions::AudioOptions(const xml_node& node, AudioNodeTag)
 {
-    auto uriNode = node.get_child(ResourcesXlf::Media::Path);
+    auto uriNode = node.get_child(ResourcesXlf::Media::Uri);
 
     setId(uriNode.get<int>(ResourcesXlf::attr("mediaId")));
     setUri(uriNode.get_value<std::string>());

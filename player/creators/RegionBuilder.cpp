@@ -9,14 +9,13 @@
 const int MIN_WIDTH = 1;
 const int MIN_HEIGHT = 1;
 
-RegionBuilder& RegionBuilder::retrieveOptions(const RegionOptions& opts)
+void RegionBuilder::retrieveOptions(const RegionOptions& opts)
 {
     m_id = opts.id();
     m_width = getWidthOption(opts.width());
     m_height = getHeightOption(opts.height());
     m_zorder = getZorderOption(opts.zorder());
     m_loop = getLoopOption(opts.loop());
-    return *this;
 }
 
 std::unique_ptr<IRegion> RegionBuilder::create()

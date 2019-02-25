@@ -17,7 +17,7 @@ public:
     void setSize(int width, int height) override;
 
     void reload() override;
-    void load(const FilePath& page) override;
+    void load(const Uri& uri) override;
     void enableTransparency() override;
 
     Gtk::ScrolledWindow& get() override;

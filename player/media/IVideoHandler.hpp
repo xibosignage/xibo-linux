@@ -5,7 +5,7 @@
 using OnVideoFinished = std::function<void()>;
 
 class IWidgetAdaptor;
-class FilePath;
+class Uri;
 
 class IVideoHandler
 {
@@ -19,7 +19,7 @@ public:
     virtual int width() const = 0;
     virtual int height() const = 0;
 
-    virtual void load(const FilePath& path) = 0;
+    virtual void load(const Uri& uri) = 0;
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void stopPlayback() = 0;

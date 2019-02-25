@@ -22,7 +22,7 @@ const std::vector<std::string> invalidColors =
 
 TEST_F(ImageBackgroundTest, Construct_WithColorAndPath_HandlerLoadImageWithPreserveAspectRatioShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), loadImage(DEFAULT_FULL_PATH, true));
+    EXPECT_CALL(adaptor(), loadImage(DEFAULT_URI, true));
 
     constructBackground();
 }

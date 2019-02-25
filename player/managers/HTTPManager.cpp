@@ -1,8 +1,10 @@
 #include "HTTPManager.hpp"
 
 #include "utils/Logger.hpp"
+#include "utils/Uri.hpp"
+#include "utils/UriParseError.hpp"
+
 #include "HTTPSession.hpp"
-#include "UrlParser.hpp"
 
 const int DEFAULT_CONCURRENT_REQUESTS = 4;
 
@@ -44,26 +46,26 @@ void HTTPManager::cancelActiveSession()
     }
 }
 
-boost::future<HTTPResponseResult> HTTPManager::get(const std::string& url)
+boost::future<HTTPResponseResult> HTTPManager::get(const std::string& uri)
 {
-    return send(http::verb::get, UrlParser{}.parse(url), {});
+    return send(http::verb::get, uri, {});
 }
 
-boost::future<HTTPResponseResult> HTTPManager::post(const std::string& url, const std::string& body)
+boost::future<HTTPResponseResult> HTTPManager::post(const std::string& uri, const std::string& body)
 {
-    return send(http::verb::post, UrlParser{}.parse(url), body);
+    return send(http::verb::post, uri, body);
 }
 
-boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const Url& url, const std::string& body)
+boost::future<HTTPResponseResult> HTTPManager::send(http::verb method, const Uri& uri, const std::string& body)
 {
     if(m_ioc.stopped()) return managerStoppedError();
 
     auto session = std::make_shared<HTTPSession>(m_ioc);
     m_activeSessions.push_back(session);
 
-    url.print();
+    Log::debug(uri);
 
-    return session->send(method, url, body);
+    return session->send(method, uri, body);
 }
 
 boost::future<HTTPResponseResult> HTTPManager::managerStoppedError()

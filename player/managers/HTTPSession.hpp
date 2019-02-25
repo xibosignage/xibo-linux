@@ -12,7 +12,7 @@
 #include <boost/thread/future.hpp>
 
 #include "utils/ResponseResult.hpp"
-#include "Url.hpp"
+#include "utils/Uri.hpp"
 
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -27,7 +27,7 @@ class HTTPSession : public std::enable_shared_from_this<HTTPSession>
 public:
     HTTPSession(asio::io_context& ioc);
 
-    boost::future<HTTPResponseResult> send(http::verb method, const Url& url, const std::string& body);
+    boost::future<HTTPResponseResult> send(http::verb method, const Uri& url, const std::string& body);
     void cancel();
 
 private:
@@ -37,7 +37,7 @@ private:
     void setHttpResult(const HTTPResponseResult& result);
 
     template<typename Callback>
-    void resolve(const Url::Host& host, unsigned short port, Callback callback);
+    void resolve(const std::string& host, unsigned short port, Callback callback);
     void onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results);
 
     template<typename Callback>
@@ -59,7 +59,7 @@ private:
 private:
     ip::tcp::resolver m_resolver;
     std::unique_ptr<ssl::stream<ip::tcp::socket>> m_socket;
-    Url::Scheme m_scheme;
+    Uri::Scheme m_scheme;
     http::request<http::string_body> m_request;
     http::response_parser<http::string_body> m_response;
     beast::flat_buffer m_buffer;

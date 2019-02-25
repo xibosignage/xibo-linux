@@ -21,7 +21,7 @@ public:
     int width() const override;
     int height() const override;
 
-    void load(const FilePath& path) override;
+    void load(const Uri& uri) override;
     void play() override;
     void stopPlayback() override;
     void stop() override;
@@ -34,7 +34,7 @@ private:
     void onPadAdded(const Gst::RefPtr<Gst::Pad>& pad);
     void init();
     void checkGstElements();
-    void inspectVideo(const FilePath& path);
+    void inspectVideo(const Uri& uri);
 
 private:
     Gst::RefPtr<Gst::Pipeline> m_pipeline;

@@ -3,13 +3,13 @@
 #include "IVideoHandler.hpp"
 #include "utils/Logger.hpp"
 
-Video::Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler) :
+Video::Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVideoHandler>&& handler) :
     Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 
     m_handler->setSize(width, height);
-    m_handler->load(path);
+    m_handler->load(uri);
     m_handler->connect(std::bind(&Video::onVideoFinished, this)); // FIXME change to subscribe
 }
 

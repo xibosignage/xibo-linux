@@ -4,13 +4,13 @@
 
 #include <cassert>
 
-WebView::WebView(int id, int width, int height, const FilePath& path, std::unique_ptr<IWebViewAdaptor>&& handler) :
+WebView::WebView(int id, int width, int height, const Uri& uri, std::unique_ptr<IWebViewAdaptor>&& handler) :
     Media(id), m_handler(std::move(handler))
 {
     assert(m_handler);
 
     m_handler->setSize(width, height);
-    m_handler->load(path);
+    m_handler->load(uri);
 }
 
 void WebView::show()

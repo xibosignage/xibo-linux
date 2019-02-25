@@ -27,14 +27,14 @@ TEST_F(ImageTest, Construct_InvalidValign_InvaldiArgShouldBeThrown)
 
 TEST_F(ImageTest, Construct_Scaled_HandlerLoadImageWithPreserveAspectRatioShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), loadImage(DEFAULT_FULL_PATH, true));
+    EXPECT_CALL(adaptor(), loadImage(DEFAULT_URI, true));
 
     constructImage("center"s, DEFAULT_ALIGN, DEFAULT_VALIGN);
 }
 
 TEST_F(ImageTest, Construct_Scaled_HandlerLoadImageWithoutPreserveAspectRatioShouldBeCalled)
 {
-    EXPECT_CALL(adaptor(), loadImage(DEFAULT_FULL_PATH, false));
+    EXPECT_CALL(adaptor(), loadImage(DEFAULT_URI, false));
 
     constructImage("stretch"s, DEFAULT_ALIGN, DEFAULT_VALIGN);
 }

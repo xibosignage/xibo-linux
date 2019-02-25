@@ -10,7 +10,7 @@
 #include "wrapper/Pad.hpp"
 
 #include "utils/Logger.hpp"
-#include "utils/FilePath.hpp"
+#include "utils/Uri.hpp"
 
 namespace ph = std::placeholders;
 
@@ -83,9 +83,9 @@ void AudioHandler::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
     pad->link(sinkpad);
 }
 
-void AudioHandler::load(const FilePath& path)
+void AudioHandler::load(const Uri& uri)
 {
-    m_source->setLocation(path.string());
+    m_source->setLocation(uri.path());
 }
 
 void AudioHandler::play()

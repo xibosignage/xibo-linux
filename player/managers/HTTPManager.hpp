@@ -10,7 +10,7 @@
 
 using HTTPResponseResult = ResponseResult<std::string>;
 class HTTPSession;
-class Url;
+class Uri;
 
 class HTTPManager : private boost::noncopyable
 {
@@ -23,7 +23,7 @@ public:
     boost::future<HTTPResponseResult> post(const std::string& url, const std::string& body);
 
 private:
-    boost::future<HTTPResponseResult> send(boost::beast::http::verb method, const Url& url, const std::string& body);
+    boost::future<HTTPResponseResult> send(boost::beast::http::verb method, const Uri& uri, const std::string& body);
 
     boost::future<HTTPResponseResult> managerStoppedError();
     void cancelActiveSession();

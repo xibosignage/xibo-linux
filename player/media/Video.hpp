@@ -4,7 +4,7 @@
 #include "options/VideoOptions.hpp"
 
 class IVideoHandler;
-class FilePath;
+class Uri;
 
 class Video : public Media, public IVisible, public IPlayable
 {
@@ -34,7 +34,7 @@ protected:
 private:
     friend class VideoBuilder;
 
-    Video(int id, int width, int height, const FilePath& path, std::unique_ptr<IVideoHandler>&& handler);
+    Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVideoHandler>&& handler);
 
     void onVideoFinished();
 
