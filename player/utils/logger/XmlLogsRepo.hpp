@@ -6,7 +6,9 @@
 class XmlLogsRepo
 {
 public:
-    std::string get() const;
+    static XmlLogsRepo& get();
+
+    std::string buffer() const;
     void append(const std::string& data);
     void clear();
 

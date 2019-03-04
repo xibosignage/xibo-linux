@@ -1,5 +1,7 @@
 #include "Logging.hpp"
 
+#include "XmlLogsRepo.hpp"
+
 std::shared_ptr<Logger> Log::logger()
 {
     static auto logger = Logger::get();
@@ -8,6 +10,6 @@ std::shared_ptr<Logger> Log::logger()
 
 std::string Log::xmlLogs()
 {
-    XmlLogsRetriever logsRetriever{logger()};
+    XmlLogsRetriever logsRetriever{logger(), XmlLogsRepo::get()};
     return logsRetriever.retrieveLogs();
 }

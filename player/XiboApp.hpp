@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <spdlog/common.h>
 
 class MainLoop;
 class XmdsRequestSender;
@@ -29,8 +30,9 @@ public:
     int run(int argc, char** argv);
 
 private:
-    XiboApp(const std::string& name);
+    static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
+    XiboApp(const std::string& name);
     int runMainLoop();
     void startWindow(MainWindow& window);
     void onCollectionFinished(const CollectionResult& result);

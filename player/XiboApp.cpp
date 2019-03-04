@@ -4,6 +4,8 @@
 
 #include "utils/Resources.hpp"
 #include "events/CallbackGlobalQueue.hpp"
+#include "utils/logger/XmlLoggerSink.hpp"
+#include <spdlog/sinks/stdout_sinks.h>
 
 #include "xmds/XmdsRequestSender.hpp"
 #include "xmds/SoapRequestSender.hpp"
@@ -26,7 +28,7 @@ std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = Logger::create(LOGGER);
+    auto logger = Logger::create(LOGGER, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
@@ -35,6 +37,16 @@ XiboApp& XiboApp::create(const std::string& name)
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
+}
+
+std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
+{
+    std::vector<spdlog::sink_ptr> sinks;
+
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
+    sinks.push_back(std::make_shared<LoggerXmlSinkMt>(XmlLogsRepo::get()));
+
+    return sinks;
 }
 
 XiboApp::XiboApp(const std::string& name) :

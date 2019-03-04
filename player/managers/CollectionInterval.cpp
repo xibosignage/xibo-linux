@@ -35,7 +35,7 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onRegularCollectionFinished(const CollectionResult& result)
 {
-    Log::debug("Collection finished {}", std::this_thread::get_id());
+    Log::debug("Collection finished");
     Log::debug("Next collection will start in {} seconds", m_collectInterval);
     pushEvent(CollectionFinished{result});
     startTimer();

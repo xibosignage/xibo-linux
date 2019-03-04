@@ -1,14 +1,12 @@
 #include "Logger.hpp"
 
-#include "XmlLoggerSink.hpp"
-
-#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/spdlog.h>
 
 std::shared_ptr<Logger> Logger::globalLogger;
 
-std::shared_ptr<Logger> Logger::create(const std::string& name)
+std::shared_ptr<Logger> Logger::create(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks)
 {
-    globalLogger = std::shared_ptr<Logger>(new Logger{name});
+    globalLogger = std::shared_ptr<Logger>(new Logger{name, sinks});
     return globalLogger;
 }
 
@@ -32,19 +30,8 @@ void Logger::flush()
     m_combinedLogger->flush();
 }
 
-XmlLogsRepo& Logger::xmlLogsRepo()
+Logger::Logger(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks)
 {
-    return *m_xmlLogsRepo;
-}
-
-Logger::Logger(const std::string& name)
-{
-    m_xmlLogsRepo = std::make_unique<XmlLogsRepo>();
-
-    std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
-    sinks.push_back(std::make_shared<LoggerXmlSinkMt>(xmlLogsRepo()));
-
     m_combinedLogger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
     spdlog::register_logger(m_combinedLogger);
 }

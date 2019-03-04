@@ -1,6 +1,12 @@
 #include "XmlLogsRepo.hpp"
 
-std::string XmlLogsRepo::get() const
+XmlLogsRepo& XmlLogsRepo::get()
+{
+    static XmlLogsRepo repo;
+    return repo;
+}
+
+std::string XmlLogsRepo::buffer() const
 {
     return m_buffer;
 }
