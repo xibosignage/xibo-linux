@@ -1,7 +1,7 @@
 #include "UriParser.hpp"
 #include "UriParseError.hpp"
 
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include <boost/format.hpp>
 
 const std::regex URL_REGEX(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?(\/.*))");

@@ -20,7 +20,7 @@ add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTUR
 file(GLOB ADAPTORS_SOURCES ${CMAKE_SOURCE_DIR}/player/adaptors/*.cpp ${CMAKE_SOURCE_DIR}/player/adaptors/*.hpp)
 file(GLOB CONTROL_SOURCES ${CMAKE_SOURCE_DIR}/player/control/*.cpp ${CMAKE_SOURCE_DIR}/player/control/*.hpp)
 file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp ${CMAKE_SOURCE_DIR}/player/media/*.hpp)
-file(GLOB UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp ${CMAKE_SOURCE_DIR}/player/utils/*.hpp)
+file(GLOB_RECURSE UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp ${CMAKE_SOURCE_DIR}/player/utils/*.hpp)
 file(GLOB CREATORS_SOURCES ${CMAKE_SOURCE_DIR}/player/creators/*.cpp ${CMAKE_SOURCE_DIR}/player/creators/*.hpp)
 file(GLOB MANAGERS_SOURCES ${CMAKE_SOURCE_DIR}/player/managers/*.cpp ${CMAKE_SOURCE_DIR}/player/managers/*.hpp)
 file(GLOB PARSERS_SOURCES ${CMAKE_SOURCE_DIR}/player/options/*.cpp ${CMAKE_SOURCE_DIR}/player/options/*.hpp)

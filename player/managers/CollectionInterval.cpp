@@ -1,10 +1,9 @@
 #include "CollectionInterval.hpp"
 
-#include "xmds/XMDSManager.hpp"
+#include "xmds/XmdsRequestSender.hpp"
 #include "events/CallbackGlobalQueue.hpp"
 
-#include "utils/Logger.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
 
 #include <glibmm/main.h>
@@ -12,8 +11,8 @@
 const uint DEFAULT_INTERVAL = 5;
 namespace ph = std::placeholders;
 
-CollectionInterval::CollectionInterval() :
-    m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
+CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
+    m_xmdsSender(xmdsSender), m_collectInterval{DEFAULT_INTERVAL}, m_intervalTimer(std::make_unique<TimerProvider>())
 {
 }
 
@@ -51,7 +50,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
 
-        auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display").get();
+        auto registerDisplayResult = m_xmdsSender.registerDisplay(121, "1.8", "Display").get();
         onDisplayRegistered(registerDisplayResult, session);
     });
 }
@@ -75,11 +74,14 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             updateTimer(result.playerSettings.collectInterval);
             session->result.settings = result.playerSettings;
 
-            auto requiredFilesResult = Utils::xmdsManager().requiredFiles().get();
-            auto scheduleResult = Utils::xmdsManager().schedule().get();
+            auto requiredFilesResult = m_xmdsSender.requiredFiles().get();
+            auto scheduleResult = m_xmdsSender.schedule().get();
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
+
+            auto submitLogsResult = m_xmdsSender.submitLogs(Log::xmlLogs()).get();
+            onSubmitLog(submitLogsResult, session);
         }
         sessionFinished(session);
     }
@@ -111,7 +113,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if(!error)
     {
-        RequiredFilesDownloader downloader;
+        RequiredFilesDownloader downloader{m_xmdsSender};
 
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
@@ -146,11 +148,31 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
 {
-    Utils::xmdsManager().mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+    m_xmdsSender.mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
         auto [error, result] = future.get();
         if(error)
         {
             Log::error("MediaInventory: {}", error);
         }
     });
+}
+
+void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& logResult, CollectionSessionPtr session)
+{
+    auto [error, result] = logResult;
+    if(!error)
+    {
+        if(result.success)
+        {
+            Log::debug("Logs were submitted successfully");
+        }
+        else
+        {
+            Log::debug("Logs were not submited due to some error");
+        }
+    }
+    else
+    {
+        sessionFinished(session, error);
+    }
 }

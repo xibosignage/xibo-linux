@@ -4,7 +4,7 @@
 
 #include "utils/Resources.hpp"
 #include "utils/FileSystemAdaptor.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 #include "options/MediaOptions.hpp"
 
@@ -87,7 +87,7 @@ private:
             throw std::runtime_error("Not valid path");
     }
 
-protected: // FIXME
+protected:
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     Uri m_uri;
     int m_id;

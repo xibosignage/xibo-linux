@@ -39,7 +39,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
     video_sink_class->show_frame = GST_DEBUG_FUNCPTR(gst_xibovideosink_show_frame);
 }
 
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler)
 {

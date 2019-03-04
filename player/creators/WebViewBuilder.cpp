@@ -1,7 +1,7 @@
 #include "WebViewBuilder.hpp"
 
 #include "utils/Resources.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "adaptors/WebKitWebViewAdaptor.hpp"
 
 #include <fstream>

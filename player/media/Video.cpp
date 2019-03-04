@@ -1,7 +1,7 @@
 #include "Video.hpp"
 
 #include "IVideoHandler.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 Video::Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVideoHandler>&& handler) :
     Media(id), m_handler(std::move(handler))
@@ -10,7 +10,7 @@ Video::Video(int id, int width, int height, const Uri& uri, std::unique_ptr<IVid
 
     m_handler->setSize(width, height);
     m_handler->load(uri);
-    m_handler->connect(std::bind(&Video::onVideoFinished, this)); // FIXME change to subscribe
+    m_handler->connect(std::bind(&Video::onVideoFinished, this));
 }
 
 void Video::onVideoFinished()

@@ -1,7 +1,8 @@
 #pragma once
 
+#include "utils/logger/LoggingLevel.hpp"
+
 #include <string>
-#include <spdlog/common.h>
 
 struct PlayerSettings
 {
@@ -14,7 +15,7 @@ struct PlayerSettings
     double sizeY;
     double offsetX;
     double offsetY;
-    spdlog::level::level_enum logLevel;
+    LoggingLevel logLevel;
     bool shellCommandsEnabled;
     bool modifiedLayoutsEnabled;
     int maxConcurrentDownloads;

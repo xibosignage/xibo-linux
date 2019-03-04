@@ -41,6 +41,6 @@ private:
     std::unique_ptr<IOverlayAdaptor> m_handler;
     std::unique_ptr<IBackground> m_background;
     std::vector<std::unique_ptr<IRegion>> m_regions;
-    std::map<int, bool> m_expiredRegions; // FIXME better to use 1 data structure
+    std::map<int, bool> m_expiredRegions;
 
 };

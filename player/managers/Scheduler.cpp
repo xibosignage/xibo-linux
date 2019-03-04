@@ -2,8 +2,7 @@
 
 #include "control/IMainLayout.hpp"
 #include "creators/MainDirector.hpp"
-#include "utils/Utilities.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "utils/Resources.hpp"
 #include "constants.hpp"
 
@@ -23,7 +22,7 @@ void Scheduler::update(const Schedule::Result& schedule)
 
 void Scheduler::resetSchedule()
 {
-//    m_nextLayoutIndex = FIRST_ITEM_INDEX; // FIXME (should I reset index ???)
+//    m_nextLayoutIndex = FIRST_ITEM_INDEX;
     m_layouts.clear();
 }
 

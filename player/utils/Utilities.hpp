@@ -2,15 +2,13 @@
 
 #include "constants.hpp"
 
-class XMDSManager;
-class HTTPManager;
+class HttpManager;
 class FileCacheManager;
 class FilePath;
 
 namespace Utils
 {
-    XMDSManager& xmdsManager();
-    HTTPManager& httpManager();
+    HttpManager& httpManager();
     FileCacheManager& fileManager();
     xml_node parseXmlFromPath(const FilePath& xlfPath);
     xml_node parseXmlFromString(const std::string& xml);

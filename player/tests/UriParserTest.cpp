@@ -1,7 +1,7 @@
 #include "UriParserTest.hpp"
 
-#include "utils/UriParser.hpp"
-#include "utils/UriParseError.hpp"
+#include "utils/uri/UriParser.hpp"
+#include "utils/uri/UriParseError.hpp"
 
 TEST_P(UriParserValidHttpTests, UriParser_ParseValidHttpUri_EqualsGivenUri)
 {

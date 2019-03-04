@@ -5,31 +5,30 @@
 #include "utils/Resources.hpp"
 #include "events/CallbackGlobalQueue.hpp"
 
-#include "xmds/XMDSManager.hpp"
-#include "xmds/SOAPManager.hpp"
+#include "xmds/XmdsRequestSender.hpp"
+#include "xmds/SoapRequestSender.hpp"
 #include "adaptors/GtkWindowAdaptor.hpp"
 #include "control/MainWindow.hpp"
 #include "control/IMainLayout.hpp"
 
 #include "options/CommandLineParser.hpp"
-#include "managers/HTTPManager.hpp"
+#include "managers/HttpManager.hpp"
 #include "managers/CollectionInterval.hpp"
 #include "managers/Scheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/sinks/stdout_sinks.h>
 #include <gst/gst.h>
 #include <glibmm/main.h>
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
+
 XiboApp& XiboApp::create(const std::string& name)
 {
-    spdlog::stdout_logger_st(LOGGER);
-    spdlog::set_level(spdlog::level::debug);
-    spdlog::set_pattern("[%H:%M:%S.%e] [%l]: %v");
+    auto logger = Logger::create(LOGGER);
+    logger->setLevel(LoggingLevel::Debug);
+    logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
     gst_init(nullptr, nullptr);
     Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
@@ -42,21 +41,10 @@ XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<Scheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
-    m_collectionInterval(std::make_unique<CollectionInterval>()),
-    m_httpManager(std::make_unique<HTTPManager>()),
+    m_httpManager(std::make_unique<HttpManager>()),
     m_options(std::make_unique<CommandLineParser>())
 {
     m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
-
-    m_mainLoop->setShutdownAction([this](){
-        m_httpManager->shutdown();
-        m_collectionInterval->stop();
-    });
-
-    m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
-        auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
-        onCollectionFinished(collectionEvent.result());
-    });
 }
 
 void XiboApp::onCollectionFinished(const CollectionResult& result)
@@ -78,7 +66,7 @@ void XiboApp::updateSettings(const PlayerSettings& settings)
 {
     Log::debug("Log level updated");
 
-    spdlog::set_level(settings.logLevel);
+    Log::logger()->setLevel(settings.logLevel);
 }
 
 XiboApp::~XiboApp()
@@ -94,12 +82,7 @@ XiboApp& XiboApp::app()
     return *m_app;
 }
 
-XMDSManager& XiboApp::xmdsManager()
-{
-    return *m_xmdsManager;
-}
-
-HTTPManager& XiboApp::httpManager()
+HttpManager& XiboApp::httpManager()
 {
     return *m_httpManager;
 }
@@ -157,7 +140,18 @@ int XiboApp::runMainLoop()
 {
     auto mainWindow = std::make_shared<MainWindow>(std::make_unique<GtkWindowAdaptor>());
 
-    m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
+    m_xmdsManager = std::make_unique<XmdsRequestSender>(m_options->host(), m_options->serverKey(), m_options->hardwareKey());
+    m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
+
+    m_mainLoop->setShutdownAction([this](){
+        m_httpManager->shutdown();
+        m_collectionInterval->stop();
+    });
+
+    m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
+        auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
+        onCollectionFinished(collectionEvent.result());
+    });
 
     m_scheduler->subscribe(EventType::LayoutExpired, [this, &mainWindow](const Event&){
         mainWindow->setLayout(m_scheduler->nextLayout());

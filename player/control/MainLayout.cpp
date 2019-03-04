@@ -8,7 +8,7 @@
 #include "adaptors/IOverlayAdaptor.hpp"
 
 #include "events/Event.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 #include <cassert>
 

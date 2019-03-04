@@ -7,7 +7,7 @@
 #include "adaptors/IImageAdaptor.hpp"
 
 #include "utils/IFileSystemAdaptor.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 class BackgroundBuilder;
 

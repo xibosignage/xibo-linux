@@ -21,17 +21,17 @@ private:
 class MacAddressFetcher
 {
 public:
-    boost::optional<std::string> getMacAddress();
+    static boost::optional<std::string> getMacAddress();
 
 private:
-    SocketDescriptor openSocket();
-    ifconf getInterfaceConfig(SocketDescriptor socket);
-    ifreq findInterface(SocketDescriptor socket, ifconf& config);
+    static SocketDescriptor openSocket();
+    static ifconf getInterfaceConfig(SocketDescriptor socket);
+    static ifreq findInterface(SocketDescriptor socket, ifconf& config);
 
-    std::string retrieveMacAddress(SocketDescriptor socket, ifreq& interfaceRequest);
-    InterfaceFlags retrieveFlags(SocketDescriptor socket, ifreq& interfaceRequest);
-    bool isNotLoopback(InterfaceFlags flags);
-    bool isConnected(InterfaceFlags flags);
+    static std::string retrieveMacAddress(SocketDescriptor socket, ifreq& interfaceRequest);
+    static InterfaceFlags retrieveFlags(SocketDescriptor socket, ifreq& interfaceRequest);
+    static bool isNotLoopback(InterfaceFlags flags);
+    static bool isConnected(InterfaceFlags flags);
 
 
 };

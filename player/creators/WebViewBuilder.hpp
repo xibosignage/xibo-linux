@@ -3,7 +3,7 @@
 #include "adaptors/IWebViewAdaptor.hpp"
 #include "media/WebView.hpp"
 #include "options/WebViewOptions.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 class WebViewBuilder;
 

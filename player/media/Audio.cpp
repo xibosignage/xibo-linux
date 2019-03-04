@@ -1,7 +1,7 @@
 #include "Audio.hpp"
 
 #include "IAudioHandler.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 namespace ph = std::placeholders;
 

@@ -49,7 +49,7 @@ protected:
         return std::move(m_adaptor);
     }
 
-protected: // FIXME
+protected:
     std::unique_ptr<Options> m_options;
     std::unique_ptr<Handler> m_adaptor;
 
