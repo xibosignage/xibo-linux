@@ -78,3 +78,14 @@ boost::future<ResponseResult<MediaInventory::Result>> XMDSManager::mediaInventor
 
     return m_soapManager->sendRequest<MediaInventory::Result>(request);
 }
+
+boost::future<ResponseResult<SubmitScreenShot::Result>> XMDSManager::submitScreenShot(const std::string& screenShot)
+{
+    SubmitScreenShot::Request request;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.screenShot = screenShot;
+
+    return m_soapManager->sendRequest<SubmitScreenShot::Result>(request);
+}
+

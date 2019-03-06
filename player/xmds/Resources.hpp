@@ -115,4 +115,10 @@ namespace XMDSResources
         const std::string_view Name = "MediaInventory";
         const std::string Success = "success";
     }
+
+    namespace SubmitScreenShot
+    {
+        const std::string_view Name = "SubmitScreenShot";
+        const std::string Success = "success";
+    }
 }
