@@ -1,21 +1,20 @@
 #pragma once
 
 #include "RequiredFilesDownloader.hpp"
-#include "CollectionResult.hpp"
 
 #include "xmds/RegisterDisplay.hpp"
 #include "xmds/RequiredFiles.hpp"
+#include "xmds/Schedule.hpp"
 
 #include "utils/ITimerProvider.hpp"
 #include "utils/JoinableThread.hpp"
 #include "utils/ResponseResult.hpp"
 #include "events/Observable.hpp"
 
-using CollectionResultCallback = std::function<void(const CollectionResult&)>;
+using CollectionResultCallback = std::function<void(const PlayerError&)>;
 
 struct CollectionSession
 {
-    CollectionResult result;
     CollectionResultCallback callback;
 };
 
@@ -29,13 +28,13 @@ public:
     void startRegularCollection();
     void stop();
     void collectOnce(CollectionResultCallback callback);
+    void updateInterval(int collectInterval);
 
 private:
     void startTimer();
-    void updateTimer(int collectInterval);
 
     void sessionFinished(CollectionSessionPtr session, PlayerError = {});
-    void onRegularCollectionFinished(const CollectionResult& result);
+    void onRegularCollectionFinished(const PlayerError& error);
 
     void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);
     void displayMessage(const RegisterDisplay::Result::Status& status);
@@ -45,7 +44,7 @@ private:
 
 private:
     std::unique_ptr<JoinableThread> m_workerThread;
-    int m_collectInterval;
     std::unique_ptr<ITimerProvider> m_intervalTimer;
+    int m_collectInterval;
 
 };

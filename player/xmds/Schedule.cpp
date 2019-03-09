@@ -25,11 +25,11 @@ Schedule::Result SOAP::ResponseParser<Schedule::Result>::doParse(const xml_node&
     for(auto [name, node] : schedule)
     {
         if(name == Resources::Layout)
-            result.layouts.emplace_back(parseScheduledLayout(node));
+            result.schedule.layouts.emplace_back(parseScheduledLayout(node));
         else if(name == Resources::DefaultLayout)
-            result.defaultLayout = parseDefaultLayout(node);
+            result.schedule.defaultLayout = parseDefaultLayout(node);
         else if(name == Resources::GlobalDependants)
-            result.globalDependants = parseDependants(node);
+            result.schedule.globalDependants = parseDependants(node);
     }
 
     return result;

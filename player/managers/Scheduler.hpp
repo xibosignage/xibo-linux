@@ -1,18 +1,18 @@
 #pragma once
 
 #include "events/Observable.hpp"
-#include "xmds/Schedule.hpp"
 
 #include <memory>
 #include <vector>
 
 class IMainLayout;
+class IFileSystemAdaptor;
 
 class Scheduler : public Observable<>
 {
 public:
-    Scheduler() = default;
-    void update(const Schedule::Result& schedule);
+    Scheduler();
+    void update(const LayoutSchedule& schedule);
     std::unique_ptr<IMainLayout> nextLayout();
 
 private:
@@ -26,6 +26,7 @@ private:
     int nextValidLayoutId();
 
 private:
+    std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     DefaultScheduledLayout m_defaultLayout;
     std::vector<ScheduledLayout> m_layouts;
     std::vector<std::string> m_globalDependants;

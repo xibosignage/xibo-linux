@@ -1,15 +1,14 @@
 #include "FileCacheManager.hpp"
 
 #include "utils/Resources.hpp"
+#include "utils/FileSystemAdaptor.hpp"
 
 #include <fstream>
 #include <openssl/md5.h>
 #include <boost/format.hpp>
 
-const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
-
-FileCacheManager::FileCacheManager() :
-    m_cacheFilePath(Resources::directory() / DEFAULT_CACHE_FILE)
+FileCacheManager::FileCacheManager(const FilePath& cacheFile) :
+    m_filesystem(std::make_unique<FileSystemAdaptor>()), m_cacheFilePath(cacheFile)
 {
     loadCacheFromDrive(m_cacheFilePath);
 }
@@ -51,7 +50,7 @@ void FileCacheManager::addFileToCache(const std::string& fileHash)
 
 void FileCacheManager::loadCacheFromDrive(const FilePath& path)
 {
-    if(!std::filesystem::exists(path)) return;
+    if(!m_filesystem->exists(path)) return;
 
     std::ifstream in(path.string());
     std::string hash;

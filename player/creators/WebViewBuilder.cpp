@@ -7,6 +7,7 @@
 #include <fstream>
 #include <regex>
 #include <boost/optional/optional.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 const std::string DEFAULT_NATIVE_SCHEME = "file://";
 const std::regex DURATION_REGEX("DURATION=([0-9]+)");

@@ -2,17 +2,21 @@
 
 #include "control/IMainLayout.hpp"
 #include "creators/MainDirector.hpp"
+#include "constants.hpp"
+
 #include "utils/Utilities.hpp"
 #include "utils/Logger.hpp"
 #include "utils/Resources.hpp"
-#include "constants.hpp"
-
-#include <boost/property_tree/ptree.hpp>
-#include <filesystem>
+#include "utils/FileSystemAdaptor.hpp"
 
 const size_t FIRST_ITEM_INDEX = 0;
 
-void Scheduler::update(const Schedule::Result& schedule)
+Scheduler::Scheduler() :
+    m_filesystem(std::make_unique<FileSystemAdaptor>())
+{
+}
+
+void Scheduler::update(const LayoutSchedule& schedule)
 {
     resetSchedule();
 
@@ -118,7 +122,7 @@ bool Scheduler::allFilesExist(const std::vector<std::string>& dependants) const
 {
     for(auto dependant : m_globalDependants)
     {
-        if(!std::filesystem::exists(Resources::directory() / dependant))
+        if(!m_filesystem->exists(Resources::directory() / dependant))
         {
             return false;
         }
@@ -126,7 +130,7 @@ bool Scheduler::allFilesExist(const std::vector<std::string>& dependants) const
 
     for(auto dependant : dependants)
     {
-        if(!std::filesystem::exists(Resources::directory() / dependant))
+        if(!m_filesystem->exists(Resources::directory() / dependant))
         {
             return false;
         }

@@ -15,7 +15,7 @@ EventType DurationExpiredEvent::type() const
     return EventType::DurationExpired;
 }
 
-ScaleMediaEvent::ScaleMediaEvent(double scaleX, double scaleY) : m_scaleX(scaleX), m_scaleY(scaleY)
+ScaleMediaEvent::ScaleMediaEvent(double scaleX, double scaleY) : m_scaleX{scaleX}, m_scaleY{scaleY}
 {
 }
 
@@ -44,7 +44,7 @@ EventType LayoutExpiredEvent::type() const
     return EventType::LayoutExpired;
 }
 
-RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) : m_id(id)
+RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) : m_id{id}
 {
 }
 
@@ -53,17 +53,44 @@ int RegionDurationExpiredEvent::id() const
     return m_id;
 }
 
-CollectionFinished::CollectionFinished(const CollectionResult& result)
+CollectionFinishedEvent::CollectionFinishedEvent(const PlayerError& error) : m_error{error}
 {
-    m_result = result;
 }
 
-EventType CollectionFinished::type() const
+EventType CollectionFinishedEvent::type() const
 {
     return EventType::CollectionFinished;
 }
 
-const CollectionResult& CollectionFinished::result() const
+const PlayerError& CollectionFinishedEvent::error() const
 {
-    return m_result;
+    return m_error;
+}
+
+SettingsUpdatedEvent::SettingsUpdatedEvent(const PlayerSettings& settings) : m_settings{settings}
+{
+}
+
+EventType SettingsUpdatedEvent::type() const
+{
+    return EventType::SettingsUpdated;
+}
+
+const PlayerSettings& SettingsUpdatedEvent::settings() const
+{
+    return m_settings;
+}
+
+ScheduleUpdatedEvent::ScheduleUpdatedEvent(const LayoutSchedule& schedule) : m_schedule{schedule}
+{
+}
+
+EventType ScheduleUpdatedEvent::type() const
+{
+    return EventType::ScheduleUpdated;
+}
+
+const LayoutSchedule& ScheduleUpdatedEvent::schedule() const
+{
+    return m_schedule;
 }

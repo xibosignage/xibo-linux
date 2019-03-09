@@ -11,7 +11,8 @@ class Scheduler;
 class FileCacheManager;
 class CollectionInterval;
 class CommandLineParser;
-class CollectionResult;
+class PlayerSettingsManager;
+class PlayerError;
 struct PlayerSettings;
 
 class XiboApp
@@ -34,8 +35,9 @@ private:
 
     int runMainLoop();
     void startWindow(MainWindow& window);
-    void onCollectionFinished(const CollectionResult& result);
+    void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
+    void updatePlayerSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
     bool processCallbackQueue();
 
@@ -47,6 +49,7 @@ private:
     std::unique_ptr<XMDSManager> m_xmdsManager;
     std::unique_ptr<HTTPManager> m_httpManager;
     std::unique_ptr<CommandLineParser> m_options;
+    std::unique_ptr<PlayerSettingsManager> m_settingsManager;
 
     static std::unique_ptr<XiboApp> m_app;
 };

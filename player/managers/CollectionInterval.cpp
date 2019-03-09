@@ -9,11 +9,11 @@
 
 #include <glibmm/main.h>
 
-const uint DEFAULT_INTERVAL = 5;
+const uint DEFAULT_INTERVAL = 900;
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval() :
-    m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
+    m_intervalTimer{std::make_unique<TimerProvider>()}, m_collectInterval{DEFAULT_INTERVAL}
 {
 }
 
@@ -34,11 +34,10 @@ void CollectionInterval::startTimer()
     });
 }
 
-void CollectionInterval::onRegularCollectionFinished(const CollectionResult& result)
+void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
-    Log::debug("Collection finished {}", std::this_thread::get_id());
-    Log::debug("Next collection will start in {} seconds", m_collectInterval);
-    pushEvent(CollectionFinished{result});
+    Log::debug("Collection finished. Next collection will start in {} seconds", m_collectInterval);
+    pushEvent(CollectionFinishedEvent{error});
     startTimer();
 }
 
@@ -59,8 +58,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
     callbackQueue().add([session, error](){
-        session->result.error = error;
-        session->callback(session->result);
+        session->callback(error);
     });
 }
 
@@ -72,8 +70,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         displayMessage(result.status);
         if(result.status.code == RegisterDisplay::Result::Status::Code::Ready) // FIXME handle Activated/Waiting
         {
-            updateTimer(result.playerSettings.collectInterval);
-            session->result.settings = result.playerSettings;
+            pushEvent(SettingsUpdatedEvent{result.playerSettings});
 
             auto requiredFilesResult = Utils::xmdsManager().requiredFiles().get();
             auto scheduleResult = Utils::xmdsManager().schedule().get();
@@ -97,7 +94,7 @@ void CollectionInterval::displayMessage(const RegisterDisplay::Result::Status& s
     }
 }
 
-void CollectionInterval::updateTimer(int collectInterval)
+void CollectionInterval::updateInterval(int collectInterval)
 {
     if(m_collectInterval != collectInterval)
     {
@@ -136,7 +133,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
-        session->result.schedule = result;
+        pushEvent(ScheduleUpdatedEvent{result.schedule});
     }
     else
     {
