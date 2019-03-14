@@ -2,6 +2,7 @@
 #include "UriParser.hpp"
 
 #include <iostream>
+#include <boost/algorithm/string/replace.hpp>
 
 const std::map<Uri::Scheme, unsigned short> DEFAULT_PORTS{{Uri::Scheme::HTTPS, 443}, {Uri::Scheme::HTTP, 80}};
 
@@ -36,8 +37,16 @@ boost::optional<unsigned short> Uri::Authority::optionalPort() const
     return m_port;
 }
 
-Uri::Uri(const std::string& rawUri) : Uri(UriParser().parse(rawUri))
+Uri::Uri(const std::string& rawUri) : Uri(UriParser().parse(removeEscapedSymbols(rawUri)))
 {
+}
+
+std::string Uri::removeEscapedSymbols(std::string url)
+{
+    boost::replace_all(url, "%2F", "/");
+    boost::replace_all(url, "%3A", ":");
+
+    return url;
 }
 
 Uri::Uri(Uri::Scheme scheme, const Authority& authority, const std::string& path) :

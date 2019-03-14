@@ -1,7 +1,7 @@
 #pragma once
 
 #include "xmds/Schedule.hpp"
-#include "control/PlayerSettings.hpp"
+#include "model/PlayerSettings.hpp"
 
 struct CollectionResult
 {
