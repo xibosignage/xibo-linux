@@ -1,5 +1,5 @@
 #include "WebView.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 #include <webkit/webkit.h>
 

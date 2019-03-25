@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Field.hpp"
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+
+#include "utils/Field.hpp"
 
 namespace GetFile
 {
@@ -24,7 +25,7 @@ namespace GetFile
 }
 
 template<>
-class SOAP::RequestSerializer<GetFile::Request> : public BaseRequestSerializer<GetFile::Request>
+class Soap::RequestSerializer<GetFile::Request> : public BaseRequestSerializer<GetFile::Request>
 {
 public:
     RequestSerializer(const GetFile::Request& request);
@@ -33,7 +34,7 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<GetFile::Result> : public BaseResponseParser<GetFile::Result>
+class Soap::ResponseParser<GetFile::Result> : public BaseResponseParser<GetFile::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);

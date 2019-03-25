@@ -39,6 +39,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
     video_sink_class->show_frame = GST_DEBUG_FUNCPTR(gst_xibovideosink_show_frame);
 }
 
+
 void gst_xibovideosink_set_handler(XiboVideoSink* sink, DrawingArea* handler)
 {
     sink->handler = handler;    

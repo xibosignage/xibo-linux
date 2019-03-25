@@ -1,47 +1,11 @@
 #include "Event.hpp"
 
-StartMediaEvent::StartMediaEvent(int id) :
-    m_id(id)
-{
-}
-
-int StartMediaEvent::id() const
-{
-    return m_id;
-}
-
-EventType StartMediaEvent::type() const
-{
-    return EventType::StartMedia;
-}
-
-StopMediaEvent::StopMediaEvent(int id) :
-    m_id(id)
-{
-}
-
-int StopMediaEvent::id() const
-{
-    return m_id;
-}
-
-EventType StopMediaEvent::type() const
-{
-    return EventType::StopMedia;
-}
-
 EventType DurationExpiredEvent::type() const
 {
     return EventType::DurationExpired;
 }
 
-EventType PlaybackFinishedEvent::type() const
-{
-    return EventType::PlaybackFinished;
-}
-
-RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) :
-    m_id(id)
+RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) : m_id{id}
 {
 }
 
@@ -50,9 +14,8 @@ int RegionDurationExpiredEvent::id() const
     return m_id;
 }
 
-CollectionFinishedEvent::CollectionFinishedEvent(const CollectionResult& result)
+CollectionFinishedEvent::CollectionFinishedEvent(const PlayerError& error) : m_error{error}
 {
-    m_result = result;
 }
 
 EventType CollectionFinishedEvent::type() const
@@ -60,9 +23,37 @@ EventType CollectionFinishedEvent::type() const
     return EventType::CollectionFinished;
 }
 
-const CollectionResult& CollectionFinishedEvent::result() const
+const PlayerError& CollectionFinishedEvent::error() const
 {
-    return m_result;
+    return m_error;
+}
+
+SettingsUpdatedEvent::SettingsUpdatedEvent(const PlayerSettings& settings) : m_settings{settings}
+{
+}
+
+EventType SettingsUpdatedEvent::type() const
+{
+    return EventType::SettingsUpdated;
+}
+
+const PlayerSettings& SettingsUpdatedEvent::settings() const
+{
+    return m_settings;
+}
+
+ScheduleUpdatedEvent::ScheduleUpdatedEvent(const LayoutSchedule& schedule) : m_schedule{schedule}
+{
+}
+
+EventType ScheduleUpdatedEvent::type() const
+{
+    return EventType::ScheduleUpdated;
+}
+
+const LayoutSchedule& ScheduleUpdatedEvent::schedule() const
+{
+    return m_schedule;
 }
 
 EventType WidgetShownEvent::type() const

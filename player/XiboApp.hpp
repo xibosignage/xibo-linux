@@ -1,17 +1,19 @@
 #pragma once
 
 #include <memory>
+#include <spdlog/common.h>
 
 class MainLoop;
-class XMDSManager;
+class XmdsRequestSender;
 class IMainLayout;
 class MainWindow;
-class HTTPManager;
+class HttpManager;
 class LayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
 class CommandLineParser;
-class CollectionResult;
+class PlayerSettingsManager;
+class PlayerError;
 struct PlayerSettings;
 
 class XiboApp
@@ -23,29 +25,32 @@ public:
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
-    XMDSManager& xmdsManager();
-    HTTPManager& httpManager();
+    HttpManager& httpManager();
     FileCacheManager& fileManager();
 
     int run(int argc, char** argv);
 
 private:
-    XiboApp(const std::string& name);
+    static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
+    XiboApp(const std::string& name);
     int runMainLoop();
-    void onCollectionFinished(const CollectionResult& result);
+    void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
+    void updatePlayerSettings(const PlayerSettings& settings);
     void tryParseCommandLine(int argc, char** argv);
     bool processCallbackQueue();
+    void handleCollectionUpdates(CollectionInterval& interval);
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
     std::unique_ptr<LayoutScheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
-    std::unique_ptr<XMDSManager> m_xmdsManager;
-    std::unique_ptr<HTTPManager> m_httpManager;
+    std::unique_ptr<XmdsRequestSender> m_xmdsManager;
+    std::unique_ptr<HttpManager> m_httpManager;
     std::unique_ptr<CommandLineParser> m_options;
+    std::unique_ptr<PlayerSettingsManager> m_settingsManager;
 
     static std::unique_ptr<XiboApp> m_app;
 };

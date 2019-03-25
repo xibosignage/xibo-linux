@@ -1,6 +1,6 @@
 #include "WebViewTests.hpp"
 
-#include "utils/UriParseError.hpp"
+#include "utils/uri/UriParseError.hpp"
 
 using namespace ::testing;
 

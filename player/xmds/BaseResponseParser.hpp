@@ -2,11 +2,11 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/ResponseResult.hpp"
 
-namespace SOAP
+namespace Soap
 {
     template<typename Result>
     class BaseResponseParser

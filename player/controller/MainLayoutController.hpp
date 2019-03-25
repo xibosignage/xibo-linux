@@ -27,6 +27,6 @@ private:
     std::shared_ptr<MainLayoutModel> m_model;
     std::shared_ptr<OverlayLayout> m_view;
     std::vector<std::unique_ptr<RegionController>> m_regions;
-    std::set<int> m_expiredRegions; // FIXME better to use 1 data structure
+    std::set<int> m_expiredRegions;
 
 };

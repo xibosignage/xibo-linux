@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 #include "model/RegionModel.hpp"
 #include "parsers/Options.hpp"
 

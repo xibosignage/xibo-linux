@@ -1,5 +1,7 @@
 #include "AudioController.hpp"
 
+#include "constants.hpp"
+
 AudioController::AudioController(const std::shared_ptr<AudioModel>& model) :
     MediaController(model), m_model(model)
 {

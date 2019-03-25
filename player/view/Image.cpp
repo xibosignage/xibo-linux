@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 Image::Image(int width, int height) :
     Widget(m_handler)

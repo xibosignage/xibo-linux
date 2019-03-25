@@ -1,19 +1,19 @@
 #include "CollectionInterval.hpp"
 
-#include "xmds/XMDSManager.hpp"
+#include "xmds/XmdsRequestSender.hpp"
 #include "events/CallbackEventQueue.hpp"
 
-#include "utils/Logger.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
+#include "utils/ScreenShoter.hpp"
 
 #include <glibmm/main.h>
 
-const uint DEFAULT_INTERVAL = 5;
+const uint DEFAULT_INTERVAL = 900;
 namespace ph = std::placeholders;
 
-CollectionInterval::CollectionInterval() :
-    m_collectInterval{DEFAULT_INTERVAL},  m_intervalTimer(std::make_unique<TimerProvider>())
+CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
+    m_xmdsSender{xmdsSender}, m_collectInterval{DEFAULT_INTERVAL}, m_intervalTimer{std::make_unique<TimerProvider>()}
 {
 }
 
@@ -34,11 +34,10 @@ void CollectionInterval::startTimer()
     });
 }
 
-void CollectionInterval::onRegularCollectionFinished(const CollectionResult& result)
+void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
-    Log::debug("Collection finished {}", std::this_thread::get_id());
-    Log::debug("Next collection will start in {} seconds", m_collectInterval);
-    pushEvent(CollectionFinishedEvent{result});
+    Log::debug("Collection finished. Next collection will start in {} seconds", m_collectInterval);
+    pushEvent(CollectionFinishedEvent{error});
     startTimer();
 }
 
@@ -51,7 +50,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
 
-        auto registerDisplayResult = Utils::xmdsManager().registerDisplay(121, "1.8", "Display").get();
+        auto registerDisplayResult = m_xmdsSender.registerDisplay(121, "1.8", "Display").get();
         onDisplayRegistered(registerDisplayResult, session);
     });
 }
@@ -59,8 +58,7 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
     callbackQueue().add([session, error](){
-        session->result.error = error;
-        session->callback(session->result);
+        session->callback(error);
     });
 }
 
@@ -72,14 +70,18 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         displayMessage(result.status);
         if(result.status.code == RegisterDisplay::Result::Status::Code::Ready) // FIXME handle Activated/Waiting
         {
-            updateTimer(result.playerSettings.collectInterval);
-            session->result.settings = result.playerSettings;
+            pushEvent(SettingsUpdatedEvent{result.playerSettings});
 
-            auto requiredFilesResult = Utils::xmdsManager().requiredFiles().get();
-            auto scheduleResult = Utils::xmdsManager().schedule().get();
+            auto requiredFilesResult = m_xmdsSender.requiredFiles().get();
+            auto scheduleResult = m_xmdsSender.schedule().get();
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
+
+            submitScreenShot();
+
+            auto submitLogsResult = m_xmdsSender.submitLogs(Log::xmlLogs()).get();
+            onSubmitLog(submitLogsResult, session);
         }
         sessionFinished(session);
     }
@@ -97,7 +99,7 @@ void CollectionInterval::displayMessage(const RegisterDisplay::Result::Status& s
     }
 }
 
-void CollectionInterval::updateTimer(int collectInterval)
+void CollectionInterval::updateInterval(int collectInterval)
 {
     if(m_collectInterval != collectInterval)
     {
@@ -111,7 +113,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if(!error)
     {
-        RequiredFilesDownloader downloader;
+        RequiredFilesDownloader downloader{m_xmdsSender};
 
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
@@ -136,7 +138,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
-        session->result.schedule = result;
+        pushEvent(ScheduleUpdatedEvent{result.schedule});
     }
     else
     {
@@ -146,11 +148,44 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
 {
-    Utils::xmdsManager().mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+    m_xmdsSender.mediaInventory(std::move(items)).then([](auto future){
         auto [error, result] = future.get();
         if(error)
         {
             Log::error("MediaInventory: {}", error);
+        }
+    });
+}
+
+void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& logResult, CollectionSessionPtr session)
+{
+    auto [error, result] = logResult;
+    if(!error)
+    {
+        if(result.success)
+        {
+            Log::debug("Logs were submitted successfully");
+        }
+        else
+        {
+            Log::debug("Logs were not submited due to some error");
+        }
+    }
+    else
+    {
+        sessionFinished(session, error);
+    }
+}
+
+void CollectionInterval::submitScreenShot()
+{
+    ScreenShoter screenShoter;
+
+    m_xmdsSender.submitScreenShot(screenShoter.takeBase64()).then([](auto future){
+        auto [error, result] = future.get();
+        if(error)
+        {
+            Log::error("SubmitScreenShot: {}", error);
         }
     });
 }
