@@ -1,6 +1,6 @@
 #include "MainLoop.hpp"
 
-#include "adaptors/GtkWindowAdaptor.hpp"
+#include "view/MainWindow.hpp"
 
 #include <glibmm/main.h>
 
@@ -9,9 +9,9 @@ MainLoop::MainLoop(const std::string& name) :
 {
 }
 
-int MainLoop::run(IWindowAdaptor& adaptor)
+int MainLoop::run(MainWindow& adaptor)
 {
-    auto&& windowHandler = static_cast<GtkWindowAdaptor&>(adaptor).get();
+    auto&& windowHandler = adaptor.get();
 
     m_parentApp->signal_shutdown().connect([this](){
         m_idleConnection.disconnect();

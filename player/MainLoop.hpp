@@ -2,7 +2,7 @@
 
 #include <gtkmm/application.h>
 
-class IWindowAdaptor;
+class MainWindow;
 
 using ShutdownAction = std::function<void()>;
 using IdleAction = std::function<bool()>;
@@ -12,7 +12,7 @@ class MainLoop
 public:
     MainLoop(const std::string& name);
 
-    int run(IWindowAdaptor& adaptor);
+    int run(MainWindow& adaptor);
 
     void setShutdownAction(const ShutdownAction& action);
     void setIdleAction(const IdleAction& action);
