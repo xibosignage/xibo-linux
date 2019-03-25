@@ -66,7 +66,7 @@ private:
             case spdlog::level::trace:
             case spdlog::level::debug:
             case spdlog::level::info:
-//                return "audit";
+//                return "audit"; FIXME
             case spdlog::level::warn:
             case spdlog::level::err:
             case spdlog::level::critical:

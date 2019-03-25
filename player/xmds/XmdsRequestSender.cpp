@@ -91,3 +91,13 @@ boost::future<ResponseResult<SubmitLog::Result>> XmdsRequestSender::submitLogs(c
 
     return SoapRequestHelper::sendRequest<SubmitLog::Result>(m_uri, request);
 }
+
+boost::future<ResponseResult<SubmitScreenShot::Result>> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
+{
+    SubmitScreenShot::Request request;
+    request.serverKey = m_serverKey;
+    request.hardwareKey = m_hardwareKey;
+    request.screenShot = screenShot;
+
+    return SoapRequestHelper::sendRequest<SubmitScreenShot::Result>(m_uri, request);
+}

@@ -3,28 +3,26 @@
 #include "config.hpp"
 
 #include "utils/Resources.hpp"
-#include "events/CallbackGlobalQueue.hpp"
 #include "utils/logger/XmlLoggerSink.hpp"
-#include <spdlog/sinks/stdout_sinks.h>
+#include "parsers/CommandLineParser.hpp"
+#include "events/CallbackEventQueue.hpp"
 
+#include "controller/MainWindowController.hpp"
+#include "view/MainWindow.hpp"
+
+#include "managers/CollectionInterval.hpp"
+#include "managers/LayoutScheduler.hpp"
+#include "managers/FileCacheManager.hpp"
+#include "managers/HttpManager.hpp"
 #include "xmds/XmdsRequestSender.hpp"
 #include "xmds/SoapRequestSender.hpp"
-#include "adaptors/GtkWindowAdaptor.hpp"
-#include "control/MainWindow.hpp"
-#include "control/IMainLayout.hpp"
-
-#include "options/CommandLineParser.hpp"
-#include "managers/HttpManager.hpp"
-#include "managers/CollectionInterval.hpp"
-#include "managers/Scheduler.hpp"
-#include "managers/FileCacheManager.hpp"
 
 #include <gst/gst.h>
 #include <glibmm/main.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 std::unique_ptr<XiboApp> XiboApp::m_app;
-
 
 XiboApp& XiboApp::create(const std::string& name)
 {
@@ -51,7 +49,7 @@ std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
 
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_scheduler(std::make_unique<Scheduler>()),
+    m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_httpManager(std::make_unique<HttpManager>()),
     m_options(std::make_unique<CommandLineParser>())
@@ -150,49 +148,39 @@ bool XiboApp::processCallbackQueue()
 
 int XiboApp::runMainLoop()
 {
-    auto mainWindow = std::make_shared<MainWindow>(std::make_unique<GtkWindowAdaptor>());
-
-    m_xmdsManager = std::make_unique<XmdsRequestSender>(m_options->host(), m_options->serverKey(), m_options->hardwareKey());
-    m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
-
-    m_mainLoop->setShutdownAction([this](){
-        m_httpManager->shutdown();
-        m_collectionInterval->stop();
-    });
-
-    m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
-        auto&& collectionEvent = static_cast<const CollectionFinished&>(ev);
-        onCollectionFinished(collectionEvent.result());
-    });
-
-    m_scheduler->subscribe(EventType::LayoutExpired, [this, &mainWindow](const Event&){
-        mainWindow->setLayout(m_scheduler->nextLayout());
-        mainWindow->showLayout();
-    });
-
-    m_collectionInterval->collectOnce([this, &mainWindow](const CollectionResult& result){
-        onCollectionFinished(result);
-        m_collectionInterval->startRegularCollection();
-        startWindow(*mainWindow);
-    });
-
-    return m_mainLoop->run(mainWindow->handler());
-}
-
-void XiboApp::startWindow(MainWindow& window)
-{
     try
     {
-        window.setSize(1366, 768);
-//        window.setFullscreen(true);
-        window.setLayout(m_scheduler->nextLayout());
-        window.showLayout();
-        window.show();
+        auto window = std::make_shared<MainWindow>(1366, 768);
+        MainWindowController mainController{window, *m_scheduler};
 
-        Log::info("Player started");
+        m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
+        m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
+
+        m_mainLoop->setShutdownAction([this](){
+            m_httpManager->shutdown();
+            m_collectionInterval->stop();
+        });
+
+        m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
+            auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
+            onCollectionFinished(collectionEvent.result());
+        });
+
+        m_collectionInterval->collectOnce([=, &mainController](const CollectionResult& result){
+            onCollectionFinished(result);
+            m_collectionInterval->startRegularCollection();
+
+            mainController.updateLayout(m_scheduler->nextLayoutId());
+            window->show();
+            Log::info("Player started");
+        });
+
+        return m_mainLoop->run(*window);
     }
     catch(std::exception& e)
     {
         Log::error("Player failed to start: {}", e.what());
     }
+
+    return -1;
 }

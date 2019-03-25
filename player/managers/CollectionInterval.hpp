@@ -10,7 +10,7 @@
 #include "utils/ITimerProvider.hpp"
 #include "utils/JoinableThread.hpp"
 #include "utils/ResponseResult.hpp"
-#include "events/Observable.hpp"
+#include "events/EventPublisher.hpp"
 
 using CollectionResultCallback = std::function<void(const CollectionResult&)>;
 class XmdsRequestSender;
@@ -23,7 +23,7 @@ struct CollectionSession
 
 using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 
-class CollectionInterval : public Observable<>
+class CollectionInterval : public EventPublisher<>
 {
 public:
     CollectionInterval(XmdsRequestSender& xmdsSender);
@@ -45,6 +45,7 @@ private:
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitLog(const ResponseResult<SubmitLog::Result>& requiredFiles, CollectionSessionPtr session);
+    void submitScreenShot();
 
 private:
     XmdsRequestSender& m_xmdsSender;

@@ -17,24 +17,10 @@ set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs
 
 add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
 
-file(GLOB ADAPTORS_SOURCES ${CMAKE_SOURCE_DIR}/player/adaptors/*.cpp ${CMAKE_SOURCE_DIR}/player/adaptors/*.hpp)
-file(GLOB CONTROL_SOURCES ${CMAKE_SOURCE_DIR}/player/control/*.cpp ${CMAKE_SOURCE_DIR}/player/control/*.hpp)
-file(GLOB MEDIA_SOURCES ${CMAKE_SOURCE_DIR}/player/media/*.cpp ${CMAKE_SOURCE_DIR}/player/media/*.hpp)
-file(GLOB_RECURSE UTILS_SOURCES ${CMAKE_SOURCE_DIR}/player/utils/*.cpp ${CMAKE_SOURCE_DIR}/player/utils/*.hpp)
-file(GLOB CREATORS_SOURCES ${CMAKE_SOURCE_DIR}/player/creators/*.cpp ${CMAKE_SOURCE_DIR}/player/creators/*.hpp)
-file(GLOB MANAGERS_SOURCES ${CMAKE_SOURCE_DIR}/player/managers/*.cpp ${CMAKE_SOURCE_DIR}/player/managers/*.hpp)
-file(GLOB PARSERS_SOURCES ${CMAKE_SOURCE_DIR}/player/options/*.cpp ${CMAKE_SOURCE_DIR}/player/options/*.hpp)
-file(GLOB WRAPPER_SOURCES ${CMAKE_SOURCE_DIR}/player/wrapper/*.cpp ${CMAKE_SOURCE_DIR}/player/wrapper/*.hpp)
-file(GLOB XMDS_SOURCES ${CMAKE_SOURCE_DIR}/player/xmds/*.cpp ${CMAKE_SOURCE_DIR}/player/xmds/*.hpp)
-file(GLOB EVENTS_SOURCES ${CMAKE_SOURCE_DIR}/player/events/*.cpp ${CMAKE_SOURCE_DIR}/player/events/*.hpp)
+file(GLOB_RECURSE PLAYER_SOURCES ${CMAKE_SOURCE_DIR}/player/*.cpp ${CMAKE_SOURCE_DIR}/player/*.hpp)
 
-add_library(player_lib STATIC MainLoop.hpp MainLoop.cpp XiboApp.cpp
-                              ${ADAPTORS_SOURCES} ${CONTROL_SOURCES} ${MEDIA_SOURCES}
-                              ${UTILS_SOURCES} ${CREATORS_SOURCES} ${MANAGERS_SOURCES}
-                              ${PARSERS_SOURCES} ${XMDS_SOURCES} ${EVENTS_SOURCES})
-target_link_libraries(player_lib stdc++fs ssl crypto)
-add_library(gst_wrapper SHARED ${WRAPPER_SOURCES})
-add_library(xibovideosink SHARED customsink/XiboVideoSink.cpp)
+add_library(player_lib STATIC ${PLAYER_SOURCES})
+target_link_libraries(player_lib stdc++fs ssl crypto X11)
 
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)
@@ -46,10 +32,10 @@ find_soname_libs("${WebKit_LINK_LIBRARIES}" WebKit_SONAME_LIBRARIES)
 find_soname_libs("${Boost_LIBRARIES}" Boost_SONAME_LIBRARIES)
 
 # Tests
-add_subdirectory(tests)
+#add_subdirectory(tests)
 
 add_executable(${PROJECT_NAME} main.cpp)
-target_link_libraries(${PROJECT_NAME} player_lib gst_wrapper xibovideosink ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} player_lib ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
 
 
 # install

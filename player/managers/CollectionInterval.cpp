@@ -1,10 +1,11 @@
 #include "CollectionInterval.hpp"
 
 #include "xmds/XmdsRequestSender.hpp"
-#include "events/CallbackGlobalQueue.hpp"
+#include "events/CallbackEventQueue.hpp"
 
 #include "utils/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
+#include "utils/ScreenShoter.hpp"
 
 #include <glibmm/main.h>
 
@@ -37,7 +38,7 @@ void CollectionInterval::onRegularCollectionFinished(const CollectionResult& res
 {
     Log::debug("Collection finished");
     Log::debug("Next collection will start in {} seconds", m_collectInterval);
-    pushEvent(CollectionFinished{result});
+    pushEvent(CollectionFinishedEvent{result});
     startTimer();
 }
 
@@ -79,6 +80,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
+
+            submitScreenShot();
 
             auto submitLogsResult = m_xmdsSender.submitLogs(Log::xmlLogs()).get();
             onSubmitLog(submitLogsResult, session);
@@ -148,7 +151,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
 {
-    m_xmdsSender.mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+    m_xmdsSender.mediaInventory(std::move(items)).then([](auto future){
         auto [error, result] = future.get();
         if(error)
         {
@@ -175,4 +178,17 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
     {
         sessionFinished(session, error);
     }
+}
+
+void CollectionInterval::submitScreenShot()
+{
+    ScreenShoter screenShoter;
+
+    m_xmdsSender.submitScreenShot(screenShoter.takeBase64()).then([](auto future){
+        auto [error, result] = future.get();
+        if(error)
+        {
+            Log::error("SubmitScreenShot: {}", error);
+        }
+    });
 }

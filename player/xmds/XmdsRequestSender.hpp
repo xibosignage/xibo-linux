@@ -9,6 +9,7 @@
 #include "GetFile.hpp"
 #include "MediaInventory.hpp"
 #include "SubmitLog.hpp"
+#include "SubmitScreenShot.hpp"
 
 #include "utils/ResponseResult.hpp"
 #include "utils/uri/Uri.hpp"
@@ -25,6 +26,7 @@ public:
     boost::future<ResponseResult<GetFile::Result>> getFile(int fileId, const std::string& fileType, std::size_t chunkOffset, std::size_t chunkSize);
     boost::future<ResponseResult<MediaInventory::Result>> mediaInventory(MediaInventoryItems&& items);
     boost::future<ResponseResult<SubmitLog::Result>> submitLogs(const std::string& logXml);
+    boost::future<ResponseResult<SubmitScreenShot::Result>> submitScreenShot(const std::string& screenShot);
 
 private:
     Uri m_uri;
