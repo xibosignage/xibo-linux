@@ -1,6 +1,6 @@
 #include "XiboVideoSink.hpp"
 
-#include <spdlog/spdlog.h>
+#include <glibmm/main.h>
 
 static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps);
 static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* video_sink, GstBuffer* buf);
@@ -39,12 +39,11 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
     video_sink_class->show_frame = GST_DEBUG_FUNCPTR(gst_xibovideosink_show_frame);
 }
 
-#include "utils/Logger.hpp"
 
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, DrawingArea* handler)
 {
     sink->handler = handler;    
-    sink->handler->signal_draw().connect([sink](const Cairo::RefPtr<Cairo::Context>& cairo){
+    sink->handler->setDrawCallback([sink](const Cairo::RefPtr<Cairo::Context>& cairo){
         return gst_xibovideosink_on_frame_drawn(sink, cairo);
     });
 }
@@ -75,7 +74,7 @@ static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* base_sink, GstBu
                                                                          GST_VIDEO_INFO_HEIGHT(&sink->info),
                                                                          GST_VIDEO_INFO_PLANE_STRIDE(&sink->info, 0));
         Glib::MainContext::get_default()->invoke([sink](){
-            sink->handler->queue_draw();
+            sink->handler->queueDraw();
             return false;
         });
     }

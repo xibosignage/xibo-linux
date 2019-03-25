@@ -1,19 +1,14 @@
 #pragma once
 
-#include <sigc++/signal.h>
 #include <functional>
 
 enum class EventType
 {
-    StartMedia,
-    StopMedia,
     DurationExpired,
-    ScaleMedia,
-    PlaybackFinished,
-    LayoutExpired,
     CollectionFinished,
     SettingsUpdated,
-    ScheduleUpdated
+    ScheduleUpdated,
+    WidgetShown
 };
 
 class Event
@@ -25,46 +20,10 @@ public:
 
 using EventHandler = std::function<void(const Event&)>;
 
-class StartMediaEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
-class StopMediaEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
 class DurationExpiredEvent : public Event
 {
 public:
     EventType type() const override;
-};
-
-class PlaybackFinishedEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
-class LayoutExpiredEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-class ScaleMediaEvent : public Event
-{
-public:
-    ScaleMediaEvent(double scaleX, double scaleY);
-    EventType type() const override;
-    double scaleX() const;
-    double scaleY() const;
-
-private:
-    double m_scaleX;
-    double m_scaleY;
 };
 
 class RegionDurationExpiredEvent : public DurationExpiredEvent
@@ -91,7 +50,7 @@ private:
 
 };
 
-#include "control/PlayerSettings.hpp"
+#include "model/PlayerSettings.hpp"
 
 class SettingsUpdatedEvent : public Event
 {
@@ -119,3 +78,9 @@ private:
 
 };
 
+class WidgetShownEvent : public Event
+{
+public:
+    EventType type() const override;
+
+};

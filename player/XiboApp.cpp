@@ -3,25 +3,24 @@
 #include "config.hpp"
 
 #include "utils/Resources.hpp"
-#include "events/CallbackGlobalQueue.hpp"
+#include "utils/logger/XmlLoggerSink.hpp"
+#include "parsers/CommandLineParser.hpp"
+#include "events/CallbackEventQueue.hpp"
 
-#include "xmds/XMDSManager.hpp"
-#include "xmds/SOAPManager.hpp"
-#include "adaptors/GtkWindowAdaptor.hpp"
-#include "control/MainWindow.hpp"
-#include "control/IMainLayout.hpp"
-#include "control/PlayerSettingsManager.hpp"
+#include "controller/MainWindowController.hpp"
+#include "view/MainWindow.hpp"
 
-#include "options/CommandLineParser.hpp"
-#include "managers/HTTPManager.hpp"
 #include "managers/CollectionInterval.hpp"
-#include "managers/Scheduler.hpp"
+#include "managers/LayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
+#include "managers/HttpManager.hpp"
+#include "managers/PlayerSettingsManager.hpp"
+#include "xmds/XmdsRequestSender.hpp"
+#include "xmds/SoapRequestSender.hpp"
 
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/sinks/stdout_sinks.h>
 #include <gst/gst.h>
 #include <glibmm/main.h>
+#include <spdlog/sinks/stdout_sinks.h>
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 const std::string DEFAULT_SETTINGS_FILE = "settings.xml";
@@ -31,9 +30,9 @@ std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    spdlog::stdout_logger_st(LOGGER);
-    spdlog::set_level(spdlog::level::debug);
-    spdlog::set_pattern("[%H:%M:%S.%e] [%l]: %v");
+    auto logger = Logger::create(LOGGER, createLoggerSinks());
+    logger->setLevel(LoggingLevel::Debug);
+    logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
     gst_init(nullptr, nullptr);
     Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
@@ -42,59 +41,39 @@ XiboApp& XiboApp::create(const std::string& name)
     return *m_app;
 }
 
+std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
+{
+    std::vector<spdlog::sink_ptr> sinks;
+
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
+    sinks.push_back(std::make_shared<LoggerXmlSinkMt>(XmlLogsRepo::get()));
+
+    return sinks;
+}
+
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_scheduler(std::make_unique<Scheduler>()),
+    m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>(Resources::directory() / DEFAULT_CACHE_FILE)),
-    m_collectionInterval(std::make_unique<CollectionInterval>()),
-    m_httpManager(std::make_unique<HTTPManager>()),
+    m_httpManager(std::make_unique<HttpManager>()),
     m_options(std::make_unique<CommandLineParser>()),
     m_settingsManager(std::make_unique<PlayerSettingsManager>(Resources::directory() / DEFAULT_SETTINGS_FILE))
 {
     m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
-
-    updatePlayerSettings(m_settingsManager->load());
-
     m_mainLoop->setShutdownAction([this](){
         m_httpManager->shutdown();
         m_collectionInterval->stop();
     });
-
-    m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
-        auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
-        onCollectionFinished(collectionEvent.error());
-    });
-
-    m_collectionInterval->subscribe(EventType::SettingsUpdated, [this](const Event& ev){
-        auto&& settingsEvent = static_cast<const SettingsUpdatedEvent&>(ev);
-        updateSettings(settingsEvent.settings());
-    });
-
-    m_collectionInterval->subscribe(EventType::ScheduleUpdated, [this](const Event& ev){
-        auto&& scheduleEvent = static_cast<const ScheduleUpdatedEvent&>(ev);
-        m_scheduler->update(scheduleEvent.schedule());
-    });
 }
 
-void XiboApp::onCollectionFinished(const PlayerError& error)
+bool XiboApp::processCallbackQueue()
 {
-    if(error)
+    if(!callbackQueue().empty())
     {
-        Log::debug("Collection interval error: {}", error);
+        auto callback = callbackQueue().pop();
+        callback();
     }
-}
-
-void XiboApp::updateSettings(const PlayerSettings& settings)
-{
-    m_settingsManager->update(settings);
-    updatePlayerSettings(settings);
-}
-
-void XiboApp::updatePlayerSettings(const PlayerSettings& settings)
-{
-    spdlog::set_level(settings.logLevel);
-    m_collectionInterval->updateInterval(settings.collectInterval);
-    Log::debug("Player settings updated");
+    return true;
 }
 
 XiboApp::~XiboApp()
@@ -110,12 +89,7 @@ XiboApp& XiboApp::app()
     return *m_app;
 }
 
-XMDSManager& XiboApp::xmdsManager()
-{
-    return *m_xmdsManager;
-}
-
-HTTPManager& XiboApp::httpManager()
+HttpManager& XiboApp::httpManager()
 {
     return *m_httpManager;
 }
@@ -159,50 +133,72 @@ void XiboApp::tryParseCommandLine(int argc, char** argv)
     }
 }
 
-bool XiboApp::processCallbackQueue()
-{
-    if(!callbackQueue().empty())
-    {
-        auto callback = callbackQueue().pop();
-        callback();
-    }
-    return true;
-}
-
 int XiboApp::runMainLoop()
-{
-    auto mainWindow = std::make_shared<MainWindow>(std::make_unique<GtkWindowAdaptor>());
-
-    m_xmdsManager.reset(new XMDSManager{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-
-    m_scheduler->subscribe(EventType::LayoutExpired, [this, &mainWindow](const Event&){
-        mainWindow->setLayout(m_scheduler->nextLayout());
-        mainWindow->showLayout();
-    });
-
-    m_collectionInterval->collectOnce([this, &mainWindow](const PlayerError& error){
-        onCollectionFinished(error);
-        m_collectionInterval->startRegularCollection();
-        startWindow(*mainWindow);
-    });
-
-    return m_mainLoop->run(mainWindow->handler());
-}
-
-void XiboApp::startWindow(MainWindow& window)
 {
     try
     {
-        window.setSize(1366, 768);
-//        window.setFullscreen(true);
-        window.setLayout(m_scheduler->nextLayout());
-        window.showLayout();
-        window.show();
+        auto window = std::make_shared<MainWindow>(1366, 768);
+        MainWindowController mainController{window, *m_scheduler};
 
-        Log::info("Player started");
+        m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
+        m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
+        handleCollectionUpdates(*m_collectionInterval);
+        updatePlayerSettings(m_settingsManager->load());
+
+        m_collectionInterval->collectOnce([=, &mainController](const PlayerError& error){
+            onCollectionFinished(error);
+            m_collectionInterval->startRegularCollection();
+
+            mainController.updateLayout(m_scheduler->nextLayoutId());
+            window->show();
+            Log::info("Player started");
+        });
+
+        return m_mainLoop->run(*window);
     }
     catch(std::exception& e)
     {
         Log::error("Player failed to start: {}", e.what());
     }
+
+    return -1;
+}
+
+void XiboApp::handleCollectionUpdates(CollectionInterval& interval)
+{
+    interval.subscribe(EventType::CollectionFinished, [this](const Event& ev){
+        auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
+        onCollectionFinished(collectionEvent.error());
+    });
+
+    interval.subscribe(EventType::SettingsUpdated, [this](const Event& ev){
+        auto&& settingsEvent = static_cast<const SettingsUpdatedEvent&>(ev);
+        updateSettings(settingsEvent.settings());
+    });
+
+    interval.subscribe(EventType::ScheduleUpdated, [this](const Event& ev){
+        auto&& scheduleEvent = static_cast<const ScheduleUpdatedEvent&>(ev);
+        m_scheduler->update(scheduleEvent.schedule());
+    });
+}
+
+void XiboApp::onCollectionFinished(const PlayerError& error)
+{
+    if(error)
+    {
+        Log::debug("Collection interval error: {}", error);
+    }
+}
+
+void XiboApp::updateSettings(const PlayerSettings& settings)
+{
+    m_settingsManager->update(settings);
+    updatePlayerSettings(settings);
+}
+
+void XiboApp::updatePlayerSettings(const PlayerSettings& settings)
+{
+    Log::logger()->setLevel(settings.logLevel);
+    m_collectionInterval->updateInterval(settings.collectInterval);
+    Log::debug("Player settings updated");
 }

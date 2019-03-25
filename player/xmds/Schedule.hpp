@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseRequestSerializer.hpp"
 #include "BaseResponseParser.hpp"
 
@@ -22,7 +22,7 @@ namespace Schedule
 }
 
 template<>
-class SOAP::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
+class Soap::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
 {
 public:
     RequestSerializer(const Schedule::Request& request);
@@ -31,7 +31,7 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
+class Soap::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);

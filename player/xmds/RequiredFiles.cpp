@@ -3,7 +3,7 @@
 #include "Resources.hpp"
 #include "utils/Utilities.hpp"
 
-namespace Resources = XMDSResources::RequiredFiles;
+namespace Resources = XmdsResources::RequiredFiles;
 
 const FilesToDownload<RegularFile>& RequiredFiles::Result::requiredFiles() const
 {
@@ -25,20 +25,20 @@ void RequiredFiles::Result::addResource(ResourceFile&& resource)
     m_requiredResources.emplace_back(std::move(resource));
 }
 
-SOAP::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) : BaseRequestSerializer(request)
 {
 }
 
-std::string SOAP::RequestSerializer<RequiredFiles::Request>::string()
+std::string Soap::RequestSerializer<RequiredFiles::Request>::string()
 {
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
-SOAP::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
 {
 }
 
-RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const xml_node& node)
+RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::doParse(const xml_node& node)
 {
     auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
     auto filesNode = Utils::parseXmlFromString(requiredFilesXml).get_child(Resources::Files);
@@ -65,7 +65,7 @@ RequiredFiles::Result SOAP::ResponseParser<RequiredFiles::Result>::doParse(const
     return result;
 }
 
-RegularFile SOAP::ResponseParser<RequiredFiles::Result>::parseRegularFile(const xml_node& attrs)
+RegularFile Soap::ResponseParser<RequiredFiles::Result>::parseRegularFile(const xml_node& attrs)
 {
     auto fileType = attrs.get<std::string>(Resources::FileType);
     auto id = attrs.get<int>(Resources::RegularFile::Id);
@@ -77,7 +77,7 @@ RegularFile SOAP::ResponseParser<RequiredFiles::Result>::parseRegularFile(const 
     return RegularFile{id, size, md5, path, name, fileType, downloadType};
 }
 
-ResourceFile SOAP::ResponseParser<RequiredFiles::Result>::parseResourceFile(const xml_node& attrs)
+ResourceFile Soap::ResponseParser<RequiredFiles::Result>::parseResourceFile(const xml_node& attrs)
 {
     auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
     auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
@@ -86,26 +86,26 @@ ResourceFile SOAP::ResponseParser<RequiredFiles::Result>::parseResourceFile(cons
     return ResourceFile{layoutId, regionId, mediaId};
 }
 
-bool SOAP::ResponseParser<RequiredFiles::Result>::isLayout(std::string_view type) const
+bool Soap::ResponseParser<RequiredFiles::Result>::isLayout(std::string_view type) const
 {
     return type == Resources::LayoutType;
 }
 
-bool SOAP::ResponseParser<RequiredFiles::Result>::isMedia(std::string_view type) const
+bool Soap::ResponseParser<RequiredFiles::Result>::isMedia(std::string_view type) const
 {
     return type == Resources::MediaType;
 }
 
-bool SOAP::ResponseParser<RequiredFiles::Result>::isResource(std::string_view type) const
+bool Soap::ResponseParser<RequiredFiles::Result>::isResource(std::string_view type) const
 {
     return type == Resources::ResourceType;
 }
 
-DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
+DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
 {
-    if(type == Resources::RegularFile::HTTPDownload)
+    if(type == Resources::RegularFile::HttpDownload)
         return DownloadType::HTTP;
-    else if(type == Resources::RegularFile::XMDSDownload)
+    else if(type == Resources::RegularFile::XmdsDownload)
         return DownloadType::XMDS;
 
     return DownloadType::Invalid;
@@ -114,7 +114,7 @@ DownloadType SOAP::ResponseParser<RequiredFiles::Result>::toDownloadType(std::st
 
 // NOTE: workaround because filePath and fileName from RequiredFiles request are a bit clumsy to parse directly
 std::pair<std::string, std::string>
-SOAP::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs)
+Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs)
 {
     std::string path, name;
 

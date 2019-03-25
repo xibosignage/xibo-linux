@@ -3,24 +3,24 @@
 #include "Resources.hpp"
 #include "utils/Utilities.hpp"
 
-namespace Resources = XMDSResources::RegisterDisplay;
+namespace Resources = XmdsResources::RegisterDisplay;
 
-SOAP::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
 {
 }
 
-std::string SOAP::RequestSerializer<RegisterDisplay::Request>::string()
+std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
 {
     return createRequest(Resources::Name, request().clientCode, request().clientType, request().clientVersion,
                          request().displayName, request().macAddress, request().serverKey, request().hardwareKey);
 
 }
 
-SOAP::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
 {
 }
 
-RegisterDisplay::Result SOAP::ResponseParser<RegisterDisplay::Result>::doParse(const xml_node& node)
+RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::doParse(const xml_node& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto display = Utils::parseXmlFromString(activationMessage).get_child(Resources::Display);
@@ -37,7 +37,7 @@ RegisterDisplay::Result SOAP::ResponseParser<RegisterDisplay::Result>::doParse(c
     return result;
 }
 
-void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSettings& settings, const xml_node& display)
+void Soap::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSettings& settings, const xml_node& display)
 {
     namespace Settings = Resources::Settings;
 
@@ -66,14 +66,14 @@ void SOAP::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
 }
 
 
-spdlog::level::level_enum SOAP::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const std::string& level)
+LoggingLevel Soap::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const std::string& level)
 {
     if(level == "audit")
-        return spdlog::level::level_enum::trace;
-    else if(level == "info")
-        return spdlog::level::level_enum::debug;
+        return LoggingLevel::Trace;
     else if(level == "error")
-        return spdlog::level::level_enum::warn;
-    else
-        return spdlog::level::level_enum::off;
+        return LoggingLevel::Error;
+    else if(level == "info")
+        return LoggingLevel::Debug;
+
+    return LoggingLevel::Debug;
 }
