@@ -2,7 +2,7 @@
 
 #include "BaseTestWithHandler.hpp"
 
-#include "creators/RegionBuilder.hpp" // FIXME zorder from here
+#include "creators/RegionBuilder.hpp"
 #include "control/Region.hpp"
 #include "mocks/MockFixedLayout.hpp"
 

@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace SOAP
+namespace Soap
 {
     template<typename Response>
     Response createResult(const std::string& soapResponse);

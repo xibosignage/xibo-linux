@@ -1,6 +1,6 @@
 #include "MacAddressFetcher.hpp"
 
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 #include <sys/socket.h>
 #include <sys/ioctl.h>

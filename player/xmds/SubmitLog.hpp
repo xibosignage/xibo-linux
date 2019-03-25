@@ -5,7 +5,7 @@
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
 
-namespace SubmitScreenShot
+namespace SubmitLog
 {
     struct Result
     {
@@ -16,26 +16,27 @@ namespace SubmitScreenShot
     {
         Field<std::string> serverKey{"serverKey"};
         Field<std::string> hardwareKey{"hardwareKey"};
-        Field<std::string> screenShot{"screenShot"};
+        Field<std::string> logXml{"logXml"};
     };
 }
 
 template<>
-class Soap::RequestSerializer<SubmitScreenShot::Request> : public BaseRequestSerializer<SubmitScreenShot::Request>
+class Soap::RequestSerializer<SubmitLog::Request> : public BaseRequestSerializer<SubmitLog::Request>
 {
 public:
-    RequestSerializer(const SubmitScreenShot::Request& request);
+    RequestSerializer(const SubmitLog::Request& request);
     std::string string();
 
 };
 
 template<>
-class Soap::ResponseParser<SubmitScreenShot::Result> : public BaseResponseParser<SubmitScreenShot::Result>
+class Soap::ResponseParser<SubmitLog::Result> : public BaseResponseParser<SubmitLog::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitScreenShot::Result doParse(const xml_node& node) override;
+    SubmitLog::Result doParse(const xml_node& node) override;
 
 };
+

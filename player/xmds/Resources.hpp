@@ -3,7 +3,7 @@
 #include <string_view>
 #include <string>
 
-namespace XMDSResources
+namespace XmdsResources
 {
     namespace GetResource
     {
@@ -91,8 +91,8 @@ namespace XMDSResources
             const std::string Path = "path";
             const std::string Name = "saveAs";
             const std::string DownloadType = "download";
-            const std::string HTTPDownload = "http";
-            const std::string XMDSDownload = "xmds";
+            const std::string HttpDownload = "http";
+            const std::string XmdsDownload = "xmds";
 
         }
 
@@ -113,6 +113,12 @@ namespace XMDSResources
     namespace MediaInventory
     {
         const std::string_view Name = "MediaInventory";
+        const std::string Success = "success";
+    }
+
+    namespace SubmitLog
+    {
+        const std::string_view Name = "SubmitLog";
         const std::string Success = "success";
     }
 

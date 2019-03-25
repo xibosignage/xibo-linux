@@ -9,8 +9,8 @@
 #include "wrapper/Element.hpp"
 #include "wrapper/Pad.hpp"
 
-#include "utils/Logger.hpp"
-#include "utils/Uri.hpp"
+#include "utils/logger/Logging.hpp"
+#include "utils/uri/Uri.hpp"
 
 namespace ph = std::placeholders;
 

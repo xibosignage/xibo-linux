@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 namespace Validators
 {

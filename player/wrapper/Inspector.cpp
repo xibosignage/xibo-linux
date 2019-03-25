@@ -1,5 +1,5 @@
 #include "Inspector.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 
 #include <cassert>
 

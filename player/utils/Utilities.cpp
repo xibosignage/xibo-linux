@@ -5,14 +5,9 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/algorithm/string.hpp>
 
-HTTPManager& Utils::httpManager()
+HttpManager& Utils::httpManager()
 {
     return XiboApp::app().httpManager();
-}
-
-XMDSManager& Utils::xmdsManager()
-{
-    return XiboApp::app().xmdsManager();
 }
 
 FileCacheManager& Utils::fileManager()

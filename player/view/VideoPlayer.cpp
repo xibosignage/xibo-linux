@@ -16,8 +16,8 @@
 #include "wrapper/Inspector.hpp"
 #include "customsink/XiboVideoSink.hpp"
 
-#include "utils/Logger.hpp"
-#include "utils/Uri.hpp"
+#include "utils/logger/Logging.hpp"
+#include "utils/uri/Uri.hpp"
 
 #include <boost/format.hpp>
 

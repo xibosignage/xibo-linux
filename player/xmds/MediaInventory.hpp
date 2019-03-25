@@ -2,7 +2,7 @@
 
 #include "Field.hpp"
 #include "MediaInventoryField.hpp"
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
 
@@ -22,7 +22,7 @@ namespace MediaInventory
 }
 
 template<>
-class SOAP::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
+class Soap::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
 {
 public:
     RequestSerializer(const MediaInventory::Request& request);
@@ -31,7 +31,7 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<MediaInventory::Result> : public BaseResponseParser<MediaInventory::Result>
+class Soap::ResponseParser<MediaInventory::Result> : public BaseResponseParser<MediaInventory::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);

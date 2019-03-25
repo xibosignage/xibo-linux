@@ -1,6 +1,6 @@
 #include "MainLayoutController.hpp"
 
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "view/Image.hpp"
 
 #include <cassert>

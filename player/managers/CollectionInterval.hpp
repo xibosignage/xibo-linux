@@ -5,6 +5,7 @@
 
 #include "xmds/RegisterDisplay.hpp"
 #include "xmds/RequiredFiles.hpp"
+#include "xmds/SubmitLog.hpp"
 
 #include "utils/ITimerProvider.hpp"
 #include "utils/JoinableThread.hpp"
@@ -12,6 +13,7 @@
 #include "events/EventPublisher.hpp"
 
 using CollectionResultCallback = std::function<void(const CollectionResult&)>;
+class XmdsRequestSender;
 
 struct CollectionSession
 {
@@ -24,7 +26,7 @@ using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 class CollectionInterval : public EventPublisher<>
 {
 public:
-    CollectionInterval();
+    CollectionInterval(XmdsRequestSender& xmdsSender);
 
     void startRegularCollection();
     void stop();
@@ -42,9 +44,11 @@ private:
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);
+    void onSubmitLog(const ResponseResult<SubmitLog::Result>& requiredFiles, CollectionSessionPtr session);
     void submitScreenShot();
 
 private:
+    XmdsRequestSender& m_xmdsSender;
     std::unique_ptr<JoinableThread> m_workerThread;
     int m_collectInterval;
     std::unique_ptr<ITimerProvider> m_intervalTimer;

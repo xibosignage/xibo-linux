@@ -12,7 +12,7 @@
 #include <boost/thread/future.hpp>
 
 #include "utils/ResponseResult.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 namespace beast = boost::beast;
 namespace http = boost::beast::http;
@@ -20,21 +20,21 @@ namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 namespace ssl = boost::asio::ssl;
 
-using HTTPResponseResult = ResponseResult<std::string>;
+using HttpResponseResult = ResponseResult<std::string>;
 
-class HTTPSession : public std::enable_shared_from_this<HTTPSession>
+class HttpSession : public std::enable_shared_from_this<HttpSession>
 {
 public:
-    HTTPSession(asio::io_context& ioc);
+    HttpSession(asio::io_context& ioc);
 
-    boost::future<HTTPResponseResult> send(http::verb method, const Uri& url, const std::string& body);
+    boost::future<HttpResponseResult> send(http::verb method, const Uri& url, const std::string& body);
     void cancel();
 
 private:
     http::request<http::string_body> createRequest(http::verb method, const std::string& host, const std::string& target, const std::string& body);
 
     void sessionFinished(const boost::system::error_code& ec);
-    void setHttpResult(const HTTPResponseResult& result);
+    void setHttpResult(const HttpResponseResult& result);
 
     template<typename Callback>
     void resolve(const std::string& host, unsigned short port, Callback callback);
@@ -63,6 +63,6 @@ private:
     http::request<http::string_body> m_request;
     http::response_parser<http::string_body> m_response;
     beast::flat_buffer m_buffer;
-    boost::promise<HTTPResponseResult> m_result;
+    boost::promise<HttpResponseResult> m_result;
     std::atomic<bool> m_resultSet = false;
 };

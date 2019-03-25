@@ -3,7 +3,7 @@
 #include "IMediaVisitor.hpp"
 #include "parsers/Options.hpp"
 
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 class MediaModel
 {

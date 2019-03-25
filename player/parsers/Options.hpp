@@ -1,7 +1,7 @@
 #pragma once
 
 #include "model/MediaGeometry.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 #include <boost/optional/optional.hpp>
 

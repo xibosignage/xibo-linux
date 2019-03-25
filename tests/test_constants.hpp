@@ -3,7 +3,7 @@
 #include "constants.hpp"
 #include "utils/Helpers.hpp"
 #include "utils/FilePath.hpp"
-#include "utils/Uri.hpp"
+#include "utils/uri/Uri.hpp"
 
 const std::string DEFAULT_RESOURCES_DIR = "fakedir";
 const FilePath DEFAULT_PATH = "fakepath";
