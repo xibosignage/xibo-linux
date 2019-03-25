@@ -9,7 +9,7 @@
 #include "utils/ITimerProvider.hpp"
 #include "utils/JoinableThread.hpp"
 #include "utils/ResponseResult.hpp"
-#include "events/Observable.hpp"
+#include "events/EventPublisher.hpp"
 
 using CollectionResultCallback = std::function<void(const CollectionResult&)>;
 
@@ -21,7 +21,7 @@ struct CollectionSession
 
 using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 
-class CollectionInterval : public Observable<>
+class CollectionInterval : public EventPublisher<>
 {
 public:
     CollectionInterval();

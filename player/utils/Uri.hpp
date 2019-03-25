@@ -59,6 +59,7 @@ public:
 private:
     std::string schemeToString(Scheme scheme) const;
     std::string portToString(boost::optional<unsigned short> port) const;
+    std::string removeEscapedSymbols(std::string url);
 
 private:
     Scheme m_scheme = Scheme::Invalid;

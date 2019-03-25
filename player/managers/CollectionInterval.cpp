@@ -1,7 +1,7 @@
 #include "CollectionInterval.hpp"
 
 #include "xmds/XMDSManager.hpp"
-#include "events/CallbackGlobalQueue.hpp"
+#include "events/CallbackEventQueue.hpp"
 
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
@@ -38,7 +38,7 @@ void CollectionInterval::onRegularCollectionFinished(const CollectionResult& res
 {
     Log::debug("Collection finished {}", std::this_thread::get_id());
     Log::debug("Next collection will start in {} seconds", m_collectInterval);
-    pushEvent(CollectionFinished{result});
+    pushEvent(CollectionFinishedEvent{result});
     startTimer();
 }
 
