@@ -1,16 +1,17 @@
 #include "LayoutScheduler.hpp"
 
-#include "utils/Utilities.hpp"
 #include "utils/logger/Logging.hpp"
+#include "utils/Utilities.hpp"
 #include "utils/Resources.hpp"
-
-#include "constants.hpp"
-
-#include <filesystem>
+#include "utils/FileSystemAdaptor.hpp"
 
 const size_t FIRST_ITEM_INDEX = 0;
 
-void LayoutScheduler::update(const Schedule::Result& schedule)
+LayoutScheduler::LayoutScheduler() : m_filesystem(std::make_unique<FileSystemAdaptor>())
+{
+}
+
+void LayoutScheduler::update(const LayoutSchedule& schedule)
 {
     resetSchedule();
 
@@ -102,7 +103,7 @@ bool LayoutScheduler::allFilesExist(const std::vector<std::string>& dependants) 
 {
     for(auto dependant : m_globalDependants)
     {
-        if(!std::filesystem::exists(Resources::directory() / dependant))
+        if(!m_filesystem->exists(Resources::directory() / dependant))
         {
             return false;
         }
@@ -110,7 +111,7 @@ bool LayoutScheduler::allFilesExist(const std::vector<std::string>& dependants) 
 
     for(auto dependant : dependants)
     {
-        if(!std::filesystem::exists(Resources::directory() / dependant))
+        if(!m_filesystem->exists(Resources::directory() / dependant))
         {
             return false;
         }

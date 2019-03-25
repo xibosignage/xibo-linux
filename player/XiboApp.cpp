@@ -14,6 +14,7 @@
 #include "managers/LayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/HttpManager.hpp"
+#include "managers/PlayerSettingsManager.hpp"
 #include "xmds/XmdsRequestSender.hpp"
 #include "xmds/SoapRequestSender.hpp"
 
@@ -22,6 +23,9 @@
 #include <spdlog/sinks/stdout_sinks.h>
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
+const std::string DEFAULT_SETTINGS_FILE = "settings.xml";
+const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
+
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
@@ -50,33 +54,26 @@ std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<LayoutScheduler>()),
-    m_fileManager(std::make_unique<FileCacheManager>()),
+    m_fileManager(std::make_unique<FileCacheManager>(Resources::directory() / DEFAULT_CACHE_FILE)),
     m_httpManager(std::make_unique<HttpManager>()),
-    m_options(std::make_unique<CommandLineParser>())
+    m_options(std::make_unique<CommandLineParser>()),
+    m_settingsManager(std::make_unique<PlayerSettingsManager>(Resources::directory() / DEFAULT_SETTINGS_FILE))
 {
     m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
+    m_mainLoop->setShutdownAction([this](){
+        m_httpManager->shutdown();
+        m_collectionInterval->stop();
+    });
 }
 
-void XiboApp::onCollectionFinished(const CollectionResult& result)
+bool XiboApp::processCallbackQueue()
 {
-    if(!result.error)
+    if(!callbackQueue().empty())
     {
-        Log::debug("Received collection result");
-
-        m_scheduler->update(result.schedule);
-        updateSettings(result.settings);
+        auto callback = callbackQueue().pop();
+        callback();
     }
-    else
-    {
-        Log::debug("Collection interval error: {}", result.error);
-    }
-}
-
-void XiboApp::updateSettings(const PlayerSettings& settings)
-{
-    Log::debug("Log level updated");
-
-    Log::logger()->setLevel(settings.logLevel);
+    return true;
 }
 
 XiboApp::~XiboApp()
@@ -136,16 +133,6 @@ void XiboApp::tryParseCommandLine(int argc, char** argv)
     }
 }
 
-bool XiboApp::processCallbackQueue()
-{
-    if(!callbackQueue().empty())
-    {
-        auto callback = callbackQueue().pop();
-        callback();
-    }
-    return true;
-}
-
 int XiboApp::runMainLoop()
 {
     try
@@ -155,19 +142,11 @@ int XiboApp::runMainLoop()
 
         m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
         m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
+        handleCollectionUpdates(*m_collectionInterval);
+        updatePlayerSettings(m_settingsManager->load());
 
-        m_mainLoop->setShutdownAction([this](){
-            m_httpManager->shutdown();
-            m_collectionInterval->stop();
-        });
-
-        m_collectionInterval->subscribe(EventType::CollectionFinished, [this](const Event& ev){
-            auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
-            onCollectionFinished(collectionEvent.result());
-        });
-
-        m_collectionInterval->collectOnce([=, &mainController](const CollectionResult& result){
-            onCollectionFinished(result);
+        m_collectionInterval->collectOnce([=, &mainController](const PlayerError& error){
+            onCollectionFinished(error);
             m_collectionInterval->startRegularCollection();
 
             mainController.updateLayout(m_scheduler->nextLayoutId());
@@ -183,4 +162,43 @@ int XiboApp::runMainLoop()
     }
 
     return -1;
+}
+
+void XiboApp::handleCollectionUpdates(CollectionInterval& interval)
+{
+    interval.subscribe(EventType::CollectionFinished, [this](const Event& ev){
+        auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
+        onCollectionFinished(collectionEvent.error());
+    });
+
+    interval.subscribe(EventType::SettingsUpdated, [this](const Event& ev){
+        auto&& settingsEvent = static_cast<const SettingsUpdatedEvent&>(ev);
+        updateSettings(settingsEvent.settings());
+    });
+
+    interval.subscribe(EventType::ScheduleUpdated, [this](const Event& ev){
+        auto&& scheduleEvent = static_cast<const ScheduleUpdatedEvent&>(ev);
+        m_scheduler->update(scheduleEvent.schedule());
+    });
+}
+
+void XiboApp::onCollectionFinished(const PlayerError& error)
+{
+    if(error)
+    {
+        Log::debug("Collection interval error: {}", error);
+    }
+}
+
+void XiboApp::updateSettings(const PlayerSettings& settings)
+{
+    m_settingsManager->update(settings);
+    updatePlayerSettings(settings);
+}
+
+void XiboApp::updatePlayerSettings(const PlayerSettings& settings)
+{
+    Log::logger()->setLevel(settings.logLevel);
+    m_collectionInterval->updateInterval(settings.collectInterval);
+    Log::debug("Player settings updated");
 }

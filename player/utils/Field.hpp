@@ -10,6 +10,10 @@ public:
     {
     }
 
+    explicit Field(std::string_view name, const T& defaultValue) : m_fieldName(name), m_value(defaultValue)
+    {
+    }
+
     Field& operator=(const T& value)
     {
         setValue(value);
@@ -39,6 +43,11 @@ public:
     }
 
     T value() const
+    {
+        return m_value;
+    }
+
+    operator T() const
     {
         return m_value;
     }

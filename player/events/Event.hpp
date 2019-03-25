@@ -6,6 +6,8 @@ enum class EventType
 {
     DurationExpired,
     CollectionFinished,
+    SettingsUpdated,
+    ScheduleUpdated,
     WidgetShown
 };
 
@@ -34,17 +36,45 @@ private:
     int m_id;
 };
 
-#include "managers/CollectionResult.hpp"
+#include "utils/PlayerError.hpp"
 
 class CollectionFinishedEvent : public Event
 {
 public:
-    CollectionFinishedEvent(const CollectionResult& result);
+    CollectionFinishedEvent(const PlayerError& error);
     EventType type() const override;
-    const CollectionResult& result() const;
+    const PlayerError& error() const;
 
 private:
-    CollectionResult m_result;
+    PlayerError m_error;
+
+};
+
+#include "model/PlayerSettings.hpp"
+
+class SettingsUpdatedEvent : public Event
+{
+public:
+    SettingsUpdatedEvent(const PlayerSettings& settings);
+    EventType type() const override;
+    const PlayerSettings& settings() const;
+
+private:
+    PlayerSettings m_settings;
+
+};
+
+#include "managers/LayoutSchedule.hpp"
+
+class ScheduleUpdatedEvent : public Event
+{
+public:
+    ScheduleUpdatedEvent(const LayoutSchedule& schedule);
+    EventType type() const override;
+    const LayoutSchedule& schedule() const;
+
+private:
+    LayoutSchedule m_schedule;
 
 };
 

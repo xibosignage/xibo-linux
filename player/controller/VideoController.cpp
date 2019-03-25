@@ -1,5 +1,7 @@
 #include "VideoController.hpp"
 
+#include "constants.hpp"
+
 VideoController::VideoController(const std::shared_ptr<VideoModel>& model,
                                  const std::shared_ptr<DrawingArea>& videoWindow) :
     VisibleMediaController(model, videoWindow),

@@ -1,5 +1,7 @@
 #include "AddMediaVisitor.hpp"
 
+#include "constants.hpp"
+
 #include "model/GetMediaPosition.hpp"
 #include "model/ImageModel.hpp"
 #include "model/WebViewModel.hpp"

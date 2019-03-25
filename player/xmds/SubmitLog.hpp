@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Field.hpp"
 #include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+
+#include "utils/Field.hpp"
 
 namespace SubmitLog
 {

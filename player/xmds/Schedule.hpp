@@ -1,19 +1,17 @@
 #pragma once
 
-#include "Field.hpp"
 #include "Soap.hpp"
 #include "BaseRequestSerializer.hpp"
 #include "BaseResponseParser.hpp"
 
-#include "managers/ScheduleItem.hpp"
+#include "utils/Field.hpp"
+#include "managers/LayoutSchedule.hpp"
 
 namespace Schedule
 {
     struct Result
     {
-        std::vector<std::string> globalDependants;
-        std::vector<ScheduledLayout> layouts;
-        DefaultScheduledLayout defaultLayout;
+        LayoutSchedule schedule;
     };
 
     struct Request

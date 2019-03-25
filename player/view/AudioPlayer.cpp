@@ -1,5 +1,7 @@
 #include "AudioPlayer.hpp"
 
+#include "constants.hpp"
+
 #include "wrapper/Pipeline.hpp"
 #include "wrapper/AudioConvert.hpp"
 #include "wrapper/Volume.hpp"

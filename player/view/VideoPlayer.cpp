@@ -1,5 +1,7 @@
 #include "VideoPlayer.hpp"
 
+#include "constants.hpp"
+
 #include "wrapper/Pipeline.hpp"
 #include "wrapper/VideoConvert.hpp"
 #include "wrapper/AudioConvert.hpp"
