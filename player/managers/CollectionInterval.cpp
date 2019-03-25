@@ -6,6 +6,7 @@
 #include "utils/Logger.hpp"
 #include "utils/Utilities.hpp"
 #include "utils/TimerProvider.hpp"
+#include "utils/ScreenShoter.hpp"
 
 #include <glibmm/main.h>
 
@@ -123,6 +124,8 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
 
         updateMediaInventory(filesResult.get());
         updateMediaInventory(resourcesResult.get());
+
+        submitScreenShot();
     }
     else
     {
@@ -146,11 +149,24 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
 {
-    Utils::xmdsManager().mediaInventory(std::move(items)).then([](boost::future<ResponseResult<MediaInventory::Result>> future){
+    Utils::xmdsManager().mediaInventory(std::move(items)).then([](auto future){
         auto [error, result] = future.get();
         if(error)
         {
             Log::error("MediaInventory: {}", error);
+        }
+    });
+}
+
+void CollectionInterval::submitScreenShot()
+{
+    ScreenShoter screenShoter;
+
+    Utils::xmdsManager().submitScreenShot(screenShoter.takeBase64()).then([](auto future){
+        auto [error, result] = future.get();
+        if(error)
+        {
+            Log::error("SubmitScreenShot: {}", error);
         }
     });
 }

@@ -20,7 +20,7 @@ add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTUR
 file(GLOB_RECURSE PLAYER_SOURCES ${CMAKE_SOURCE_DIR}/player/*.cpp ${CMAKE_SOURCE_DIR}/player/*.hpp)
 
 add_library(player_lib STATIC ${PLAYER_SOURCES})
-target_link_libraries(player_lib stdc++fs ssl crypto)
+target_link_libraries(player_lib stdc++fs ssl crypto X11)
 
 find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
 find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)

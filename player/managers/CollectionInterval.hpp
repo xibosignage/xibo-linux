@@ -42,6 +42,7 @@ private:
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);
+    void submitScreenShot();
 
 private:
     std::unique_ptr<JoinableThread> m_workerThread;

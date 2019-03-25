@@ -1,43 +1,8 @@
 #include "Event.hpp"
 
-StartMediaEvent::StartMediaEvent(int id) :
-    m_id(id)
-{
-}
-
-int StartMediaEvent::id() const
-{
-    return m_id;
-}
-
-EventType StartMediaEvent::type() const
-{
-    return EventType::StartMedia;
-}
-
-StopMediaEvent::StopMediaEvent(int id) :
-    m_id(id)
-{
-}
-
-int StopMediaEvent::id() const
-{
-    return m_id;
-}
-
-EventType StopMediaEvent::type() const
-{
-    return EventType::StopMedia;
-}
-
 EventType DurationExpiredEvent::type() const
 {
     return EventType::DurationExpired;
-}
-
-EventType PlaybackFinishedEvent::type() const
-{
-    return EventType::PlaybackFinished;
 }
 
 RegionDurationExpiredEvent::RegionDurationExpiredEvent(int id) :
