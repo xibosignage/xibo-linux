@@ -20,6 +20,7 @@ public:
     OverlayLayout(int width, int height);
 
     void addWidget(const std::shared_ptr<Widget>& child, int x, int y, int z);
+    void removeWidget(const std::shared_ptr<Widget>& child);
     void removeWidgets();
     void addMainWidget(const std::shared_ptr<Widget>& mainChild);
     void removeMainWidget();

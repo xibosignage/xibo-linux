@@ -20,6 +20,17 @@ void OverlayLayout::addWidget(const std::shared_ptr<Widget>& child, int x, int y
     m_children.emplace(std::make_pair(std::move(child), info));
 }
 
+void OverlayLayout::removeWidget(const std::shared_ptr<Widget>& child)
+{
+    auto it = m_children.find(child);
+    if(it != m_children.end())
+    {
+        m_handler.Gtk::Container::remove(child->get());
+
+        m_children.erase(it);
+    }
+}
+
 void OverlayLayout::removeWidgets()
 {
     for(auto&& widget : m_handler.get_children())

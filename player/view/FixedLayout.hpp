@@ -9,7 +9,8 @@ class FixedLayout : public Widget
 public:
     FixedLayout(int width, int height);
 
-    void addWidget(const std::shared_ptr<Widget>& widget, int left, int top);
+    void addWidget(const std::shared_ptr<Widget>& child, int left, int top);
+    void removeWidget(const std::shared_ptr<Widget>& child);
     Widget& widget(std::size_t index);
     void removeWidgets();
 

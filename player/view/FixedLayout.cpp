@@ -13,6 +13,17 @@ void FixedLayout::addWidget(const std::shared_ptr<Widget>& child, int left, int 
     m_children.emplace_back(child);
 }
 
+void FixedLayout::removeWidget(const std::shared_ptr<Widget>& child)
+{
+    auto it = std::find(m_children.begin(), m_children.end(), child);
+    if(it != m_children.end())
+    {
+        m_handler.remove(child->get());
+
+        m_children.erase(it);
+    }
+}
+
 Widget& FixedLayout::widget(std::size_t index)
 {
     return *m_children[index];
