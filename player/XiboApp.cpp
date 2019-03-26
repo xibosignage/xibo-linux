@@ -150,7 +150,7 @@ int XiboApp::runMainLoop()
             m_collectionInterval->startRegularCollection();
 
             mainController.updateLayout(m_scheduler->nextLayoutId());
-            window->show();
+            window->showAll();
             Log::info("Player started");
         });
 

@@ -13,7 +13,7 @@ const uint DEFAULT_INTERVAL = 900;
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
-    m_xmdsSender{xmdsSender}, m_collectInterval{DEFAULT_INTERVAL}, m_intervalTimer{std::make_unique<TimerProvider>()}
+    m_xmdsSender{xmdsSender}, m_intervalTimer{std::make_unique<TimerProvider>()}, m_collectInterval{DEFAULT_INTERVAL}
 {
 }
 
