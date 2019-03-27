@@ -1,6 +1,6 @@
 #pragma once
 
-#include "adaptors/IFixedLayout.hpp"
+#include "adaptors/IRegionView.hpp"
 #include "MockWidget.hpp"
 
 #include <gmock/gmock.h>

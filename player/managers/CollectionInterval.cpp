@@ -5,7 +5,9 @@
 
 #include "utils/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
+
 #include "utils/ScreenShoter.hpp"
+#include "utils/Utilities.hpp"
 
 #include <glibmm/main.h>
 
@@ -179,13 +181,13 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
 
 void CollectionInterval::submitScreenShot()
 {
-    ScreenShoter screenShoter;
-
-    m_xmdsSender.submitScreenShot(screenShoter.takeBase64()).then([](auto future){
-        auto [error, result] = future.get();
-        if(error)
-        {
-            Log::error("SubmitScreenShot: {}", error);
-        }
+    Utils::screenShoter().takeBase64([this](const std::string& screenshot){
+        m_xmdsSender.submitScreenShot(screenshot).then([](auto future){
+            auto [error, result] = future.get();
+            if(error)
+            {
+                Log::error("SubmitScreenShot: {}", error);
+            }
+        });
     });
 }

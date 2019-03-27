@@ -2,30 +2,31 @@
 
 #include "utils/FilePath.hpp"
 
+#include <glibmm/main.h>
+#include <gdkmm.h>
 #include <cairomm/xlib_surface.h>
+#include <gdk/gdkx.h>
 #include <fstream>
 #include <boost/beast/core/detail/base64.hpp>
 
-void ScreenShoter::take(const FilePath& path)
+ScreenShoter::ScreenShoter(MainWindow& window) :
+    m_window(window)
 {
-    auto buffer = takeScreenshot();
-
-    std::ofstream out(path);
-    out << boost::beast::detail::base64_encode(buffer.data(), buffer.size());
 }
 
-std::string ScreenShoter::takeBase64()
+void ScreenShoter::takeBase64(ScreenShotTaken callback)
 {
-    auto buffer = takeScreenshot();
-
-    return boost::beast::detail::base64_encode(buffer.data(), buffer.size());
+    takeScreenshot([=](const std::vector<unsigned char>& buffer){
+        auto base64 = boost::beast::detail::base64_encode(buffer.data(), buffer.size());
+        callback(base64);
+    });
 }
 
-std::vector<unsigned char> ScreenShoter::takeScreenshot()
+void ScreenShoter::takeScreenshot(ImageBufferCreated callback)
 {
-    auto surface = takeXDisplayScreenshot();
-
-    return copySurfaceToBuffer(surface);
+    takeXDisplayScreenshot([=](const Cairo::RefPtr<Cairo::Surface>& surface){
+        callback(copySurfaceToBuffer(surface));
+    });
 }
 
 std::vector<unsigned char> ScreenShoter::copySurfaceToBuffer(const Cairo::RefPtr<Cairo::Surface>& surface)
@@ -40,15 +41,20 @@ std::vector<unsigned char> ScreenShoter::copySurfaceToBuffer(const Cairo::RefPtr
     return buffer;
 }
 
-Cairo::RefPtr<Cairo::Surface> ScreenShoter::takeXDisplayScreenshot()
+void ScreenShoter::takeXDisplayScreenshot(SurfaceCreated callback)
 {
-    Display* display = XOpenDisplay(nullptr);
-    int screen = DefaultScreen(display);
-    Window rootWindow = DefaultRootWindow(display);
+    Glib::MainContext::get_default()->invoke([=](){
+        auto window = m_window.get().get_window();
+        if(window)
+        {
+            Display* display = XOpenDisplay(nullptr);
+            Window active = gdk_x11_window_get_xid(window->gobj());
+            XWindowAttributes gwa;
+            XGetWindowAttributes(display, active, &gwa);
 
-    return Cairo::XlibSurface::create(display,
-                                      rootWindow,
-                                      DefaultVisual(display, screen),
-                                      DisplayWidth(display, screen),
-                                      DisplayHeight(display, screen));
+            auto surface = Cairo::XlibSurface::create(display, active, gwa.visual, gwa.width, gwa.height);
+            callback(surface);
+        }
+        return false;
+    });
 }
