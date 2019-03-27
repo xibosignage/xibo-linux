@@ -64,10 +64,12 @@ private:
         switch(level)
         {
             case spdlog::level::trace:
+                return "trace";
             case spdlog::level::debug:
+                return "debug";
             case spdlog::level::info:
-                return "audit";
             case spdlog::level::warn:
+                return "info";
             case spdlog::level::err:
             case spdlog::level::critical:
             case spdlog::level::off:

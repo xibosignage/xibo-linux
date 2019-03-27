@@ -11,10 +11,12 @@ class HttpManager;
 class LayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
-class CommandLineParser;
 class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
+class ConfigurationView;
+class MainWindowController;
+class Event;
 struct PlayerSettings;
 
 class XiboApp
@@ -30,19 +32,18 @@ public:
     FileCacheManager& fileManager();
     ScreenShoter& screenShoter();
 
-    int run(int argc, char** argv);
+    int run();
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
     XiboApp(const std::string& name);
-    int runMainLoop();
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
     void updatePlayerSettings(const PlayerSettings& settings);
-    void tryParseCommandLine(int argc, char** argv);
     bool processCallbackQueue();
     void handleCollectionUpdates(CollectionInterval& interval);
+    void startPlayer(const std::shared_ptr<ConfigurationView>& view);
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
@@ -51,9 +52,10 @@ private:
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
     std::unique_ptr<HttpManager> m_httpManager;
-    std::unique_ptr<CommandLineParser> m_options;
     std::unique_ptr<PlayerSettingsManager> m_settingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
+    std::unique_ptr<MainWindowController> m_mainWindowController;
+    std::shared_ptr<MainWindow> m_mainWindow;
 
     static std::unique_ptr<XiboApp> m_app;
 };

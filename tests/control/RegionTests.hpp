@@ -4,7 +4,7 @@
 
 #include "creators/RegionBuilder.hpp"
 #include "control/Region.hpp"
-#include "mocks/MockFixedLayout.hpp"
+#include "mocks/MockRegionView.hpp"
 
 #include "mocks/MockRegionContent.hpp"
 #include "mocks/MockWidget.hpp"

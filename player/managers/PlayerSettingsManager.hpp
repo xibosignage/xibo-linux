@@ -3,18 +3,23 @@
 #include "utils/Field.hpp"
 #include "utils/FilePath.hpp"
 #include "utils/IFileSystemAdaptor.hpp"
+#include "model/PlayerSettings.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
-struct PlayerSettings;
 class FilePath;
 
 class PlayerSettingsManager
 {
 public:
     PlayerSettingsManager(const FilePath& settingsFile);
-    PlayerSettings load();
-    void update(const PlayerSettings& settings);
+    void load();
+    void update(const Settings& settings);
+    void updateCmsSettings(const CmsSettings& settings);
+    void updatePlayerSettings(const PlayerSettings& settings);
+
+    PlayerSettings playerSettings();
+    CmsSettings cmsSettings();
 
 private:
     template<typename... Args>
@@ -38,6 +43,7 @@ private:
     }
 
 private:
+    Settings m_settings;
     FilePath m_settingsFile;
     std::unique_ptr<IFileSystemAdaptor> m_filesystem;
 

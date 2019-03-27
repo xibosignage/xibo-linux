@@ -8,7 +8,7 @@
 namespace ph = std::placeholders;
 
 MainLayoutController::MainLayoutController(const std::shared_ptr<MainLayoutModel>& model,
-                                           const std::shared_ptr<OverlayLayout>& view) :
+                                           const std::shared_ptr<MainLayoutView>& view) :
     m_model(model), m_view(view)
 {
     updateBackground();
@@ -27,17 +27,17 @@ void MainLayoutController::updateBackground()
     else
         background->setColor(m_model->backgroundColor());
 
-    m_view->addMainWidget(background);
+    m_view->addBackground(background);
 }
 
 void MainLayoutController::addRegion(const std::shared_ptr<RegionModel>& regionModel)
 {
-    auto regionView = std::make_shared<FixedLayout>(regionModel->width(), regionModel->height());
+    auto regionView = std::make_shared<RegionView>(regionModel->width(), regionModel->height());
     auto regionController = std::make_unique<RegionController>(regionModel, regionView);
 
     regionController->subscribe(EventType::DurationExpired, std::bind(&MainLayoutController::onRegionExpired, this, ph::_1));
 
-    m_view->addWidget(regionView, regionModel->left(), regionModel->top(), regionModel->zindex());
+    m_view->addRegion(regionView, regionModel->left(), regionModel->top(), regionModel->zindex());
     m_regions.emplace_back(std::move(regionController));
 }
 

@@ -9,7 +9,8 @@ enum class EventType
     SettingsUpdated,
     ScheduleUpdated,
     WidgetShown,
-    KeyPress
+    KeyPress,
+    ButtonClicked
 };
 
 class Event
@@ -97,5 +98,12 @@ public:
 private:
     unsigned int m_value;
     std::string m_string;
+
+};
+
+class ButtonClickedEvent : public Event
+{
+public:
+    EventType type() const override;
 
 };

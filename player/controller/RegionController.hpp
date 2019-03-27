@@ -3,7 +3,7 @@
 #include "events/EventPublisher.hpp"
 
 #include "model/RegionModel.hpp"
-#include "view/FixedLayout.hpp"
+#include "view/RegionView.hpp"
 #include "controller/MediaController.hpp"
 
 #include <vector>
@@ -12,7 +12,7 @@
 class RegionController : public EventPublisher<>, private boost::noncopyable
 {
 public:
-    RegionController(const std::shared_ptr<RegionModel>& model, const std::shared_ptr<FixedLayout>& view);
+    RegionController(const std::shared_ptr<RegionModel>& model, const std::shared_ptr<RegionView>& view);
 
     void addMedia(std::unique_ptr<MediaController>&& controller);
 
@@ -27,7 +27,7 @@ private:
 
 private:
     std::shared_ptr<RegionModel> m_model;
-    std::shared_ptr<FixedLayout> m_view;
+    std::shared_ptr<RegionView> m_view;
 
     std::vector<std::unique_ptr<MediaController>> m_media;
     size_t m_currentMediaIndex = 0;

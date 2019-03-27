@@ -68,10 +68,12 @@ void Soap::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
 
 LoggingLevel Soap::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const std::string& level)
 {
-    if(level == "audit")
+    if(level == "trace")
         return LoggingLevel::Trace;
-    else if(level == "info")
+    else if(level == "debug")
         return LoggingLevel::Debug;
+    else if(level == "info")
+        return LoggingLevel::Info;
     else if(level == "error")
         return LoggingLevel::Error;
 

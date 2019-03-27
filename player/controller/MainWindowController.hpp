@@ -13,11 +13,10 @@ public:
     void updateLayout(int layoutId);
 
 private:
-    void scaleLayout(const std::shared_ptr<OverlayLayout>& layout);
+    void scaleLayout(const std::shared_ptr<MainLayoutView>& layout);
 
 private:
     std::shared_ptr<MainWindow> m_window;
-    std::shared_ptr<OverlayLayout> m_windowLayout;
     LayoutScheduler& m_scheduler;
     std::unique_ptr<StatusScreenController> m_statusScreenController;
     std::unique_ptr<MainLayoutController> m_layoutController;

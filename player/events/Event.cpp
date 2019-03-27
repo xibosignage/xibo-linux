@@ -80,3 +80,8 @@ std::string KeyPressEvent::string() const
 {
     return m_string;
 }
+
+EventType ButtonClickedEvent::type() const
+{
+    return EventType::ButtonClicked;
+}

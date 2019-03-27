@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MockFixedLayout.hpp"
+#include "MockRegionView.hpp"
 #include "test_constants.hpp"
 
 #include "control/IRegion.hpp"
