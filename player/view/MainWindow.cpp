@@ -14,6 +14,12 @@ MainWindow::MainWindow(int width, int height) :
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
     loadDefaultStyle();
 
+    m_handler.add_events(Gdk::KEY_PRESS_MASK);
+    m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
+        pushEvent(KeyPressEvent{event->keyval, event->string});
+        return false;
+    });
+
     setSize(width, height);
 }
 

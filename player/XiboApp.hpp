@@ -14,6 +14,7 @@ class CollectionInterval;
 class CommandLineParser;
 class PlayerSettingsManager;
 class PlayerError;
+class ScreenShoter;
 struct PlayerSettings;
 
 class XiboApp
@@ -27,6 +28,7 @@ public:
     static XiboApp& app();
     HttpManager& httpManager();
     FileCacheManager& fileManager();
+    ScreenShoter& screenShoter();
 
     int run(int argc, char** argv);
 
@@ -51,6 +53,7 @@ private:
     std::unique_ptr<HttpManager> m_httpManager;
     std::unique_ptr<CommandLineParser> m_options;
     std::unique_ptr<PlayerSettingsManager> m_settingsManager;
+    std::unique_ptr<ScreenShoter> m_screenShoter;
 
     static std::unique_ptr<XiboApp> m_app;
 };

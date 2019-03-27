@@ -2,6 +2,7 @@
 #include "MainLoop.hpp"
 #include "config.hpp"
 
+#include "utils/ScreenShoter.hpp"
 #include "utils/Resources.hpp"
 #include "utils/logger/XmlLoggerSink.hpp"
 #include "parsers/CommandLineParser.hpp"
@@ -70,8 +71,16 @@ bool XiboApp::processCallbackQueue()
 {
     if(!callbackQueue().empty())
     {
-        auto callback = callbackQueue().pop();
-        callback();
+        try
+        {
+            auto callback = callbackQueue().pop();
+            callback();
+        }
+        catch(std::exception& e)
+        {
+            Log::error("Error occured: {}", e.what());
+        }
+
     }
     return true;
 }
@@ -97,6 +106,11 @@ HttpManager& XiboApp::httpManager()
 FileCacheManager& XiboApp::fileManager()
 {
     return *m_fileManager;
+}
+
+ScreenShoter& XiboApp::screenShoter()
+{
+    return *m_screenShoter;
 }
 
 int XiboApp::run(int argc, char** argv)
@@ -135,33 +149,26 @@ void XiboApp::tryParseCommandLine(int argc, char** argv)
 
 int XiboApp::runMainLoop()
 {
-    try
-    {
-        auto window = std::make_shared<MainWindow>(1366, 768);
-        MainWindowController mainController{window, *m_scheduler};
+    auto window = std::make_shared<MainWindow>(1366, 768);
+    MainWindowController mainController{window, *m_scheduler};
 
-        m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
-        m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
-        handleCollectionUpdates(*m_collectionInterval);
-        updatePlayerSettings(m_settingsManager->load());
+    m_screenShoter.reset(new ScreenShoter{*window});
+    m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});    
 
-        m_collectionInterval->collectOnce([=, &mainController](const PlayerError& error){
-            onCollectionFinished(error);
-            m_collectionInterval->startRegularCollection();
+    m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
+    handleCollectionUpdates(*m_collectionInterval);
+    updatePlayerSettings(m_settingsManager->load());
 
-            mainController.updateLayout(m_scheduler->nextLayoutId());
-            window->showAll();
-            Log::info("Player started");
-        });
+    m_collectionInterval->collectOnce([=, &mainController](const PlayerError& error){
+        onCollectionFinished(error);
+        m_collectionInterval->startRegularCollection();
 
-        return m_mainLoop->run(*window);
-    }
-    catch(std::exception& e)
-    {
-        Log::error("Player failed to start: {}", e.what());
-    }
+        mainController.updateLayout(m_scheduler->nextLayoutId());
+        window->showAll();
+        Log::info("Player started");
+    });
 
-    return -1;
+    return m_mainLoop->run(*window);
 }
 
 void XiboApp::handleCollectionUpdates(CollectionInterval& interval)

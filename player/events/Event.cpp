@@ -60,3 +60,23 @@ EventType WidgetShownEvent::type() const
 {
     return EventType::WidgetShown;
 }
+
+KeyPressEvent::KeyPressEvent(unsigned int value, const std::string& string) :
+    m_value{value}, m_string{string}
+{
+}
+
+EventType KeyPressEvent::type() const
+{
+    return EventType::KeyPress;
+}
+
+unsigned int KeyPressEvent::value() const
+{
+    return m_value;
+}
+
+std::string KeyPressEvent::string() const
+{
+    return m_string;
+}
