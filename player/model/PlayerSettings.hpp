@@ -5,7 +5,7 @@
 
 struct PlayerSettings
 {
-    Field<int> collectInterval{"collectInterval", 5};
+    Field<int> collectInterval{"collectInterval", 900};
     Field<std::string> downloadStartWindow{"downloadStartWindow", "00:00"};
     Field<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
     Field<bool> statsEnabled{"statsEnabled", false};
@@ -26,4 +26,17 @@ struct PlayerSettings
     Field<bool> preventSleep{"preventSleep", false};
     Field<std::string> displayName{"displayName"};
     Field<bool> screenshotRequested{"screenshotRequested", false};
+};
+
+struct CmsSettings
+{
+    Field<std::string> host{"host"};
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+};
+
+struct Settings
+{
+    CmsSettings cms;
+    PlayerSettings player;
 };

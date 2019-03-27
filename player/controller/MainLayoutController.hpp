@@ -3,7 +3,7 @@
 #include "events/EventPublisher.hpp"
 
 #include "model/MainLayoutModel.hpp"
-#include "view/OverlayLayout.hpp"
+#include "view/MainLayoutView.hpp"
 #include "controller/RegionController.hpp"
 
 #include <vector>
@@ -14,7 +14,7 @@ class MainLayoutController : public EventPublisher<>, private boost::noncopyable
 {
 public:
     MainLayoutController(const std::shared_ptr<MainLayoutModel>& model,
-                         const std::shared_ptr<OverlayLayout>& view);
+                         const std::shared_ptr<MainLayoutView>& view);
 
 private:
     void updateBackground();
@@ -25,7 +25,7 @@ private:
 
 private:
     std::shared_ptr<MainLayoutModel> m_model;
-    std::shared_ptr<OverlayLayout> m_view;
+    std::shared_ptr<MainLayoutView> m_view;
     std::vector<std::unique_ptr<RegionController>> m_regions;
     std::set<int> m_expiredRegions;
 

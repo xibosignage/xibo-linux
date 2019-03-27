@@ -16,7 +16,7 @@
 #include "view/DrawingArea.hpp"
 #include "view/Image.hpp"
 
-AddMediaVisitor::AddMediaVisitor(FixedLayout& view, RegionController& controller) :
+AddMediaVisitor::AddMediaVisitor(RegionView& view, RegionController& controller) :
     m_view(view), m_controller(controller)
 {
 }
@@ -30,7 +30,7 @@ void AddMediaVisitor::visit(const std::shared_ptr<ImageModel>& imageModel)
     int left = positionCalc.getMediaLeft(image->width(), imageModel->align());
     int top = positionCalc.getMediaTop(image->height(), imageModel->valign());
 
-    m_view.addWidget(image, left, top);
+    m_view.addMedia(image, left, top);
     m_controller.addMedia(std::make_unique<VisibleMediaController>(imageModel, image));
 }
 
@@ -45,7 +45,7 @@ void AddMediaVisitor::visit(const std::shared_ptr<WebViewModel>& webviewModel)
         webview->enableTransparency();
     }
 
-    m_view.addWidget(webview, DEFAULT_XPOS, DEFAULT_YPOS);
+    m_view.addMedia(webview, DEFAULT_XPOS, DEFAULT_YPOS);
     m_controller.addMedia(std::make_unique<VisibleMediaController>(webviewModel, webview));
 }
 
@@ -58,6 +58,6 @@ void AddMediaVisitor::visit(const std::shared_ptr<VideoModel>& videoModel)
 {
     auto videoWindow = std::make_shared<DrawingArea>(m_view.width(), m_view.height());
 
-    m_view.addWidget(videoWindow, DEFAULT_XPOS, DEFAULT_YPOS);
+    m_view.addMedia(videoWindow, DEFAULT_XPOS, DEFAULT_YPOS);
     m_controller.addMedia(std::make_unique<VideoController>(videoModel, videoWindow));
 }

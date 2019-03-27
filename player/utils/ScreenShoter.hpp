@@ -2,19 +2,29 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 #include <cairomm/surface.h>
 
+#include "view/MainWindow.hpp"
+
 class FilePath;
+using ScreenShotTaken = std::function<void(const std::string&)>;
+using ImageBufferCreated = std::function<void(const std::vector<unsigned char>&)>;
+using SurfaceCreated = std::function<void(const Cairo::RefPtr<Cairo::Surface>&)>;
 
 class ScreenShoter
 {
 public:
-    void take(const FilePath& path);
-    std::string takeBase64();
+    ScreenShoter(MainWindow& window);
+    void takeBase64(ScreenShotTaken callback);
 
 private:
-    std::vector<unsigned char> takeScreenshot();
+    void takeScreenshot(ImageBufferCreated callback);
     std::vector<unsigned char> copySurfaceToBuffer(const Cairo::RefPtr<Cairo::Surface>& surface);
-    Cairo::RefPtr<Cairo::Surface> takeXDisplayScreenshot();
+    void takeXDisplayScreenshot(SurfaceCreated callback);
+
+private:
+    MainWindow& m_window;
+
 
 };

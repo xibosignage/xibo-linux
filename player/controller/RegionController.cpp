@@ -5,7 +5,7 @@
 const int FIRST_CONTENT_INDEX = 0;
 
 RegionController::RegionController(const std::shared_ptr<RegionModel>& model,
-                                   const std::shared_ptr<FixedLayout>& view) :
+                                   const std::shared_ptr<RegionView>& view) :
     m_model(model), m_view(view)
 {
     for(auto&& mediaModel : m_model->media())

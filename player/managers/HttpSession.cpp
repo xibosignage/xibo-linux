@@ -23,6 +23,12 @@ boost::future<HttpResponseResult> HttpSession::send(http::verb method, const Uri
     m_scheme = uri.scheme();
     m_socket->set_verify_callback(ssl::rfc2818_verification(uri.host()));
 
+    if(!SSL_set_tlsext_host_name(m_socket->native_handle(), uri.host().c_str()))
+    {
+        beast::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
+        sessionFinished(ec);
+    }
+
     resolve(uri.host(), uri.port(), std::bind(&HttpSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 
     return m_result.get_future();
