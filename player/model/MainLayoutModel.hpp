@@ -24,6 +24,7 @@ public:
 
 private:
     void sortRegionsByZindex();
+    void assignZindexToRegions();
 
 private:
     int m_width;

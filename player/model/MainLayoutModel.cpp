@@ -40,6 +40,7 @@ void MainLayoutModel::addRegion(const std::shared_ptr<RegionModel>& region)
     m_regions.emplace_back(region);
 
     sortRegionsByZindex();
+    assignZindexToRegions();
 }
 
 void MainLayoutModel::sortRegionsByZindex()
@@ -47,4 +48,12 @@ void MainLayoutModel::sortRegionsByZindex()
     std::stable_sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
         return first->zindex() < second->zindex();
     });
+}
+
+void MainLayoutModel::assignZindexToRegions()
+{
+    for(size_t i = 0; i !=  m_regions.size(); ++i)
+    {
+        m_regions[i]->setZindex(static_cast<int>(i));
+    }
 }

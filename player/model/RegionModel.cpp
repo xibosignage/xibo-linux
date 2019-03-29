@@ -51,6 +51,11 @@ int RegionModel::top() const
     return m_top;
 }
 
+void RegionModel::setZindex(int zindex)
+{
+    m_zindex = zindex;
+}
+
 int RegionModel::zindex() const
 {
     return m_zindex;

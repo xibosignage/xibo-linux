@@ -10,6 +10,7 @@
 #include "controller/MainWindowController.hpp"
 #include "view/MainWindow.hpp"
 #include "view/ConfigurationView.hpp"
+#include "parsers/CommandLineParser.hpp"
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/LayoutScheduler.hpp"
@@ -57,7 +58,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>(Resources::directory() / DEFAULT_CACHE_FILE)),
     m_httpManager(std::make_unique<HttpManager>()),
-    m_settingsManager(std::make_unique<PlayerSettingsManager>(Resources::directory() / DEFAULT_SETTINGS_FILE))
+    m_settingsManager(std::make_unique<PlayerSettingsManager>(Resources::directory() / DEFAULT_SETTINGS_FILE)),
+    m_options(std::make_unique<CommandLineParser>())
 {
     m_settingsManager->load();
 
@@ -117,47 +119,63 @@ ScreenShoter& XiboApp::screenShoter()
     return *m_screenShoter;
 }
 
-int XiboApp::run()
+int XiboApp::run(int argc, char** argv)
 {
-    namespace ph = std::placeholders;
+    tryParseCommandLine(argc, argv);
 
-    auto cmsSettings = m_settingsManager->cmsSettings();
-    m_mainWindow = std::make_shared<MainWindow>(320, 240);
-    m_mainWindowController = std::make_unique<MainWindowController>(m_mainWindow, *m_scheduler);
-    m_screenShoter.reset(new ScreenShoter{*m_mainWindow});
+    if(m_options->helpOption())
+    {
+        Log::info("{}", m_options->availableOptions());
+    }
+    else
+    {
+        if(m_options->versionOption())
+        {
+            Log::info("Project version: {}", getVersion());
+        }
+        if(m_options->credentials())
+        {
+            return runMainLoop();
+        }
+    }
 
-    auto configurationView = std::make_shared<ConfigurationView>(cmsSettings.host,
-                                                                 cmsSettings.serverKey,
-                                                                 cmsSettings.hardwareKey);
-    configurationView->subscribe(EventType::ButtonClicked, std::bind(&XiboApp::startPlayer, this, configurationView));
-
-    m_mainWindow->addWidget(configurationView);
-    m_mainWindow->showAll();
-
-    return m_mainLoop->run(*m_mainWindow);
+    return 0;
 }
 
-void XiboApp::startPlayer(const std::shared_ptr<ConfigurationView>& view)
+void XiboApp::tryParseCommandLine(int argc, char** argv)
 {
-    CmsSettings cms;
-    cms.host = view->host();
-    cms.serverKey = view->serverKey();
-    cms.hardwareKey = view->hardwareKey();
-    m_settingsManager->updateCmsSettings(cms);
-    m_xmdsManager.reset(new XmdsRequestSender{view->host(), view->serverKey(), view->hardwareKey()});
+    try
+    {
+        m_options->parse(argc, argv);
+    }
+    catch(std::exception& e)
+    {
+        Log::error(e.what());
+    }
+}
+
+int XiboApp::runMainLoop()
+{
+    m_mainWindow = std::make_shared<MainWindow>(1366, 768);
+    MainWindowController controller{m_mainWindow, *m_scheduler};
+    m_screenShoter.reset(new ScreenShoter{*m_mainWindow});
+
+    m_xmdsManager.reset(new XmdsRequestSender{m_options->host(), m_options->serverKey(), m_options->hardwareKey()});
 
     m_collectionInterval = std::make_unique<CollectionInterval>(*m_xmdsManager);
     handleCollectionUpdates(*m_collectionInterval);
     updatePlayerSettings(m_settingsManager->playerSettings());
 
-    m_collectionInterval->collectOnce([this](const PlayerError& error){
+    m_collectionInterval->collectOnce([this, &controller](const PlayerError& error){
         onCollectionFinished(error);
         m_collectionInterval->startRegularCollection();
 
-        m_mainWindow->setSize(1366, 768);
-        m_mainWindowController->updateLayout(m_scheduler->nextLayoutId());
+        controller.updateLayout(m_scheduler->nextLayoutId());
+        m_mainWindow->showAll();
         Log::info("Player started");
     });
+
+    return m_mainLoop->run(*m_mainWindow);
 }
 
 void XiboApp::handleCollectionUpdates(CollectionInterval& interval)

@@ -30,6 +30,7 @@ public:
 
     int left() const;
     int top() const;
+    void setZindex(int zindex);
     int zindex() const;
 
 private:

@@ -15,7 +15,7 @@ class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
 class ConfigurationView;
-class MainWindowController;
+class CommandLineParser;
 class Event;
 struct PlayerSettings;
 
@@ -32,7 +32,7 @@ public:
     FileCacheManager& fileManager();
     ScreenShoter& screenShoter();
 
-    int run();
+    int run(int argc, char** argv);
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
@@ -43,6 +43,8 @@ private:
     void updatePlayerSettings(const PlayerSettings& settings);
     bool processCallbackQueue();
     void handleCollectionUpdates(CollectionInterval& interval);
+    int runMainLoop();
+    void tryParseCommandLine(int argc, char** argv);
     void startPlayer(const std::shared_ptr<ConfigurationView>& view);
 
 private:
@@ -53,8 +55,8 @@ private:
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
     std::unique_ptr<HttpManager> m_httpManager;
     std::unique_ptr<PlayerSettingsManager> m_settingsManager;
+    std::unique_ptr<CommandLineParser> m_options;
     std::unique_ptr<ScreenShoter> m_screenShoter;
-    std::unique_ptr<MainWindowController> m_mainWindowController;
     std::shared_ptr<MainWindow> m_mainWindow;
 
     static std::unique_ptr<XiboApp> m_app;
