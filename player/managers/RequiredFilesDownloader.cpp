@@ -1,54 +1,85 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "HTTPDownloader.hpp"
+#include "HttpManager.hpp"
+#include "FileCacheManager.hpp"
 
-#include "utils/Logger.hpp"
-#include "utils/Utilities.hpp"
-#include "utils/FilePath.hpp"
+#include "xmds/XmdsFileDownloader.hpp"
+#include "xmds/XmdsRequestSender.hpp"
 
-std::future<void> RequiredFilesDownloader::download(const RegularFiles& files)
+#include "utils/Resources.hpp"
+
+#include <fstream>
+
+RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
+    m_xmdsRequestSender(xmdsRequestSender),
+    m_xmdsFileDownloader(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
 {
-    return std::async(std::launch::async, [=](){
-        auto downloadResults = downloadAllFiles(files);
+}
 
-        for(auto&& result : downloadResults)
-        {
-            result.wait();
-        }
+RequiredFilesDownloader::~RequiredFilesDownloader()
+{
+}
+
+DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
+{
+    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
+
+        auto fileName = std::to_string(res.mediaId) + ".html";
+        auto [error, result] = future.get();
+
+        return processDownloadedContent(ResponseContentResult{error, result.resource}, fileName);
     });
 }
 
-DownloadFilesResults RequiredFilesDownloader::downloadAllFiles(const RegularFiles& files)
+DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    DownloadFilesResults results;
-
-    for(auto&& file : files)
+    if(file.downloadType == DownloadType::HTTP)
     {
-        Log::trace("File type: {} ID: {} Size: {}", static_cast<int>(file.fileType), file.id, file.size);
-        Log::trace("MD5: {} File name: {} Download type: {}", file.md5, file.filename, static_cast<int>(file.downloadType));
-
-        results.push_back(downloadFile(file.filename, file.path));
-    }
-
-    return results;
-}
-
-std::future<void> RequiredFilesDownloader::downloadFile(const std::string& filename, const std::string& path)
-{
-    // FIXME
-    return Utils::httpDownloader().download(filename, path, [=](const DownloadedFile& file){
-        processDownloadedFile(file);
-    });
-}
-
-void RequiredFilesDownloader::processDownloadedFile(const DownloadedFile& file)
-{
-    if(!file.downloadError)
-    {
-        Log::debug("[{}] Downloaded", file.name);
+        return downloadHttpFile(file.name, file.url);
     }
     else
     {
-        Log::error("[{}] Download error: {}", file.name, file.downloadError.message());
+        return downloadXmdsFile(file.id, file.name, file.type, file.size);
     }
+}
+
+DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
+{
+    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
+        return processDownloadedContent(future.get(), fileName);
+    });
+}
+
+DownloadResult RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
+{
+    return m_xmdsFileDownloader->download(fileId, fileType, fileSize).then([this, fileName](boost::future<XmdsResponseResult> future){
+        return processDownloadedContent(future.get(), fileName);
+    });
+}
+
+bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResult& result, const std::string& fileName)
+{
+    auto [error, fileContent] = result;
+    if(!error)
+    {
+        Utils::fileManager().saveFile(fileName, fileContent);
+
+        Log::debug("[{}] Downloaded", fileName);
+        return true;
+    }
+    else
+    {
+        Log::error("[{}] Download error: {}", fileName, error);
+        return false;
+    }
+}
+
+bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
+{
+    return Utils::fileManager().isFileInCache(file.md5);
+}
+
+bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
+{
+    return false;
 }

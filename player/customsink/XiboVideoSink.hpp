@@ -1,10 +1,9 @@
 #pragma once
 
-#include <gtkmm.h>
-#include <gst/gst.h>
 #include <gst/video/video-info.h>
-#include <cassert>
-#include "constants.hpp"
+#include <cairomm/surface.h>
+
+#include "view/DrawingArea.hpp"
 
 G_BEGIN_DECLS
 
@@ -26,7 +25,7 @@ struct XiboVideoSink
     GstPad* sinkpad;
     GstVideoInfo info;
 
-    Gtk::DrawingArea* handler;
+    DrawingArea* handler = nullptr;
     GstVideoFrame frame;
     bool frameMapped = false;
     Cairo::RefPtr<Cairo::ImageSurface> surface;
@@ -39,6 +38,6 @@ struct XiboVideoSinkClass
 
 gboolean pluginInit(GstPlugin* plugin);
 GType gst_xibovideosink_get_type(void);
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, Gtk::DrawingArea* handler);
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, DrawingArea* handler);
 
 G_END_DECLS

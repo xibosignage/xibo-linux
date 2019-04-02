@@ -1,31 +1,50 @@
 #include "Utilities.hpp"
 #include "XiboApp.hpp"
 #include "FilePath.hpp"
+#include "ScreenShoter.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/algorithm/string.hpp>
 
-HTTPDownloader& Utils::httpDownloader()
+HttpManager& Utils::httpManager()
 {
-    return XiboApp::app().downloadManager();
+    return XiboApp::app().httpManager();
 }
 
-XMDSManager& Utils::xmdsManager()
+FileCacheManager& Utils::fileManager()
 {
-    return XiboApp::app().xmdsManager();
+    return XiboApp::app().fileManager();
 }
 
-boost::property_tree::ptree Utils::parseXmlFromPath(const FilePath& xlfPath)
+ScreenShoter& Utils::screenShoter()
 {
-    boost::property_tree::ptree tree;
+    return XiboApp::app().screenShoter();
+}
+
+xml_node Utils::parseXmlFromPath(const FilePath& xlfPath)
+{
+    xml_node tree;
     boost::property_tree::read_xml(xlfPath.string(), tree);
     return tree;
 }
 
-boost::property_tree::ptree Utils::parseXmlFromString(const std::string& xml)
+xml_node Utils::parseXmlFromString(const std::string& xml)
 {
     std::stringstream stream;
     stream << xml;
-    boost::property_tree::ptree tree;
+    xml_node tree;
     boost::property_tree::read_xml(stream, tree);
     return tree;
+}
+
+std::string Utils::xmlTreeToEscapedString(const xml_node& node)
+{
+    std::stringstream sstream;
+    boost::property_tree::write_xml(sstream, node);
+    std::string xmlStr = sstream.str();
+
+    boost::replace_all(xmlStr, "<", "&lt;");
+    boost::replace_all(xmlStr, ">", "&gt;");
+
+    return xmlStr;
 }

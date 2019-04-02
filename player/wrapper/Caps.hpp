@@ -23,11 +23,11 @@ namespace Gst
     {
     public:
         Caps(GstCaps* getHandler);
-        Caps(const std::string& stringCaps);
+        Caps(std::string_view stringCaps);
         Caps(Caps&& other);
         Caps& operator=(Caps&& other);
         ~Caps();
-        static Gst::RefPtr<Gst::Caps> create(const std::string& stringCaps);
+        static Gst::RefPtr<Gst::Caps> create(std::string_view stringCaps);
         Gst::RefPtr<Gst::Structure> getStructure(guint index) const;
         GstCaps* getHandler();
 

@@ -54,9 +54,9 @@ namespace Gst
     class MessageError
     {
     public:
-        MessageError(const std::string& text, const std::string& debugInfo);
-        const std::string& getText() const;
-        const std::string& getDebugInfo() const;
+        MessageError(std::string_view text, std::string_view debugInfo);
+        std::string_view getText() const;
+        std::string_view getDebugInfo() const;
 
     private:
         std::string m_text;

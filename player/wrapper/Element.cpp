@@ -1,9 +1,9 @@
 #include "Element.hpp"
 #include "Pad.hpp"
 
-Gst::Element::Element(const std::string& name)
+Gst::Element::Element(std::string_view name)
 {
-    m_element = gst_element_factory_make(name.c_str(), nullptr);
+    m_element = gst_element_factory_make(name.data(), nullptr);
 }
 
 void Gst::Element::setElement(GstElement* element)
@@ -68,11 +68,11 @@ Gst::State Gst::Element::getState() const
     return static_cast<Gst::State>(state);
 }
 
-Gst::RefPtr<Gst::Pad> Gst::Element::getStaticPad(const std::string& name)
+Gst::RefPtr<Gst::Pad> Gst::Element::getStaticPad(std::string_view name)
 {
     if(m_element)
     {
-        auto pad = gst_element_get_static_pad(m_element, name.c_str());
+        auto pad = gst_element_get_static_pad(m_element, name.data());
 
         if(!pad)
             return nullptr;
@@ -81,7 +81,7 @@ Gst::RefPtr<Gst::Pad> Gst::Element::getStaticPad(const std::string& name)
     return nullptr;
 }
 
-Gst::RefPtr<Gst::Element> Gst::Element::create(const std::string& name)
+Gst::RefPtr<Gst::Element> Gst::Element::create(std::string_view name)
 {
     return std::shared_ptr<Gst::Element>(new Gst::Element(name));
 }

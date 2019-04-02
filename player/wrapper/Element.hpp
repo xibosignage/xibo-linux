@@ -56,8 +56,8 @@ namespace Gst
         Gst::RefPtr<Gst::Element> linkFltered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter);
         void setState(Gst::State state);
         Gst::State getState() const;
-        Gst::RefPtr<Gst::Pad> getStaticPad(const std::string& name);
-        static Gst::RefPtr<Gst::Element> create(const std::string& name);
+        Gst::RefPtr<Gst::Pad> getStaticPad(std::string_view name);
+        static Gst::RefPtr<Gst::Element> create(std::string_view name);
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
                   Gst::SeekType startType, gint64 start, Gst::SeekType stopType, gint64 stop);
         GstElement* getHandler() const;
@@ -65,7 +65,7 @@ namespace Gst
 
     protected:
         Element() = default;
-        Element(const std::string& name);
+        Element(std::string_view name);
 
     protected:
         void setElement(GstElement* element);

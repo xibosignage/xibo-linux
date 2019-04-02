@@ -23,7 +23,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software
   git \
   g++-8 \
   libffi-dev \
-  libmount-dev
+  libmount-dev \
+  libssl-dev
 
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
@@ -45,7 +46,7 @@ RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archiv
 
 RUN ACLOCAL_PATH="/usr/local/share/aclocal" && \
     export ACLOCAL_PATH && \
-    curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/GNOME/libsigcplusplus/archive/${SIGC}.tar.gz && \
+    curl -o /root/libsigcplusplus.tar.gz -SL https://github.com/libsigcplusplus/libsigcplusplus/archive/${SIGC}.tar.gz && \
     cd /root && \
     tar -zxvf libsigcplusplus.tar.gz && \
     cd libsigcplusplus-${SIGC} && \
@@ -84,7 +85,7 @@ RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOO
     cd /root && \
     tar -zxvf boost.tar.gz && \
     cd boost_${BOOST} && \
-    ./bootstrap.sh --with-libraries=system,filesystem,program_options,date_time && \
+    ./bootstrap.sh --with-libraries=system,filesystem,program_options,date_time,thread && \
     ./b2 install && \
     cd /root && \
     rm -r /root/boost_${BOOST} && \

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Field.hpp"
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
 
-#include "control/PlayerSettings.hpp"
+#include "utils/Field.hpp"
+#include "model/PlayerSettings.hpp"
 
 namespace RegisterDisplay
 {
@@ -42,7 +42,7 @@ namespace RegisterDisplay
 }
 
 template<>
-class SOAP::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
+class Soap::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
 {
 public:
     RequestSerializer(const RegisterDisplay::Request& request);
@@ -51,16 +51,16 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
+class Soap::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result doParse(const boost::property_tree::ptree& node) override;
+    RegisterDisplay::Result doParse(const xml_node& node) override;
 
 private:
-    void fillPlayerSettings(PlayerSettings& settings, const boost::property_tree::ptree& display);
-    spdlog::level::level_enum toLogLevelEnum(const std::string& level);
+    void fillPlayerSettings(PlayerSettings& settings, const xml_node& display);
+    LoggingLevel toLogLevelEnum(const std::string& level);
 
 };

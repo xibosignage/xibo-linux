@@ -2,14 +2,17 @@
 
 #include "constants.hpp"
 
-class XMDSManager;
-class HTTPDownloader;
+class HttpManager;
+class FileCacheManager;
 class FilePath;
+class ScreenShoter;
 
 namespace Utils
 {
-    XMDSManager& xmdsManager();
-    HTTPDownloader& httpDownloader();
-    xlf_node parseXmlFromPath(const FilePath& xlfPath);
-    xlf_node parseXmlFromString(const std::string& xml);
+    HttpManager& httpManager();
+    FileCacheManager& fileManager();
+    ScreenShoter& screenShoter();
+    xml_node parseXmlFromPath(const FilePath& xlfPath);
+    xml_node parseXmlFromString(const std::string& xml);
+    std::string xmlTreeToEscapedString(const xml_node& node);
 }

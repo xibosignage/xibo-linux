@@ -1,17 +1,16 @@
 #pragma once
 
-#include <sigc++/signal.h>
 #include <functional>
 
 enum class EventType
 {
-    StartMedia,
-    StopMedia,
     DurationExpired,
-    ScaleMedia,
-    PlaybackFinished,
-    LayoutExpired,
-    CollectionFinished
+    CollectionFinished,
+    SettingsUpdated,
+    ScheduleUpdated,
+    WidgetShown,
+    KeyPress,
+    ButtonClicked
 };
 
 class Event
@@ -23,46 +22,10 @@ public:
 
 using EventHandler = std::function<void(const Event&)>;
 
-class StartMediaEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
-class StopMediaEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
 class DurationExpiredEvent : public Event
 {
 public:
     EventType type() const override;
-};
-
-class PlaybackFinishedEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-
-class LayoutExpiredEvent : public Event
-{
-public:
-    EventType type() const override;
-};
-class ScaleMediaEvent : public Event
-{
-public:
-    ScaleMediaEvent(double scaleX, double scaleY);
-    EventType type() const override;
-    double scaleX() const;
-    double scaleY() const;
-
-private:
-    double m_scaleX;
-    double m_scaleY;
 };
 
 class RegionDurationExpiredEvent : public DurationExpiredEvent
@@ -75,16 +38,72 @@ private:
     int m_id;
 };
 
-#include "managers/CollectionResult.hpp"
+#include "utils/PlayerError.hpp"
 
-class CollectionFinished : public Event
+class CollectionFinishedEvent : public Event
 {
 public:
-    CollectionFinished(const CollectionResult& result);
+    CollectionFinishedEvent(const PlayerError& error);
     EventType type() const override;
-    const CollectionResult& result() const;
+    const PlayerError& error() const;
 
 private:
-    CollectionResult m_result;
+    PlayerError m_error;
+
+};
+
+#include "model/PlayerSettings.hpp"
+
+class SettingsUpdatedEvent : public Event
+{
+public:
+    SettingsUpdatedEvent(const PlayerSettings& settings);
+    EventType type() const override;
+    const PlayerSettings& settings() const;
+
+private:
+    PlayerSettings m_settings;
+
+};
+
+#include "managers/LayoutSchedule.hpp"
+
+class ScheduleUpdatedEvent : public Event
+{
+public:
+    ScheduleUpdatedEvent(const LayoutSchedule& schedule);
+    EventType type() const override;
+    const LayoutSchedule& schedule() const;
+
+private:
+    LayoutSchedule m_schedule;
+
+};
+
+class WidgetShownEvent : public Event
+{
+public:
+    EventType type() const override;
+
+};
+
+class KeyPressEvent : public Event
+{
+public:
+    KeyPressEvent(unsigned int value, const std::string& string);
+    EventType type() const override;
+    unsigned int value() const;
+    std::string string() const;
+
+private:
+    unsigned int m_value;
+    std::string m_string;
+
+};
+
+class ButtonClickedEvent : public Event
+{
+public:
+    EventType type() const override;
 
 };

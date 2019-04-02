@@ -1,20 +1,19 @@
 #pragma once
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/system/error_code.hpp>
 
-#include "SOAPError.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "utils/Utilities.hpp"
+#include "utils/ResponseResult.hpp"
 
-namespace SOAP
+namespace Soap
 {
     template<typename Result>
     class BaseResponseParser
     {
     public:
-        using OptionalParsedNode = boost::optional<boost::property_tree::ptree&>;
-        using ParsedNode = boost::property_tree::ptree;
+        using OptionalParsedNode = boost::optional<xml_node&>;
+        using ParsedNode = xml_node;
 
         BaseResponseParser(const std::string& response) : m_response(response)
         {
@@ -22,7 +21,7 @@ namespace SOAP
         }
         virtual ~BaseResponseParser() = default;
 
-        std::pair<SOAP::Error, Result> get()
+        ResponseResult<Result> get()
         {
             if(m_responseTree)
             {
@@ -33,10 +32,10 @@ namespace SOAP
                     return std::pair{makeErrorFromNode(node), Result{}};
                 }
 
-                return std::pair{SOAP::Error{}, doParse(bodyNode)};
+                return std::pair{PlayerError{}, doParse(bodyNode)};
             }
 
-            return std::pair{SOAP::Error{"Parser", m_response}, Result{}};
+            return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
         }
 
     protected:
@@ -59,12 +58,10 @@ namespace SOAP
             return m_responseTree->get_child_optional("SOAP-ENV:Fault");
         }
 
-        SOAP::Error makeErrorFromNode(OptionalParsedNode faultNode)
+        PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
         {
-            auto faultCode = faultNode->template get<std::string>("faultcode");
             auto faultMessage = faultNode->template get<std::string>("faultstring");
-
-            return SOAP::Error{faultCode, faultMessage};
+            return PlayerError{PlayerError::Type::SOAP, faultMessage};
         }
 
     private:

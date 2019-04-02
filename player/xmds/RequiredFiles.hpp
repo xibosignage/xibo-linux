@@ -1,50 +1,25 @@
 #pragma once
 
-#include "Field.hpp"
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+
+#include "utils/Field.hpp"
+#include "managers/RequiredItems.hpp"
 
 namespace RequiredFiles
 {
     struct Result
     {
-        enum class FileType
-        {
-            Media,
-            Layout,
-            Resource,
-            Invalid
-        };
+        const FilesToDownload<RegularFile>& requiredFiles() const;
+        const FilesToDownload<ResourceFile>& requiredResources() const;
 
-        enum class DownloadType
-        {
-            HTTP,
-            XMDS,
-            Invalid
-        };
+        void addFile(RegularFile&& file);
+        void addResource(ResourceFile&& resource);
 
-        struct RequiredFile
-        {
-            int id;
-            size_t size;
-            std::string md5;
-            std::string path;
-            std::string filename;
-            DownloadType downloadType;
-            FileType fileType;
-        };
-
-        struct RequiredResource
-        {
-            int layoutId;
-            int regionId;
-            int mediaId;
-        };
-
-        std::vector<RequiredFile> requiredFiles;
-        std::vector<RequiredResource> requiredResources;
-
+    private:
+        FilesToDownload<RegularFile> m_requiredFiles;
+        FilesToDownload<ResourceFile> m_requiredResources;
     };
 
     struct Request
@@ -54,11 +29,8 @@ namespace RequiredFiles
     };
 }
 
-using RegularFiles = std::vector<RequiredFiles::Result::RequiredFile>;
-using ResourceFiles = std::vector<RequiredFiles::Result::RequiredResource>;
-
 template<>
-class SOAP::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
+class Soap::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
 {
 public:
     RequestSerializer(const RequiredFiles::Request& request);
@@ -67,17 +39,22 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<RequiredFiles::Result> : public BaseResponseParser<RequiredFiles::Result>
+class Soap::ResponseParser<RequiredFiles::Result> : public BaseResponseParser<RequiredFiles::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result doParse(const boost::property_tree::ptree& node) override;
+    RequiredFiles::Result doParse(const xml_node& node) override;
 
 private:
-    void addRequiredFile(RequiredFiles::Result& response, const boost::property_tree::ptree& attrs);
-    RequiredFiles::Result::FileType toFileType(const std::string& type);
-    RequiredFiles::Result::DownloadType toDownloadType(const std::string& type);
+    RegularFile parseRegularFile(const xml_node& attrs);
+    ResourceFile parseResourceFile(const xml_node& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs);
+
+    bool isLayout(std::string_view type) const;
+    bool isMedia(std::string_view type) const;
+    bool isResource(std::string_view type) const;
+    DownloadType toDownloadType(std::string_view type);
 
 };

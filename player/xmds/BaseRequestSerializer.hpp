@@ -3,7 +3,7 @@
 #include <string_view>
 #include <sstream>
 
-namespace SOAP
+namespace Soap
 {
     template<typename Request>
     class BaseRequestSerializer

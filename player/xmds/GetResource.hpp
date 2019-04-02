@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Field.hpp"
-#include "SOAP.hpp"
+#include "Soap.hpp"
 #include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+
+#include "utils/Field.hpp"
 
 namespace GetResource
 {
@@ -23,7 +24,7 @@ namespace GetResource
 }
 
 template<>
-class SOAP::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
+class Soap::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
 {
 public:
     RequestSerializer(const GetResource::Request& request);
@@ -32,12 +33,12 @@ public:
 };
 
 template<>
-class SOAP::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
+class Soap::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetResource::Result doParse(const boost::property_tree::ptree& node) override;
+    GetResource::Result doParse(const xml_node& node) override;
 
 };

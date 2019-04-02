@@ -3,7 +3,7 @@
 #include <string_view>
 #include <string>
 
-namespace XMDSResources
+namespace XmdsResources
 {
     namespace GetResource
     {
@@ -79,9 +79,9 @@ namespace XMDSResources
         const std::string File = "file";
         const std::string FileAttrs = "<xmlattr>";
         const std::string FileType = "type";
-        const std::string Media = "media";
-        const std::string Layout = "layout";
-        const std::string Resource = "resource";
+        const std::string MediaType = "media";
+        const std::string LayoutType = "layout";
+        const std::string ResourceType = "resource";
 
         namespace RegularFile
         {
@@ -89,10 +89,10 @@ namespace XMDSResources
             const std::string Size = "size";
             const std::string MD5 = "md5";
             const std::string Path = "path";
-            const std::string SaveAs = "saveAs";
+            const std::string Name = "saveAs";
             const std::string DownloadType = "download";
-            const std::string HTTPDownload = "http";
-            const std::string XMDSDownload = "xmds";
+            const std::string HttpDownload = "http";
+            const std::string XmdsDownload = "xmds";
 
         }
 
@@ -102,5 +102,29 @@ namespace XMDSResources
             const std::string RegionId = "regionid";
             const std::string MediaId = "mediaid";
         }
+    }
+
+    namespace GetFile
+    {
+        const std::string_view Name = "GetFile";
+        const std::string FileChunk = "file";
+    }
+
+    namespace MediaInventory
+    {
+        const std::string_view Name = "MediaInventory";
+        const std::string Success = "success";
+    }
+
+    namespace SubmitLog
+    {
+        const std::string_view Name = "SubmitLog";
+        const std::string Success = "success";
+    }
+
+    namespace SubmitScreenShot
+    {
+        const std::string_view Name = "SubmitScreenShot";
+        const std::string Success = "success";
     }
 }
