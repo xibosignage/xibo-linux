@@ -1,9 +1,5 @@
 # XiboLinux
 
-| `v0.6-alpha` | `master (v0.5.1-alpha)`|
-|--------|--------|
-| [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.6-alpha.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/v0.6-alpha) | [![CircleCI](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master.svg?style=svg)](https://circleci.com/gh/Stivius/XiboLinuxStack/tree/master)
-
 ## Building from sources
 
 ### Building manually
