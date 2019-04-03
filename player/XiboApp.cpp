@@ -5,12 +5,11 @@
 #include "utils/ScreenShoter.hpp"
 #include "utils/Resources.hpp"
 #include "utils/logger/XmlLoggerSink.hpp"
-#include "events/CallbackEventQueue.hpp"
 
-#include "controller/MainWindowController.hpp"
-#include "view/MainWindow.hpp"
-#include "view/ConfigurationView.hpp"
-#include "parsers/CommandLineParser.hpp"
+#include "control/MainWindowController.hpp"
+#include "control/MainWindow.hpp"
+#include "control/ConfigurationView.hpp"
+#include "CommandLineParser.hpp"
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/LayoutScheduler.hpp"
@@ -63,7 +62,6 @@ XiboApp::XiboApp(const std::string& name) :
 {
     m_settingsManager->load();
 
-    m_mainLoop->setIdleAction(std::bind(&XiboApp::processCallbackQueue, this));
     m_mainLoop->setShutdownAction([this](){
         m_httpManager->shutdown();
         if(m_collectionInterval)
@@ -71,24 +69,6 @@ XiboApp::XiboApp(const std::string& name) :
             m_collectionInterval->stop();
         }
     });
-}
-
-bool XiboApp::processCallbackQueue()
-{
-    if(!callbackQueue().empty())
-    {
-        try
-        {
-            auto callback = callbackQueue().pop();
-            callback();
-        }
-        catch(std::exception& e)
-        {
-            Log::error("Error occured: {}", e.what());
-        }
-
-    }
-    return true;
 }
 
 XiboApp::~XiboApp()
@@ -180,19 +160,16 @@ int XiboApp::runMainLoop()
 
 void XiboApp::handleCollectionUpdates(CollectionInterval& interval)
 {
-    interval.subscribe(EventType::CollectionFinished, [this](const Event& ev){
-        auto&& collectionEvent = static_cast<const CollectionFinishedEvent&>(ev);
-        onCollectionFinished(collectionEvent.error());
+    interval.collectionFinished().connect([this](const PlayerError& error){
+        onCollectionFinished(error);
     });
 
-    interval.subscribe(EventType::SettingsUpdated, [this](const Event& ev){
-        auto&& settingsEvent = static_cast<const SettingsUpdatedEvent&>(ev);
-        updateSettings(settingsEvent.settings());
+    interval.settingsUpdated().connect([this](const PlayerSettings& settings){
+        updateSettings(settings);
     });
 
-    interval.subscribe(EventType::ScheduleUpdated, [this](const Event& ev){
-        auto&& scheduleEvent = static_cast<const ScheduleUpdatedEvent&>(ev);
-        m_scheduler->update(scheduleEvent.schedule());
+    interval.scheduleUpdated().connect([this](const LayoutSchedule& schedule){
+        m_scheduler->update(schedule);
     });
 }
 

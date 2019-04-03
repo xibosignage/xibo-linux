@@ -70,7 +70,7 @@ LoggingLevel Soap::ResponseParser<RegisterDisplay::Result>::toLogLevelEnum(const
 {
     if(level == "trace")
         return LoggingLevel::Trace;
-    else if(level == "debug")
+    else if(level == "audit")
         return LoggingLevel::Debug;
     else if(level == "info")
         return LoggingLevel::Info;

@@ -16,7 +16,6 @@ class PlayerError;
 class ScreenShoter;
 class ConfigurationView;
 class CommandLineParser;
-class Event;
 struct PlayerSettings;
 
 class XiboApp
@@ -41,7 +40,6 @@ private:
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
     void updatePlayerSettings(const PlayerSettings& settings);
-    bool processCallbackQueue();
     void handleCollectionUpdates(CollectionInterval& interval);
     int runMainLoop();
     void tryParseCommandLine(int argc, char** argv);

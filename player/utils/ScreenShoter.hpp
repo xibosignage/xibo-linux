@@ -5,7 +5,7 @@
 #include <functional>
 #include <cairomm/surface.h>
 
-#include "view/MainWindow.hpp"
+#include "control/MainWindow.hpp"
 
 class FilePath;
 using ScreenShotTaken = std::function<void(const std::string&)>;

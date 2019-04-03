@@ -40,7 +40,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
 }
 
 
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, DrawingArea* handler)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, VideoWindow* handler)
 {
     sink->handler = handler;    
     sink->handler->setDrawCallback([sink](const Cairo::RefPtr<Cairo::Context>& cairo){

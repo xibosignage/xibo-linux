@@ -1,6 +1,6 @@
 #include "MainLoop.hpp"
 
-#include "view/MainWindow.hpp"
+#include "control/MainWindow.hpp"
 
 #include <glibmm/main.h>
 
