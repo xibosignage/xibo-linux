@@ -12,14 +12,12 @@ slots:
     name: org.gtkmm.xibo # adjust accordingly
 
 apps:
-  xibo-player-test:
+  xibo-player:
     command: desktop-launch $SNAP/player/player
     plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
     slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/player/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
-  # xibo-player-tests:
-  #   command: player/tests/unit_tests
 
 parts:
   player-sources:
@@ -29,7 +27,6 @@ parts:
       - player/libs
       - player/player
       - usr/lib/x86_64-linux-gnu
-      # - player/tests/unit_tests
     stage-packages:
       - libgstreamer1.0-0
       - gstreamer1.0-plugins-base
