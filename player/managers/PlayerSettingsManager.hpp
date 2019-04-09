@@ -3,7 +3,7 @@
 #include "utils/Field.hpp"
 #include "utils/FilePath.hpp"
 #include "utils/IFileSystemAdaptor.hpp"
-#include "model/PlayerSettings.hpp"
+#include "PlayerSettings.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 

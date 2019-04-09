@@ -1,6 +1,5 @@
 #pragma once
 
-#include "events/EventPublisher.hpp"
 #include "LayoutSchedule.hpp"
 
 #include <memory>
@@ -9,7 +8,7 @@
 class IMainLayout;
 class IFileSystemAdaptor;
 
-class LayoutScheduler : public EventPublisher<>
+class LayoutScheduler
 {
 public:
     LayoutScheduler();

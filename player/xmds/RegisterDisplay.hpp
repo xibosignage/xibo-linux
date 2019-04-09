@@ -5,7 +5,7 @@
 #include "BaseRequestSerializer.hpp"
 
 #include "utils/Field.hpp"
-#include "model/PlayerSettings.hpp"
+#include "managers/PlayerSettings.hpp"
 
 namespace RegisterDisplay
 {
