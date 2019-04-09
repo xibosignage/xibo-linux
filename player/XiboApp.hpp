@@ -1,16 +1,22 @@
 #pragma once
 
-#include <gtkmm/application.h>
+#include <memory>
+#include <spdlog/common.h>
 
-class XMDSManager;
+class MainLoop;
+class XmdsRequestSender;
 class IMainLayout;
 class MainWindow;
-class HTTPManager;
-class Scheduler;
+class HttpManager;
+class LayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
+class PlayerSettingsManager;
+class PlayerError;
+class ScreenShoter;
+class ConfigurationView;
 class CommandLineParser;
-class CollectionResult;
+class Event;
 struct PlayerSettings;
 
 class XiboApp
@@ -22,32 +28,36 @@ public:
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
-    XMDSManager& xmdsManager();
-    HTTPManager& downloadManager();
+    HttpManager& httpManager();
     FileCacheManager& fileManager();
+    ScreenShoter& screenShoter();
 
     int run(int argc, char** argv);
 
 private:
-    XiboApp(const std::string& name);
+    static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
-    int initMainLoop();
-    void runPlayer();
-    void onCollectionFinished(const CollectionResult& result);
+    XiboApp(const std::string& name);
+    void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
-    void tryParseCommandLine(int argc, char** argv);
+    void updatePlayerSettings(const PlayerSettings& settings);
     bool processCallbackQueue();
+    void handleCollectionUpdates(CollectionInterval& interval);
+    int runMainLoop();
+    void tryParseCommandLine(int argc, char** argv);
+    void startPlayer(const std::shared_ptr<ConfigurationView>& view);
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parentApp;
-    std::unique_ptr<MainWindow> m_mainWindow;
-    std::unique_ptr<XMDSManager> m_xmdsManager;
-    std::unique_ptr<HTTPManager> m_downloadManager;
-    std::unique_ptr<Scheduler> m_scheduler;
+    std::unique_ptr<MainLoop> m_mainLoop;
+    std::unique_ptr<LayoutScheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
+    std::unique_ptr<XmdsRequestSender> m_xmdsManager;
+    std::unique_ptr<HttpManager> m_httpManager;
+    std::unique_ptr<PlayerSettingsManager> m_settingsManager;
     std::unique_ptr<CommandLineParser> m_options;
-    sigc::connection m_idleConnection;
+    std::unique_ptr<ScreenShoter> m_screenShoter;
+    std::shared_ptr<MainWindow> m_mainWindow;
 
     static std::unique_ptr<XiboApp> m_app;
 };

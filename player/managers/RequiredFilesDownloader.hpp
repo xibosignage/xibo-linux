@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils/ResponseResult.hpp"
-#include "utils/Logger.hpp"
+#include "utils/logger/Logging.hpp"
 #include "xmds/MediaInventoryItem.hpp"
 
 #include <boost/thread/future.hpp>
@@ -9,12 +9,13 @@
 using DownloadResult = boost::future<bool>;
 using DownloadResults = std::vector<DownloadResult>;
 using ResponseContentResult = ResponseResult<std::string>;
-class XMDSDownloader;
+class XmdsFileDownloader;
+class XmdsRequestSender;
 
 class RequiredFilesDownloader
 {
 public:
-    RequiredFilesDownloader();
+    RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender);
     ~RequiredFilesDownloader();
 
     template<typename RequiredFileType>
@@ -71,6 +72,7 @@ private:
     bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName);
 
 private:
-    std::unique_ptr<XMDSDownloader> m_xmdsDownloader;
+    XmdsRequestSender& m_xmdsRequestSender;
+    std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
 
 };

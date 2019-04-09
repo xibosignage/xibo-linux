@@ -21,11 +21,17 @@ namespace ResourcesXlf
 
     namespace Layout
     {
-        const std::string Width = "width";
         const std::string SchemaVersion = "schemaVersion";
+        const std::string Width = "width";
         const std::string Height = "height";
-        const std::string BackgroundPath = "background";
-        const std::string BackgroundColor = "bgcolor";
+    }
+
+    namespace Background
+    {
+        const std::string Width = "width";
+        const std::string Height = "height";
+        const std::string Path = "background";
+        const std::string Color = "bgcolor";
     }
 
     namespace Region
@@ -46,8 +52,23 @@ namespace ResourcesXlf
         const std::string Uri = "uri";
         const std::string Duration = "duration";
 
+        const std::string ScaleType = "scaleType";
+        const std::string Scaled = "center";
+        const std::string Stretch = "stretch";
+
+        const std::string Align = "align";
+        const std::string RightAlign = "right";
+        const std::string CenterAlign = "center";
+        const std::string LeftAlign = "left";
+
+        const std::string Valign = "valign";
+        const std::string TopValign = "top";
+        const std::string MiddleValign = "middle";
+        const std::string BottomValign = "bottom";
+
         namespace Audio
         {
+            const std::string Id = "mediaId";
             const std::string Mute = "mute";
             const std::string Loop = "loop";
             const std::string Volume = "volume";
@@ -62,13 +83,7 @@ namespace ResourcesXlf
         namespace WebView
         {
             const std::string Transparent = "transparency";
-        }
-
-        namespace Image
-        {
-            const std::string ScaleType = "scaleType";
-            const std::string Align = "align";
-            const std::string Valign = "valign";
+            const std::string ModeId = "modeid";
         }
     }
 

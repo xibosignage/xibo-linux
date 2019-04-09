@@ -11,8 +11,6 @@ public:
 
     bool versionOption() const;
     bool helpOption() const;
-    bool exampleDir() const;
-    std::string getExampleDir() const;
     bool hostOption() const;
     std::string host() const;
     bool serverKeyOption() const;

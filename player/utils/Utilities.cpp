@@ -1,24 +1,24 @@
 #include "Utilities.hpp"
 #include "XiboApp.hpp"
 #include "FilePath.hpp"
+#include "ScreenShoter.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/algorithm/string.hpp>
 
-HTTPManager& Utils::httpManager()
+HttpManager& Utils::httpManager()
 {
-    return XiboApp::app().downloadManager();
+    return XiboApp::app().httpManager();
 }
-
-XMDSManager& Utils::xmdsManager()
-{
-    return XiboApp::app().xmdsManager();
-}
-
 
 FileCacheManager& Utils::fileManager()
 {
     return XiboApp::app().fileManager();
+}
+
+ScreenShoter& Utils::screenShoter()
+{
+    return XiboApp::app().screenShoter();
 }
 
 xml_node Utils::parseXmlFromPath(const FilePath& xlfPath)

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MediaInventoryItem.hpp"
-#include "Field.hpp"
+#include "utils/Field.hpp"
 
 template<>
 class Field<MediaInventoryItems>

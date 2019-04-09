@@ -6,7 +6,6 @@ namespace po = boost::program_options;
 
 static const char* VERSION = "version";
 static const char* HELP = "help";
-static const char* EXAMPLE_DIR = "example-dir";
 static const char* HOST = "host";
 static const char* SERVER_KEY = "server-key";
 static const char* HARDWARE_KEY = "hardware-key";
@@ -20,7 +19,6 @@ void CommandLineParser::parse(int argc, char** argv)
 {
     m_options.add_options()(VERSION, "get project version");
     m_options.add_options()(HELP, "get available options");
-    m_options.add_options()(EXAMPLE_DIR, po::value<std::string>(), "set example dir (for testing)");
     m_options.add_options()(HOST, po::value<std::string>(), "set CMS host");
     m_options.add_options()(SERVER_KEY, po::value<std::string>(), "set server key that used in CMS");
     m_options.add_options()(HARDWARE_KEY, po::value<std::string>(), "set hardware key that identifies your PC");
@@ -37,19 +35,6 @@ bool CommandLineParser::versionOption() const
 bool CommandLineParser::helpOption() const
 {
     return m_vm.empty() || m_vm.count(HELP);
-}
-
-bool CommandLineParser::exampleDir() const
-{
-    return m_vm.count(EXAMPLE_DIR);
-}
-
-std::string CommandLineParser::getExampleDir() const
-{
-    if(!exampleDir())
-        throw std::runtime_error("Example dir option was not parsed");
-
-    return m_vm[EXAMPLE_DIR].as<std::string>();
 }
 
 bool CommandLineParser::hostOption() const

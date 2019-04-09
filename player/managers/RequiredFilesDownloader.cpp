@@ -1,17 +1,18 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "HTTPManager.hpp"
-#include "XMDSDownloader.hpp"
+#include "HttpManager.hpp"
 #include "FileCacheManager.hpp"
-#include "xmds/XMDSManager.hpp"
 
-#include "utils/Utilities.hpp"
+#include "xmds/XmdsFileDownloader.hpp"
+#include "xmds/XmdsRequestSender.hpp"
+
 #include "utils/Resources.hpp"
 
 #include <fstream>
 
-RequiredFilesDownloader::RequiredFilesDownloader() :
-    m_xmdsDownloader(std::make_unique<XMDSDownloader>())
+RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
+    m_xmdsRequestSender(xmdsRequestSender),
+    m_xmdsFileDownloader(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
 {
 }
 
@@ -21,7 +22,7 @@ RequiredFilesDownloader::~RequiredFilesDownloader()
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return Utils::xmdsManager().getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
+    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
 
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
@@ -44,14 +45,14 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 
 DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
 {
-    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HTTPResponseResult> future){
+    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
         return processDownloadedContent(future.get(), fileName);
     });
 }
 
 DownloadResult RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
 {
-    return m_xmdsDownloader->download(fileId, fileType, fileSize).then([this, fileName](boost::future<XMDSResponseResult> future){
+    return m_xmdsFileDownloader->download(fileId, fileType, fileSize).then([this, fileName](boost::future<XmdsResponseResult> future){
         return processDownloadedContent(future.get(), fileName);
     });
 }
@@ -62,12 +63,13 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     if(!error)
     {
         Utils::fileManager().saveFile(fileName, fileContent);
+
         Log::debug("[{}] Downloaded", fileName);
         return true;
     }
     else
     {
-        Log::debug("[{}] Download error: {}", fileName, error);
+        Log::error("[{}] Download error: {}", fileName, error);
         return false;
     }
 }
