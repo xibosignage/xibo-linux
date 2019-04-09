@@ -1,7 +1,7 @@
 #pragma once
 
 #include "test_utils.hpp"
-#include "utils/uri/Uri.hpp"
+#include "managers/Uri.hpp"
 
 struct UriTest
 {
