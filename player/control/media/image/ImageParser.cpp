@@ -58,10 +58,16 @@ ImageParser::ImageParser(const xml_node& node) :
 ImageOptions ImageParser::parse()
 {
     auto options = baseOptions();
+
+    return ImageOptions{options};
+}
+
+MediaGeometry ImageParser::geometry()
+{
     auto scaleType = node().get<MediaGeometry::ScaleType>(ResourcesXlf::option(ResourcesXlf::Image::ScaleType), DEFAULT_SCALE_TYPE);
     auto align = node().get<MediaGeometry::Align>(ResourcesXlf::option(ResourcesXlf::Image::Align), DEFAULT_ALIGN);
     auto valign = node().get<MediaGeometry::Valign>(ResourcesXlf::option(ResourcesXlf::Image::Valign), DEFAULT_VALIGN);
 
-    return ImageOptions{options, scaleType, align, valign};
+    return MediaGeometry{scaleType, align, valign};
 }
 

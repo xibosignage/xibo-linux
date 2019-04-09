@@ -10,4 +10,7 @@ public:
     ImageParser(const xml_node& node);
     ImageOptions parse();
 
+protected:
+    MediaGeometry geometry() override;
+
 };

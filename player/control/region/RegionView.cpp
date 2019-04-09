@@ -8,9 +8,12 @@ RegionView::RegionView(int width, int height) :
 
 void RegionView::addMedia(const std::shared_ptr<Widget>& child, int left, int top)
 {
-    m_handler.put(child->get(), left, top);
+    if(child)
+    {
+        m_handler.put(child->get(), left, top);
 
-    m_media.emplace_back(child);
+        m_media.emplace_back(child);
+    }
 }
 
 void RegionView::scale(double scaleX, double scaleY)

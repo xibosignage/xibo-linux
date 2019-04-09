@@ -19,6 +19,7 @@ protected:
     virtual int id();
     virtual Uri uri();
     virtual int duration();
+    virtual MediaGeometry geometry();
 
 private:
     xml_node m_node;

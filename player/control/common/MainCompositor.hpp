@@ -7,14 +7,12 @@
 
 class MainLayoutView;
 class RegionView;
-class Image;
-class WebView;
-class ImageOptions;
-class AudioOptions;
-class MediaPlayerOptions;
-class WebViewOptions;
+class Widget;
+class Controller;
+class VisibleMediaFactory;
+class MediaFactory;
 
-class MainParser
+class MainCompositor
 {
 public:
     std::pair<std::unique_ptr<MainLayout>, std::shared_ptr<MainLayoutView>> parseLayout(int layoutId);
@@ -27,16 +25,11 @@ private:
     void addAllMedia(Region& region, RegionView& view, const xml_node& node);
     void addMedia(Region& region, RegionView& view, const xml_node& node);
     void attachAdditionalMedia(Media& media, const xml_node& node);
+    std::unique_ptr<VisibleMediaFactory> createVisibleMediaFactory(const std::string& type, const xml_node& node);
+    std::unique_ptr<MediaFactory> createMediaFactory(const std::string& type, const xml_node& node);
 
 private:
-    std::shared_ptr<Image> createBackground(const MainLayoutOptions& options);
-
-    void addMedia(Region& region, RegionView& view, const ImageOptions& options);
-    std::shared_ptr<Image> create(int width, int height, const ImageOptions& options);
-    void addMedia(Region& region, RegionView& view, const WebViewOptions& options);
-    std::shared_ptr<WebView> create(int width, int height, const WebViewOptions& options);
-    void addAudio(Region& region, RegionView& view, const MediaPlayerOptions& options);
-    void addVideo(Region& region, RegionView& view, const MediaPlayerOptions& options);
+    std::shared_ptr<Widget> createBackground(const MainLayoutOptions& options);
 
     template<typename Parser>
     auto parse(const xml_node& node)

@@ -4,7 +4,7 @@
 
 namespace ResourcesXlf::Player
 {
-    const std::string Id = "mediaId";
+    const std::string AudioId = "mediaId";
     const std::string Mute = "mute";
     const std::string Loop = "loop";
     const std::string Volume = "volume";

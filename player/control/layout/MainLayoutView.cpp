@@ -14,10 +14,33 @@ MainLayoutView::MainLayoutView(int width, int height) :
 void MainLayoutView::addRegion(const std::shared_ptr<Widget>& child, int x, int y, int z)
 {
     m_overlayLayout.add_overlay(child->get());
-    m_overlayLayout.reorder_overlay(child->get(), z);
 
-    WidgetInfo info{child->width(), child->height(), x, y};
-    m_regions.emplace(std::make_pair(std::move(child), info));
+    WidgetInfo info{child, child->width(), child->height(), x, y, z};
+    m_regions.emplace_back(info);
+
+    sortRegionsByZindex();
+    reorderRegions();
+}
+
+void MainLayoutView::sortRegionsByZindex()
+{
+    std::stable_sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
+        return first.z < second.z;
+    });
+}
+
+void MainLayoutView::reorderRegions()
+{
+    for(std::size_t i = 0; i != m_regions.size(); ++i)
+    {
+        auto&& widget = m_regions[i].widget;
+        m_overlayLayout.reorder_overlay(widget->get(), static_cast<int>(i));
+    }
+}
+
+void MainLayoutView::reorderRegion(const std::shared_ptr<Widget>& child, int z)
+{
+    m_overlayLayout.reorder_overlay(child->get(), z);
 }
 
 void MainLayoutView::addBackground(const std::shared_ptr<Widget>& mainChild)
@@ -37,9 +60,9 @@ void MainLayoutView::showAll()
     Widget::showAll();
     m_mainChild->showAll();
 
-    for(auto&& [child, childInfo] : m_regions)
+    for(auto&& childInfo : m_regions)
     {
-        child->showAll();
+        childInfo.widget->showAll();
     }
 }
 
@@ -72,9 +95,9 @@ void MainLayoutView::updateOffsets()
 
 void MainLayoutView::scaleRegions(double scaleX, double scaleY)
 {
-    for(auto&& [child, childInfo] : m_regions)
+    for(auto&& childInfo : m_regions)
     {
-        child->scale(scaleX, scaleY);
+        childInfo.widget->scale(scaleX, scaleY);
 
         childInfo.x *= scaleX;
         childInfo.y *= scaleY;
@@ -91,7 +114,7 @@ bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& al
     auto it = findRegion(widget);
     if(it != m_regions.end())
     {
-        WidgetInfo info = it->second;
+        WidgetInfo info = *it;
 
         alloc.set_x(m_xOffset + info.x);
         alloc.set_y(m_yOffset + info.y);
@@ -104,8 +127,7 @@ bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& al
 
 MainLayoutView::WidgetsWithInfo::iterator MainLayoutView::findRegion(Gtk::Widget* widget)
 {
-    return std::find_if(m_regions.begin(), m_regions.end(), [widget](const auto& value){
-        auto&& child = value.first;
-        return &child->get() == widget;
+    return std::find_if(m_regions.begin(), m_regions.end(), [widget](const auto& child){
+        return &child.widget->get() == widget;
     });
 }

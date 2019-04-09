@@ -6,16 +6,17 @@
 #include <sigc++/signal.h>
 
 class Uri;
-class VideoWindow;
+class Widget;
 using SignalPlaybackFinished = sigc::signal<void()>;
 
 class MediaPlayer
 {
 public:
+    MediaPlayer(Widget& outputWindow);
     MediaPlayer();
     ~MediaPlayer();
 
-    void setOutputWindow(const std::shared_ptr<VideoWindow>& window);
+    void setOutputWindow(const std::shared_ptr<Widget>& window);
     void load(const Uri& uri);
     void play();
     void stop();
@@ -32,7 +33,7 @@ private:
     void inspectFile(const Uri& uri);
 
 private:
-    std::shared_ptr<VideoWindow> m_videoWindow;
+    std::shared_ptr<Widget> m_outputWindow;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
     Gst::RefPtr<Gst::FileSrc> m_source;

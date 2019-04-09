@@ -1,6 +1,6 @@
 #include "VideoParser.hpp"
 
-#include "MediaPlayerResources.hpp"
+#include "control/media/player/MediaPlayerResources.hpp"
 
 const bool DEFAULT_VIDEO_MUTED = false;
 const bool DEFAULT_VIDEO_LOOPED = false;

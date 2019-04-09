@@ -60,16 +60,16 @@ MediaPlayer::~MediaPlayer()
     stop();
 }
 
-void MediaPlayer::setOutputWindow(const std::shared_ptr<VideoWindow>& window)
+void MediaPlayer::setOutputWindow(const std::shared_ptr<Widget>& window)
 {
-    m_videoWindow = window;
+    m_outputWindow = window;
 
-    m_videoWindow->shown().connect([this](){
-        setVideoSize(m_videoWindow->width(), m_videoWindow->height());
+    m_outputWindow->shown().connect([this](){
+        setVideoSize(m_outputWindow->width(), m_outputWindow->height());
     });
 
     auto sink = GST_XIBOVIDEOSINK(m_videoSink->getHandler());
-    gst_xibovideosink_set_handler(sink, m_videoWindow.get());
+    gst_xibovideosink_set_handler(sink, dynamic_cast<VideoWindow*>(m_outputWindow.get()));
 }
 
 void MediaPlayer::setVideoSize(int width, int height)
@@ -177,18 +177,18 @@ void MediaPlayer::load(const Uri& uri)
 
 void MediaPlayer::play()
 {
-    if(m_videoWindow)
+    if(m_outputWindow)
     {
-        m_videoWindow->show();
+        m_outputWindow->show();
     }
     m_pipeline->setState(Gst::State::PLAYING);
 }
 
 void MediaPlayer::stop()
 {
-    if(m_videoWindow)
+    if(m_outputWindow)
     {
-        m_videoWindow->hide();
+        m_outputWindow->hide();
     }
     m_pipeline->setState(Gst::State::NULL_STATE);
 }

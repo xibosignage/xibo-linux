@@ -12,7 +12,8 @@ using SignalRegionExpired = sigc::signal<void(int)>;
 class Region : private boost::noncopyable
 {
 public:
-    Region(int id, RegionOptions::Loop looped);
+    Region(const RegionOptions& options);
+    ~Region();
 
     void addMedia(std::unique_ptr<Media>&& media);
     void start();
@@ -28,10 +29,9 @@ private:
     bool isExpired() const;
 
 private:
-    int m_id;
-    RegionOptions::Loop m_looped;
+    RegionOptions m_options;
     std::vector<std::unique_ptr<Media>> m_media;
     size_t m_currentMediaIndex = 0;
-    SignalRegionExpired m_regionRexpired;
+    SignalRegionExpired m_regionExpired;
 
 };

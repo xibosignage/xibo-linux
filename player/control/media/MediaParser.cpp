@@ -19,7 +19,7 @@ MediaOptions MediaParser::baseOptions()
     m_uri = m_node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Uri));
     m_duration = m_node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Duration));
 
-    return MediaOptions{id(), uri(), duration()};
+    return MediaOptions{id(), uri(), duration(), geometry()};
 }
 
 int MediaParser::id()
@@ -35,4 +35,9 @@ Uri MediaParser::uri()
 int MediaParser::duration()
 {
     return m_duration;
+}
+
+MediaGeometry MediaParser::geometry()
+{
+    return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
 }

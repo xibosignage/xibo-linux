@@ -9,17 +9,20 @@ class MainLayoutView : public Widget
 public:
     struct WidgetInfo
     {
+        std::shared_ptr<Widget> widget;
         int width;
         int height;
         int x;
         int y;
+        int z;
     };
 
-    using WidgetsWithInfo = std::map<std::shared_ptr<Widget>, WidgetInfo>;
+    using WidgetsWithInfo = std::vector<WidgetInfo>;
 
     MainLayoutView(int width, int height);
 
     void addRegion(const std::shared_ptr<Widget>& child, int x, int y, int z);
+    void reorderRegion(const std::shared_ptr<Widget>& child, int z);
     void addBackground(const std::shared_ptr<Widget>& mainChild);
     bool hasBackground() const;
 
@@ -30,6 +33,8 @@ public:
     Gtk::Overlay& get() override;
 
 private:
+    void sortRegionsByZindex();
+    void reorderRegions();
     bool onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc);
     WidgetsWithInfo::iterator findRegion(Gtk::Widget* widget);
     void scaleRegions(double scaleX, double scaleY);

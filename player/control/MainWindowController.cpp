@@ -3,7 +3,7 @@
 #include "StatusScreen.hpp"
 
 #include "control/layout/MainLayoutView.hpp"
-#include "control/common/MainParser.hpp"
+#include "control/common/MainCompositor.hpp"
 #include "managers/LayoutScheduler.hpp"
 
 const int DEFAULT_DIALOG_WIDTH = 640;
@@ -27,10 +27,10 @@ MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, L
 
 void MainWindowController::updateLayout(int layoutId)
 {
-    auto [layout, layoutView] = MainParser{}.parseLayout(layoutId);
-    m_layout = std::move(layout);
-//    auto layoutView = std::make_shared<MainLayoutView>(layoutModel->width(), layoutModel->height());
+    MainCompositor parser;
+    auto [layout, layoutView] = parser.parseLayout(layoutId);
 
+    m_layout = std::move(layout);
     m_layout->expired().connect([this](){
         updateLayout(m_scheduler.nextLayoutId());
     });

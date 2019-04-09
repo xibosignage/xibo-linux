@@ -3,7 +3,7 @@
 #include <gst/video/video-info.h>
 #include <cairomm/surface.h>
 
-#include "control/media/player/VideoWindow.hpp"
+#include "control/media/player/video/VideoWindow.hpp"
 
 G_BEGIN_DECLS
 

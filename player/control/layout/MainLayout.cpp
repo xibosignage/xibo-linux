@@ -23,8 +23,8 @@ void MainLayout::onRegionExpired(int regionId)
 
     if(areAllRegionsExpired())
     {
-        m_layoutExpired.emit();
         Log::debug("Duration expired layout sent");
+        m_layoutExpired.emit();
     }
 }
 
@@ -32,3 +32,4 @@ bool MainLayout::areAllRegionsExpired() const
 {
     return m_expiredRegions.size() == m_regions.size();
 }
+

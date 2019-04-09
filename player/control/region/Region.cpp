@@ -2,9 +2,19 @@
 
 const int FIRST_CONTENT_INDEX = 0;
 
-Region::Region(int id, RegionOptions::Loop looped) :
-    m_id(id), m_looped(looped)
+Region::Region(const RegionOptions& options) :
+    m_options(options)
 {
+}
+
+Region::~Region()
+{
+    for(auto&& media : m_media)
+    {
+        media->started().block();
+        media->stopped().block();
+        media->mediaFinished().block();
+    }
 }
 
 void Region::addMedia(std::unique_ptr<Media>&& media)
@@ -20,7 +30,7 @@ void Region::start()
 
 SignalRegionExpired Region::expired()
 {
-    return m_regionRexpired;
+    return m_regionExpired;
 }
 
 void Region::placeMedia(size_t mediaIndex)
@@ -36,26 +46,26 @@ void Region::removeMedia(size_t mediaIndex)
 
 void Region::onMediaDurationTimeout()
 {
-    if(isExpired())
-    {
-        m_regionRexpired.emit(m_id);
-    }
-
     if(shouldBeMediaReplaced())
     {
         removeMedia(m_currentMediaIndex);
         placeMedia(getNextMediaIndex());
     }
+
+    if(isExpired())
+    {
+        m_regionExpired.emit(m_options.id);
+    }
 }
 
 bool Region::isExpired() const
 {
-    return getNextMediaIndex() == FIRST_CONTENT_INDEX;
+    return m_currentMediaIndex == FIRST_CONTENT_INDEX;
 }
 
 bool Region::shouldBeMediaReplaced() const
 {
-    return m_media.size() > 1 || m_looped == RegionOptions::Loop::Enable;
+    return m_media.size() > 1 || m_options.looped == RegionOptions::Loop::Enable;
 }
 
 size_t Region::getNextMediaIndex() const

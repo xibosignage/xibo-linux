@@ -10,7 +10,7 @@ using SignalStarted = sigc::signal<void()>;
 using SignalStopped = sigc::signal<void()>;
 using SignalMediaFinished = sigc::signal<void()>;
 
-class Media final
+class Media
 {
 public:
     Media(const MediaOptions& options);

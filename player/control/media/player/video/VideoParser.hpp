@@ -1,8 +1,7 @@
 #pragma once
 
 #include "control/media/MediaParser.hpp"
-
-#include "MediaPlayerOptions.hpp"
+#include "control/media/player/MediaPlayerOptions.hpp"
 
 class VideoParser : public MediaParser
 {
