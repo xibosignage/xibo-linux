@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utils/ResponseResult.hpp"
-#include "utils/logger/Logging.hpp"
-#include "xmds/MediaInventoryItem.hpp"
+#include "networking/ResponseResult.hpp"
+#include "networking/xmds/MediaInventoryItem.hpp"
+#include "common/logger/Logging.hpp"
 
 #include <boost/thread/future.hpp>
 

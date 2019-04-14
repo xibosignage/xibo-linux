@@ -13,23 +13,26 @@ slots:
 
 apps:
   xibo-player-test:
-    command: desktop-launch $SNAP/player/player
+    command: desktop-launch $SNAP/bin/player
     plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
     slots: [dbus-daemon]
     environment:
-      LD_LIBRARY_PATH: $SNAP/player/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
-  # xibo-player-tests:
-  #   command: player/tests/unit_tests
+      LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
+  
+  options:
+    command: desktop-launch $SNAP/bin/options
+    plugs: [gsettings, network, home, unity7, x11]
+    slots: [dbus-daemon]
+    environment:
+      LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
 
 parts:
   player-sources:
     source: build
     plugin: dump
     prime:
-      - player/libs
-      - player/player
+      - bin
       - usr/lib/x86_64-linux-gnu
-      # - player/tests/unit_tests
     stage-packages:
       - libgstreamer1.0-0
       - gstreamer1.0-plugins-base

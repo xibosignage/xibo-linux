@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utils/Field.hpp"
-#include "utils/logger/LoggingLevel.hpp"
+#include "common/Field.hpp"
+#include "common/logger/LoggingLevel.hpp"
 
 struct PlayerSettings
 {
@@ -26,17 +26,4 @@ struct PlayerSettings
     Field<bool> preventSleep{"preventSleep", false};
     Field<std::string> displayName{"displayName"};
     Field<bool> screenshotRequested{"screenshotRequested", false};
-};
-
-struct CmsSettings
-{
-    Field<std::string> host{"host"};
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-};
-
-struct Settings
-{
-    CmsSettings cms;
-    PlayerSettings player;
 };

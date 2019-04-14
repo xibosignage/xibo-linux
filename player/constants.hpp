@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <boost/property_tree/ptree_fwd.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 using xml_node = boost::property_tree::ptree;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wrapper/GstFwd.hpp"
+#include "gstwrapper/GstFwd.hpp"
 
 #include <functional>
 #include <sigc++/signal.h>

@@ -1,8 +1,18 @@
 #include "XiboApp.hpp"
 
-int main(int argc, char** argv)
-{
-    auto&& app = XiboApp::create("org.gtkmm.xibo");
+#include <iostream>
 
-    return app.run(argc, argv);
+int main()
+{
+    try
+    {
+        auto&& app = XiboApp::create("org.gtkmm.xibo");
+
+        return app.run();
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
+
 }

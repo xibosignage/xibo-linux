@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14.1)
 
-execute_process(COMMAND git rev-list v0.5-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
-project(XiboLinux VERSION 0.6.0.${GIT_REVISION})
+execute_process(COMMAND git rev-list v0.6-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
+project(XiboLinux VERSION 0.7.0.${GIT_REVISION})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -12,14 +12,20 @@ find_package(PkgConfig REQUIRED)
 find_package(Boost 1.66 REQUIRED system program_options date_time thread)
 
 # modules
-include(FindSonameLibs)
-include(FindLinkLibs)
+include(FindSonameLib)
 include(CopyLibs)
-include(CTest)
 
-enable_testing()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -O0 -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wshadow -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -g")
+set(CMAKE_EXE_LINKER_FLAGS_DEBUG "${CMAKE_EXE_LINKER_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/libs/)
 
 configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/generated/config.hpp)
+configure_file(player/ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
+
 include_directories(${CMAKE_BINARY_DIR}/generated/)
+install(DIRECTORY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 add_subdirectory(player)

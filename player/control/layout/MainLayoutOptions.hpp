@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/uri/Uri.hpp"
+#include "common/uri/Uri.hpp"
 
 struct MainLayoutOptions
 {

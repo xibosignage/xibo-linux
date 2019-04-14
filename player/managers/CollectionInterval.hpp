@@ -2,14 +2,14 @@
 
 #include "RequiredFilesDownloader.hpp"
 
-#include "xmds/RegisterDisplay.hpp"
-#include "xmds/RequiredFiles.hpp"
-#include "xmds/Schedule.hpp"
-#include "xmds/SubmitLog.hpp"
+#include "networking/xmds/RegisterDisplay.hpp"
+#include "networking/xmds/RequiredFiles.hpp"
+#include "networking/xmds/Schedule.hpp"
+#include "networking/xmds/SubmitLog.hpp"
 
 #include "utils/ITimerProvider.hpp"
-#include "utils/JoinableThread.hpp"
-#include "utils/ResponseResult.hpp"
+#include "networking/ResponseResult.hpp"
+#include "common/JoinableThread.hpp"
 
 #include <sigc++/signal.h>
 

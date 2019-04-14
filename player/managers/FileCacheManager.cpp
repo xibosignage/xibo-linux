@@ -1,16 +1,23 @@
 #include "FileCacheManager.hpp"
 
 #include "utils/Resources.hpp"
-#include "utils/FileSystemAdaptor.hpp"
+#include "common/FileSystem.hpp"
+#include "common/Utils.hpp"
 
 #include <fstream>
-#include <openssl/md5.h>
-#include <boost/format.hpp>
 
-FileCacheManager::FileCacheManager(const FilePath& cacheFile) :
-    m_filesystem(std::make_unique<FileSystemAdaptor>()), m_cacheFilePath(cacheFile)
+void FileCacheManager::loadCache(const FilePath& cacheFile)
 {
-    loadCacheFromDrive(m_cacheFilePath);
+    m_cacheFilePath = cacheFile;
+
+    if(!FileSystem::exists(cacheFile)) return;
+
+    std::ifstream in(cacheFile.string());
+    std::string hash;
+    while(in >> hash)
+    {
+        m_fileCache.emplace(hash);
+    }
 }
 
 bool FileCacheManager::isFileInCache(const std::string& fileHash) const
@@ -25,42 +32,17 @@ void FileCacheManager::saveFile(const std::string& fileName, const std::string& 
     std::ofstream out(filePath.string());
     out << fileContent;
 
-    addFileToCache(md5hash(fileContent));
-}
-
-std::string FileCacheManager::md5hash(std::string_view data)
-{
-    unsigned char result[MD5_DIGEST_LENGTH];
-    MD5(reinterpret_cast<const unsigned char*>(data.data()), data.size(), result);
-
-    std::stringstream stream;
-    for(unsigned char byte : result)
-    {
-        stream << boost::format("%02x") % static_cast<short>(byte);
-    }
-    return stream.str();
+    addFileToCache(Utils::md5hash(fileContent));
 }
 
 void FileCacheManager::addFileToCache(const std::string& fileHash)
 {
     m_fileCache.emplace(fileHash);
 
-    updateCacheOnDrive(m_cacheFilePath);
+    updateCache(m_cacheFilePath);
 }
 
-void FileCacheManager::loadCacheFromDrive(const FilePath& path)
-{
-    if(!m_filesystem->exists(path)) return;
-
-    std::ifstream in(path.string());
-    std::string hash;
-    while(in >> hash)
-    {
-        m_fileCache.emplace(hash);
-    }
-}
-
-void FileCacheManager::updateCacheOnDrive(const FilePath& path)
+void FileCacheManager::updateCache(const FilePath& path)
 {
     std::ofstream out(path.string());
     for(auto hash : m_fileCache)

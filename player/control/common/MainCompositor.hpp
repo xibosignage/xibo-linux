@@ -3,7 +3,7 @@
 #include "constants.hpp"
 
 #include "control/layout/MainLayout.hpp"
-#include "utils/FilePath.hpp"
+#include "common/FilePath.hpp"
 
 class MainLayoutView;
 class RegionView;

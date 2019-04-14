@@ -2,7 +2,7 @@
 
 #include "XlfResources.hpp"
 
-#include "utils/Utilities.hpp"
+#include "common/Utils.hpp"
 #include "utils/Resources.hpp"
 
 #include "control/layout/MainLayoutParser.hpp"

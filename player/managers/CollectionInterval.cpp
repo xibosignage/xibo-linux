@@ -1,11 +1,12 @@
 #include "CollectionInterval.hpp"
 
-#include "xmds/XmdsRequestSender.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
-#include "utils/logger/Logging.hpp"
+#include "common/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
 #include "utils/ScreenShoter.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Managers.hpp"
+#include "xmlsink/XmlLogsRetriever.hpp"
 
 #include <glibmm/main.h>
 
@@ -81,7 +82,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             submitScreenShot();
 
-            auto submitLogsResult = m_xmdsSender.submitLogs(Log::xmlLogs()).get();
+            XmlLogsRetriever logsRetriever;
+            auto submitLogsResult = m_xmdsSender.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
         }
         sessionFinished(session);
@@ -195,7 +197,7 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
 
 void CollectionInterval::submitScreenShot()
 {
-    Utils::screenShoter().takeBase64([this](const std::string& screenshot){
+    Managers::screenShoter().takeBase64([this](const std::string& screenshot){
         m_xmdsSender.submitScreenShot(screenshot).then([](auto future){
             auto [error, result] = future.get();
             if(error)

@@ -1,11 +1,25 @@
 #pragma once
 
 #include <string>
+#include "common/FilePath.hpp"
 
 const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
 const int PROJECT_VERSION_BUILD = @PROJECT_VERSION_TWEAK@;
 
-std::string getVersion()
+const std::string DEFAULT_RESOURCES_DIR = "resources";
+const std::string DEFAULT_PLAYER_SETTINGS_FILE = "playerSettings.xml";
+const std::string DEFAULT_CMS_SETTINGS_FILE = "cmsSettings.xml";
+const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
+
+namespace ProjectResources
 {
-    return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
+    inline std::string getVersion()
+    {
+        return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
+    }
+
+    inline FilePath buildDirectory()
+    {
+        return "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@";
+    }
 }
