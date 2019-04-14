@@ -9,14 +9,14 @@
 class UriParser
 {
 public:
-    Uri parse(const std::string& rawUri);
+    static Uri parse(const std::string& rawUri);
     static Uri::Scheme getScheme(const std::string& scheme);
     static Uri::Authority::HostType getHostType(const std::string& host);
 
 private:
-    boost::optional<std::string> getUserInfo(const std::string& userinfo);
-    boost::optional<unsigned short> getPortNumber(const std::string& port);
+    static boost::optional<std::string> getUserInfo(const std::string& userinfo);
+    static boost::optional<unsigned short> getPortNumber(const std::string& port);
 
-    std::smatch parseInternal(const std::string& rawUri);
+    static std::smatch parseInternal(const std::string& rawUri);
 
 };

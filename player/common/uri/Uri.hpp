@@ -55,6 +55,7 @@ public:
     unsigned short port() const;
     Authority::HostType hostType() const;
     const std::string& path() const;
+    boost::optional<std::string> credentials() const;
 
 private:
     std::string schemeToString(Scheme scheme) const;

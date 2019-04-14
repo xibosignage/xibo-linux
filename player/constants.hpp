@@ -21,3 +21,6 @@ const int MIN_YPOS = 0;
 const int DEFAULT_XPOS = 0;
 const int DEFAULT_YPOS = 0;
 const int INVALID_POS = -1;
+
+const int DEFAULT_HTTP_VERSION = 11;
+const std::string DEFAULT_HTTP_TARGET = "/";

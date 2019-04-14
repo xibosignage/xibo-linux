@@ -63,6 +63,7 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_playerSettingsManager->load();
     m_fileManager->loadCache(Resources::directory() / DEFAULT_CACHE_FILE);
+    HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
 
     m_mainLoop->setShutdownAction([this](){
         HttpManager::instance().shutdown();

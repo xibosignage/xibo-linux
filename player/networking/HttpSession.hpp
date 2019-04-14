@@ -12,11 +12,9 @@
 #include <boost/thread/future.hpp>
 
 #include "ResponseResult.hpp"
-#include "common/uri/Uri.hpp"
+#include "HostInfo.hpp"
 
-namespace beast = boost::beast;
 namespace http = boost::beast::http;
-namespace asio = boost::asio;
 namespace ip = boost::asio::ip;
 namespace ssl = boost::asio::ssl;
 
@@ -25,14 +23,12 @@ using HttpResponseResult = ResponseResult<std::string>;
 class HttpSession : public std::enable_shared_from_this<HttpSession>
 {
 public:
-    HttpSession(asio::io_context& ioc);
+    HttpSession(boost::asio::io_context& ioc);
 
-    boost::future<HttpResponseResult> send(http::verb method, const Uri& url, const std::string& body);
+    boost::future<HttpResponseResult> send(const HostInfo& info, const http::request<http::string_body>& request);
     void cancel();
 
 private:
-    http::request<http::string_body> createRequest(http::verb method, const Uri& uri, const std::string& body);
-
     void sessionFinished(const boost::system::error_code& ec);
     void setHttpResult(const HttpResponseResult& result);
 
@@ -59,10 +55,10 @@ private:
 private:
     ip::tcp::resolver m_resolver;
     std::unique_ptr<ssl::stream<ip::tcp::socket>> m_socket;
-    Uri::Scheme m_scheme;
+    HostInfo m_hostInfo;
     http::request<http::string_body> m_request;
     http::response_parser<http::string_body> m_response;
-    beast::flat_buffer m_buffer;
+    boost::beast::flat_buffer m_buffer;
     boost::promise<HttpResponseResult> m_result;
     std::atomic<bool> m_resultSet = false;
 };

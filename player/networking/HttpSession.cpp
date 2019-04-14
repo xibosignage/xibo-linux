@@ -6,58 +6,42 @@
 #include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/beast/core/detail/base64.hpp>
 
-const int DEFAULT_HTTP_VERSION = 11;
-
 HttpSession::HttpSession(boost::asio::io_context& ioc) : m_resolver{ioc}
 {
-    boost::asio::ssl::context ctx{boost::asio::ssl::context::sslv23_client};
+    ssl::context ctx{ssl::context::sslv23_client};
     ctx.set_default_verify_paths();
-    ctx.set_verify_mode(boost::asio::ssl::verify_peer);
+    ctx.set_verify_mode(ssl::verify_peer);
 
-    m_socket = std::make_unique<boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>(ioc, ctx);
+    m_socket = std::make_unique<ssl::stream<ip::tcp::socket>>(ioc, ctx);
     m_response.body_limit(std::numeric_limits<std::uint64_t>::max());
 }
 
-boost::future<HttpResponseResult> HttpSession::send(http::verb method, const Uri& uri, const std::string& body)
+boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info, const http::request<http::string_body>& request)
 {
-    m_request = createRequest(method, uri, body);
+    m_hostInfo = info;
+    m_request = request;
 
-    m_scheme = uri.scheme();
-    m_socket->set_verify_callback(ssl::rfc2818_verification(uri.host()));
+    m_socket->set_verify_callback(ssl::rfc2818_verification(m_hostInfo.host));
 
-    if(!SSL_set_tlsext_host_name(m_socket->native_handle(), uri.host().c_str()))
+    if(!SSL_set_tlsext_host_name(m_socket->native_handle(), m_hostInfo.host.c_str()))
     {
-        beast::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
+        boost::beast::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
         sessionFinished(ec);
     }
 
-    resolve(uri.host(), uri.port(), std::bind(&HttpSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+    resolve(m_hostInfo.host, m_hostInfo.port, std::bind(&HttpSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
 
     return m_result.get_future();
 }
 
-http::request<http::string_body> HttpSession::createRequest(http::verb method, const Uri& uri, const std::string& body)
-{
-    http::request<http::string_body> request;
-
-    request.method(method);
-    request.target(uri.path());
-    request.version(DEFAULT_HTTP_VERSION);
-    request.set(http::field::host, uri.host());
-    request.body() = body;
-    request.prepare_payload();
-
-    return request;
-}
-
 template<typename Callback>
 void HttpSession::resolve(const std::string& host, unsigned short port, Callback callback)
-{    
+{
     m_resolver.async_resolve(host, std::to_string(port), ip::resolver_base::numeric_service, callback);
 }
 
 void HttpSession::onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)
-{ 
+{
     if(!ec)
     {
         connect(results, std::bind(&HttpSession::onConnected, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
@@ -70,15 +54,15 @@ void HttpSession::onResolved(const boost::system::error_code& ec, ip::tcp::resol
 
 template<typename Callback>
 void HttpSession::connect(ip::tcp::resolver::results_type results, Callback callback)
-{   
-    asio::async_connect(m_socket->next_layer(), results.begin(), results.end(), callback);
+{
+    boost::asio::async_connect(m_socket->next_layer(), results.begin(), results.end(), callback);
 }
 
 void HttpSession::onConnected(const boost::system::error_code& ec, ip::tcp::resolver::iterator)
 {
     if(!ec)
     {
-        if(m_scheme == Uri::Scheme::HTTPS)
+        if(m_hostInfo.useSsl)
         {
             handshake(std::bind(&HttpSession::onHandshaked, shared_from_this(), std::placeholders::_1));
         }
@@ -114,7 +98,7 @@ void HttpSession::onHandshaked(const boost::system::error_code& ec)
 template<typename Callback>
 void HttpSession::write(Callback callback)
 {
-    if(m_scheme == Uri::Scheme::HTTPS)
+    if(m_hostInfo.useSsl)
     {
         http::async_write(*m_socket, m_request, callback);
     }
@@ -139,7 +123,7 @@ void HttpSession::onWritten(const boost::system::error_code& ec, std::size_t /*b
 template<typename Callback>
 void HttpSession::read(Callback callback)
 {
-    if(m_scheme == Uri::Scheme::HTTPS)
+    if(m_hostInfo.useSsl)
     {
         http::async_read(*m_socket, m_buffer, m_response, callback);
     }
@@ -180,5 +164,3 @@ void HttpSession::setHttpResult(const HttpResponseResult& result)
         m_result.set_value(result);
     }
 }
-
-

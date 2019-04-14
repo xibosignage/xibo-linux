@@ -5,6 +5,8 @@
 #include "common/uri/UriParseError.hpp"
 
 #include "HttpSession.hpp"
+#include "HttpRequest.hpp"
+#include "ProxyHttpRequest.hpp"
 
 const int DEFAULT_CONCURRENT_REQUESTS = 4;
 
@@ -41,6 +43,14 @@ void HttpManager::shutdown()
     }
 }
 
+void HttpManager::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
+{
+    if(!host.empty())
+    {
+        m_proxyInfo = ProxyInfo{host, username, password};
+    }
+}
+
 void HttpManager::cancelActiveSession()
 {
     for(auto&& session : m_activeSessions)
@@ -71,7 +81,16 @@ boost::future<HttpResponseResult> HttpManager::send(http::verb method, const Uri
 
     Log::debug(uri);
 
-    return session->send(method, uri, body);
+    if(m_proxyInfo)
+    {
+        ProxyHttpRequest request{method, m_proxyInfo.value(), uri, body};
+        return session->send(request.hostInfo(), request.get());
+    }
+    else
+    {
+        HttpRequest request{method, uri, body};
+        return session->send(request.hostInfo(), request.get());
+    }
 }
 
 boost::future<HttpResponseResult> HttpManager::managerStoppedError()

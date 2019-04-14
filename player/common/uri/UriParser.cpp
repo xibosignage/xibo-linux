@@ -4,7 +4,7 @@
 #include "logger/Logging.hpp"
 #include <boost/format.hpp>
 
-const std::regex URL_REGEX(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?(?:\/(.*)))");
+const std::regex URI_REGEX(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?(\/.*))");
 const std::regex IP_REGEX("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
 
 const std::map<std::string, Uri::Scheme> DEFAULT_SCHEMES{{"https://", Uri::Scheme::HTTPS}, {"http://", Uri::Scheme::HTTP}, {"file://", Uri::Scheme::File}};
@@ -33,7 +33,7 @@ Uri UriParser::parse(const std::string& rawUri)
 std::smatch UriParser::parseInternal(const std::string& rawUri)
 {
     std::smatch urlMatch;
-    auto valid = std::regex_match(rawUri, urlMatch, URL_REGEX) && urlMatch.size() > URL_PARTS_COUNT;
+    auto valid = std::regex_match(rawUri, urlMatch, URI_REGEX) && urlMatch.size() > URL_PARTS_COUNT;
     if(valid)
     {
         return urlMatch;

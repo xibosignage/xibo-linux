@@ -37,7 +37,7 @@ boost::optional<unsigned short> Uri::Authority::optionalPort() const
     return m_port;
 }
 
-Uri::Uri(const std::string& rawUri) : Uri(UriParser().parse(removeEscapedSymbols(rawUri)))
+Uri::Uri(const std::string& rawUri) : Uri(UriParser::parse(removeEscapedSymbols(rawUri)))
 {
 }
 
@@ -115,6 +115,11 @@ Uri::Authority::HostType Uri::hostType() const
 const std::string& Uri::path() const
 {
     return m_path;
+}
+
+boost::optional<std::string> Uri::credentials() const
+{
+    return m_authority.credentials();
 }
 
 std::string Uri::schemeToString(Uri::Scheme scheme) const
