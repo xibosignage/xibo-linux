@@ -11,6 +11,9 @@ const std::string DEFAULT_PLAYER_SETTINGS_FILE = "playerSettings.xml";
 const std::string DEFAULT_CMS_SETTINGS_FILE = "cmsSettings.xml";
 const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
 
+const std::string PLAYER_EXE = "./player";
+const std::string PLAYER_OPTIONS_EXE = "./options";
+
 namespace ProjectResources
 {
     inline std::string getVersion()

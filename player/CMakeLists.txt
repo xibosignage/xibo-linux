@@ -21,6 +21,7 @@ add_subdirectory(options)
 add_subdirectory(common)
 add_subdirectory(gstwrapper)
 add_subdirectory(networking)
+add_subdirectory(watchdog)
 #add_subdirectory(xmr)
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${PLAYER_SOURCES})

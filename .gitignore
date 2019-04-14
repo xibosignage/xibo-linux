@@ -1,15 +1,14 @@
 *.autosave
 *.txt.user
 *.snap*
-snap-build.sh
 gcov
 build*
 prime
 stage
 parts
-disabled_xmds
 XiboExamples
 WORK
 pch.py
 url_regex.txt
 xmr
+old_watchdog

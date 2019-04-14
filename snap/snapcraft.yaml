@@ -13,6 +13,13 @@ slots:
 
 apps:
   xibo-player-test:
+    command: desktop-launch $SNAP/bin/watchdog
+    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
+    slots: [dbus-daemon]
+    environment:
+      LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
+
+  player:
     command: desktop-launch $SNAP/bin/player
     plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
     slots: [dbus-daemon]

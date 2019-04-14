@@ -3,7 +3,7 @@
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/messagedialog.h>
 
-#include <boost/process/spawn.hpp>
+#include <boost/process/child.hpp>
 
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "config.hpp"
@@ -120,15 +120,11 @@ void MainWindowController::updateSettings()
 
 void MainWindowController::onLaunchClientClicked()
 {
-    auto&& settings = m_settingsManager.settings();
-
-    std::string hostOption = "--host=" + settings.cmsAddress.value();
-    std::string serverKeyOption = "--server-key=" + settings.key.value();
-    std::string hardwareKeyOption = "--hardware-key=" + settings.displayId.value();
-
-    boost::process::spawn("./player", hostOption, serverKeyOption, hardwareKeyOption);
+    boost::process::child player{PLAYER_EXE};
 
     m_mainWindow->close();
+
+    player.wait();
 }
 
 void MainWindowController::onBrowseResourcesPathClicked()
