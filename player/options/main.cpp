@@ -14,6 +14,8 @@ std::vector<spdlog::sink_ptr> createLoggerSinks()
     return sinks;
 }
 
+#include <iostream>
+
 int main(int /*argc*/, char** /*argv*/)
 {
     auto app = Gtk::Application::create();

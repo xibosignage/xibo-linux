@@ -54,10 +54,10 @@ void XmrSubscriber::processMessageQueue()
         try
         {
             auto message = recvAll(m_socket);
-            for(auto&& part : message)
-            {
-                Log::debug("Part {}", part);
-            }
+//            for(auto&& part : message)
+//            {
+//                Log::debug("Part {}", part);
+//            }
         }
         catch(const zmq::error_t& ex)
         {
@@ -76,7 +76,8 @@ std::vector<std::string> XmrSubscriber::recvAll(zmq::socket_t& socket)
         zmq::message_t message;
 
         socket.recv(&message);
-        composedMessage.emplace_back(static_cast<char*>(message.data()));
+        std::string data{static_cast<char*>(message.data()), message.size()};
+        composedMessage.emplace_back(data);
 
         if(!message.more())
             break;

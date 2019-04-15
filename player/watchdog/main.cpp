@@ -6,15 +6,15 @@
 
 int main()
 {
-    if(FileSystem::exists(DEFAULT_CMS_SETTINGS_FILE))
+    if(FileSystem::exists(ProjectResources::cmsSettings()))
     {
-        boost::process::child playerBin{PLAYER_EXE};
+        boost::process::child playerBin{ProjectResources::playerBinary()};
 
         playerBin.wait();
     }
     else
     {
-        boost::process::child optionsBin{PLAYER_OPTIONS_EXE};
+        boost::process::child optionsBin{ProjectResources::optionsBinary()};
 
         optionsBin.wait();
     }

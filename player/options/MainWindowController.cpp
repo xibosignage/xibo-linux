@@ -12,7 +12,7 @@
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     m_ui(ui),
     m_mainWindow(window),
-    m_settingsManager(ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE)
+    m_settingsManager(ProjectResources::cmsSettings())
 {
     initUi();
     updateControls(m_settingsManager.load());
@@ -120,7 +120,7 @@ void MainWindowController::updateSettings()
 
 void MainWindowController::onLaunchClientClicked()
 {
-    boost::process::child player{PLAYER_EXE};
+    boost::process::child player{ProjectResources::playerBinary()};
 
     m_mainWindow->close();
 

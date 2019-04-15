@@ -53,10 +53,10 @@ XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
-    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::configDirectory() / DEFAULT_PLAYER_SETTINGS_FILE)),
+    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
     m_xmrSubscriber(std::make_unique<XmrSubscriber>())
 {
-    if(!FileSystem::exists(ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE))
+    if(!FileSystem::exists(ProjectResources::cmsSettings()))
         throw std::runtime_error("Update CMS settings using player options app");
 
     m_xmrSubscriber->collectionInterval().connect([this](){
@@ -79,7 +79,7 @@ XiboApp::XiboApp(const std::string& name) :
         });
     });
 
-    CmsSettingsManager cmsSettingsManager{ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE};
+    CmsSettingsManager cmsSettingsManager{ProjectResources::cmsSettings()};
     m_cmsSettings = cmsSettingsManager.load();
     if(!m_cmsSettings.resourcesPath.value().empty())
         Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});

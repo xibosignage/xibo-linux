@@ -72,6 +72,8 @@ boost::future<HttpResponseResult> HttpManager::post(const Uri& uri, const std::s
     return send(http::verb::post, uri, body);
 }
 
+#include <iostream>
+
 boost::future<HttpResponseResult> HttpManager::send(http::verb method, const Uri& uri, const std::string& body)
 {
     if(m_ioc.stopped()) return managerStoppedError();
