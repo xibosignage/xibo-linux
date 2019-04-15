@@ -59,6 +59,7 @@ private:
     std::unique_ptr<JoinableThread> m_workerThread;
     std::unique_ptr<ITimerProvider> m_intervalTimer;
     int m_collectInterval;
+    bool started = false;
     SignalSettingsUpdated m_settingsUpdated;
     SignalScheduleUpdated m_scheduleUpdated;
     SignalCollectionFinished m_collectionFinished;

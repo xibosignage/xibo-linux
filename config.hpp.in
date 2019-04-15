@@ -5,19 +5,11 @@
 #include "common/FilePath.hpp"
 #include "common/FileSystem.hpp"
 
-const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
-const int PROJECT_VERSION_BUILD = @PROJECT_VERSION_TWEAK@;
-
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
 
 namespace ProjectResources
 {
-    inline std::string getVersion()
-    {
-        return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
-    }
-
     inline FilePath buildDirectory()
     {
         const char* directory = getenv("SNAP");

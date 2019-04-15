@@ -3,6 +3,7 @@
 #include "Resources.hpp"
 
 #include "common/MacAddressFetcher.hpp"
+#include "common/RsaManager.hpp"
 
 const std::string DEFAULT_CLIENT_TYPE = "linux";
 const std::string UNDEFINED_MAC_ADDRESS = "00:00:00:00:00:00";
@@ -15,6 +16,7 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host, const std::string&
 {
 }
 
+#include "common/logger/Logging.hpp"
 boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
 {
     RegisterDisplay::Request request;
@@ -25,8 +27,9 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     request.clientVersion = clientVersion;
     request.macAddress = MacAddressFetcher::get().value_or(UNDEFINED_MAC_ADDRESS);
     request.xmrChannel = XMR_CHANNEL;
-//    request.xmrPubKey = test_key;
-//    std::cout << generate_key() << std::endl;
+    request.xmrPubKey = RsaManager::instance().publicKeyStr();
+    Log::debug(RsaManager::instance().publicKeyStr());
+    Log::debug(RsaManager::instance().privateKeyStr());
     request.displayName = displayName;
 
     return SoapRequestHelper::sendRequest<RegisterDisplay::Result>(m_uri, request);

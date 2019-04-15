@@ -16,6 +16,7 @@
 #include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrSubscriber.hpp"
 #include "common/CmsSettingsManager.hpp"
+#include "common/RsaManager.hpp"
 #include "networking/HttpManager.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "networking/xmds/SoapRequestSender.hpp"
@@ -87,6 +88,7 @@ XiboApp::XiboApp(const std::string& name) :
     m_playerSettingsManager->load();
     m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
+    RsaManager::instance().load();
 
     m_mainLoop->setShutdownAction([this](){
         m_xmrSubscriber->stop();
