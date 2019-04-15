@@ -2,17 +2,21 @@
 
 #include "RequiredFilesDownloader.hpp"
 
-#include "xmds/RegisterDisplay.hpp"
-#include "xmds/RequiredFiles.hpp"
-#include "xmds/Schedule.hpp"
-#include "xmds/SubmitLog.hpp"
+#include "networking/xmds/RegisterDisplay.hpp"
+#include "networking/xmds/RequiredFiles.hpp"
+#include "networking/xmds/Schedule.hpp"
+#include "networking/xmds/SubmitLog.hpp"
 
 #include "utils/ITimerProvider.hpp"
-#include "utils/JoinableThread.hpp"
-#include "utils/ResponseResult.hpp"
-#include "events/EventPublisher.hpp"
+#include "networking/ResponseResult.hpp"
+#include "common/JoinableThread.hpp"
+
+#include <sigc++/signal.h>
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
+using SignalSettingsUpdated = sigc::signal<void(const PlayerSettings&)>;
+using SignalScheduleUpdated = sigc::signal<void(const LayoutSchedule&)>;
+using SignalCollectionFinished = sigc::signal<void(const PlayerError&)>;
 class XmdsRequestSender;
 
 struct CollectionSession
@@ -22,7 +26,7 @@ struct CollectionSession
 
 using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 
-class CollectionInterval : public EventPublisher<>
+class CollectionInterval
 {
 public:
     CollectionInterval(XmdsRequestSender& xmdsSender);
@@ -31,6 +35,10 @@ public:
     void stop();
     void collectOnce(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
+
+    SignalSettingsUpdated settingsUpdated();
+    SignalScheduleUpdated scheduleUpdated();
+    SignalCollectionFinished collectionFinished();
 
 private:
     void startTimer();
@@ -51,5 +59,7 @@ private:
     std::unique_ptr<JoinableThread> m_workerThread;
     std::unique_ptr<ITimerProvider> m_intervalTimer;
     int m_collectInterval;
-
+    SignalSettingsUpdated m_settingsUpdated;
+    SignalScheduleUpdated m_scheduleUpdated;
+    SignalCollectionFinished m_collectionFinished;
 };

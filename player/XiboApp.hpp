@@ -3,10 +3,10 @@
 #include <memory>
 #include <spdlog/common.h>
 
+#include "common/CmsSettings.hpp"
+
 class MainLoop;
 class XmdsRequestSender;
-class IMainLayout;
-class MainWindow;
 class HttpManager;
 class LayoutScheduler;
 class FileCacheManager;
@@ -14,9 +14,7 @@ class CollectionInterval;
 class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
-class ConfigurationView;
-class CommandLineParser;
-class Event;
+class XmrSubscriber;
 struct PlayerSettings;
 
 class XiboApp
@@ -28,24 +26,20 @@ public:
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
-    HttpManager& httpManager();
     FileCacheManager& fileManager();
     ScreenShoter& screenShoter();
 
-    int run(int argc, char** argv);
+    int run();
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
     XiboApp(const std::string& name);
+
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
-    void updatePlayerSettings(const PlayerSettings& settings);
-    bool processCallbackQueue();
-    void handleCollectionUpdates(CollectionInterval& interval);
-    int runMainLoop();
-    void tryParseCommandLine(int argc, char** argv);
-    void startPlayer(const std::shared_ptr<ConfigurationView>& view);
+    void applyPlayerSettings(const PlayerSettings& settings);
+    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
@@ -53,11 +47,10 @@ private:
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
-    std::unique_ptr<HttpManager> m_httpManager;
-    std::unique_ptr<PlayerSettingsManager> m_settingsManager;
-    std::unique_ptr<CommandLineParser> m_options;
+    std::unique_ptr<PlayerSettingsManager> m_playerSettingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
-    std::shared_ptr<MainWindow> m_mainWindow;
+    std::unique_ptr<XmrSubscriber> m_xmrSubscriber;
+    CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;
 };

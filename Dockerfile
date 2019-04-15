@@ -40,7 +40,7 @@ RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 
 ENV MMCOMMON=0.9.10 SIGC=2.10.0 GLIB=2.56.1 GLIBMM=2.56.0 SPDLOG=1.1.0 GTEST=1.8.1 \
-    CMAKE_MAJOR=3 CMAKE_MINOR=12 CMAKE_PATCH=1 BOOST_MAJOR=1 BOOST_MINOR=68
+    CMAKE_MAJOR=3 CMAKE_MINOR=14 CMAKE_PATCH=1 BOOST_MAJOR=1 BOOST_MINOR=68
 ENV BOOST=${BOOST_MAJOR}_${BOOST_MINOR}_0 CMAKE=${CMAKE_MAJOR}.${CMAKE_MINOR}.${CMAKE_PATCH}
 
 RUN curl -o /root/mm-common.tar.gz -SL https://github.com/GNOME/mm-common/archive/${MMCOMMON}.tar.gz && \
@@ -133,6 +133,30 @@ RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar
     cd /root && \
     rm -r googletest-release-${GTEST} && \
     rm gtest.tar.gz
+
+RUN curl -o /root/zeromq.tar.gz -SL https://github.com/zeromq/libzmq/releases/download/v4.3.0/zeromq-4.3.0.tar.gz && \
+    cd /root && \
+    tar -zxvf zeromq.tar.gz && \
+    cd zeromq-4.3.0 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 install && \
+    cd /root && \
+    rm -r zeromq-4.3.0 && \
+    rm zeromq.tar.gz
+
+RUN curl -o /root/cppzmq.tar.gz -SL https://github.com/zeromq/cppzmq/archive/v4.3.0.tar.gz && \
+    cd /root && \
+    tar -zxvf cppzmq.tar.gz && \
+    cd cppzmq-4.3.0 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 install && \
+    cd /root && \
+    rm -r cppzmq-4.3.0 && \
+    rm cppzmq.tar.gz
 
 RUN mkdir -p /app
 

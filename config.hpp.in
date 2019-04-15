@@ -2,10 +2,56 @@
 
 #include <string>
 
+#include "common/FilePath.hpp"
+#include "common/FileSystem.hpp"
+
 const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
 const int PROJECT_VERSION_BUILD = @PROJECT_VERSION_TWEAK@;
 
-std::string getVersion()
+const std::string DEFAULT_RESOURCES_DIR = "resources";
+const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
+
+namespace ProjectResources
 {
-    return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
+    inline std::string getVersion()
+    {
+        return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
+    }
+
+    inline FilePath buildDirectory()
+    {
+        const char* directory = getenv("SNAP");
+        return directory == nullptr ? FilePath{"@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"} : FilePath{directory} / "bin";
+    }
+
+    inline FilePath configDirectory()
+    {
+        const char* directory = getenv("SNAP_USER_DATA");
+        return directory == nullptr ? FileSystem::currentPath() : FilePath{directory};
+    }
+
+    inline FilePath cmsSettings()
+    {
+        return configDirectory() / "cmsSettings.xml";
+    }
+
+    inline FilePath playerSettings()
+    {
+        return configDirectory() / "playerSettings.xml";
+    }
+
+    inline std::string playerBinary()
+    {
+        const char* directory = getenv("SNAP");
+        auto path = buildDirectory() / "player";
+        return directory == nullptr ? path.string() : "desktop-launch " + path.string();
+    }
+
+    inline std::string optionsBinary()
+    {
+        const char* directory = getenv("SNAP");
+        auto path = buildDirectory() / "options";
+        return directory == nullptr ? path.string() : "desktop-launch " + path.string();
+    }
+
 }

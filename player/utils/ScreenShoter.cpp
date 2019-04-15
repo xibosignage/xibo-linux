@@ -1,6 +1,6 @@
 #include "ScreenShoter.hpp"
 
-#include "utils/FilePath.hpp"
+#include "common/FilePath.hpp"
 
 #include <glibmm/main.h>
 #include <gdkmm.h>

@@ -1,15 +1,13 @@
 #pragma once
 
-#include "events/EventPublisher.hpp"
 #include "LayoutSchedule.hpp"
 
 #include <memory>
 #include <vector>
 
 class IMainLayout;
-class IFileSystemAdaptor;
 
-class LayoutScheduler : public EventPublisher<>
+class LayoutScheduler
 {
 public:
     LayoutScheduler();
@@ -26,7 +24,6 @@ private:
     int nextValidLayoutId();
 
 private:
-    std::unique_ptr<IFileSystemAdaptor> m_filesystem;
     DefaultScheduledLayout m_defaultLayout;
     std::vector<ScheduledLayout> m_layouts;
     std::vector<std::string> m_globalDependants;

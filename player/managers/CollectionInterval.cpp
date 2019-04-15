@@ -1,13 +1,12 @@
 #include "CollectionInterval.hpp"
 
-#include "xmds/XmdsRequestSender.hpp"
-#include "events/CallbackEventQueue.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
-#include "utils/logger/Logging.hpp"
+#include "common/logger/Logging.hpp"
 #include "utils/TimerProvider.hpp"
-
 #include "utils/ScreenShoter.hpp"
-#include "utils/Utilities.hpp"
+#include "utils/Managers.hpp"
+#include "xmlsink/XmlLogsRetriever.hpp"
 
 #include <glibmm/main.h>
 
@@ -39,7 +38,7 @@ void CollectionInterval::startTimer()
 void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
     Log::debug("Collection finished. Next collection will start in {} seconds", m_collectInterval);
-    pushEvent(CollectionFinishedEvent{error});
+    m_collectionFinished.emit(error);
     startTimer();
 }
 
@@ -59,8 +58,9 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
-    callbackQueue().add([session, error](){
+    Glib::MainContext::get_default()->invoke([session, error](){
         session->callback(error);
+        return false;
     });
 }
 
@@ -72,7 +72,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         displayMessage(result.status);
         if(result.status.code == RegisterDisplay::Result::Status::Code::Ready) // FIXME handle Activated/Waiting
         {
-            pushEvent(SettingsUpdatedEvent{result.playerSettings});
+            m_settingsUpdated.emit(result.playerSettings);
 
             auto requiredFilesResult = m_xmdsSender.requiredFiles().get();
             auto scheduleResult = m_xmdsSender.schedule().get();
@@ -82,7 +82,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             submitScreenShot();
 
-            auto submitLogsResult = m_xmdsSender.submitLogs(Log::xmlLogs()).get();
+            XmlLogsRetriever logsRetriever;
+            auto submitLogsResult = m_xmdsSender.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
         }
         sessionFinished(session);
@@ -108,6 +109,21 @@ void CollectionInterval::updateInterval(int collectInterval)
         Log::debug("Collection interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
         m_collectInterval = collectInterval;
     }
+}
+
+SignalSettingsUpdated CollectionInterval::settingsUpdated()
+{
+    return m_settingsUpdated;
+}
+
+SignalScheduleUpdated CollectionInterval::scheduleUpdated()
+{
+    return m_scheduleUpdated;
+}
+
+SignalCollectionFinished CollectionInterval::collectionFinished()
+{
+    return m_collectionFinished;
 }
 
 void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session)
@@ -140,7 +156,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
-        pushEvent(ScheduleUpdatedEvent{result.schedule});
+        m_scheduleUpdated.emit(result.schedule);
     }
     else
     {
@@ -181,7 +197,7 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
 
 void CollectionInterval::submitScreenShot()
 {
-    Utils::screenShoter().takeBase64([this](const std::string& screenshot){
+    Managers::screenShoter().takeBase64([this](const std::string& screenshot){
         m_xmdsSender.submitScreenShot(screenshot).then([](auto future){
             auto [error, result] = future.get();
             if(error)

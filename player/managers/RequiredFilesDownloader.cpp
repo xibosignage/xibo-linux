@@ -1,11 +1,12 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "HttpManager.hpp"
-#include "FileCacheManager.hpp"
+#include "managers/FileCacheManager.hpp"
 
-#include "xmds/XmdsFileDownloader.hpp"
-#include "xmds/XmdsRequestSender.hpp"
+#include "networking/xmds/XmdsFileDownloader.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
+#include "networking/HttpManager.hpp"
 
+#include "utils/Managers.hpp"
 #include "utils/Resources.hpp"
 
 #include <fstream>
@@ -45,7 +46,7 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 
 DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
 {
-    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
+    return HttpManager::instance().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
         return processDownloadedContent(future.get(), fileName);
     });
 }
@@ -62,7 +63,7 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
     auto [error, fileContent] = result;
     if(!error)
     {
-        Utils::fileManager().saveFile(fileName, fileContent);
+        Managers::fileManager().saveFile(fileName, fileContent);
 
         Log::debug("[{}] Downloaded", fileName);
         return true;
@@ -76,7 +77,7 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
 
 bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
 {
-    return Utils::fileManager().isFileInCache(file.md5);
+    return Managers::fileManager().isFileInCache(file.md5);
 }
 
 bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
