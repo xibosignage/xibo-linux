@@ -6,6 +6,8 @@
 using xml_node = boost::property_tree::ptree;
 
 const std::string LOGGER = "logger";
+const char* const XMR_CHANNEL = "playerLinux";
+const char* const HEARTBEAT_CHANNEL = "H";
 
 const unsigned int MSECS = 1000;
 const int MAX_VOLUME = 100;

@@ -13,6 +13,7 @@
 #include "managers/LayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
+#include "managers/XmrSubscriber.hpp"
 #include "common/CmsSettingsManager.hpp"
 #include "networking/HttpManager.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
@@ -51,7 +52,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
-    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(DEFAULT_PLAYER_SETTINGS_FILE))
+    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(DEFAULT_PLAYER_SETTINGS_FILE)),
+    m_xmrSubscriber(std::make_unique<XmrSubscriber>())
 {
     if(!FileSystem::exists(DEFAULT_CMS_SETTINGS_FILE))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -66,6 +68,7 @@ XiboApp::XiboApp(const std::string& name) :
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
 
     m_mainLoop->setShutdownAction([this](){
+        m_xmrSubscriber->stop();
         HttpManager::instance().shutdown();
         if(m_collectionInterval)
         {
@@ -160,5 +163,6 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
     Log::logger()->setLevel(settings.logLevel);
     m_collectionInterval->updateInterval(settings.collectInterval);
+    m_xmrSubscriber->connect(settings.xmrNetworkAddress);
     Log::debug("Player settings updated");
 }

@@ -11,8 +11,16 @@ Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const Regis
 
 std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
 {
-    return createRequest(Resources::Name, request().clientCode, request().clientType, request().clientVersion,
-                         request().displayName, request().macAddress, request().serverKey, request().hardwareKey);
+    return createRequest(Resources::Name,
+                         request().clientCode,
+                         request().clientType,
+                         request().clientVersion,
+                         request().displayName,
+                         request().macAddress,
+                         request().xmrChannel,
+                         request().xmrPubKey,
+                         request().serverKey,
+                         request().hardwareKey);
 
 }
 

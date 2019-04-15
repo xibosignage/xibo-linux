@@ -14,6 +14,7 @@ class CollectionInterval;
 class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
+class XmrSubscriber;
 struct PlayerSettings;
 
 class XiboApp
@@ -48,6 +49,7 @@ private:
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
     std::unique_ptr<PlayerSettingsManager> m_playerSettingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
+    std::unique_ptr<XmrSubscriber> m_xmrSubscriber;
     CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;
