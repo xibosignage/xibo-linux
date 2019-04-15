@@ -1,23 +1,33 @@
 FROM ubuntu:16.04
 MAINTAINER Alex Harrington <alex@springsignage.com>
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software-properties-common && add-apt-repository ppa:ubuntu-toolchain-r/test && apt-get update && apt-get install -y \
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y software-properties-common
+
+RUN DEBIAN_FRONTEND=noninteractive add-apt-repository ppa:ubuntu-toolchain-r/test && apt-get update
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   software-properties-common \
-  cmake \
+  cmake
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libgtkmm-3.0-dev \
   libgstreamer1.0-dev \
   libgstreamer-plugins-base1.0-dev \
   libgstreamer-plugins-bad1.0-dev \
   gstreamer1.0-libav \
   libwebkitgtk-3.0-dev \
-  gstreamer1.0-tools \
+  gstreamer1.0-tools
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   mesa-common-dev \
   libgl1-mesa-dev \
   libgles2-mesa-dev \
   build-essential \
   autoconf \
   autogen \
-  libtool \
+  libtool
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   curl \
   libxml-parser-perl \
   git \
