@@ -28,8 +28,8 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     request.macAddress = MacAddressFetcher::get().value_or(UNDEFINED_MAC_ADDRESS);
     request.xmrChannel = XMR_CHANNEL;
     request.xmrPubKey = RsaManager::instance().publicKeyStr();
-    Log::debug(RsaManager::instance().publicKeyStr());
-    Log::debug(RsaManager::instance().privateKeyStr());
+//    Log::debug(RsaManager::instance().publicKeyStr());
+//    Log::debug(RsaManager::instance().privateKeyStr());
     request.displayName = displayName;
 
     return SoapRequestHelper::sendRequest<RegisterDisplay::Result>(m_uri, request);
