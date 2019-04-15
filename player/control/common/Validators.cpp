@@ -9,7 +9,7 @@ Uri Validators::validateUri(const boost::optional<std::string>& uri)
     if(uri)
     {
         auto filesystem = std::make_unique<FileSystem>();
-        auto fullPath = Resources::directory() / uri.value();
+        auto fullPath = Resources::resDirectory() / uri.value();
 
         if(!FileSystem::isRegularFile(fullPath))
             throw std::runtime_error("Not valid path");

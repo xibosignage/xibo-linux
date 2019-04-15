@@ -47,4 +47,3 @@ std::string Utils::md5hash(std::string_view data)
     }
     return stream.str();
 }
-

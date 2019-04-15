@@ -60,7 +60,7 @@ Uri WebViewParser::uri()
     if(mode != NATIVE_MODEID)
     {
         auto fileName = std::to_string(id()) + DEFAULT_WEBVIEW_EXTENSION;
-        return Uri(DEFAULT_NATIVE_SCHEME + (Resources::directory() / fileName).string());
+        return Uri(DEFAULT_NATIVE_SCHEME + (Resources::resDirectory() / fileName).string());
     }
     else
     {

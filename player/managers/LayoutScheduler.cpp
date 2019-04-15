@@ -102,7 +102,7 @@ bool LayoutScheduler::allFilesExist(const std::vector<std::string>& dependants) 
 {
     for(auto dependant : m_globalDependants)
     {
-        if(!FileSystem::exists(Resources::directory() / dependant))
+        if(!FileSystem::exists(Resources::resDirectory() / dependant))
         {
             return false;
         }
@@ -110,7 +110,7 @@ bool LayoutScheduler::allFilesExist(const std::vector<std::string>& dependants) 
 
     for(auto dependant : dependants)
     {
-        if(!FileSystem::exists(Resources::directory() / dependant))
+        if(!FileSystem::exists(Resources::resDirectory() / dependant))
         {
             return false;
         }

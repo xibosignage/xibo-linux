@@ -1,4 +1,5 @@
 ﻿#include "XiboApp.hpp"
+
 #include "MainLoop.hpp"
 #include "config.hpp"
 
@@ -32,7 +33,7 @@ XiboApp& XiboApp::create(const std::string& name)
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
     gst_init(nullptr, nullptr);
-    Resources::setDirectory(std::filesystem::current_path() / DEFAULT_RESOURCES_DIR);
+    Resources::setDirectory(ProjectResources::configDirectory() / DEFAULT_RESOURCES_DIR);
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
@@ -52,19 +53,19 @@ XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
-    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(DEFAULT_PLAYER_SETTINGS_FILE)),
+    m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::configDirectory() / DEFAULT_PLAYER_SETTINGS_FILE)),
     m_xmrSubscriber(std::make_unique<XmrSubscriber>())
 {
-    if(!FileSystem::exists(DEFAULT_CMS_SETTINGS_FILE))
+    if(!FileSystem::exists(ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE))
         throw std::runtime_error("Update CMS settings using player options app");
 
-    CmsSettingsManager cmsSettingsManager{DEFAULT_CMS_SETTINGS_FILE};
+    CmsSettingsManager cmsSettingsManager{ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE};
     m_cmsSettings = cmsSettingsManager.load();
     if(!m_cmsSettings.resourcesPath.value().empty())
         Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_playerSettingsManager->load();
-    m_fileManager->loadCache(Resources::directory() / DEFAULT_CACHE_FILE);
+    m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
 
     m_mainLoop->setShutdownAction([this](){

@@ -4,7 +4,7 @@
 
 FilePath Resources::directory_;
 
-FilePath Resources::directory()
+FilePath Resources::resDirectory()
 {
     return directory_;
 }

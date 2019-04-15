@@ -7,8 +7,8 @@ class Resources
     static FilePath directory_;
 
 public:
-    static FilePath directory();
-    static void setDirectory(const FilePath& directory);
+    static FilePath resDirectory();
+    static void setDirectory(const FilePath& resDirectory);
 
 };
 

@@ -38,7 +38,7 @@ std::pair<std::unique_ptr<MainLayout>, std::shared_ptr<MainLayoutView>> MainComp
 FilePath MainCompositor::getXlfFilePath(int layoutId)
 {
     auto xlfFile = std::to_string(layoutId) + ".xlf";
-    return Resources::directory() / xlfFile;
+    return Resources::resDirectory() / xlfFile;
 }
 
 std::pair<std::unique_ptr<MainLayout>, std::shared_ptr<MainLayoutView>> MainCompositor::parseLayout(const xml_node& layoutNode)

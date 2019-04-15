@@ -15,3 +15,8 @@ bool FileSystem::createDirectory(const FilePath& path)
 {
     return std::filesystem::create_directory(path);
 }
+
+FilePath FileSystem::currentPath()
+{
+    return std::filesystem::current_path();
+}

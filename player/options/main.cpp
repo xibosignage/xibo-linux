@@ -1,9 +1,9 @@
 #include <gtkmm/application.h>
 
 #include "MainWindowController.hpp"
+#include "common/logger/Logger.hpp"
 #include "constants.hpp"
 #include "config.hpp"
-#include "common/logger/Logger.hpp"
 
 #include <spdlog/sinks/stdout_sinks.h>
 
@@ -14,10 +14,10 @@ std::vector<spdlog::sink_ptr> createLoggerSinks()
     return sinks;
 }
 
-int main()
+int main(int /*argc*/, char** /*argv*/)
 {
     auto app = Gtk::Application::create();
-    auto ui = Gtk::Builder::create_from_file(Resources::UiFile);
+    auto ui = Gtk::Builder::create_from_file(ProjectResources::buildDirectory() / Resources::UiFile);
 
     auto logger = Logger::create(LOGGER, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);
