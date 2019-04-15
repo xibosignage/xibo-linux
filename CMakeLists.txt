@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.1)
 
-execute_process(COMMAND git rev-list v0.6-a..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
+execute_process(COMMAND git rev-list 1.8-alpha6..HEAD --count COMMAND xargs echo -n WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_REVISION)
 project(XiboLinux VERSION 0.7.0.${GIT_REVISION})
 
 set(CMAKE_CXX_STANDARD 17)

@@ -1,5 +1,5 @@
-name: xibo-player-test
-version: 0.7-alpha
+name: xibo-player
+version: 1.8-beta1
 summary: Xibo Linux Player
 description: Test snap package for Xibo Linux Player
 grade: devel
@@ -12,7 +12,7 @@ slots:
     name: org.gtkmm.xibo # adjust accordingly
 
 apps:
-  xibo-player-test:
+  xibo-player:
     command: desktop-launch $SNAP/bin/watchdog
     plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
     slots: [dbus-daemon]
