@@ -73,7 +73,6 @@ std::string generate_key() {
     return std::string{pub_key};
 }
 
-
 boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
 {
     RegisterDisplay::Request request;

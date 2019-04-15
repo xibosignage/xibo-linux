@@ -59,6 +59,26 @@ XiboApp::XiboApp(const std::string& name) :
     if(!FileSystem::exists(ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE))
         throw std::runtime_error("Update CMS settings using player options app");
 
+    m_xmrSubscriber->collectionInterval().connect([this](){
+        Log::info("Start unscheduled collection");
+        m_collectionInterval->collectOnce([this](const PlayerError& error){
+            onCollectionFinished(error);
+        });
+    });
+
+    m_xmrSubscriber->screenshot().connect([this](){
+        Log::info("Taking unscheduled screenshot");
+        Managers::screenShoter().takeBase64([this](const std::string& screenshot){
+            m_xmdsManager->submitScreenShot(screenshot).then([](auto future){
+                auto [error, result] = future.get();
+                if(error)
+                {
+                    Log::error("SubmitScreenShot: {}", error);
+                }
+            });
+        });
+    });
+
     CmsSettingsManager cmsSettingsManager{ProjectResources::configDirectory() / DEFAULT_CMS_SETTINGS_FILE};
     m_cmsSettings = cmsSettingsManager.load();
     if(!m_cmsSettings.resourcesPath.value().empty())

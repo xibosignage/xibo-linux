@@ -124,6 +124,30 @@ RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar
     rm -r googletest-release-${GTEST} && \
     rm gtest.tar.gz
 
+RUN curl -o /root/zeromq.tar.gz -SL https://github.com/zeromq/libzmq/releases/download/v4.3.0/zeromq-4.3.0.tar.gz && \
+    cd /root && \
+    tar -zxvf zeromq.tar.gz && \
+    cd zeromq-4.3.0 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 install && \
+    cd /root && \
+    rm -r zeromq-4.3.0 && \
+    rm zeromq.tar.gz
+
+RUN curl -o /root/cppzmq.tar.gz -SL https://github.com/zeromq/cppzmq/archive/v4.3.0.tar.gz && \
+    cd /root && \
+    tar -zxvf cppzmq.tar.gz && \
+    cd cppzmq-4.3.0 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j4 install && \
+    cd /root && \
+    rm -r cppzmq-4.3.0 && \
+    rm cppzmq.tar.gz
+
 RUN mkdir -p /app
 
 ADD . /app

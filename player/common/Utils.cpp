@@ -3,6 +3,7 @@
 #include "FilePath.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <openssl/md5.h>
@@ -20,6 +21,15 @@ xml_node Utils::parseXmlFromString(const std::string& xml)
     stream << xml;
     xml_node tree;
     boost::property_tree::read_xml(stream, tree);
+    return tree;
+}
+
+xml_node Utils::parseJsonFromString(const std::string& json)
+{
+    std::stringstream stream;
+    stream << json;
+    xml_node tree;
+    boost::property_tree::read_json(stream, tree);
     return tree;
 }
 
