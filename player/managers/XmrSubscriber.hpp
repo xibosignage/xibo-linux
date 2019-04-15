@@ -34,6 +34,8 @@ private:
     std::vector<std::string> recvAll(zmq::socket_t& socket);
     XmrMessage parseMessage(const std::string& jsonMessage);
     bool isMessageExpired(const XmrMessage& message);
+    std::string decryptMessage(const std::string& key, const std::string& message);
+    void processMessage(const XmrMessage& action);
 
 private:
     std::unique_ptr<JoinableThread> m_worker;

@@ -158,6 +158,16 @@ RUN curl -o /root/cppzmq.tar.gz -SL https://github.com/zeromq/cppzmq/archive/v4.
     rm -r cppzmq-4.3.0 && \
     rm cppzmq.tar.gz
 
+RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_8_1_0.tar.gz && \
+    cd /root && \
+    tar -zxvf cryptopp.tar.gz && \
+    cd cryptopp-CRYPTOPP_8_1_0 && \
+    make -j4 && \
+    make install && \
+    cd /root && \
+    rm -r cryptopp-CRYPTOPP_8_1_0 && \
+    rm cryptopp.tar.gz
+
 RUN mkdir -p /app
 
 ADD . /app

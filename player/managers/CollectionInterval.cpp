@@ -20,6 +20,7 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
 
 void CollectionInterval::startRegularCollection()
 {
+    started = true;
     startTimer();
 }
 
@@ -58,7 +59,11 @@ void CollectionInterval::collectOnce(CollectionResultCallback callback)
 
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
-    Glib::MainContext::get_default()->invoke([session, error](){
+    Glib::MainContext::get_default()->invoke([this, session, error](){
+        if(started)
+        {
+            startTimer();
+        }
         session->callback(error);
         return false;
     });
