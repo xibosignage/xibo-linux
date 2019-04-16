@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Encoding=UTF-8
-Name=xibo-player
+Name=Xibo Linux Player
 Comment=Xibo Linux Player
 Exec=xibo-player
 Terminal=true
