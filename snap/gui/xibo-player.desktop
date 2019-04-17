@@ -5,3 +5,4 @@ Name=Xibo Linux Player
 Comment=Xibo Linux Player
 Exec=xibo-player
 Terminal=true
+Icon=${SNAP}/meta/gui/xibo-player.png
