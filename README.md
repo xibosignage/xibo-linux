@@ -1,5 +1,7 @@
 # XiboLinux
 
+[![xibo-player](https://snapcraft.io/xibo-player/badge.svg)](https://snapcraft.io/xibo-player)
+
 ## Building from sources
 
 ### Building manually
