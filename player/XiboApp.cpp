@@ -14,12 +14,14 @@
 #include "managers/LayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
-#include "managers/XmrSubscriber.hpp"
-#include "common/CmsSettingsManager.hpp"
-#include "common/RsaManager.hpp"
+#include "managers/XmrManager.hpp"
+
 #include "networking/HttpManager.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "networking/xmds/SoapRequestSender.hpp"
+
+#include "common/CmsSettingsManager.hpp"
+#include "common/RsaManager.hpp"
 
 #include <gst/gst.h>
 #include <glibmm/main.h>
@@ -34,7 +36,7 @@ XiboApp& XiboApp::create(const std::string& name)
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
     gst_init(nullptr, nullptr);
-    Resources::setDirectory(ProjectResources::configDirectory() / DEFAULT_RESOURCES_DIR);
+    Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *m_app;
@@ -55,19 +57,19 @@ XiboApp::XiboApp(const std::string& name) :
     m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
-    m_xmrSubscriber(std::make_unique<XmrSubscriber>())
+    m_xmrManager(std::make_unique<XmrManager>())
 {
     if(!FileSystem::exists(ProjectResources::cmsSettings()))
         throw std::runtime_error("Update CMS settings using player options app");
 
-    m_xmrSubscriber->collectionInterval().connect([this](){
+    m_xmrManager->collectionInterval().connect([this](){
         Log::info("Start unscheduled collection");
         m_collectionInterval->collectOnce([this](const PlayerError& error){
             onCollectionFinished(error);
         });
     });
 
-    m_xmrSubscriber->screenshot().connect([this](){
+    m_xmrManager->screenshot().connect([this](){
         Log::info("Taking unscheduled screenshot");
         Managers::screenShoter().takeBase64([this](const std::string& screenshot){
             m_xmdsManager->submitScreenShot(screenshot).then([](auto future){
@@ -91,7 +93,7 @@ XiboApp::XiboApp(const std::string& name) :
     RsaManager::instance().load();
 
     m_mainLoop->setShutdownAction([this](){
-        m_xmrSubscriber->stop();
+        m_xmrManager->stop();
         HttpManager::instance().shutdown();
         if(m_collectionInterval)
         {
@@ -186,6 +188,6 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
     Log::logger()->setLevel(settings.logLevel);
     m_collectionInterval->updateInterval(settings.collectInterval);
-    m_xmrSubscriber->connect(settings.xmrNetworkAddress);
+    m_xmrManager->connect(settings.xmrNetworkAddress);
     Log::debug("Player settings updated");
 }

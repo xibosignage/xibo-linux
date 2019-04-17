@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.1)
+cmake_minimum_required(VERSION 3.14)
 
 project(XiboLinux)
 
@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.66 REQUIRED system program_options date_time thread)
+find_package(Boost 1.69 REQUIRED system date_time thread)
 
 # modules
 include(FindSonameLib)

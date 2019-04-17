@@ -7,6 +7,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
 #include <openssl/md5.h>
+#include <boost/beast/core/detail/base64.hpp>
 
 xml_node Utils::parseXmlFromPath(const FilePath& xlfPath)
 {
@@ -56,4 +57,14 @@ std::string Utils::md5hash(std::string_view data)
         stream << boost::format("%02x") % static_cast<short>(byte);
     }
     return stream.str();
+}
+
+std::string Utils::toBase64(const std::string& text)
+{
+    return boost::beast::detail::base64_encode(text);
+}
+
+std::string Utils::fromBase64(const std::string& text)
+{
+    return boost::beast::detail::base64_decode(text);
 }

@@ -16,7 +16,6 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host, const std::string&
 {
 }
 
-#include "common/logger/Logging.hpp"
 boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
 {
     RegisterDisplay::Request request;
@@ -27,9 +26,7 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     request.clientVersion = clientVersion;
     request.macAddress = MacAddressFetcher::get().value_or(UNDEFINED_MAC_ADDRESS);
     request.xmrChannel = XMR_CHANNEL;
-    request.xmrPubKey = RsaManager::instance().publicKeyStr();
-//    Log::debug(RsaManager::instance().publicKeyStr());
-//    Log::debug(RsaManager::instance().privateKeyStr());
+    request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName;
 
     return SoapRequestHelper::sendRequest<RegisterDisplay::Result>(m_uri, request);

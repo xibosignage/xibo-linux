@@ -22,6 +22,21 @@ namespace ProjectResources
         return directory == nullptr ? FileSystem::currentPath() : FilePath{directory};
     }
 
+    inline FilePath publicKeyFile()
+    {
+        return configDirectory() / "id_rsa.pub";
+    }
+
+    inline FilePath privateKeyFile()
+    {
+        return configDirectory() / "id_rsa";
+    }
+
+    inline FilePath defaultResourcesDir()
+    {
+        return configDirectory() / "resources";
+    }
+
     inline FilePath cmsSettings()
     {
         return configDirectory() / "cmsSettings.xml";
