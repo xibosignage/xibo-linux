@@ -189,5 +189,6 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
     Log::logger()->setLevel(settings.logLevel);
     m_collectionInterval->updateInterval(settings.collectInterval);
     m_xmrManager->connect(settings.xmrNetworkAddress);
+
     Log::debug("Player settings updated");
 }

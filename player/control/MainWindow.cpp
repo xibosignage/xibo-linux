@@ -83,6 +83,8 @@ int MainWindow::height() const
 
 void MainWindow::addWidget(const std::shared_ptr<Widget>& child)
 {
+    child->get().property_halign().set_value(Gtk::ALIGN_CENTER);
+    child->get().property_valign().set_value(Gtk::ALIGN_CENTER);
     m_handler.add(child->get());
 
     m_child = child;

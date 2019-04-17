@@ -21,8 +21,6 @@ MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, L
 
 //    m_window->disableWindowResize();
     m_window->disableWindowDecoration();
-//    m_window->move(x, y);
-//    m_window->fullscreen();
 }
 
 void MainWindowController::updateLayout(int layoutId)
