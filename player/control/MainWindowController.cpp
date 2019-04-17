@@ -20,7 +20,7 @@ MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, L
     m_window->keyPressed().connect(std::bind(&StatusScreenController::onKeyPressed, m_statusScreenController.get(), ph::_1));
 
 //    m_window->disableWindowResize();
-//    m_window->disableWindowDecoration();
+    m_window->disableWindowDecoration();
 //    m_window->move(x, y);
 //    m_window->fullscreen();
 }

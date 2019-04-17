@@ -107,7 +107,7 @@ void MainWindow::disableWindowResize()
 
 void MainWindow::disableWindowDecoration()
 {
-    //m_handler.set_decorated(false);
+    m_handler.set_decorated(false);
 }
 
 void MainWindow::fullscreen()
