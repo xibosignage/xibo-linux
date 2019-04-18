@@ -12,7 +12,7 @@ class Dispatcher : public Glib::Dispatcher
 public:
     using Glib::Dispatcher::Dispatcher;
 
-    void emit(Args&&... args)
+    void emit(Args... args)
     {
         m_args = std::make_tuple<Args...>(std::forward<Args>(args)...);
         Glib::Dispatcher::emit();

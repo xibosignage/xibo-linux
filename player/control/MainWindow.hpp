@@ -10,13 +10,15 @@ using SignalWindowRealized = sigc::signal<void()>;
 class MainWindow : public Widget
 {
 public:
-    MainWindow(int width, int height);
+    MainWindow();
 
     void showAll() override;
     void scale(double scaleX, double scaleY) override;
     void setSize(int width, int height) override;
     int width() const override;
     int height() const override;
+    int x() const;
+    int y() const;
 
     void addWidget(const std::shared_ptr<Widget>& child);
     void removeWidget();
@@ -43,8 +45,8 @@ private:
     SignalWindowRealized m_resizeSignal;
     SignalKeyPressed m_keyPressed;
     sigc::connection m_windowState;
-    int m_originalWidth;
-    int m_originalHeight;
+    int m_originalWidth, m_originalHeight;
+    int m_xPos = -1, m_yPos = -1;
     bool m_cursorVisible = true;
 
 };

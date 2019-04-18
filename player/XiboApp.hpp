@@ -15,6 +15,7 @@ class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
 class XmrManager;
+class MainWindowController;
 struct PlayerSettings;
 
 class XiboApp
@@ -50,6 +51,7 @@ private:
     std::unique_ptr<PlayerSettingsManager> m_playerSettingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
     std::unique_ptr<XmrManager> m_xmrManager;
+    std::unique_ptr<MainWindowController> m_windowController;
     CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;

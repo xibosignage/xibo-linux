@@ -8,7 +8,7 @@
     const std::string DEFAULT_STYLE = "GtkMainWindow { background-color: black; }";
 #endif
 
-MainWindow::MainWindow(int width, int height) :
+MainWindow::MainWindow() :
     Widget(m_handler)
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
@@ -19,8 +19,6 @@ MainWindow::MainWindow(int width, int height) :
         m_keyPressed.emit(event->string);
         return false;
     });
-
-    setSize(width, height);
 }
 
 void MainWindow::showAll()
@@ -81,10 +79,18 @@ int MainWindow::height() const
     return height;
 }
 
+int MainWindow::x() const
+{
+    return m_xPos;
+}
+
+int MainWindow::y() const
+{
+    return m_yPos;
+}
+
 void MainWindow::addWidget(const std::shared_ptr<Widget>& child)
 {
-    child->get().property_halign().set_value(Gtk::ALIGN_CENTER);
-    child->get().property_valign().set_value(Gtk::ALIGN_CENTER);
     m_handler.add(child->get());
 
     m_child = child;
@@ -99,6 +105,8 @@ void MainWindow::removeWidget()
 
 void MainWindow::move(int x, int y)
 {
+    m_xPos = x;
+    m_yPos = y;
     m_handler.move(x, y);
 }
 

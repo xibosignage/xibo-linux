@@ -116,17 +116,17 @@ void CollectionInterval::updateInterval(int collectInterval)
     }
 }
 
-SignalSettingsUpdated CollectionInterval::settingsUpdated()
+SignalSettingsUpdated& CollectionInterval::settingsUpdated()
 {
     return m_settingsUpdated;
 }
 
-SignalScheduleUpdated CollectionInterval::scheduleUpdated()
+SignalScheduleUpdated& CollectionInterval::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
 
-SignalCollectionFinished CollectionInterval::collectionFinished()
+SignalCollectionFinished& CollectionInterval::collectionFinished()
 {
     return m_collectionFinished;
 }

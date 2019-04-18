@@ -10,13 +10,12 @@
 #include "utils/ITimerProvider.hpp"
 #include "networking/ResponseResult.hpp"
 #include "common/JoinableThread.hpp"
-
-#include <sigc++/signal.h>
+#include "common/Dispatcher.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
-using SignalSettingsUpdated = sigc::signal<void(const PlayerSettings&)>;
-using SignalScheduleUpdated = sigc::signal<void(const LayoutSchedule&)>;
-using SignalCollectionFinished = sigc::signal<void(const PlayerError&)>;
+using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
+using SignalScheduleUpdated = Dispatcher<LayoutSchedule>;
+using SignalCollectionFinished = Dispatcher<PlayerError>;
 class XmdsRequestSender;
 
 struct CollectionSession
@@ -36,9 +35,9 @@ public:
     void collectOnce(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
 
-    SignalSettingsUpdated settingsUpdated();
-    SignalScheduleUpdated scheduleUpdated();
-    SignalCollectionFinished collectionFinished();
+    SignalSettingsUpdated& settingsUpdated();
+    SignalScheduleUpdated& scheduleUpdated();
+    SignalCollectionFinished& collectionFinished();
 
 private:
     void startTimer();

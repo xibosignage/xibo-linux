@@ -93,6 +93,7 @@ XiboApp::XiboApp(const std::string& name) :
     RsaManager::instance().load();
 
     m_mainLoop->setShutdownAction([this](){
+        m_windowController.reset();
         m_xmrManager->stop();
         HttpManager::instance().shutdown();
         if(m_collectionInterval)
@@ -127,8 +128,8 @@ ScreenShoter& XiboApp::screenShoter()
 
 int XiboApp::run()
 {
-    auto mainWindow = std::make_shared<MainWindow>(1366, 768);
-    MainWindowController controller{mainWindow, *m_scheduler};
+    auto mainWindow = std::make_shared<MainWindow>();
+    m_windowController = std::make_unique<MainWindowController>(mainWindow, *m_scheduler);
 
     m_screenShoter = std::make_unique<ScreenShoter>(*mainWindow);
     m_xmdsManager = std::make_unique<XmdsRequestSender>(m_cmsSettings.cmsAddress, m_cmsSettings.key, m_cmsSettings.displayId);
@@ -136,12 +137,12 @@ int XiboApp::run()
 
     updateSettings(m_playerSettingsManager->settings());
 
-    m_collectionInterval->collectOnce([this, &controller, mainWindow](const PlayerError& error){
+    m_collectionInterval->collectOnce([this, mainWindow](const PlayerError& error){
 
         onCollectionFinished(error);
         m_collectionInterval->startRegularCollection();
 
-        controller.updateLayout(m_scheduler->nextLayoutId());
+        m_windowController->updateLayout(m_scheduler->nextLayoutId());
         mainWindow->showAll();
 
         Log::info("Player started");
@@ -189,6 +190,7 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
     Log::logger()->setLevel(settings.logLevel);
     m_collectionInterval->updateInterval(settings.collectInterval);
     m_xmrManager->connect(settings.xmrNetworkAddress);
+    m_windowController->updateWindowDimensions(settings.dimensions);
 
     Log::debug("Player settings updated");
 }

@@ -8,6 +8,9 @@ MainLayoutView::MainLayoutView(int width, int height) :
     m_overlayLayout.signal_get_child_position().
             connect(sigc::mem_fun(*this, &MainLayoutView::onGetRegionPosition), false);
 
+    m_overlayLayout.property_halign().set_value(Gtk::ALIGN_CENTER);
+    m_overlayLayout.property_valign().set_value(Gtk::ALIGN_CENTER);
+
     setSize(width, height);
 }
 
