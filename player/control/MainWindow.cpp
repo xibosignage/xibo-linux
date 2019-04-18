@@ -112,7 +112,7 @@ void MainWindow::move(int x, int y)
 
 void MainWindow::disableWindowResize()
 {
-    //m_handler.set_resizable(false);
+    m_handler.set_resizable(false);
 }
 
 void MainWindow::disableWindowDecoration()
