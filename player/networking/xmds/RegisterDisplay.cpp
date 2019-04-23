@@ -54,10 +54,10 @@ void Soap::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
     settings.downloadEndWindow = display.get<std::string>(Settings::DownloadEndWindow);
     settings.statsEnabled = display.get<bool>(Settings::StatsEnabled);
     settings.xmrNetworkAddress = display.get<std::string>(Settings::XmrNetworkAddress);
-    settings.sizeX = display.get<double>(Settings::SizeX);
-    settings.sizeY = display.get<double>(Settings::SizeY);
-    settings.offsetX = display.get<double>(Settings::OffsetX);
-    settings.offsetY = display.get<double>(Settings::OffsetY);
+    settings.dimensions.width = static_cast<int>(display.get<double>(Settings::Width));
+    settings.dimensions.height = static_cast<int>(display.get<double>(Settings::Height));
+    settings.dimensions.x = static_cast<int>(display.get<double>(Settings::XPos));
+    settings.dimensions.y = static_cast<int>(display.get<double>(Settings::YPos));
     settings.logLevel = toLogLevelEnum(display.get<std::string>(Settings::LogLevel));
     settings.shellCommandsEnabled = display.get<bool>(Settings::EnableShellCommands);
     settings.modifiedLayoutsEnabled = display.get<bool>(Settings::ExpireModifiedLayouts);

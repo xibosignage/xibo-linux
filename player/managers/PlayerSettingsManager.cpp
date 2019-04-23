@@ -9,10 +9,10 @@ PlayerSettings PlayerSettingsManager::loadImpl()
 {
     PlayerSettings settings;
 
-    loadHelper(settings.sizeX,
-               settings.sizeY,
-               settings.offsetX,
-               settings.offsetY,
+    loadHelper(settings.dimensions.width,
+               settings.dimensions.height,
+               settings.dimensions.x,
+               settings.dimensions.y,
                settings.logLevel,
                settings.displayName,
                settings.preventSleep,
@@ -36,10 +36,10 @@ PlayerSettings PlayerSettingsManager::loadImpl()
 
 void PlayerSettingsManager::updateImpl(const PlayerSettings& settings)
 {
-    updateHelper(settings.sizeX,
-                 settings.sizeY,
-                 settings.offsetX,
-                 settings.offsetY,
+    updateHelper(settings.dimensions.width,
+                 settings.dimensions.height,
+                 settings.dimensions.x,
+                 settings.dimensions.y,
                  settings.logLevel,
                  settings.displayName,
                  settings.preventSleep,

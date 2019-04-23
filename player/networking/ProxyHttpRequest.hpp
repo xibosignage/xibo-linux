@@ -3,12 +3,12 @@
 #include "ProxyInfo.hpp"
 #include "HostInfo.hpp"
 #include "constants.hpp"
+#include "common/Utils.hpp"
 #include "common/uri/Uri.hpp"
 
 #include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>
-#include <boost/beast/core/detail/base64.hpp>
 
 namespace http = boost::beast::http;
 
@@ -40,7 +40,7 @@ public:
         request.set(http::field::host, m_uri.host());
         if(auto credentials = getCredentials())
         {
-            request.set(http::field::proxy_authorization, "Basic " + boost::beast::detail::base64_encode(credentials.value()));
+            request.set(http::field::proxy_authorization, "Basic " + Utils::toBase64(credentials.value()));
         }
         request.body() = std::move(m_body);
         request.prepare_payload();

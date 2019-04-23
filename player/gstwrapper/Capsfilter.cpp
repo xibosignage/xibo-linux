@@ -1,9 +1,9 @@
 #include "Capsfilter.hpp"
 #include "Caps.hpp"
 
-Gst::Capsfilter::Capsfilter()
+Gst::Capsfilter::Capsfilter() :
+    Gst::Element("capsfilter")
 {
-    setElement(gst_element_factory_make("capsfilter", nullptr));
 }
 
 Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()

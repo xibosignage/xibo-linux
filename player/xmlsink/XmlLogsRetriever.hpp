@@ -1,9 +1,6 @@
 #pragma once
 
-#include <memory>
-
-class Logger;
-class XmlLogsRepo;
+#include <string>
 
 class XmlLogsRetriever
 {

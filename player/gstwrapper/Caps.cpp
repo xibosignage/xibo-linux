@@ -6,8 +6,7 @@ Gst::Caps::Caps(GstCaps* handler) :
 }
 
 Gst::Caps::Caps(std::string_view stringCaps) :
-    m_stringCaps(stringCaps),
-    m_handler(gst_caps_from_string(m_stringCaps.data()))
+    m_handler(gst_caps_from_string(stringCaps.data()))
 {
 }
 

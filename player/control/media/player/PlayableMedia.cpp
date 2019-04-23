@@ -11,7 +11,7 @@ PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<
     m_player->load(options.uri);
 
     mediaFinished().connect([this](){
-        m_player->stop();
+        m_player->stopPlayback();
     });
 
     started().connect([this](){
@@ -19,7 +19,7 @@ PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<
     });
 
     stopped().connect([this](){
-        m_player->stop();
+        m_player->stopAndRemove();
     });
 
     m_player->playbackFinished().connect([this, options](){

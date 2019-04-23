@@ -28,6 +28,11 @@ int MainLoop::run(MainWindow& adaptor)
     return m_parentApp->run();
 }
 
+void MainLoop::quit()
+{
+    m_parentApp->quit();
+}
+
 void MainLoop::setShutdownAction(const ShutdownAction& action)
 {
     m_shutdownAction = action;

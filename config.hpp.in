@@ -6,7 +6,7 @@
 #include "common/FileSystem.hpp"
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
-const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
+const std::string DEFAULT_CACHE_FILE = "cachedFiles.xml";
 
 namespace ProjectResources
 {
@@ -20,6 +20,21 @@ namespace ProjectResources
     {
         const char* directory = getenv("SNAP_USER_DATA");
         return directory == nullptr ? FileSystem::currentPath() : FilePath{directory};
+    }
+
+    inline FilePath publicKeyFile()
+    {
+        return configDirectory() / "id_rsa.pub";
+    }
+
+    inline FilePath privateKeyFile()
+    {
+        return configDirectory() / "id_rsa";
+    }
+
+    inline FilePath defaultResourcesDir()
+    {
+        return configDirectory() / "resources";
     }
 
     inline FilePath cmsSettings()

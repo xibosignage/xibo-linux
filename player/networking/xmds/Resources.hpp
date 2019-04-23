@@ -51,10 +51,10 @@ namespace XmdsResources
             const std::string DownloadEndWindow = "downloadEndWindow";
             const std::string StatsEnabled = "statsEnabled";
             const std::string XmrNetworkAddress = "xmrNetworkAddress";
-            const std::string SizeX = "sizeX";
-            const std::string SizeY = "sizeY";
-            const std::string OffsetX = "offsetX";
-            const std::string OffsetY = "offsetY";
+            const std::string Width = "sizeX";
+            const std::string Height = "sizeY";
+            const std::string XPos = "offsetX";
+            const std::string YPos = "offsetY";
             const std::string LogLevel = "logLevel";
             const std::string EnableShellCommands = "enableShellCommands";
             const std::string ExpireModifiedLayouts = "expireModifiedLayouts";

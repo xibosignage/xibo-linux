@@ -10,7 +10,8 @@ public:
     {
         Success = 0,
         HTTP,
-        SOAP
+        SOAP,
+        CMS
     };
 
     PlayerError() = default;

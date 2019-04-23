@@ -1,8 +1,8 @@
 #include "AutoAudioSink.hpp"
 
-Gst::AutoAudioSink::AutoAudioSink()
+Gst::AutoAudioSink::AutoAudioSink() :
+    Gst::Element("autoaudiosink")
 {
-    setElement(gst_element_factory_make("autoaudiosink", nullptr));
 }
 
 Gst::RefPtr<Gst::AutoAudioSink> Gst::AutoAudioSink::create()

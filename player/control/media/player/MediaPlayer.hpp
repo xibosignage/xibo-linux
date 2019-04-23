@@ -19,7 +19,8 @@ public:
     void setOutputWindow(const std::shared_ptr<Widget>& window);
     void load(const Uri& uri);
     void play();
-    void stop();
+    void stopAndRemove();
+    void stopPlayback();
     void setVolume(int volume);
     SignalPlaybackFinished playbackFinished();
 

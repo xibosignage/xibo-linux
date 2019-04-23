@@ -24,6 +24,8 @@ std::string PlayerError::name() const
             return "HTTP";
         case PlayerError::Type::SOAP:
             return "SOAP";
+        case PlayerError::Type::CMS:
+            return "CMS";
         default:
             break;
     }

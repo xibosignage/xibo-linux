@@ -1,7 +1,7 @@
 #include "XmdsFileDownloader.hpp"
 #include "XmdsRequestSender.hpp"
 
-#include <boost/beast/core/detail/base64.hpp>
+#include "common/Utils.hpp"
 
 const std::size_t DEFAULT_CHUNK_SIZE = 524288;
 
@@ -37,7 +37,7 @@ XmdsResponseResult XmdsFileDownloader::combineAllChunks(DownloadXmdsFilesResult&
         auto [error, result] = future.get();
         if(!error)
         {
-            fileContent += boost::beast::detail::base64_decode(result.base64chunk);
+            fileContent += Utils::fromBase64(result.base64chunk);
         }
         else
         {

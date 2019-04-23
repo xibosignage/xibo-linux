@@ -1,7 +1,6 @@
 #pragma once
 
 #include <gst/video/video-info.h>
-#include <cairomm/surface.h>
 
 #include "control/media/player/video/VideoWindow.hpp"
 
@@ -25,10 +24,7 @@ struct XiboVideoSink
     GstPad* sinkpad;
     GstVideoInfo info;
 
-    VideoWindow* handler = nullptr;
-    GstVideoFrame frame;
-    bool frameMapped = false;
-    Cairo::RefPtr<Cairo::ImageSurface> surface;
+    std::weak_ptr<Widget> handler;
 };
 
 struct XiboVideoSinkClass
@@ -38,6 +34,6 @@ struct XiboVideoSinkClass
 
 gboolean pluginInit(GstPlugin* plugin);
 GType gst_xibovideosink_get_type(void);
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, VideoWindow* handler);
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<Widget>& handler);
 
 G_END_DECLS

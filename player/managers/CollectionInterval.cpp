@@ -74,8 +74,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
     auto [error, result] = registerDisplay;
     if(!error)
     {
-        displayMessage(result.status);
-        if(result.status.code == RegisterDisplay::Result::Status::Code::Ready) // FIXME handle Activated/Waiting
+        auto displayError = getDisplayStatus(result.status);
+        if(!displayError)
         {
             m_settingsUpdated.emit(result.playerSettings);
 
@@ -91,7 +91,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = m_xmdsSender.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
         }
-        sessionFinished(session);
+        sessionFinished(session, displayError);
     }
     else
     {
@@ -99,11 +99,19 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
     }
 }
 
-void CollectionInterval::displayMessage(const RegisterDisplay::Result::Status& status)
+PlayerError CollectionInterval::getDisplayStatus(const RegisterDisplay::Result::Status& status)
 {
-    if(status.code != RegisterDisplay::Result::Status::Code::Invalid)
+    using DisplayCode = RegisterDisplay::Result::Status::Code;
+
+    switch(status.code)
     {
-        Log::debug(status.message);
+        case DisplayCode::Ready:
+            return {};
+        case DisplayCode::Added:
+        case DisplayCode::Waiting:
+            return {PlayerError::Type::CMS, status.message};
+        default:
+            return {PlayerError::Type::CMS, "Unknown eror with RegisterDisplay"};
     }
 }
 
@@ -116,17 +124,17 @@ void CollectionInterval::updateInterval(int collectInterval)
     }
 }
 
-SignalSettingsUpdated CollectionInterval::settingsUpdated()
+SignalSettingsUpdated& CollectionInterval::settingsUpdated()
 {
     return m_settingsUpdated;
 }
 
-SignalScheduleUpdated CollectionInterval::scheduleUpdated()
+SignalScheduleUpdated& CollectionInterval::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
 
-SignalCollectionFinished CollectionInterval::collectionFinished()
+SignalCollectionFinished& CollectionInterval::collectionFinished()
 {
     return m_collectionFinished;
 }

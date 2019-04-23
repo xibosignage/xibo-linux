@@ -13,6 +13,7 @@ public:
     MainLoop(const std::string& name);
 
     int run(MainWindow& adaptor);
+    void quit();
 
     void setShutdownAction(const ShutdownAction& action);
     void setIdleAction(const IdleAction& action);

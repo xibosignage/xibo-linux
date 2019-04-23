@@ -1,6 +1,7 @@
 #include "MediaPlayer.hpp"
 
 #include "constants.hpp"
+#include "video/XiboVideoSink.hpp"
 
 #include "gstwrapper/Pipeline.hpp"
 #include "gstwrapper/VideoConvert.hpp"
@@ -16,7 +17,6 @@
 #include "gstwrapper/Caps.hpp"
 #include "gstwrapper/Capsfilter.hpp"
 #include "gstwrapper/Inspector.hpp"
-#include "gstsink/XiboVideoSink.hpp"
 
 #include "common/logger/Logging.hpp"
 #include "common/uri/Uri.hpp"
@@ -57,7 +57,7 @@ MediaPlayer::MediaPlayer()
 
 MediaPlayer::~MediaPlayer()
 {
-    stop();
+    stopAndRemove();
 }
 
 void MediaPlayer::setOutputWindow(const std::shared_ptr<Widget>& window)
@@ -69,7 +69,7 @@ void MediaPlayer::setOutputWindow(const std::shared_ptr<Widget>& window)
     });
 
     auto sink = GST_XIBOVIDEOSINK(m_videoSink->getHandler());
-    gst_xibovideosink_set_handler(sink, dynamic_cast<VideoWindow*>(m_outputWindow.get()));
+    gst_xibovideosink_set_handler(sink, m_outputWindow);
 }
 
 void MediaPlayer::setVideoSize(int width, int height)
@@ -184,12 +184,17 @@ void MediaPlayer::play()
     m_pipeline->setState(Gst::State::PLAYING);
 }
 
-void MediaPlayer::stop()
+void MediaPlayer::stopAndRemove()
 {
     if(m_outputWindow)
     {
         m_outputWindow->hide();
     }
+    m_pipeline->setState(Gst::State::NULL_STATE);
+}
+
+void MediaPlayer::stopPlayback()
+{
     m_pipeline->setState(Gst::State::NULL_STATE);
 }
 

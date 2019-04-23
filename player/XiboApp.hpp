@@ -14,7 +14,9 @@ class CollectionInterval;
 class PlayerSettingsManager;
 class PlayerError;
 class ScreenShoter;
-class XmrSubscriber;
+class XmrManager;
+class MainWindowController;
+class MainWindow;
 struct PlayerSettings;
 
 class XiboApp
@@ -39,6 +41,7 @@ private:
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
     void applyPlayerSettings(const PlayerSettings& settings);
+    void tryStartPlayer(const std::shared_ptr<MainWindow>& window);
     std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
 private:
@@ -49,7 +52,8 @@ private:
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
     std::unique_ptr<PlayerSettingsManager> m_playerSettingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
-    std::unique_ptr<XmrSubscriber> m_xmrSubscriber;
+    std::unique_ptr<XmrManager> m_xmrManager;
+    std::unique_ptr<MainWindowController> m_windowController;
     CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;

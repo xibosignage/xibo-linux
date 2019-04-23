@@ -10,7 +10,7 @@ Gst::Pad::~Pad()
 {
     if(m_takeOwnership)
     {
-        g_object_unref(m_handler);
+        gst_object_unref(m_handler);
     }
 }
 

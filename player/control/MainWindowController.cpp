@@ -20,9 +20,7 @@ MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, L
     m_window->keyPressed().connect(std::bind(&StatusScreenController::onKeyPressed, m_statusScreenController.get(), ph::_1));
 
 //    m_window->disableWindowResize();
-//    m_window->disableWindowDecoration();
-//    m_window->move(x, y);
-//    m_window->fullscreen();
+    m_window->disableWindowDecoration();
 }
 
 void MainWindowController::updateLayout(int layoutId)
@@ -51,3 +49,36 @@ void MainWindowController::scaleLayout(const std::shared_ptr<MainLayoutView>& la
     layout->scale(scaleFactor, scaleFactor);
 }
 
+void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensions& dimensions)
+{
+    if(shouldBeFullscreen(dimensions))
+    {
+        m_window->fullscreen();
+    }
+    else
+    {
+        setWindowSize(dimensions.width, dimensions.height);
+        setWindowPos(dimensions.x, dimensions.y);
+    }
+}
+
+void MainWindowController::setWindowSize(int width, int height)
+{
+    if(width != m_window->width() || height != m_window->height())
+    {
+        m_window->setSize(width, height);
+    }
+}
+
+void MainWindowController::setWindowPos(int x, int y)
+{
+    if(x != m_window->x() || y != m_window->y())
+    {
+        m_window->move(x, y);
+    }
+}
+
+bool MainWindowController::shouldBeFullscreen(const PlayerSettings::Dimensions& dimensions) const
+{
+    return dimensions.width == 0 && dimensions.height == 0;
+}

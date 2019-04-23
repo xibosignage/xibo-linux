@@ -10,10 +10,15 @@ struct PlayerSettings
     Field<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
     Field<bool> statsEnabled{"statsEnabled", false};
     Field<std::string> xmrNetworkAddress{"xmrNetworkAddress"};
-    Field<double> sizeX{"sizeX", 0.0};
-    Field<double> sizeY{"sizeY", 0.0};
-    Field<double> offsetX{"offsetX", 0.0};
-    Field<double> offsetY{"offsetY", 0.0};
+
+    struct Dimensions
+    {
+        Field<int> width{"sizeX", 0};
+        Field<int> height{"sizeY", 0};
+        Field<int> x{"offsetX", 0};
+        Field<int> y{"offsetY", 0};
+    } dimensions;
+
     Field<LoggingLevel> logLevel{"logLevel", LoggingLevel::Debug};
     Field<bool> shellCommandsEnabled{"shellCommandsEnabled", false};
     Field<bool> modifiedLayoutsEnabled{"modifiedLayoutsEnabled", false};
