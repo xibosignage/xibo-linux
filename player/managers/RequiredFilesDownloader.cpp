@@ -77,7 +77,7 @@ bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResu
 
 bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
 {
-    return Managers::fileManager().isFileInCache(file.md5);
+    return Managers::fileManager().isFileInCache(file.name, file.md5);
 }
 
 bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const

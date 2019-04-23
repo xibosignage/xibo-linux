@@ -4,25 +4,29 @@
 #include "common/FileSystem.hpp"
 #include "common/Utils.hpp"
 
-#include <fstream>
+#include <boost/property_tree/xml_parser.hpp>
+
+using ptree = boost::property_tree::ptree;
 
 void FileCacheManager::loadCache(const FilePath& cacheFile)
 {
     m_cacheFilePath = cacheFile;
+    loadFileHashes(cacheFile);
+}
 
-    if(!FileSystem::exists(cacheFile)) return;
-
-    std::ifstream in(cacheFile.string());
-    std::string hash;
-    while(in >> hash)
+void FileCacheManager::loadFileHashes(const FilePath& path)
+{
+    if(FileSystem::exists(path))
     {
-        m_fileCache.emplace(hash);
+        boost::property_tree::read_xml(path, m_fileCache);
     }
 }
 
-bool FileCacheManager::isFileInCache(const std::string& fileHash) const
+bool FileCacheManager::isFileInCache(const std::string& fileName, const std::string& fileHash) const
 {
-    return m_fileCache.count(fileHash) != 0;
+    auto hash = m_fileCache.get_optional<std::string>(ptree::path_type(fileName, '|'));
+
+    return hash ? hash == fileHash : false;
 }
 
 void FileCacheManager::saveFile(const std::string& fileName, const std::string& fileContent)
@@ -32,22 +36,18 @@ void FileCacheManager::saveFile(const std::string& fileName, const std::string& 
     std::ofstream out(filePath.string());
     out << fileContent;
 
-    addFileToCache(Utils::md5hash(fileContent));
+    addFileToCache(fileName, Utils::md5hash(fileContent));
 }
 
-void FileCacheManager::addFileToCache(const std::string& fileHash)
+void FileCacheManager::addFileToCache(const std::string& fileName, const std::string& fileHash)
 {
-    m_fileCache.emplace(fileHash);
+    m_fileCache.put(ptree::path_type(fileName, '|'), fileHash);
 
-    updateCache(m_cacheFilePath);
+    saveFileHashes(m_cacheFilePath);
 }
 
-void FileCacheManager::updateCache(const FilePath& path)
+void FileCacheManager::saveFileHashes(const FilePath& path)
 {
-    std::ofstream out(path.string());
-    for(auto hash : m_fileCache)
-    {
-        out << hash << std::endl;
-    }
+    boost::property_tree::write_xml(path, m_fileCache);
 }
 

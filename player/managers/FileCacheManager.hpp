@@ -3,24 +3,24 @@
 #include "common/FilePath.hpp"
 
 #include <boost/noncopyable.hpp>
-#include <string>
-#include <unordered_set>
+#include <boost/property_tree/ptree.hpp>
 
 class FileCacheManager : private boost::noncopyable
 {
 public:
     void loadCache(const FilePath& cacheFile);
-    bool isFileInCache(const std::string& fileHash) const;
+    bool isFileInCache(const std::string& fileName, const std::string& fileHash) const;
     void saveFile(const std::string& fileName, const std::string& fileContent);
 
 private:
-    void addFileToCache(const std::string& fileHash);
+    void loadFileHashes(const FilePath& cacheFile);
+    void addFileToCache(const std::string& fileName, const std::string& fileHash);
     std::string md5hash(std::string_view data);
 
-    void updateCache(const FilePath& path);
+    void saveFileHashes(const FilePath& path);
 
 private:
-    std::unordered_set<std::string> m_fileCache;
+    boost::property_tree::ptree m_fileCache;
     FilePath m_cacheFilePath;
 
 };

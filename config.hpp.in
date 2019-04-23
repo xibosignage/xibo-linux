@@ -6,7 +6,7 @@
 #include "common/FileSystem.hpp"
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
-const std::string DEFAULT_CACHE_FILE = "cachedFiles.txt";
+const std::string DEFAULT_CACHE_FILE = "cachedFiles.xml";
 
 namespace ProjectResources
 {
