@@ -41,10 +41,17 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
     if(multipart[CHANNEL_PART] == XMR_CHANNEL)
     {
-        auto decryptedMessage = decryptMessage(multipart[KEY_PART], multipart[MESSAGE_PART]);
-        auto xmrMessage = parseMessage(decryptedMessage);
+        try
+        {
+            auto decryptedMessage = decryptMessage(multipart[KEY_PART], multipart[MESSAGE_PART]);
+            auto xmrMessage = parseMessage(decryptedMessage);
 
-        processXmrMessage(xmrMessage);
+            processXmrMessage(xmrMessage);
+        }
+        catch (std::exception& e)
+        {
+            Log::error(e.what());
+        }
     }
     else
     {
