@@ -27,12 +27,12 @@ namespace Gst
         Caps(Caps&& other);
         Caps& operator=(Caps&& other);
         ~Caps();
+
         static Gst::RefPtr<Gst::Caps> create(std::string_view stringCaps);
         Gst::RefPtr<Gst::Structure> getStructure(guint index) const;
         GstCaps* getHandler();
 
-//    private:
-        std::string m_stringCaps;
+    private:
         GstCaps* m_handler = nullptr;
     };
 }

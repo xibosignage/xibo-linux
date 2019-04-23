@@ -1,8 +1,8 @@
 #include "FileSrc.hpp"
 
-Gst::FileSrc::FileSrc()
+Gst::FileSrc::FileSrc() :
+    Gst::Element("filesrc")
 {
-    setElement(gst_element_factory_make("filesrc", nullptr));
 }
 
 Gst::RefPtr<Gst::FileSrc> Gst::FileSrc::create()

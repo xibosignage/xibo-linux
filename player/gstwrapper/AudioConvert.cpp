@@ -1,8 +1,8 @@
 #include "AudioConvert.hpp"
 
-Gst::AudioConvert::AudioConvert()
+Gst::AudioConvert::AudioConvert() :
+    Gst::Element("audioconvert")
 {
-    setElement(gst_element_factory_make("audioconvert", nullptr));
 }
 
 Gst::RefPtr<Gst::AudioConvert> Gst::AudioConvert::create()

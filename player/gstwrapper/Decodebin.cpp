@@ -1,11 +1,9 @@
 #include "Decodebin.hpp"
 #include "Pad.hpp"
 
-
-Gst::Decodebin::Decodebin()
+Gst::Decodebin::Decodebin() :
+    Gst::Element("decodebin")
 {
-    setElement(gst_element_factory_make("decodebin", nullptr));
-
     g_signal_connect(element(), "pad-added", reinterpret_cast<GCallback>(onPadAdded), this);
     g_signal_connect(element(), "no-more-pads", reinterpret_cast<GCallback>(noMorePads), this);
 }

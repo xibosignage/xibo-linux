@@ -12,8 +12,7 @@ Gst::RefPtr<Gst::Inspector> Gst::Inspector::create(unsigned timeoutSeconds)
 
 Gst::Inspector::Inspector(unsigned int timeoutSeconds)
 {
-    GError* err = nullptr;
-    m_discoverer = gst_discoverer_new (timeoutSeconds * GST_SECOND, &err);
+    m_discoverer = gst_discoverer_new(timeoutSeconds * GST_SECOND, nullptr);
 }
 
 Gst::Inspector::~Inspector()
@@ -62,7 +61,16 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
         Log::debug("This URI cannot be played");
     }
 
-    retrieveStreamsInfo(discoveredResult, gst_discoverer_info_get_stream_list(info));
+    auto streamsList = gst_discoverer_info_get_stream_list(info);
+    retrieveStreamsInfo(discoveredResult, streamsList);
+
+    if(err)
+    {
+        g_error_free(err);
+    }
+    gst_discoverer_stream_info_list_free(streamsList);
+    g_object_unref(info);
+
     return discoveredResult;
 }
 
@@ -74,21 +82,14 @@ void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* st
 
         if(GST_IS_DISCOVERER_VIDEO_INFO(streamInfo))
         {
-            result.m_videoInfo = GST_DISCOVERER_VIDEO_INFO(streamInfo);
+            result.m_videoStream = true;
         }
 
         if(GST_IS_DISCOVERER_AUDIO_INFO(streamInfo))
         {
-            result.m_audioInfo = GST_DISCOVERER_AUDIO_INFO(streamInfo);
+            result.m_audioStream = true;
         }
     }
-
-    gst_discoverer_stream_info_list_free(streamsList);
-}
-
-void Gst::Inspector::onFinished(GstDiscoverer*, gpointer)
-{
-    Log::debug("Finished discovering");
 }
 
 Gst::InspectorResult Gst::Inspector::discover(std::string_view uri)
@@ -99,26 +100,12 @@ Gst::InspectorResult Gst::Inspector::discover(std::string_view uri)
     return processDiscoveredInfo(info, err);
 }
 
-unsigned int Gst::InspectorResult::videoWidth() const
-{
-    assert(m_videoInfo);
-
-    return gst_discoverer_video_info_get_width(m_videoInfo);
-}
-
-unsigned int Gst::InspectorResult::videoHeigth() const
-{
-    assert(m_videoInfo);
-
-    return gst_discoverer_video_info_get_height(m_videoInfo);
-}
-
 bool Gst::InspectorResult::hasVideoStream() const
 {
-    return m_videoInfo != nullptr;
+    return m_videoStream;
 }
 
 bool Gst::InspectorResult::hasAudioStream() const
 {
-    return m_audioInfo != nullptr;
+    return m_audioStream;
 }

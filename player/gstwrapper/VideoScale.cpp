@@ -1,8 +1,8 @@
 #include "VideoScale.hpp"
 
-Gst::VideoScale::VideoScale()
+Gst::VideoScale::VideoScale() :
+    Gst::Element("videoscale")
 {
-    setElement(gst_element_factory_make("videoscale", nullptr));
 }
 
 Gst::RefPtr<Gst::VideoScale> Gst::VideoScale::create()

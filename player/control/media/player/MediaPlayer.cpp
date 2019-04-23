@@ -57,7 +57,7 @@ MediaPlayer::MediaPlayer()
 
 MediaPlayer::~MediaPlayer()
 {
-    stop();
+    stopAndRemove();
 }
 
 void MediaPlayer::setOutputWindow(const std::shared_ptr<Widget>& window)
@@ -184,12 +184,17 @@ void MediaPlayer::play()
     m_pipeline->setState(Gst::State::PLAYING);
 }
 
-void MediaPlayer::stop()
+void MediaPlayer::stopAndRemove()
 {
     if(m_outputWindow)
     {
         m_outputWindow->hide();
     }
+    m_pipeline->setState(Gst::State::NULL_STATE);
+}
+
+void MediaPlayer::stopPlayback()
+{
     m_pipeline->setState(Gst::State::NULL_STATE);
 }
 

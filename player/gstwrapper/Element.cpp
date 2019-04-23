@@ -6,14 +6,10 @@ Gst::Element::Element(std::string_view name)
     m_element = gst_element_factory_make(name.data(), nullptr);
 }
 
-void Gst::Element::setElement(GstElement* element)
-{
-    m_element = element;
-}
 
-GstElement* Gst::Element::element() const
+Gst::Element::Element(GstElement* element) :
+    m_element(element)
 {
-    return m_element;
 }
 
 Gst::Element::~Element()
@@ -31,6 +27,11 @@ Gst::Element::~Element()
             g_object_unref(parent);
         }
     }
+}
+
+GstElement* Gst::Element::element() const
+{
+    return m_element;
 }
 
 Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& other)

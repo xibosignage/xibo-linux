@@ -1,8 +1,8 @@
 #include "Pipeline.hpp"
 
-Gst::Pipeline::Pipeline(std::string_view name)
+Gst::Pipeline::Pipeline(std::string_view name) :
+    Gst::Element(gst_pipeline_new(name.data()))
 {
-    setElement(gst_pipeline_new(name.data()));
 }
 
 gboolean Gst::Pipeline::onBusWatchMem(GstBus*, GstMessage* message, gpointer)

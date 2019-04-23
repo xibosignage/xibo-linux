@@ -51,24 +51,27 @@ namespace Gst
     class Element
     {
     public:
+        static Gst::RefPtr<Gst::Element> create(std::string_view name);
         virtual ~Element();
+
         Gst::RefPtr<Gst::Element> link(const Gst::RefPtr<Gst::Element>& other);
         Gst::RefPtr<Gst::Element> linkFltered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter);
+
         void setState(Gst::State state);
         Gst::State getState() const;
         Gst::RefPtr<Gst::Pad> getStaticPad(std::string_view name);
-        static Gst::RefPtr<Gst::Element> create(std::string_view name);
+
         bool seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags,
                   Gst::SeekType startType, gint64 start, Gst::SeekType stopType, gint64 stop);
+
         GstElement* getHandler() const;
         void resetHandler();
 
     protected:
-        Element() = default;
+        Element(GstElement* element);
         Element(std::string_view name);
 
     protected:
-        void setElement(GstElement* element);
         GstElement* element() const;
 
     private:

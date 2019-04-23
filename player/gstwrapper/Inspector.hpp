@@ -10,17 +10,14 @@ namespace Gst
     class InspectorResult
     {
     public:
-        unsigned int videoWidth() const;
-        unsigned int videoHeigth() const;
-
         bool hasVideoStream() const;
         bool hasAudioStream() const;
 
         friend class Inspector;
 
     private:
-        GstDiscovererAudioInfo* m_audioInfo = nullptr;
-        GstDiscovererVideoInfo* m_videoInfo = nullptr;
+        bool m_audioStream = false;
+        bool m_videoStream = false;
 
     };
 
@@ -36,7 +33,6 @@ namespace Gst
         Inspector(unsigned int timeoutSeconds);
 
         Gst::InspectorResult processDiscoveredInfo(GstDiscovererInfo* info, GError* err);
-        void onFinished(GstDiscoverer*, gpointer);
         void retrieveStreamsInfo(Gst::InspectorResult& result, GList* streams_list);
 
     private:

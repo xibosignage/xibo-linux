@@ -1,8 +1,8 @@
 #include "Queue.hpp"
 
-Gst::Queue::Queue()
+Gst::Queue::Queue() :
+    Gst::Element("queue")
 {
-    setElement(gst_element_factory_make("queue", nullptr));
 }
 
 Gst::RefPtr<Gst::Queue> Gst::Queue::create()
