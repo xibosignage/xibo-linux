@@ -46,7 +46,7 @@ private:
     void onRegularCollectionFinished(const PlayerError& error);
 
     void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);
-    void displayMessage(const RegisterDisplay::Result::Status& status);
+    PlayerError getDisplayStatus(const RegisterDisplay::Result::Status& status);
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);

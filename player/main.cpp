@@ -1,6 +1,6 @@
 #include "XiboApp.hpp"
 
-#include <iostream>
+#include "common/logger/Logging.hpp"
 
 int main(int /*argc*/, char** /*argv*/)
 {
@@ -12,7 +12,6 @@ int main(int /*argc*/, char** /*argv*/)
     }
     catch (std::exception& e)
     {
-        std::cout << e.what() << std::endl;
+        Log::error(e.what());
     }
-
 }

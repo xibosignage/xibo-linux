@@ -138,17 +138,37 @@ int XiboApp::run()
     updateSettings(m_playerSettingsManager->settings());
 
     m_collectionInterval->collectOnce([this, mainWindow](const PlayerError& error){
-
-        onCollectionFinished(error);
-        m_collectionInterval->startRegularCollection();
-
-        m_windowController->updateLayout(m_scheduler->nextLayoutId());
-        mainWindow->showAll();
-
-        Log::info("Player started");
+        if(error)
+        {
+            onCollectionFinished(error);
+            m_mainLoop->quit();
+        }
+        else
+        {
+            tryStartPlayer(mainWindow);
+        }
     });
 
     return m_mainLoop->run(*mainWindow);
+}
+
+void XiboApp::tryStartPlayer(const std::shared_ptr<MainWindow>& window)
+{
+    int layoutId = m_scheduler->nextLayoutId();
+    if(layoutId != 0)
+    {
+        m_windowController->updateLayout(layoutId);
+
+        m_collectionInterval->startRegularCollection();
+        window->showAll();
+
+        Log::info("Player started");
+    }
+    else
+    {
+        Log::error("Scheduled and default layout have not been set");
+        m_mainLoop->quit();
+    }
 }
 
 
