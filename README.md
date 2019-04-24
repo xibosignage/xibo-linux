@@ -1,27 +1,20 @@
 # XiboLinux
 
-## Building from sources
-
-### Building manually
+### Building manually from sources
 NOTE: these libraries can require additional installations if you haven't such
-- `cmake>=3.12` cross-platform software for managing the build process
+- `cmake>=3.14` cross-platform software for managing the build process
 - `gtk>=3.18` and `gtkmm>=3.18` GUI library and C++ bindings
+- `glib>=2.56` and `glibmm>=2.56` low-level system library written in C and C++ bindings
 - `gstreamer>=1.8`, `gstreamer-base-plugins>=1.8` multimedia framerwork with base plugins
+- `gstreamer1.0-libav` needed for running video content
+- `cryptopp>=8.1` for crypto utils (RSA, RC4 etc.)
+- `zeromq>=4.3` distributed messaging 
 - `webkitgtk>=2.4.10` web content rendering
-- `Boost.Filesystem>=1.66` and `Boost.Program_options>=1.66`
-- Also `gstreamer1.0-libav` needed for running video content (I hope to get rid of this addition requirement)
+- `Boost.System>=1.69`, `Boost.Date_Time>=1.69` and `Boost.Thread>=1.69`
 
-### Building with Docker for Ubuntu 16.04
+### Building with Docker (only for Ubuntu 16.04)
 - Install Docker
 - Clone this repository
-- Run `docker build -t xibo-linux .` in the root of the repository
+- Run `sudo docker build -t xibo-linux .` in the root of the repository
 - `docker run -v /path/to/local/clone/build:/build xibo-linux`
 - The Player binaries will be build and output in to your `build` directory
-
-## Running Player
-- Just run `./player` to get info about available command options
-- `./player --host=your_cms_host --server-key=key_in_cms --hardware-key=type_random_symbols`
-- `./player --version` print current version (check VERSIONING.md and CHANGELOG.md to know more about your player version)
-
-## Binary distribution
-To run on another machine the package that you've built you need to copy `player` executable together with `libs` folder from `source-dir/_build/player`
