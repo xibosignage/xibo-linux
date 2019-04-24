@@ -17,4 +17,4 @@ NOTE: these libraries can require additional installations if you haven't such
 - Clone this repository
 - Run `sudo docker build -t xibo-linux .` in the root of the repository
 - `docker run -v /path/to/local/clone/build:/build xibo-linux`
-- The Player binaries will be build and output in to your `build` directory
+- The Player binaries will be built and output in to your `build` directory

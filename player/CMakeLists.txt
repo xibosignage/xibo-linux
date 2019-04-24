@@ -15,7 +15,6 @@ file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
 file(GLOB_RECURSE PLAYER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp
                                  ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.*pp
                                  ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
-                                 ${CMAKE_CURRENT_SOURCE_DIR}/gstsink/*.*pp
                                  ${CMAKE_CURRENT_SOURCE_DIR}/xmlsink/*.*pp)
 
 add_subdirectory(options)

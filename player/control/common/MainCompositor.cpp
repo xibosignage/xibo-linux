@@ -58,7 +58,7 @@ std::shared_ptr<Widget> MainCompositor::createBackground(const MainLayoutOptions
     auto background = std::make_shared<Image>(options.width, options.height);
 
     if(options.backgroundUri.isValid())
-        background->loadFromFile(options.backgroundUri, true);
+        background->loadFromFile(options.backgroundUri, false);
     else
         background->setColor(options.backgroundColor);
 
