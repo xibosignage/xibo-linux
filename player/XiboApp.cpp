@@ -95,8 +95,7 @@ XiboApp::XiboApp(const std::string& name) :
 
     CmsSettingsManager cmsSettingsManager{ProjectResources::cmsSettings()};
     m_cmsSettings = cmsSettingsManager.load();
-    if(!m_cmsSettings.resourcesPath.value().empty())
-        Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
+    Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_playerSettingsManager->load();
     m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);

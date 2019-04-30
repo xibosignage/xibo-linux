@@ -108,7 +108,8 @@ void MainWindowController::updateSettings()
 
     settings.cmsAddress = m_cmsAddress->get_text();
     settings.key = m_key->get_text();
-    settings.resourcesPath = m_resourcesPath->get_text();
+    std::string path = m_resourcesPath->get_text();
+    settings.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
 
     settings.username = m_username->get_text();
     settings.password = m_password->get_text();
