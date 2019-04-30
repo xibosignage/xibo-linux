@@ -15,16 +15,16 @@ file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
 file(GLOB_RECURSE PLAYER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp
                                  ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.*pp
                                  ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
-                                 ${CMAKE_CURRENT_SOURCE_DIR}/xmlsink/*.*pp)
+                                 ${CMAKE_CURRENT_SOURCE_DIR}/xmlsink/*.*pp
+                                 ${CMAKE_CURRENT_SOURCE_DIR}/gstwrapper/*.*pp)
 
 add_subdirectory(options)
 add_subdirectory(common)
-add_subdirectory(gstwrapper)
 add_subdirectory(networking)
 add_subdirectory(watchdog)
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${PLAYER_SOURCES})
-target_link_libraries(${PROJECT_NAME} X11 gstwrapper common ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} X11 common ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
 
 copy_libs("${Gtkmm_LINK_LIBRARIES}")
 copy_libs("${GStreamer_LINK_LIBRARIES}")

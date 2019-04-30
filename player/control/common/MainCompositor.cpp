@@ -27,7 +27,7 @@
 #include "control/media/player/video/VideoParser.hpp"
 #include "control/media/player/video/VideoFactory.hpp"
 
-std::pair<std::unique_ptr<MainLayout>, std::shared_ptr<MainLayoutView>> MainCompositor::parseLayout(int layoutId)
+std::unique_ptr<MainLayout> MainCompositor::parseLayout(int layoutId)
 {
     auto tree = Utils::parseXmlFromPath(getXlfFilePath(layoutId));
     auto layoutNode = tree.get_child(ResourcesXlf::LayoutNode);
@@ -41,16 +41,23 @@ FilePath MainCompositor::getXlfFilePath(int layoutId)
     return Resources::resDirectory() / xlfFile;
 }
 
-std::pair<std::unique_ptr<MainLayout>, std::shared_ptr<MainLayoutView>> MainCompositor::parseLayout(const xml_node& layoutNode)
+std::unique_ptr<MainLayout> MainCompositor::parseLayout(const xml_node& layoutNode)
 {
     auto options = parse<MainLayoutParser>(layoutNode);
-    auto layout = std::make_unique<MainLayout>();
+    auto layout = std::make_unique<MainLayout>(createLayoutView(options));
+
+    addRegions(*layout, layoutNode);
+
+    return layout;
+}
+
+std::shared_ptr<MainLayoutView> MainCompositor::createLayoutView(const MainLayoutOptions& options)
+{
     auto layoutView = std::make_shared<MainLayoutView>(options.width, options.height);
 
     layoutView->addBackground(createBackground(options));
-    addRegions(*layout, *layoutView, layoutNode);
 
-    return std::pair{std::move(layout), layoutView};
+    return layoutView;
 }
 
 std::shared_ptr<Widget> MainCompositor::createBackground(const MainLayoutOptions& options)
@@ -65,90 +72,67 @@ std::shared_ptr<Widget> MainCompositor::createBackground(const MainLayoutOptions
     return background;
 }
 
-void MainCompositor::addRegions(MainLayout& layout, MainLayoutView& view, const xml_node& node)
+void MainCompositor::addRegions(MainLayout& layout, const xml_node& node)
 {
     for(auto [nodeName, regionNode] : node)
     {
         if(nodeName == ResourcesXlf::RegionNode)
         {
             auto options = parse<RegionParser>(regionNode);
-            auto region = std::make_unique<Region>(options);
             auto regionView = std::make_shared<RegionView>(options.width, options.height);
+            auto region = std::make_unique<Region>(options, regionView);
 
-            regionView->shown().connect(std::bind(&Region::start, region.get()));
+            addAllMedia(*region, regionNode);
 
-            addAllMedia(*region, *regionView, regionNode);
-
-            view.addRegion(regionView, options.left, options.top, options.zindex);
-            layout.addRegion(std::move(region));
+            layout.addRegion(std::move(region), options.left, options.top, options.zindex);
         }
     }
 }
 
-void MainCompositor::addAllMedia(Region& region, RegionView& view, const xml_node& node)
+void MainCompositor::addAllMedia(Region& region,const xml_node& node)
 {
     for(auto [nodeName, mediaNode] : node)
     {
         if(nodeName == ResourcesXlf::MediaNode)
         {
-            addMedia(region, view, mediaNode);
+            addMedia(region, mediaNode);
         }
     }
 }
 
-void MainCompositor::addMedia(Region& region, RegionView& view, const xml_node& node)
+void MainCompositor::addMedia(Region& region, const xml_node& node)
 {
     auto type = node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Type));
-    std::unique_ptr<Media> mediaModel;
+    auto view = region.view();
 
-    if(type != ResourcesXlf::AudioType)
-    {
-        auto factory = createVisibleMediaFactory(type, node);
-        auto mediaViewInfo = factory->createView(view.width(), view.height());
-        mediaModel = factory->createModel(mediaViewInfo.view);
+    auto adder = createMediaFactory(type, view->width(), view->height(), node);
+    auto media = adder->create();
 
-        GetMediaPosition positionCalc{view.width(), view.height()};
-        int left = positionCalc.getMediaLeft(mediaViewInfo.view->width(), mediaViewInfo.align);
-        int top = positionCalc.getMediaTop(mediaViewInfo.view->height(), mediaViewInfo.valign);
+    attachAdditionalMedia(*media, node);
 
-        view.addMedia(mediaViewInfo.view, left, top);
-    }
-    else
-    {
-        auto factory = createMediaFactory(type, node);
-        mediaModel = factory->createModel();
-    }
-
-    attachAdditionalMedia(*mediaModel, node);
-    region.addMedia(std::move(mediaModel));
+    region.addMedia(std::move(media));
 }
 
-std::unique_ptr<VisibleMediaFactory> MainCompositor::createVisibleMediaFactory(const std::string& type, const xml_node& node)
+std::unique_ptr<MediaFactory> MainCompositor::createMediaFactory(const std::string& type, int width, int height, const xml_node& node)
 {
     if(type == ResourcesXlf::ImageType)
-        return std::make_unique<ImageFactory>(parse<ImageParser>(node));
+        return std::make_unique<ImageFactory>(width, height, parse<ImageParser>(node));
     else if(type == ResourcesXlf::VideoType)
-        return std::make_unique<VideoFactory>(parse<VideoParser>(node));
-    else
-        return std::make_unique<WebViewFactory>(parse<WebViewParser>(node));
-}
-
-std::unique_ptr<MediaFactory> MainCompositor::createMediaFactory(const std::string& type, const xml_node& node)
-{
-    if(type == ResourcesXlf::AudioType)
+        return std::make_unique<VideoFactory>(width, height, parse<VideoParser>(node));
+    else if(type == ResourcesXlf::AudioType)
         return std::make_unique<AudioFactory>(parse<AudioParser>(node));
     else
-        return nullptr;
+        return std::make_unique<WebViewFactory>(width, height, parse<WebViewParser>(node));
 }
 
 void MainCompositor::attachAdditionalMedia(Media& media, const xml_node& node)
 {
     for(auto [nodeName, attachedNode] : node)
     {
-        auto factory = createMediaFactory(nodeName, attachedNode);
-        if(factory)
+        if(nodeName == ResourcesXlf::AudioType)
         {
-            media.attachMedia(factory->createModel());
+            auto factory = createMediaFactory(nodeName, 0, 0, attachedNode);
+            media.attachMedia(factory->create());
         }
     }
 }

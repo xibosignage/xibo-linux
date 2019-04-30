@@ -26,18 +26,19 @@ MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, L
 void MainWindowController::updateLayout(int layoutId)
 {
     MainCompositor parser;
-    auto [layout, layoutView] = parser.parseLayout(layoutId);
+    auto layout = parser.parseLayout(layoutId);
+    auto view = layout->view();
 
     m_layout = std::move(layout);
     m_layout->expired().connect([this](){
         updateLayout(m_scheduler.nextLayoutId());
     });
 
-    scaleLayout(layoutView);
+    scaleLayout(view);
 
     m_window->removeWidget();
-    m_window->addWidget(layoutView);
-    layoutView->showAll();
+    m_window->addWidget(view);
+    view->showAll();
 }
 
 void MainWindowController::scaleLayout(const std::shared_ptr<MainLayoutView>& layout)

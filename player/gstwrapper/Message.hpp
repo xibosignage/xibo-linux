@@ -67,11 +67,12 @@ namespace Gst
     {
     public:
         Message(GstMessage* handler, bool takeOwnership = true);
+
         Gst::MessageError parseError();
         Gst::MessageType type() const;
 
     private:
-        GstMessage* m_handler;
+        GstMessage* m_handler = nullptr;
         bool m_takeOwnership;
 
     };

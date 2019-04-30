@@ -32,13 +32,13 @@ Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create(std::string_view name)
 
 Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::add(Gst::RefPtr<Gst::Element> other)
 {
-    gst_bin_add(GST_BIN(element()), other->getHandler());
+    gst_bin_add(GST_BIN(element()), other->handler());
     return shared_from_this();
 }
 
 Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::remove(Gst::RefPtr<Gst::Element> other)
 {
-    gst_bin_remove(GST_BIN(element()), other->getHandler());
+    gst_bin_remove(GST_BIN(element()), other->handler());
     other->resetHandler();
     return shared_from_this();
 }

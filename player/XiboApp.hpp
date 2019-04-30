@@ -35,6 +35,7 @@ public:
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
+    static void registerVideoSink();
 
     XiboApp(const std::string& name);
 

@@ -22,15 +22,15 @@ namespace Gst
     class Caps
     {
     public:
-        Caps(GstCaps* getHandler);
+        Caps(GstCaps* handler);
         Caps(std::string_view stringCaps);
         Caps(Caps&& other);
         Caps& operator=(Caps&& other);
         ~Caps();
 
         static Gst::RefPtr<Gst::Caps> create(std::string_view stringCaps);
-        Gst::RefPtr<Gst::Structure> getStructure(guint index) const;
-        GstCaps* getHandler();
+        Gst::RefPtr<Gst::Structure> structure(guint index) const;
+        GstCaps* handler();
 
     private:
         GstCaps* m_handler = nullptr;

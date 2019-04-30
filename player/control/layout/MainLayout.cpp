@@ -4,16 +4,27 @@
 
 namespace ph = std::placeholders;
 
-void MainLayout::addRegion(std::unique_ptr<Region>&& region)
+MainLayout::MainLayout(const std::shared_ptr<MainLayoutView>& view) :
+    m_view(view)
+{
+}
+
+void MainLayout::addRegion(std::unique_ptr<Region>&& region, int left, int top, int zindex)
 {
     region->expired().connect(std::bind(&MainLayout::onRegionExpired, this, ph::_1));
 
+    m_view->addRegion(region->view(), left, top, zindex);
     m_regions.emplace_back(std::move(region));
 }
 
 SignalLayoutExpired MainLayout::expired()
 {
     return m_layoutExpired;
+}
+
+std::shared_ptr<MainLayoutView> MainLayout::view() const
+{
+    return m_view;
 }
 
 void MainLayout::onRegionExpired(int regionId)

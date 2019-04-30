@@ -17,7 +17,7 @@ Gst::Inspector::Inspector(unsigned int timeoutSeconds)
 
 Gst::Inspector::~Inspector()
 {
-    g_object_unref(m_discoverer);
+    gst_object_unref(m_discoverer);
 }
 
 Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* info, GError* err)
@@ -69,7 +69,7 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
         g_error_free(err);
     }
     gst_discoverer_stream_info_list_free(streamsList);
-    g_object_unref(info);
+    gst_discoverer_info_unref(info);
 
     return discoveredResult;
 }
@@ -82,12 +82,16 @@ void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* st
 
         if(GST_IS_DISCOVERER_VIDEO_INFO(streamInfo))
         {
-            result.m_videoStream = true;
+            auto videoInfo = GST_DISCOVERER_VIDEO_INFO(streamInfo);
+
+            result.videoStream = true;
+            result.frameWidth = static_cast<int>(gst_discoverer_video_info_get_width(videoInfo));
+            result.frameHeight = static_cast<int>(gst_discoverer_video_info_get_height(videoInfo));
         }
 
         if(GST_IS_DISCOVERER_AUDIO_INFO(streamInfo))
         {
-            result.m_audioStream = true;
+            result.audioStream = true;
         }
     }
 }
@@ -98,14 +102,4 @@ Gst::InspectorResult Gst::Inspector::discover(std::string_view uri)
     auto info = gst_discoverer_discover_uri(m_discoverer, uri.data(), &err);
 
     return processDiscoveredInfo(info, err);
-}
-
-bool Gst::InspectorResult::hasVideoStream() const
-{
-    return m_videoStream;
-}
-
-bool Gst::InspectorResult::hasAudioStream() const
-{
-    return m_audioStream;
 }

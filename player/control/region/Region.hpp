@@ -2,6 +2,7 @@
 
 #include "control/media/Media.hpp"
 #include "RegionOptions.hpp"
+#include "RegionView.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -12,12 +13,13 @@ using SignalRegionExpired = sigc::signal<void(int)>;
 class Region : private boost::noncopyable
 {
 public:
-    Region(const RegionOptions& options);
+    Region(const RegionOptions& options, const std::shared_ptr<RegionView>& view);
     ~Region();
 
     void addMedia(std::unique_ptr<Media>&& media);
     void start();
     SignalRegionExpired expired();
+    std::shared_ptr<RegionView> view() const;
 
 private:
     void placeMedia(size_t mediaIndex);
@@ -30,6 +32,7 @@ private:
 
 private:
     RegionOptions m_options;
+    std::shared_ptr<RegionView> m_view;
     std::vector<std::unique_ptr<Media>> m_media;
     size_t m_currentMediaIndex = 0;
     SignalRegionExpired m_regionExpired;

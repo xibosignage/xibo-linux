@@ -7,14 +7,14 @@ Widget::Widget(Gtk::Widget& widget) :
 
 void Widget::show()
 {
-    m_shown.emit();
     m_widget.show();
+    m_shown.emit();
 }
 
 void Widget::showAll()
 {
-    m_shown.emit();
     m_widget.show();
+    m_shown.emit();
 }
 
 void Widget::hide()

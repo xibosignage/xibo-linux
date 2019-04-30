@@ -1,28 +1,32 @@
 #pragma once
 
 #include "utils/ITimerProvider.hpp"
+#include "control/common/Widget.hpp"
 #include "MediaOptions.hpp"
 
 #include <memory>
 #include <sigc++/sigc++.h>
 
-using SignalStarted = sigc::signal<void()>;
-using SignalStopped = sigc::signal<void()>;
 using SignalMediaFinished = sigc::signal<void()>;
 
 class Media
 {
 public:
-    Media(const MediaOptions& options);
+    Media(const MediaOptions& options, const std::shared_ptr<Widget>& view);
     virtual ~Media() = default;
 
     void attachMedia(std::unique_ptr<Media>&& attachedMedia);
     void start();
     void stop();
 
-    SignalStarted started();
-    SignalStopped stopped();
-    SignalStopped mediaFinished();
+    SignalMediaFinished mediaFinished();
+    std::shared_ptr<Widget> view() const;
+    MediaGeometry::Align align() const;
+    MediaGeometry::Valign valign() const;
+
+protected:
+    virtual void onStarted();
+    virtual void onStopped();
 
 private:
     void startTimer(int duration);
@@ -31,10 +35,9 @@ private:
 
 private:
     MediaOptions m_options;
+    std::shared_ptr<Widget> m_view;
     std::unique_ptr<Media> m_attachedMedia;
     std::unique_ptr<ITimerProvider> m_timer;
-    SignalStarted m_started;
-    SignalStopped m_stopped;
     SignalMediaFinished m_mediaFinished;
 
 };

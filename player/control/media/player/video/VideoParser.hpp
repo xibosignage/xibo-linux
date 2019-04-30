@@ -8,4 +8,8 @@ class VideoParser : public MediaParser
 public:
     VideoParser(const xml_node& node);
     MediaPlayerOptions parse();
+
+protected:
+    MediaGeometry geometry() override;
+
 };

@@ -7,18 +7,13 @@
 
 namespace Gst
 {
-    class InspectorResult
+    struct InspectorResult
     {
-    public:
-        bool hasVideoStream() const;
-        bool hasAudioStream() const;
+        int frameWidth = 0;
+        int frameHeight = 0;
 
-        friend class Inspector;
-
-    private:
-        bool m_audioStream = false;
-        bool m_videoStream = false;
-
+        bool audioStream = false;
+        bool videoStream = false;
     };
 
     class Inspector

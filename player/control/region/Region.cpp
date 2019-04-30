@@ -1,18 +1,20 @@
 #include "Region.hpp"
 
+#include "control/media/GetMediaPosition.hpp"
+
 const int FIRST_CONTENT_INDEX = 0;
 
-Region::Region(const RegionOptions& options) :
-    m_options(options)
+Region::Region(const RegionOptions& options, const std::shared_ptr<RegionView>& view) :
+    m_options(options),
+    m_view(view)
 {
+    m_view->shown().connect(sigc::mem_fun(this, &Region::start));
 }
 
 Region::~Region()
 {
     for(auto&& media : m_media)
     {
-        media->started().block();
-        media->stopped().block();
         media->mediaFinished().block();
     }
 }
@@ -20,6 +22,17 @@ Region::~Region()
 void Region::addMedia(std::unique_ptr<Media>&& media)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));
+    auto mediaView = media->view();
+
+    if(mediaView)
+    {
+        GetMediaPosition positionCalc{m_view->width(), m_view->height()};
+        int left = positionCalc.getMediaLeft(mediaView->width(), media->align());
+        int top = positionCalc.getMediaTop(mediaView->height(), media->valign());
+
+        m_view->addMedia(mediaView, left, top);
+    }
+
     m_media.emplace_back(std::move(media));
 }
 
@@ -31,6 +44,11 @@ void Region::start()
 SignalRegionExpired Region::expired()
 {
     return m_regionExpired;
+}
+
+std::shared_ptr<RegionView> Region::view() const
+{
+    return m_view;
 }
 
 void Region::placeMedia(size_t mediaIndex)

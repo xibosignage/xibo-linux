@@ -6,7 +6,6 @@ Gst::Element::Element(std::string_view name)
     m_element = gst_element_factory_make(name.data(), nullptr);
 }
 
-
 Gst::Element::Element(GstElement* element) :
     m_element(element)
 {
@@ -38,7 +37,7 @@ Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& ot
 {
     if(m_element)
     {
-        gst_element_link(m_element, other->getHandler());
+        gst_element_link(m_element, other->handler());
         return other;
     }
     return nullptr;
@@ -48,7 +47,7 @@ Gst::RefPtr<Gst::Element> Gst::Element::linkFltered(const Gst::RefPtr<Gst::Eleme
 {
     if(m_element)
     {
-        gst_element_link_filtered(m_element, other->getHandler(), filter);
+        gst_element_link_filtered(m_element, other->handler(), filter);
         return other;
     }
     return nullptr;
@@ -62,14 +61,14 @@ void Gst::Element::setState(Gst::State state)
     }
 }
 
-Gst::State Gst::Element::getState() const
+Gst::State Gst::Element::state() const
 {
     GstState state;
     gst_element_get_state(m_element, &state, nullptr, GST_MSECOND);
     return static_cast<Gst::State>(state);
 }
 
-Gst::RefPtr<Gst::Pad> Gst::Element::getStaticPad(std::string_view name)
+Gst::RefPtr<Gst::Pad> Gst::Element::staticPad(std::string_view name)
 {
     if(m_element)
     {
@@ -97,7 +96,7 @@ bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, 
     return false;
 }
 
-GstElement* Gst::Element::getHandler() const
+GstElement* Gst::Element::handler() const
 {
     return m_element;
 }

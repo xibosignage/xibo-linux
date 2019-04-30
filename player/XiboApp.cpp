@@ -9,6 +9,7 @@
 
 #include "control/MainWindowController.hpp"
 #include "control/MainWindow.hpp"
+#include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/LayoutScheduler.hpp"
@@ -36,6 +37,7 @@ XiboApp& XiboApp::create(const std::string& name)
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
     gst_init(nullptr, nullptr);
+    registerVideoSink();
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -50,6 +52,15 @@ std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
     sinks.push_back(std::make_shared<LoggerXmlSinkMt>(XmlLogsRepo::get()));
 
     return sinks;
+}
+
+void XiboApp::registerVideoSink()
+{
+    if(!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "Xibo Video Sink", "Video Sink Plugin for gstreamer",
+                                   pluginInit, "0.5", "GPL", "source", "package", "http://github.com/Stivius"))
+    {
+        throw std::runtime_error("XiboVideoSink was not registered");
+    }
 }
 
 XiboApp::XiboApp(const std::string& name) :
@@ -160,7 +171,7 @@ void XiboApp::tryStartPlayer(const std::shared_ptr<MainWindow>& window)
         m_windowController->updateLayout(layoutId);
 
         m_collectionInterval->startRegularCollection();
-        window->showAll();
+        window->show();
 
         Log::info("Player started");
     }

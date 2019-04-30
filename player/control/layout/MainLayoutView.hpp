@@ -10,8 +10,6 @@ public:
     struct WidgetInfo
     {
         std::shared_ptr<Widget> widget;
-        int width;
-        int height;
         int x;
         int y;
         int z;
@@ -41,7 +39,7 @@ private:
     void updateOffsets();
 
 private:
-    Gtk::Overlay m_overlayLayout;
+    Gtk::Overlay m_handler;
     std::shared_ptr<Widget> m_mainChild;
     WidgetsWithInfo m_regions;
     int m_xOffset = 0;

@@ -5,6 +5,10 @@
 
 #include <boost/property_tree/ptree.hpp>
 
+std::istream& operator >>(std::istream& in, MediaGeometry::ScaleType& scaleType);
+std::istream& operator >>(std::istream& in, MediaGeometry::Align& align);
+std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign);
+
 class MediaParser
 {
 public:
