@@ -20,8 +20,7 @@ public:
     int x() const;
     int y() const;
 
-    void addWidget(const std::shared_ptr<Widget>& child);
-    void removeWidget();
+    void setWidget(const std::shared_ptr<Widget>& child);
     void move(int x, int y);
     void disableWindowResize();
     void disableWindowDecoration();
@@ -34,6 +33,7 @@ public:
     Gtk::Window& get() override;
 
 private:
+    void removeWidget();
     void setWindowSize(int width, int height);
     void onRealized();
     void loadDefaultStyle();

@@ -5,14 +5,13 @@
 #include <memory>
 #include <vector>
 
-class IMainLayout;
-
 class LayoutScheduler
 {
 public:
-    LayoutScheduler();
+    LayoutScheduler() = default;
     void update(const LayoutSchedule& schedule);
     int nextLayoutId();
+    int currentLayoutId() const;
 
 private:
     void resetSchedule();
@@ -28,5 +27,6 @@ private:
     std::vector<ScheduledLayout> m_layouts;
     std::vector<std::string> m_globalDependants;
     size_t m_nextLayoutIndex = 0;
+    int m_layoutId = DEFAULT_LAYOUT_ID;
 
 };

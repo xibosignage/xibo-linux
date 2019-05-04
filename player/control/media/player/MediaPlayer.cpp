@@ -39,7 +39,7 @@ MediaPlayer::~MediaPlayer()
 
 void MediaPlayer::createGstElements()
 {
-    m_pipeline = Gst::Pipeline::create("pipeline");
+    m_pipeline = Gst::Pipeline::create();
     m_source = Gst::FileSrc::create();
     m_decodebin = Gst::Decodebin::create();
 

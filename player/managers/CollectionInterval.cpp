@@ -21,7 +21,7 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
 void CollectionInterval::startRegularCollection()
 {
     started = true;
-    startTimer();
+    collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
 }
 
 void CollectionInterval::stop()
@@ -32,7 +32,7 @@ void CollectionInterval::stop()
 void CollectionInterval::startTimer()
 {
     m_intervalTimer->startOnceSeconds(static_cast<unsigned int>(m_collectInterval), [=](){
-        collectOnce(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
+        collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
     });
 }
 
@@ -43,7 +43,7 @@ void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
     startTimer();
 }
 
-void CollectionInterval::collectOnce(CollectionResultCallback callback)
+void CollectionInterval::collect(CollectionResultCallback callback)
 {
     m_workerThread = std::make_unique<JoinableThread>([=]()
     {

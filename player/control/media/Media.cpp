@@ -51,7 +51,6 @@ void Media::onStarted()
     }
 }
 
-// FIXME check timer (maybe it should be stopped)
 void Media::stop()
 {
     stopAttachedMedia();

@@ -32,7 +32,7 @@ public:
 
     void startRegularCollection();
     void stop();
-    void collectOnce(CollectionResultCallback callback);
+    void collect(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
 
     SignalSettingsUpdated& settingsUpdated();

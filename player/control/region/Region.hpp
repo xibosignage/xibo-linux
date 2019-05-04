@@ -14,7 +14,6 @@ class Region : private boost::noncopyable
 {
 public:
     Region(const RegionOptions& options, const std::shared_ptr<RegionView>& view);
-    ~Region();
 
     void addMedia(std::unique_ptr<Media>&& media);
     void start();

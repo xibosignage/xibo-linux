@@ -50,7 +50,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
         }
         catch (std::exception& e)
         {
-            Log::error(e.what());
+            Log::error("[XMR] {}", e.what());
         }
     }
     else

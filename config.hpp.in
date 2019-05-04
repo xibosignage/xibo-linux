@@ -37,6 +37,11 @@ namespace ProjectResources
         return configDirectory() / "resources";
     }
 
+    inline FilePath splashScreen()
+    {
+        return configDirectory() / "splash.jpg";
+    }
+
     inline FilePath cmsSettings()
     {
         return configDirectory() / "cmsSettings.xml";
