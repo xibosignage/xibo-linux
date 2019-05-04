@@ -11,14 +11,6 @@ Region::Region(const RegionOptions& options, const std::shared_ptr<RegionView>& 
     m_view->shown().connect(sigc::mem_fun(this, &Region::start));
 }
 
-Region::~Region()
-{
-    for(auto&& media : m_media)
-    {
-        media->mediaFinished().block();
-    }
-}
-
 void Region::addMedia(std::unique_ptr<Media>&& media)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));

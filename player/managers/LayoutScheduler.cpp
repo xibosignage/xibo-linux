@@ -6,10 +6,6 @@
 
 const size_t FIRST_ITEM_INDEX = 0;
 
-LayoutScheduler::LayoutScheduler()
-{
-}
-
 void LayoutScheduler::update(const LayoutSchedule& schedule)
 {
     resetSchedule();
@@ -22,6 +18,7 @@ void LayoutScheduler::update(const LayoutSchedule& schedule)
 void LayoutScheduler::resetSchedule()
 {
 //    m_nextLayoutIndex = FIRST_ITEM_INDEX;
+    m_defaultLayout.id = DEFAULT_LAYOUT_ID;
     m_layouts.clear();
 }
 
@@ -30,11 +27,11 @@ void LayoutScheduler::fillScheduleItems(const std::vector<ScheduledLayout>& sche
     if(scheduledItems.empty()) return;
 
     int maxShowPriority = findMaxShowPriority(scheduledItems);
-    Log::debug("Max show priority: {}", maxShowPriority);
+    Log::trace("Max show priority: {}", maxShowPriority);
 
     for(auto layout : scheduledItems)
     {
-        Log::debug("Layout ID: {} SatartDT: {} EndDT: {} Priority: {}", layout.id, layout.startDT, layout.endDT, layout.priority);
+        Log::trace("Layout ID: {} SatartDT: {} EndDT: {} Priority: {}", layout.id, layout.startDT, layout.endDT, layout.priority);
         if(layout.priority == maxShowPriority)
         {
             m_layouts.push_back(layout);
@@ -57,12 +54,19 @@ int LayoutScheduler::nextLayoutId()
 {
     if(!m_layouts.empty())
     {
-        return nextValidLayoutId();
+        m_layoutId = nextValidLayoutId();
     }
     else
     {
-        return m_defaultLayout.id;
+        m_layoutId = m_defaultLayout.id;
     }
+
+    return m_layoutId;
+}
+
+int LayoutScheduler::currentLayoutId() const
+{
+    return m_layoutId;
 }
 
 int LayoutScheduler::nextValidLayoutId()

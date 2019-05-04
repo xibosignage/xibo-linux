@@ -13,10 +13,15 @@ class MainWindowController
 {
 public:
     MainWindowController(std::shared_ptr<MainWindow> window, LayoutScheduler& scheduler);
+
     void updateLayout(int layoutId);
     void updateWindowDimensions(const PlayerSettings::Dimensions& dimensions);
+    void showSplashScreen();
 
 private:
+    void showLayout(int layoutId);
+    std::unique_ptr<MainLayout> createLayout(int layoutId);
+    std::shared_ptr<Widget> createSplashScreen();
     void scaleLayout(const std::shared_ptr<MainLayoutView>& layout);
     void setWindowSize(int width, int height);
     void setWindowPos(int x, int y);

@@ -38,12 +38,12 @@ private:
     static void registerVideoSink();
 
     XiboApp(const std::string& name);
+    void setupXmrManager();
+    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
     void applyPlayerSettings(const PlayerSettings& settings);
-    void tryStartPlayer(const std::shared_ptr<MainWindow>& window);
-    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;

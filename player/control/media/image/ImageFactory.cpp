@@ -1,6 +1,7 @@
 #include "ImageFactory.hpp"
 
 #include "control/common/Image.hpp"
+#include "common/FilePath.hpp"
 
 ImageFactory::ImageFactory(int width, int height, const ImageOptions& options) :
     m_options(options),
@@ -19,7 +20,7 @@ std::shared_ptr<Widget> ImageFactory::createView(int width, int height)
     auto image = std::make_shared<Image>(width, height);
 
     bool isScaled = m_options.geometry.scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    image->loadFromFile(m_options.uri, isScaled);
+    image->loadFromFile(m_options.uri.path(), isScaled);
 
     return image;
 }
