@@ -1,6 +1,10 @@
 # XiboLinux
+[![xibo-player](https://snapcraft.io/xibo-player/badge.svg)](https://snapcraft.io/xibo-player)
 
-### Building manually from sources
+## Building from sources
+
+### Building manually
+
 NOTE: these libraries can require additional installations if you haven't such
 - `cmake>=3.14` cross-platform software for managing the build process
 - `gtk>=3.18` and `gtkmm>=3.18` GUI library and C++ bindings
