@@ -1,25 +1,28 @@
 #include "WebViewFactory.hpp"
 
-#include "control/media/VisibleMedia.hpp"
 #include "WebView.hpp"
 
-WebViewFactory::WebViewFactory(const WebViewOptions& options) :
-    m_options(options)
+WebViewFactory::WebViewFactory(int width, int height, const WebViewOptions& options) :
+    m_options(options),
+    m_width(width),
+    m_height(height)
 {
 }
 
-std::unique_ptr<Media> WebViewFactory::createModel(const std::shared_ptr<Widget>& view)
+std::unique_ptr<Media> WebViewFactory::create()
 {
-    return std::make_unique<VisibleMedia>(m_options, *view);
+    return std::make_unique<Media>(m_options, createView(m_width, m_height));
 }
 
-ViewInfo WebViewFactory::createView(int width, int height)
+std::shared_ptr<Widget> WebViewFactory::createView(int width, int height)
 {
     auto webview = std::make_shared<WebView>(width, height);
+
     webview->load(m_options.uri);
     if(m_options.transparency == WebViewOptions::Transparency::Enable)
     {
         webview->enableTransparency();
     }
-    return {webview, m_options.geometry.align, m_options.geometry.valign};
+
+    return webview;
 }

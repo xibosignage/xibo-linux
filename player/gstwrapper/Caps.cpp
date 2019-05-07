@@ -31,12 +31,12 @@ Gst::RefPtr<Gst::Caps> Gst::Caps::create(std::string_view stringCaps)
     return std::make_shared<Gst::Caps>(stringCaps);
 }
 
-Gst::RefPtr<Gst::Structure> Gst::Caps::getStructure(guint index) const
+Gst::RefPtr<Gst::Structure> Gst::Caps::structure(guint index) const
 {
     return std::make_shared<Gst::Structure>(gst_caps_get_structure(m_handler, index));
 }
 
-GstCaps* Gst::Caps::getHandler()
+GstCaps* Gst::Caps::handler()
 {
     return m_handler;
 }

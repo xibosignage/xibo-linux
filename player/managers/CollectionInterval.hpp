@@ -14,7 +14,7 @@
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
-using SignalScheduleUpdated = Dispatcher<LayoutSchedule>;
+using SignalScheduleUpdated = Dispatcher<Schedule::Result>;
 using SignalCollectionFinished = Dispatcher<PlayerError>;
 class XmdsRequestSender;
 
@@ -32,7 +32,7 @@ public:
 
     void startRegularCollection();
     void stop();
-    void collectOnce(CollectionResultCallback callback);
+    void collect(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
 
     SignalSettingsUpdated& settingsUpdated();

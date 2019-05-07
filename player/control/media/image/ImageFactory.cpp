@@ -1,22 +1,26 @@
 #include "ImageFactory.hpp"
 
 #include "control/common/Image.hpp"
-#include "control/media/VisibleMedia.hpp"
+#include "common/FilePath.hpp"
 
-ImageFactory::ImageFactory(const ImageOptions& options) :
-    m_options(options)
+ImageFactory::ImageFactory(int width, int height, const ImageOptions& options) :
+    m_options(options),
+    m_width(width),
+    m_height(height)
 {
 }
 
-std::unique_ptr<Media> ImageFactory::createModel(const std::shared_ptr<Widget>& view)
+std::unique_ptr<Media> ImageFactory::create()
 {
-    return std::make_unique<VisibleMedia>(m_options, *view);
+    return std::make_unique<Media>(m_options, createView(m_width, m_height));
 }
 
-ViewInfo ImageFactory::createView(int width, int height)
+std::shared_ptr<Widget> ImageFactory::createView(int width, int height)
 {
     auto image = std::make_shared<Image>(width, height);
+
     bool isScaled = m_options.geometry.scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    image->loadFromFile(m_options.uri, isScaled);
-    return {image, m_options.geometry.align, m_options.geometry.valign};
+    image->loadFromFile(m_options.uri.path(), isScaled);
+
+    return image;
 }

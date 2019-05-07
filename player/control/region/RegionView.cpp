@@ -16,6 +16,11 @@ void RegionView::addMedia(const std::shared_ptr<Widget>& child, int left, int to
     }
 }
 
+void RegionView::setSize(int width, int height)
+{
+    Widget::setSize(width, height);
+}
+
 void RegionView::scale(double scaleX, double scaleY)
 {
     Widget::scale(scaleX, scaleY);

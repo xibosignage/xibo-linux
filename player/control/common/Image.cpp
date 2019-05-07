@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-#include "common/uri/Uri.hpp"
+#include "common/FilePath.hpp"
 
 Image::Image(int width, int height) :
     Widget(m_handler)
@@ -29,9 +29,9 @@ void Image::setColor(uint32_t hex_color_number)
     pixbuf()->fill(hex_color_number);
 }
 
-void Image::loadFromFile(const Uri& uri, bool preserveAspectRatio)
+void Image::loadFromFile(const FilePath& path, bool preserveAspectRatio)
 {
-    m_handler.set(Gdk::Pixbuf::create_from_file(uri.path(), width(), height(), preserveAspectRatio));
+    m_handler.set(Gdk::Pixbuf::create_from_file(path, width(), height(), preserveAspectRatio));
 }
 
 Gtk::Image& Image::get()

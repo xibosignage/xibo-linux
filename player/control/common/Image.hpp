@@ -4,7 +4,7 @@
 
 #include <gtkmm/image.h>
 
-class Uri;
+class FilePath;
 
 class Image : public Widget
 {
@@ -16,7 +16,7 @@ public:
     void setSize(int width, int height) override;
 
     void setColor(uint32_t hex_color_number);
-    void loadFromFile(const Uri& uri, bool preserveAspectRatio);
+    void loadFromFile(const FilePath& path, bool preserveAspectRatio);
 
     Gtk::Image& get() override;
 

@@ -4,40 +4,74 @@
 
 #include "control/layout/MainLayoutView.hpp"
 #include "control/common/MainCompositor.hpp"
-#include "managers/LayoutScheduler.hpp"
+#include "control/common/Image.hpp"
+#include "config.hpp"
+#include "managers/XiboLayoutScheduler.hpp"
 
 const int DEFAULT_DIALOG_WIDTH = 640;
 const int DEFAULT_DIALOG_HEIGHT = 460;
 
 namespace ph = std::placeholders;
 
-MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, LayoutScheduler& scheduler) :
+MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, XiboLayoutScheduler& scheduler) :
     m_window(window), m_scheduler(scheduler)
 {
     auto statusScreen = std::make_shared<StatusScreen>(DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
-    m_statusScreenController = std::make_unique<StatusScreenController>(statusScreen);
+    m_statusScreenController = std::make_unique<StatusScreenController>(scheduler, statusScreen);
 
     m_window->keyPressed().connect(std::bind(&StatusScreenController::onKeyPressed, m_statusScreenController.get(), ph::_1));
-
-//    m_window->disableWindowResize();
     m_window->disableWindowDecoration();
 }
 
 void MainWindowController::updateLayout(int layoutId)
 {
-    MainCompositor parser;
-    auto [layout, layoutView] = parser.parseLayout(layoutId);
+    m_layout.reset();
 
-    m_layout = std::move(layout);
-    m_layout->expired().connect([this](){
+    if(layoutId != EMPTY_LAYOUT_ID)
+    {
+        showLayout(layoutId);
+    }
+    else
+    {
+        showSplashScreen();
+    }
+}
+
+void MainWindowController::showLayout(int layoutId)
+{
+    m_layout = createLayout(layoutId);
+
+    m_window->setWidget(m_layout->view());
+    m_window->showAll();
+}
+
+std::unique_ptr<MainLayout> MainWindowController::createLayout(int layoutId)
+{
+    MainCompositor parser;
+    auto layout = parser.parseLayout(layoutId);
+
+    layout->expired().connect([this](){
         updateLayout(m_scheduler.nextLayoutId());
     });
 
-    scaleLayout(layoutView);
+    scaleLayout(layout->view());
 
-    m_window->removeWidget();
-    m_window->addWidget(layoutView);
-    layoutView->showAll();
+    return layout;
+}
+
+void MainWindowController::showSplashScreen()
+{
+    m_window->setWidget(createSplashScreen());
+    m_window->showAll();
+}
+
+std::shared_ptr<Widget> MainWindowController::createSplashScreen()
+{
+    auto spashImage = std::make_shared<Image>(m_window->width(), m_window->height());
+
+    spashImage->loadFromFile(ProjectResources::splashScreen(), false);
+
+    return spashImage;
 }
 
 void MainWindowController::scaleLayout(const std::shared_ptr<MainLayoutView>& layout)

@@ -5,13 +5,16 @@
 #include "BaseResponseParser.hpp"
 
 #include "common/Field.hpp"
-#include "managers/LayoutSchedule.hpp"
+#include "managers/ScheduleItem.hpp"
 
 namespace Schedule
 {
     struct Result
     {
-        LayoutSchedule schedule;
+        std::vector<std::string> globalDependats;
+        std::vector<ScheduledLayout> scheduledLayouts;
+        DefaultScheduledLayout defaultLayout;
+        std::string generatedTime;
     };
 
     struct Request

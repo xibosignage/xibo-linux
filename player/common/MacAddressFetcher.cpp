@@ -35,7 +35,7 @@ boost::optional<std::string> MacAddressFetcher::get()
     }
     catch (MacAddressError& error)
     {
-        Log::debug("MAC address was not fetched: {}", error.what());
+        Log::error("MAC address was not fetched: {}", error.what());
         return {};
     }
 }

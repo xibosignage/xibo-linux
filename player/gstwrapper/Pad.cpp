@@ -38,7 +38,7 @@ Gst::MediaType Gst::Pad::mediaType() const
     auto caps = getCurrentCaps();
     if(caps)
     {
-        auto name = caps->getStructure(0)->getName();
+        auto name = caps->structure(0)->getName();
 
         if(name.find("video") != std::string::npos)
             return MediaType::Video;

@@ -14,6 +14,7 @@ namespace XmdsResources
 
     namespace Schedule
     {
+        const std::string Attrs = "<xmlattr>";
         const std::string_view Name = "Schedule";
 
         const std::string ScheduleXml = "ScheduleXml";
@@ -24,7 +25,6 @@ namespace XmdsResources
 
         namespace LayoutAttrs
         {
-            const std::string Node = "<xmlattr>";
             const std::string ScheduleId = "scheduleid";
             const std::string Id = "file";
             const std::string Priority = "priority";

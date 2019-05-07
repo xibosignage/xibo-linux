@@ -41,7 +41,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
     g_object_class->finalize = gst_xibovideosink_finalize;
 }
 
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<Widget>& handler)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<VideoWindow>& handler)
 {
     sink->handler = handler;
 }
@@ -75,9 +75,9 @@ static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* base_sink, GstBu
     if(auto frame = XiboVideoFrame::create(&sink->info, buffer))
     {
         Glib::MainContext::get_default()->invoke([handler = sink->handler, frame](){
-            if(auto obj = handler.lock())
+            if(auto window = handler.lock())
             {
-                dynamic_cast<VideoWindow*>(obj.get())->drawFrame(frame);
+                window->drawFrame(frame);
             }
             return false;
         });

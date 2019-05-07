@@ -2,19 +2,24 @@
 
 #include "control/media/MediaFactory.hpp"
 #include "control/media/player/MediaPlayerOptions.hpp"
+#include "gstwrapper/Inspector.hpp"
 
-#include "VideoWindow.hpp"
+class MediaPlayer;
+class VideoWindow;
 
-class VideoFactory : public VisibleMediaFactory
+class VideoFactory : public MediaFactory
 {
 public:
-    VideoFactory(const MediaPlayerOptions& options);
+    VideoFactory(int width, int height, const MediaPlayerOptions& options);
 
-    std::unique_ptr<Media> createModel(const std::shared_ptr<Widget>& view) override;
-    ViewInfo createView(int width, int height) override;
+    std::unique_ptr<Media> create() override;
+
+private:
+    std::unique_ptr<MediaPlayer> createPlayer(int width, int height);
+    std::shared_ptr<VideoWindow> createView(int width, int height, const Gst::InspectorResult& info);
 
 private:
     MediaPlayerOptions m_options;
-    std::shared_ptr<VideoWindow> m_window;
-
+    int m_width;
+    int m_height;
 };

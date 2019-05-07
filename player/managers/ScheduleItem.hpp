@@ -4,6 +4,8 @@
 #include <string>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+const int EMPTY_LAYOUT_ID = 0;
+
 struct DefaultScheduledLayout
 {
     int id;

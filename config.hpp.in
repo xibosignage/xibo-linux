@@ -10,6 +10,16 @@ const std::string DEFAULT_CACHE_FILE = "cachedFiles.xml";
 
 namespace ProjectResources
 {
+    inline std::string version()
+    {
+        return "1.8";
+    }
+
+    inline int codeVersion()
+    {
+        return 108;
+    }
+
     inline FilePath buildDirectory()
     {
         const char* directory = getenv("SNAP");
@@ -35,6 +45,11 @@ namespace ProjectResources
     inline FilePath defaultResourcesDir()
     {
         return configDirectory() / "resources";
+    }
+
+    inline FilePath splashScreen()
+    {
+        return configDirectory() / "splash.jpg";
     }
 
     inline FilePath cmsSettings()

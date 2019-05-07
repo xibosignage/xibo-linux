@@ -1,18 +1,22 @@
 #pragma once
 
 #include "control/media/MediaFactory.hpp"
-
 #include "WebViewOptions.hpp"
 
-class WebViewFactory : public VisibleMediaFactory
+class Widget;
+
+class WebViewFactory : public MediaFactory
 {
 public:
-    WebViewFactory(const WebViewOptions& options);
+    WebViewFactory(int width, int height, const WebViewOptions& options);
 
-    std::unique_ptr<Media> createModel(const std::shared_ptr<Widget>& view) override;
-    ViewInfo createView(int width, int height) override;
+    std::unique_ptr<Media> create() override;
+
+private:
+    std::shared_ptr<Widget> createView(int width, int height);
 
 private:
     WebViewOptions m_options;
-
+    int m_width;
+    int m_height;
 };

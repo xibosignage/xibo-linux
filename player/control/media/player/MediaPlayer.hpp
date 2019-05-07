@@ -1,6 +1,8 @@
 #pragma once
 
 #include "gstwrapper/GstFwd.hpp"
+#include "gstwrapper/Inspector.hpp"
+#include "video/VideoWindow.hpp"
 
 #include <functional>
 #include <sigc++/signal.h>
@@ -16,25 +18,29 @@ public:
     MediaPlayer();
     ~MediaPlayer();
 
-    void setOutputWindow(const std::shared_ptr<Widget>& window);
+    void setOutputWindow(const std::shared_ptr<VideoWindow>& window);
+    std::shared_ptr<VideoWindow> outputWindow() const;
+
     void load(const Uri& uri);
+    void setVolume(int volume);
+
     void play();
     void stopAndRemove();
     void stopPlayback();
-    void setVolume(int volume);
+
     SignalPlaybackFinished playbackFinished();
+    Gst::InspectorResult mediaInfo() const;
 
 private:
-    void setVideoSize(int width, int height);
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
     void noMorePads();
+    void inspectFile(const Uri& uri);
     void onPadAdded(const Gst::RefPtr<Gst::Pad>& pad);
     void init();
-    void checkGstElements();
-    void inspectFile(const Uri& uri);
+    void createGstElements();
 
 private:
-    std::shared_ptr<Widget> m_outputWindow;
+    std::shared_ptr<VideoWindow> m_outputWindow;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
     Gst::RefPtr<Gst::FileSrc> m_source;
@@ -48,6 +54,7 @@ private:
     Gst::RefPtr<Gst::Queue> m_queue;
     Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
     Gst::RefPtr<Gst::Inspector> m_inspector;
+    Gst::InspectorResult m_mediaInfo;
     SignalPlaybackFinished m_playbackFinished;
 
 };

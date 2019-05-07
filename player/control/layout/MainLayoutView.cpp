@@ -3,22 +3,22 @@
 #include <gtkmm/window.h>
 
 MainLayoutView::MainLayoutView(int width, int height) :
-    Widget(m_overlayLayout)
+    Widget(m_handler)
 {
-    m_overlayLayout.signal_get_child_position().
+    m_handler.signal_get_child_position().
             connect(sigc::mem_fun(*this, &MainLayoutView::onGetRegionPosition), false);
 
-    m_overlayLayout.property_halign().set_value(Gtk::ALIGN_CENTER);
-    m_overlayLayout.property_valign().set_value(Gtk::ALIGN_CENTER);
+    m_handler.property_halign().set_value(Gtk::ALIGN_CENTER);
+    m_handler.property_valign().set_value(Gtk::ALIGN_CENTER);
 
     setSize(width, height);
 }
 
 void MainLayoutView::addRegion(const std::shared_ptr<Widget>& child, int x, int y, int z)
 {
-    m_overlayLayout.add_overlay(child->get());
+    m_handler.add_overlay(child->get());
 
-    WidgetInfo info{child, child->width(), child->height(), x, y, z};
+    WidgetInfo info{child, x, y, z};
     m_regions.emplace_back(info);
 
     sortRegionsByZindex();
@@ -37,18 +37,18 @@ void MainLayoutView::reorderRegions()
     for(std::size_t i = 0; i != m_regions.size(); ++i)
     {
         auto&& widget = m_regions[i].widget;
-        m_overlayLayout.reorder_overlay(widget->get(), static_cast<int>(i));
+        m_handler.reorder_overlay(widget->get(), static_cast<int>(i));
     }
 }
 
 void MainLayoutView::reorderRegion(const std::shared_ptr<Widget>& child, int z)
 {
-    m_overlayLayout.reorder_overlay(child->get(), z);
+    m_handler.reorder_overlay(child->get(), z);
 }
 
 void MainLayoutView::addBackground(const std::shared_ptr<Widget>& mainChild)
 {
-    m_overlayLayout.add(mainChild->get());
+    m_handler.add(mainChild->get());
 
     m_mainChild = mainChild;
 }
@@ -71,7 +71,7 @@ void MainLayoutView::showAll()
 
 void MainLayoutView::setSize(int width, int height)
 {
-    m_overlayLayout.set_size_request(width, height);
+    m_handler.set_size_request(width, height);
     updateOffsets();
 }
 
@@ -85,7 +85,7 @@ void MainLayoutView::scale(double scaleX, double scaleY)
 
 void MainLayoutView::updateOffsets()
 {
-    Gtk::Window* parent = static_cast<Gtk::Window*>(m_overlayLayout.get_toplevel());
+    Gtk::Window* parent = static_cast<Gtk::Window*>(m_handler.get_toplevel());
     if(parent->get_is_toplevel())
     {
         int width, height;
@@ -109,7 +109,7 @@ void MainLayoutView::scaleRegions(double scaleX, double scaleY)
 
 Gtk::Overlay& MainLayoutView::get()
 {
-    return m_overlayLayout;
+    return m_handler;
 }
 
 bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
@@ -121,8 +121,8 @@ bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& al
 
         alloc.set_x(m_xOffset + info.x);
         alloc.set_y(m_yOffset + info.y);
-        alloc.set_width(info.width);
-        alloc.set_height(info.height);
+        alloc.set_width(info.widget->width());
+        alloc.set_height(info.widget->height());
         return true;
     }
     return false;

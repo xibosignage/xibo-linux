@@ -24,7 +24,6 @@ bool VideoWindow::onWindowDrawn(const Cairo::RefPtr<Cairo::Context>& context)
     if(!m_frames.empty())
     {
         auto frame = m_frames.front();
-
         context->set_source(frame->surface(), 0, 0);
         context->paint();
 

@@ -4,8 +4,11 @@
 
 #include "utils/TimerProvider.hpp"
 
-Media::Media(const MediaOptions& model) :
+#include "common/logger/Logging.hpp"
+
+Media::Media(const MediaOptions& model, const std::shared_ptr<Widget>& view) :
     m_options(model),
+    m_view(view),
     m_timer(std::make_unique<TimerProvider>())
 {
 }
@@ -19,7 +22,7 @@ void Media::start()
 {
     startAttachedMedia();
     startTimer(m_options.duration);
-    m_started.emit();
+    onStarted();
 }
 
 void Media::startTimer(int duration)
@@ -40,26 +43,18 @@ void Media::startAttachedMedia()
     }
 }
 
-// FIXME check timer (maybe it should be stopped)
+void Media::onStarted()
+{
+    if(m_view)
+    {
+        m_view->show();
+    }
+}
+
 void Media::stop()
 {
     stopAttachedMedia();
-    m_stopped.emit();
-}
-
-SignalStarted Media::started()
-{
-    return m_started;
-}
-
-SignalStopped Media::stopped()
-{
-    return m_stopped;
-}
-
-SignalStopped Media::mediaFinished()
-{
-    return m_mediaFinished;
+    onStopped();
 }
 
 void Media::stopAttachedMedia()
@@ -68,4 +63,32 @@ void Media::stopAttachedMedia()
     {
         m_attachedMedia->stop();
     }
+}
+
+void Media::onStopped()
+{
+    if(m_view)
+    {
+        m_view->hide();
+    }
+}
+
+std::shared_ptr<Widget> Media::view() const
+{
+    return m_view;
+}
+
+MediaGeometry::Align Media::align() const
+{
+    return m_options.geometry.align;
+}
+
+MediaGeometry::Valign Media::valign() const
+{
+    return m_options.geometry.valign;
+}
+
+SignalMediaFinished Media::mediaFinished()
+{
+    return m_mediaFinished;
 }

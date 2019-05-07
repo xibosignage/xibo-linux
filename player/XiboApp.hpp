@@ -8,7 +8,7 @@
 class MainLoop;
 class XmdsRequestSender;
 class HttpManager;
-class LayoutScheduler;
+class XiboLayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
 class PlayerSettingsManager;
@@ -35,18 +35,19 @@ public:
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
+    static void registerVideoSink();
 
     XiboApp(const std::string& name);
+    void setupXmrManager();
+    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
     void onCollectionFinished(const PlayerError& error);
     void updateSettings(const PlayerSettings& settings);
     void applyPlayerSettings(const PlayerSettings& settings);
-    void tryStartPlayer(const std::shared_ptr<MainWindow>& window);
-    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
-    std::unique_ptr<LayoutScheduler> m_scheduler;
+    std::unique_ptr<XiboLayoutScheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;

@@ -89,18 +89,22 @@ int MainWindow::y() const
     return m_yPos;
 }
 
-void MainWindow::addWidget(const std::shared_ptr<Widget>& child)
+void MainWindow::setWidget(const std::shared_ptr<Widget>& child)
 {
-    m_handler.add(child->get());
+    removeWidget();
 
+    m_handler.add(child->get());
     m_child = child;
 }
 
 void MainWindow::removeWidget()
 {
-    m_handler.remove();
+    if(m_child)
+    {
+        m_handler.remove();
 
-    m_child.reset();
+        m_child.reset();
+    }
 }
 
 void MainWindow::move(int x, int y)

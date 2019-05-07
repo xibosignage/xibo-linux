@@ -3,6 +3,49 @@
 #include "MediaResources.hpp"
 #include "control/common/Validators.hpp"
 
+std::istream& operator >>(std::istream& in, MediaGeometry::ScaleType& scaleType)
+{
+    std::string temp;
+    in >> temp;
+
+    if(temp == ResourcesXlf::Media::Geometry::Scaled || temp == ResourcesXlf::Media::Geometry::Aspect)
+        scaleType = MediaGeometry::ScaleType::Scaled;
+    else if(temp == ResourcesXlf::Media::Geometry::Stretch)
+        scaleType = MediaGeometry::ScaleType::Stretch;
+
+    return in;
+}
+
+std::istream& operator >>(std::istream& in, MediaGeometry::Align& align)
+{
+    std::string temp;
+    in >> temp;
+
+    if(temp == ResourcesXlf::Media::Geometry::LeftAlign)
+        align = MediaGeometry::Align::Left;
+    else if(temp == ResourcesXlf::Media::Geometry::CenterAlign)
+        align = MediaGeometry::Align::Center;
+    else if(temp == ResourcesXlf::Media::Geometry::RightAlign)
+        align = MediaGeometry::Align::Right;
+
+    return in;
+}
+
+std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign)
+{
+    std::string temp;
+    in >> temp;
+
+    if(temp == ResourcesXlf::Media::Geometry::TopValign)
+        valign = MediaGeometry::Valign::Top;
+    else if(temp == ResourcesXlf::Media::Geometry::MiddleValign)
+        valign = MediaGeometry::Valign::Middle;
+    else if(temp == ResourcesXlf::Media::Geometry::BottomValign)
+        valign = MediaGeometry::Valign::Bottom;
+
+    return in;
+}
+
 MediaParser::MediaParser(const xml_node& node) :
     m_node(node)
 {
