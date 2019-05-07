@@ -6,13 +6,13 @@
 #include "managers/PlayerSettings.hpp"
 #include "control/layout/MainLayout.hpp"
 
-class LayoutScheduler;
+class XiboLayoutScheduler;
 class MainLayoutView;
 
 class MainWindowController
 {
 public:
-    MainWindowController(std::shared_ptr<MainWindow> window, LayoutScheduler& scheduler);
+    MainWindowController(std::shared_ptr<MainWindow> window, XiboLayoutScheduler& scheduler);
 
     void updateLayout(int layoutId);
     void updateWindowDimensions(const PlayerSettings::Dimensions& dimensions);
@@ -29,7 +29,7 @@ private:
 
 private:
     std::shared_ptr<MainWindow> m_window;
-    LayoutScheduler& m_scheduler;
+    XiboLayoutScheduler& m_scheduler;
     std::unique_ptr<StatusScreenController> m_statusScreenController;
     std::unique_ptr<MainLayout> m_layout;
 

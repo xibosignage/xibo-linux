@@ -6,18 +6,18 @@
 #include "control/common/MainCompositor.hpp"
 #include "control/common/Image.hpp"
 #include "config.hpp"
-#include "managers/LayoutScheduler.hpp"
+#include "managers/XiboLayoutScheduler.hpp"
 
 const int DEFAULT_DIALOG_WIDTH = 640;
 const int DEFAULT_DIALOG_HEIGHT = 460;
 
 namespace ph = std::placeholders;
 
-MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, LayoutScheduler& scheduler) :
+MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, XiboLayoutScheduler& scheduler) :
     m_window(window), m_scheduler(scheduler)
 {
     auto statusScreen = std::make_shared<StatusScreen>(DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
-    m_statusScreenController = std::make_unique<StatusScreenController>(statusScreen);
+    m_statusScreenController = std::make_unique<StatusScreenController>(scheduler, statusScreen);
 
     m_window->keyPressed().connect(std::bind(&StatusScreenController::onKeyPressed, m_statusScreenController.get(), ph::_1));
     m_window->disableWindowDecoration();
@@ -27,7 +27,7 @@ void MainWindowController::updateLayout(int layoutId)
 {
     m_layout.reset();
 
-    if(layoutId != DEFAULT_LAYOUT_ID)
+    if(layoutId != EMPTY_LAYOUT_ID)
     {
         showLayout(layoutId);
     }

@@ -24,7 +24,7 @@ add_subdirectory(networking)
 add_subdirectory(watchdog)
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${PLAYER_SOURCES})
-target_link_libraries(${PROJECT_NAME} X11 common ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} X11 networking ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
 
 copy_libs("${Gtkmm_LINK_LIBRARIES}")
 copy_libs("${GStreamer_LINK_LIBRARIES}")

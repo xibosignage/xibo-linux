@@ -12,7 +12,7 @@
 #include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/LayoutScheduler.hpp"
+#include "managers/XiboLayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrManager.hpp"
@@ -65,7 +65,7 @@ void XiboApp::registerVideoSink()
 
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_scheduler(std::make_unique<LayoutScheduler>()),
+    m_scheduler(std::make_unique<XiboLayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
     m_xmrManager(std::make_unique<XmrManager>())
@@ -167,7 +167,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
 
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateSettings));
-    interval->scheduleUpdated().connect(sigc::mem_fun(m_scheduler.get(), &LayoutScheduler::update));
+    interval->scheduleUpdated().connect(sigc::mem_fun(m_scheduler.get(), &XiboLayoutScheduler::update));
 
     return interval;
 }
@@ -180,7 +180,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     }
     else
     {
-        if(m_scheduler->currentLayoutId() == DEFAULT_LAYOUT_ID)
+        if(m_scheduler->currentLayoutId() == EMPTY_LAYOUT_ID)
         {
             m_windowController->updateLayout(m_scheduler->nextLayoutId());
         }

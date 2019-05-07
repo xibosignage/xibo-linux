@@ -169,7 +169,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
-        m_scheduleUpdated.emit(result.schedule);
+        m_scheduleUpdated.emit(result);
     }
     else
     {

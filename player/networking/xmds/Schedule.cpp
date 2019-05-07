@@ -20,16 +20,19 @@ Schedule::Result Soap::ResponseParser<Schedule::Result>::doParse(const xml_node&
 {
     auto scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);
     auto schedule = Utils::parseXmlFromString(scheduleXml).get_child(Resources::Schedule);
+    auto attrs = schedule.get_child(Resources::Attrs);
+
     Schedule::Result result;
+    result.generatedTime = attrs.get<std::string>("generated");
 
     for(auto [name, node] : schedule)
     {
         if(name == Resources::Layout)
-            result.schedule.layouts.emplace_back(parseScheduledLayout(node));
+            result.scheduledLayouts.emplace_back(parseScheduledLayout(node));
         else if(name == Resources::DefaultLayout)
-            result.schedule.defaultLayout = parseDefaultLayout(node);
+            result.defaultLayout = parseDefaultLayout(node);
         else if(name == Resources::GlobalDependants)
-            result.schedule.globalDependants = parseDependants(node);
+            result.globalDependats = parseDependants(node);
     }
 
     return result;
@@ -39,7 +42,7 @@ ScheduledLayout Soap::ResponseParser<Schedule::Result>::parseScheduledLayout(con
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
-    auto attrs = layoutNode.get_child(LayoutAttrs::Node);
+    auto attrs = layoutNode.get_child(Resources::Attrs);
     ScheduledLayout layout;
 
     layout.scheduleId = attrs.get<int>(LayoutAttrs::ScheduleId);
@@ -60,7 +63,7 @@ DefaultScheduledLayout Soap::ResponseParser<Schedule::Result>::parseDefaultLayou
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
-    auto attrs = layoutNode.get_child(LayoutAttrs::Node);
+    auto attrs = layoutNode.get_child(Resources::Attrs);
     DefaultScheduledLayout layout;
 
     layout.id = attrs.get<int>(LayoutAttrs::Id);
@@ -77,7 +80,7 @@ std::vector<std::string> Soap::ResponseParser<Schedule::Result>::parseDependants
 {
     std::vector<std::string> dependants;
 
-    for(auto [name, file] : dependantsNode)
+    for(auto&& [name, file] : dependantsNode)
     {
         dependants.emplace_back(file.get_value<std::string>());
     }
