@@ -49,7 +49,7 @@ namespace ProjectResources
 
     inline FilePath splashScreen()
     {
-        return configDirectory() / "splash.jpg";
+        return buildDirectory() / "splash.jpg";
     }
 
     inline FilePath cmsSettings()
