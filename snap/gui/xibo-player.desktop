@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Encoding=UTF-8
+Name=Xibo Player
+Comment=Xibo Player
+Exec=xibo-player
+Terminal=true
+Icon=${SNAP}/meta/gui/xibo-player.png
