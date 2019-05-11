@@ -45,6 +45,9 @@ std::string Uri::removeEscapedSymbols(std::string url)
 {
     boost::replace_all(url, "%2F", "/");
     boost::replace_all(url, "%3A", ":");
+    boost::replace_all(url, "%3F", "?");
+    boost::replace_all(url, "%3D", "=");
+    boost::replace_all(url, "%26", "&");
 
     return url;
 }
