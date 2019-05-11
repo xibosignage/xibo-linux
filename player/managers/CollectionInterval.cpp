@@ -9,6 +9,7 @@
 #include "xmlsink/XmlLogsRetriever.hpp"
 
 #include <glibmm/main.h>
+#include <boost/date_time/time_clock.hpp>
 
 const uint DEFAULT_INTERVAL = 900;
 namespace ph = std::placeholders;
@@ -20,7 +21,7 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
 
 void CollectionInterval::startRegularCollection()
 {
-    started = true;
+    m_started = true;
     collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
 }
 
@@ -60,7 +61,7 @@ void CollectionInterval::collect(CollectionResultCallback callback)
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
     Glib::MainContext::get_default()->invoke([this, session, error](){
-        if(started)
+        if(m_started)
         {
             startTimer();
         }
@@ -77,6 +78,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         auto displayError = getDisplayStatus(result.status);
         if(!displayError)
         {
+            m_registered = true;
+            m_lastChecked = boost::posix_time::second_clock::local_time();
             m_settingsUpdated.emit(result.playerSettings);
 
             auto requiredFilesResult = m_xmdsSender.requiredFiles().get();
@@ -124,6 +127,17 @@ void CollectionInterval::updateInterval(int collectInterval)
     }
 }
 
+CmsStatus CollectionInterval::status()
+{
+    CmsStatus status;
+
+    status.registered = m_registered;
+    status.lastChecked = m_lastChecked;
+    status.requiredFiles = m_requiredFiles;
+
+    return status;
+}
+
 SignalSettingsUpdated& CollectionInterval::settingsUpdated()
 {
     return m_settingsUpdated;
@@ -149,7 +163,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
 
-        Log::debug("{} files and {} resources to download", files.size(), resources.size());
+        m_requiredFiles = files.size() + resources.size();
 
         auto resourcesResult = downloader.download(resources);
         auto filesResult = downloader.download(files);

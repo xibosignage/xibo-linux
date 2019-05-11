@@ -4,6 +4,7 @@
 #include <spdlog/common.h>
 
 #include "common/CmsSettings.hpp"
+#include "control/GeneralInfo.hpp"
 
 class MainLoop;
 class XmdsRequestSender;
@@ -45,6 +46,8 @@ private:
     void updateSettings(const PlayerSettings& settings);
     void applyPlayerSettings(const PlayerSettings& settings);
 
+    GeneralInfo collectGeneralInfo();
+
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
     std::unique_ptr<XiboLayoutScheduler> m_scheduler;
@@ -54,6 +57,7 @@ private:
     std::unique_ptr<PlayerSettingsManager> m_playerSettingsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
     std::unique_ptr<XmrManager> m_xmrManager;
+    std::shared_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<MainWindowController> m_windowController;
     CmsSettings m_cmsSettings;
 

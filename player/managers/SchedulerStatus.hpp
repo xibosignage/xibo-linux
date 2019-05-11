@@ -11,5 +11,3 @@ struct SchedulerStatus
     int currentLayout;
     std::string generatedTime;
 };
-
-std::ostream& operator <<(std::ostream& out, const SchedulerStatus& status);

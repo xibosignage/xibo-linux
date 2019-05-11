@@ -9,6 +9,8 @@
 
 #include "control/MainWindowController.hpp"
 #include "control/MainWindow.hpp"
+#include "control/StatusScreenFormatter.hpp"
+#include "control/StatusScreen.hpp"
 #include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "managers/CollectionInterval.hpp"
@@ -27,6 +29,7 @@
 #include <gst/gst.h>
 #include <glibmm/main.h>
 #include <spdlog/sinks/stdout_sinks.h>
+#include <boost/date_time/time_clock.hpp>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -144,10 +147,18 @@ ScreenShoter& XiboApp::screenShoter()
 
 int XiboApp::run()
 {
-    auto mainWindow = std::make_shared<MainWindow>();
-    m_windowController = std::make_unique<MainWindowController>(mainWindow, *m_scheduler);
+    m_mainWindow = std::make_shared<MainWindow>();
+    m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_scheduler);
 
-    m_screenShoter = std::make_unique<ScreenShoter>(*mainWindow);
+    auto statusScreen = std::make_shared<StatusScreen>(640, 480);
+    m_windowController->statusScreenRequested().connect([this, statusScreen](){
+        StatusInfo info{collectGeneralInfo(), m_collectionInterval->status(), m_scheduler->status()};
+
+        statusScreen->setText(StatusScreenFormatter::formatInfo(info));
+        statusScreen->show();
+    });
+
+    m_screenShoter = std::make_unique<ScreenShoter>(*m_mainWindow);
     m_xmdsManager = std::make_unique<XmdsRequestSender>(m_cmsSettings.cmsAddress, m_cmsSettings.key, m_cmsSettings.displayId);
     m_collectionInterval = createCollectionInterval(*m_xmdsManager);
 
@@ -156,10 +167,27 @@ int XiboApp::run()
     m_collectionInterval->startRegularCollection();
     m_windowController->showSplashScreen();
 
-    Log::info("Player started");
-
-    return m_mainLoop->run(*mainWindow);
+    return m_mainLoop->run(*m_mainWindow);
 }
+
+GeneralInfo XiboApp::collectGeneralInfo()
+{
+    GeneralInfo info;
+    auto&& settings = m_playerSettingsManager->settings();
+
+    info.currentDT = boost::posix_time::second_clock::local_time();
+    info.cmsAddress = m_cmsSettings.cmsAddress;
+    info.resourcesPath = m_cmsSettings.resourcesPath;
+    info.codeVersion = ProjectResources::codeVersion();
+    info.projectVersion = ProjectResources::version();
+    info.screenShotInterval = settings.collectInterval;
+    info.displayName = settings.displayName;
+    info.windowWidth = m_mainWindow->width();
+    info.windowHeight = m_mainWindow->height();
+
+    return info;
+}
+
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {

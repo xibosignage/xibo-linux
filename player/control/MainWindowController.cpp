@@ -8,19 +8,23 @@
 #include "config.hpp"
 #include "managers/XiboLayoutScheduler.hpp"
 
-const int DEFAULT_DIALOG_WIDTH = 640;
-const int DEFAULT_DIALOG_HEIGHT = 460;
-
 namespace ph = std::placeholders;
 
-MainWindowController::MainWindowController(std::shared_ptr<MainWindow> window, XiboLayoutScheduler& scheduler) :
+const std::string STATUS_SCREEN_KEY = "i";
+
+MainWindowController::MainWindowController(const std::shared_ptr<MainWindow>& window, XiboLayoutScheduler& scheduler) :
     m_window(window), m_scheduler(scheduler)
 {
-    auto statusScreen = std::make_shared<StatusScreen>(DEFAULT_DIALOG_WIDTH, DEFAULT_DIALOG_HEIGHT);
-    m_statusScreenController = std::make_unique<StatusScreenController>(scheduler, statusScreen);
-
-    m_window->keyPressed().connect(std::bind(&StatusScreenController::onKeyPressed, m_statusScreenController.get(), ph::_1));
     m_window->disableWindowDecoration();
+    m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
+}
+
+void MainWindowController::onKeyPressed(const std::string& pressedKey)
+{
+    if(pressedKey == STATUS_SCREEN_KEY)
+    {
+        m_statusScrenRequested.emit();
+    }
 }
 
 void MainWindowController::updateLayout(int layoutId)
@@ -63,6 +67,11 @@ void MainWindowController::showSplashScreen()
 {
     m_window->setWidget(createSplashScreen());
     m_window->showAll();
+}
+
+StatusScreenRequested MainWindowController::statusScreenRequested()
+{
+    return m_statusScrenRequested;
 }
 
 std::shared_ptr<Widget> MainWindowController::createSplashScreen()
