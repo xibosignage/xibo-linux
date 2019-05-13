@@ -18,6 +18,7 @@ class ScreenShoter;
 class XmrManager;
 class MainWindowController;
 class MainWindow;
+class ScheduleManager;
 struct PlayerSettings;
 
 class XiboApp
@@ -59,6 +60,7 @@ private:
     std::unique_ptr<XmrManager> m_xmrManager;
     std::shared_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<MainWindowController> m_windowController;
+    std::unique_ptr<ScheduleManager> m_scheduleManager;
     CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;

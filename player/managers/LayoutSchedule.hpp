@@ -13,7 +13,7 @@ public:
     void updateDefaultLayout(DefaultScheduledLayout&& defaultLayout);
     const DefaultScheduledLayout& defaultLayout() const;
 
-    void updateScheduledLayouts(std::vector<ScheduledLayout>&& layouts);
+    void addScheduledLayout(ScheduledLayout&& layout);
     const std::vector<ScheduledLayout>& layouts() const;
     const ScheduledLayout& nextScheduledLayout();
 

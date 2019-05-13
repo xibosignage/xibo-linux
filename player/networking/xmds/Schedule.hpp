@@ -5,16 +5,12 @@
 #include "BaseResponseParser.hpp"
 
 #include "common/Field.hpp"
-#include "managers/ScheduleItem.hpp"
 
 namespace Schedule
 {
     struct Result
     {
-        std::vector<std::string> globalDependats;
-        std::vector<ScheduledLayout> scheduledLayouts;
-        DefaultScheduledLayout defaultLayout;
-        std::string generatedTime;
+        std::string scheduleXml;
     };
 
     struct Request
@@ -41,10 +37,5 @@ public:
 
 protected:
     Schedule::Result doParse(const xml_node& scheduleNode) override;
-
-private:
-    ScheduledLayout parseScheduledLayout(const xml_node& layoutNode);
-    DefaultScheduledLayout parseDefaultLayout(const xml_node& layoutNode);
-    std::vector<std::string> parseDependants(const xml_node& dependantsNode);
 
 };

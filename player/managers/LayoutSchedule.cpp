@@ -27,9 +27,9 @@ const DefaultScheduledLayout& LayoutSchedule::defaultLayout() const
     return m_defaultLayout;
 }
 
-void LayoutSchedule::updateScheduledLayouts(std::vector<ScheduledLayout>&& layouts)
+void LayoutSchedule::addScheduledLayout(ScheduledLayout&& layout)
 {
-    m_scheduledLayouts = std::move(layouts);
+    m_scheduledLayouts.emplace_back(std::move(layout));
 
     std::stable_sort(m_scheduledLayouts.begin(), m_scheduledLayouts.end(), [](const auto& first, const auto& second){
         return first.priority > second.priority;

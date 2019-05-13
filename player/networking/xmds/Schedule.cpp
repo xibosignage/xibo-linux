@@ -18,72 +18,7 @@ Soap::ResponseParser<Schedule::Result>::ResponseParser(const std::string& soapRe
 
 Schedule::Result Soap::ResponseParser<Schedule::Result>::doParse(const xml_node& scheduleNode)
 {
-    auto scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);
-    auto schedule = Utils::parseXmlFromString(scheduleXml).get_child(Resources::Schedule);
-    auto attrs = schedule.get_child(Resources::Attrs);
-
     Schedule::Result result;
-    result.generatedTime = attrs.get<std::string>("generated");
-
-    for(auto [name, node] : schedule)
-    {
-        if(name == Resources::Layout)
-            result.scheduledLayouts.emplace_back(parseScheduledLayout(node));
-        else if(name == Resources::DefaultLayout)
-            result.defaultLayout = parseDefaultLayout(node);
-        else if(name == Resources::GlobalDependants)
-            result.globalDependats = parseDependants(node);
-    }
-
+    result.scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);
     return result;
-}
-
-ScheduledLayout Soap::ResponseParser<Schedule::Result>::parseScheduledLayout(const xml_node& layoutNode)
-{
-    namespace LayoutAttrs = Resources::LayoutAttrs;
-
-    auto attrs = layoutNode.get_child(Resources::Attrs);
-    ScheduledLayout layout;
-
-    layout.scheduleId = attrs.get<int>(LayoutAttrs::ScheduleId);
-    layout.id = attrs.get<int>(LayoutAttrs::Id);
-    layout.startDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::StartDT));
-    layout.endDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::EndDT));
-    layout.priority = attrs.get<int>(LayoutAttrs::Priority);
-
-    if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))
-    {
-        layout.dependants = parseDependants(dependants.value());
-    }
-
-    return layout;
-}
-
-DefaultScheduledLayout Soap::ResponseParser<Schedule::Result>::parseDefaultLayout(const xml_node& layoutNode)
-{
-    namespace LayoutAttrs = Resources::LayoutAttrs;
-
-    auto attrs = layoutNode.get_child(Resources::Attrs);
-    DefaultScheduledLayout layout;
-
-    layout.id = attrs.get<int>(LayoutAttrs::Id);
-
-    if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))
-    {
-        layout.dependants = parseDependants(dependants.value());
-    }
-
-    return layout;
-}
-
-std::vector<std::string> Soap::ResponseParser<Schedule::Result>::parseDependants(const xml_node& dependantsNode)
-{
-    std::vector<std::string> dependants;
-
-    for(auto&& [name, file] : dependantsNode)
-    {
-        dependants.emplace_back(file.get_value<std::string>());
-    }
-
-    return dependants;
 }

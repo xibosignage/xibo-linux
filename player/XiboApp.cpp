@@ -18,6 +18,7 @@
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrManager.hpp"
+#include "managers/ScheduleManager.hpp"
 
 #include "networking/HttpManager.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
@@ -71,7 +72,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_scheduler(std::make_unique<XiboLayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
-    m_xmrManager(std::make_unique<XmrManager>())
+    m_xmrManager(std::make_unique<XmrManager>()),
+    m_scheduleManager(std::make_unique<ScheduleManager>())
 {
     if(!FileSystem::exists(ProjectResources::cmsSettings()))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -81,6 +83,8 @@ XiboApp::XiboApp(const std::string& name) :
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_playerSettingsManager->load();
+    m_scheduleManager->load(ProjectResources::configDirectory() / DEFAULT_SCHEDULE_FILE);
+    m_scheduler->reloadSchedule(m_scheduleManager->schedule());
     m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
@@ -165,7 +169,7 @@ int XiboApp::run()
     updateSettings(m_playerSettingsManager->settings());
 
     m_collectionInterval->startRegularCollection();
-    m_windowController->showSplashScreen();
+    m_windowController->updateLayout(m_scheduler->nextLayoutId());
 
     return m_mainLoop->run(*m_mainWindow);
 }
@@ -195,7 +199,10 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
 
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateSettings));
-    interval->scheduleUpdated().connect(sigc::mem_fun(m_scheduler.get(), &XiboLayoutScheduler::update));
+    interval->scheduleUpdated().connect([this](const Schedule::Result& result){
+        m_scheduleManager->update(result.scheduleXml);
+        m_scheduler->reloadSchedule(m_scheduleManager->schedule());
+    });
 
     return interval;
 }
