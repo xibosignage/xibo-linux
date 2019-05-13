@@ -7,6 +7,7 @@
 
 const std::string DEFAULT_RESOURCES_DIR = "resources";
 const std::string DEFAULT_CACHE_FILE = "cachedFiles.xml";
+const std::string DEFAULT_SCHEDULE_FILE = "schedule.xml";
 
 namespace ProjectResources
 {
