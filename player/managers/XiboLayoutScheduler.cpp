@@ -4,14 +4,9 @@
 #include "common/FileSystem.hpp"
 #include "utils/Resources.hpp"
 
-void XiboLayoutScheduler::update(const Schedule::Result& result)
+void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-    auto&& schedule = const_cast<Schedule::Result&>(result);
-
-    m_schedule.updateDependants(std::move(schedule.globalDependats));
-    m_schedule.updateScheduledLayouts(std::move(schedule.scheduledLayouts));
-    m_schedule.updateDefaultLayout(std::move(schedule.defaultLayout));
-    m_schedule.updateGeneratedTime(std::move(result.generatedTime));
+    m_schedule = std::move(schedule);
 }
 
 int XiboLayoutScheduler::nextLayoutId()
@@ -56,29 +51,6 @@ SchedulerStatus XiboLayoutScheduler::status()
     status.currentLayout = m_currentLayoutId;
 
     return status;
-}
-
-std::vector<int> XiboLayoutScheduler::collectValidLayouts()
-{
-    std::vector<int> layouts;
-
-
-
-    return layouts;
-}
-
-std::vector<int> XiboLayoutScheduler::collectInvalidLayouts()
-{
-    std::vector<int> layouts;
-
-    return layouts;
-}
-
-std::vector<int> XiboLayoutScheduler::collectScheduledLayouts()
-{
-    std::vector<int> layouts;
-
-    return layouts;
 }
 
 int XiboLayoutScheduler::nextScheduledLayoutId()

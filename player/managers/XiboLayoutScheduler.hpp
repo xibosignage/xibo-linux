@@ -2,7 +2,6 @@
 
 #include "LayoutSchedule.hpp"
 #include "SchedulerStatus.hpp"
-#include "networking/xmds/Schedule.hpp"
 
 #include <memory>
 #include <vector>
@@ -10,7 +9,7 @@
 class XiboLayoutScheduler
 {
 public:
-    void update(const Schedule::Result& schedule);
+    void reloadSchedule(LayoutSchedule&& schedule);
     int nextLayoutId();
     int currentLayoutId() const;
 
@@ -22,10 +21,6 @@ private:
     bool isLayoutOnSchedule(const ScheduledLayout& layout) const;
     bool isLayoutValid(const std::vector<std::string>& dependants) const;
     size_t increaseLayoutIndex(std::size_t index) const;
-
-    std::vector<int> collectValidLayouts();
-    std::vector<int> collectInvalidLayouts();
-    std::vector<int> collectScheduledLayouts();
 
 private:
     LayoutSchedule m_schedule;

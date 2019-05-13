@@ -11,6 +11,7 @@
 #include "networking/ResponseResult.hpp"
 #include "common/JoinableThread.hpp"
 #include "common/Dispatcher.hpp"
+#include "CmsStatus.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
@@ -34,6 +35,7 @@ public:
     void stop();
     void collect(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
+    CmsStatus status();
 
     SignalSettingsUpdated& settingsUpdated();
     SignalScheduleUpdated& scheduleUpdated();
@@ -58,7 +60,10 @@ private:
     std::unique_ptr<JoinableThread> m_workerThread;
     std::unique_ptr<ITimerProvider> m_intervalTimer;
     int m_collectInterval;
-    bool started = false;
+    bool m_started = false;
+    bool m_registered = false;
+    boost::posix_time::ptime m_lastChecked;
+    size_t m_requiredFiles = 0;
     SignalSettingsUpdated m_settingsUpdated;
     SignalScheduleUpdated m_scheduleUpdated;
     SignalCollectionFinished m_collectionFinished;
