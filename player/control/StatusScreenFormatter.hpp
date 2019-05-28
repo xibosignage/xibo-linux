@@ -3,12 +3,14 @@
 #include "managers/SchedulerStatus.hpp"
 #include "GeneralInfo.hpp"
 #include "managers/CmsStatus.hpp"
+#include "managers/XmrStatus.hpp"
 
 struct StatusInfo
 {
     GeneralInfo general;
     CmsStatus cms;
     SchedulerStatus scheduler;
+    XmrStatus xmr;
 };
 
 class StatusScreenFormatter
@@ -21,5 +23,6 @@ private:
     static std::string formatCmsInfo(const CmsStatus& info);
     static std::string formatSchedulerInfo(const SchedulerStatus& info);
     static std::string layoutsToString(const std::vector<int>& layouts);
+    static std::string formatXmrInfo(const XmrStatus& info);
 
 };
