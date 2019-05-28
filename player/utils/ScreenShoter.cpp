@@ -55,6 +55,8 @@ void ScreenShoter::takeXDisplayScreenshot(SurfaceCreated callback)
 
             auto surface = Cairo::XlibSurface::create(display, active, gwa.visual, gwa.width, gwa.height);
             callback(surface);
+
+            XCloseDisplay(display);
         }
         return false;
     });

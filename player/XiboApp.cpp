@@ -156,7 +156,7 @@ int XiboApp::run()
 
     auto statusScreen = std::make_shared<StatusScreen>(640, 480);
     m_windowController->statusScreenRequested().connect([this, statusScreen](){
-        StatusInfo info{collectGeneralInfo(), m_collectionInterval->status(), m_scheduler->status()};
+        StatusInfo info{collectGeneralInfo(), m_collectionInterval->status(), m_scheduler->status(), m_xmrManager->status()};
 
         statusScreen->setText(StatusScreenFormatter::formatInfo(info));
         statusScreen->show();

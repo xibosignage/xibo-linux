@@ -14,6 +14,7 @@ public:
 
 private:
     std::shared_ptr<Widget> createView(int width, int height);
+//    void updateFileWidth(const Uri& uri, int width);
 
 private:
     WebViewOptions m_options;

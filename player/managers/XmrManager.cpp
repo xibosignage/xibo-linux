@@ -11,9 +11,9 @@ const size_t MESSAGE_PART = 2;
 
 void XmrManager::connect(const std::string& host)
 {
-    if(m_host == host) return;
+    if(m_info.host == host) return;
 
-    m_host = host;
+    m_info.host = host;
     m_subcriber.messageReceived().connect([this](const MultiPartMessage& message){
         processMultipartMessage(message);
     });
@@ -37,6 +37,11 @@ ScreenshotAction& XmrManager::screenshot()
     return m_screenshotAction;
 }
 
+XmrStatus XmrManager::status()
+{
+    return m_info;
+}
+
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
     if(multipart[CHANNEL_PART] == XMR_CHANNEL)
@@ -47,6 +52,8 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
             auto xmrMessage = parseMessage(decryptedMessage);
 
             processXmrMessage(xmrMessage);
+
+            m_info.lastMessageDt = boost::posix_time::second_clock::universal_time();
         }
         catch (std::exception& e)
         {
@@ -55,7 +62,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        Log::trace("Heartbeat");
+        m_info.lastHeartbeatDt = boost::posix_time::second_clock::universal_time();
     }
 }
 

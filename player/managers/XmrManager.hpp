@@ -3,6 +3,7 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 #include "networking/ZeromqSubscriber.hpp"
+#include "XmrStatus.hpp"
 
 struct XmrMessage
 {
@@ -22,6 +23,7 @@ public:
 
     CollectionIntervalAction& collectionInterval();
     ScreenshotAction& screenshot();
+    XmrStatus status();
 
 private:
     void processMultipartMessage(const MultiPartMessage& message);
@@ -35,6 +37,6 @@ private:
     ZeromqSubscriber m_subcriber;
     CollectionIntervalAction m_collectionIntervalAction;
     ScreenshotAction m_screenshotAction;
-    std::string m_host;
+    XmrStatus m_info;
 
 };

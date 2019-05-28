@@ -9,6 +9,7 @@ std::string StatusScreenFormatter::formatInfo(const StatusInfo& info)
     out << "General Info:" << std::endl << formatGeneralInfo(info.general) << std::endl;
     out << "CMS Info:" << std::endl << formatCmsInfo(info.cms) << std::endl;
     out << "Schedule Info:" << std::endl << formatSchedulerInfo(info.scheduler) << std::endl;
+    out << "XMR Info:" << std::endl << formatXmrInfo(info.xmr) << std::endl;
 
     return out.str();
 }
@@ -68,6 +69,17 @@ std::string StatusScreenFormatter::layoutsToString(const std::vector<int>& layou
     {
         out << std::to_string(id) << " ";
     }
+
+    return out.str();
+}
+
+std::string StatusScreenFormatter::formatXmrInfo(const XmrStatus& info)
+{
+    std::stringstream out;
+
+    out << "Host - " << info.host << std::endl;
+    out << "Last heartbeat - " << boost::posix_time::to_simple_string(info.lastHeartbeatDt) << std::endl;
+    out << "Last message - " << boost::posix_time::to_simple_string(info.lastMessageDt) << std::endl;
 
     return out.str();
 }
