@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IWebView.hpp"
 #include "control/common/Widget.hpp"
 
 #include <gtkmm/scrolledwindow.h>
@@ -9,7 +10,7 @@ using WebKitWebView = _WebKitWebView;
 
 class Uri;
 
-class WebView : public Widget
+class WebView : public Widget<IWebView>
 {
 public:
     WebView(int width, int height);
@@ -17,9 +18,9 @@ public:
     void show() override;
     void setSize(int width, int height) override;
 
-    void reload();
-    void load(const Uri& uri);
-    void enableTransparency();
+    void reload() override;
+    void load(const Uri& uri) override;
+    void enableTransparency() override;
 
     Gtk::ScrolledWindow& get() override;
 

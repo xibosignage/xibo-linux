@@ -1,8 +1,8 @@
 #include "WebViewParser.hpp"
 
 #include "utils/Resources.hpp"
-#include "control/media/MediaResources.hpp"
-#include "WebViewResources.hpp"
+#include "control/media/creators/MediaResources.hpp"
+#include "control/media/webview/WebViewResources.hpp"
 
 #include <regex>
 #include <fstream>
@@ -16,24 +16,21 @@ const std::string DEFAULT_NATIVE_SCHEME = "file://";
 const std::regex DURATION_REGEX("DURATION=([0-9]+)");
 const std::string DEFAULT_WEBVIEW_EXTENSION = ".html";
 
-WebViewParser::WebViewParser(const xml_node& node) :
-    MediaParser(node)
-{
-}
-
-WebViewOptions WebViewParser::parse()
-{
-    auto options = baseOptions();
-    auto transparency = node().get<bool>(ResourcesXlf::option(ResourcesXlf::WebView::Transparent), DEFAULT_TRANSPARENCY);
-    auto mode = node().get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DEFAULT_WEBVIEW_MODE);
-
-    return WebViewOptions{options, static_cast<WebViewOptions::Transparency>(transparency), mode};
-}
-
 int WebViewParser::duration()
 {
     auto baseDuration = MediaParser::duration();
     return parseDuration(uri().path()).value_or(baseDuration);
+}
+
+ExtraOptions WebViewParser::parseAdditonalOptions(const xml_node& node)
+{
+    auto transparency = node.get<bool>(ResourcesXlf::option(ResourcesXlf::WebView::Transparency), DEFAULT_TRANSPARENCY);
+    auto mode = node.get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DEFAULT_WEBVIEW_MODE);
+
+    return {
+        {ResourcesXlf::WebView::Transparency, std::to_string(transparency)},
+        {ResourcesXlf::WebView::ModeId, std::to_string(mode)}
+    };
 }
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)

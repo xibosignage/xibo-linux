@@ -1,28 +1,25 @@
 #pragma once
 
-#include "utils/ITimerProvider.hpp"
-#include "control/common/Widget.hpp"
+#include "IMedia.hpp"
 #include "MediaOptions.hpp"
 
-#include <memory>
-#include <sigc++/sigc++.h>
+#include "utils/ITimerProvider.hpp"
+#include "control/common/IWidget.hpp"
 
-using SignalMediaFinished = sigc::signal<void()>;
-
-class Media
+class Media : public IMedia
 {
 public:
-    Media(const MediaOptions& options, const std::shared_ptr<Widget>& view);
-    virtual ~Media() = default;
+    Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view);
 
-    void attachMedia(std::unique_ptr<Media>&& attachedMedia);
-    void start();
-    void stop();
+    void attachMedia(std::unique_ptr<IMedia>&& attachedMedia) override;
+    void start() override;
+    void stop() override;
 
-    SignalMediaFinished mediaFinished();
-    std::shared_ptr<Widget> view() const;
-    MediaGeometry::Align align() const;
-    MediaGeometry::Valign valign() const;
+    SignalMediaFinished mediaFinished() override;
+
+    MediaGeometry::Align align() const override;
+    MediaGeometry::Valign valign() const override;
+    std::shared_ptr<IWidget> view() override;
 
 protected:
     virtual void onStarted();
@@ -35,8 +32,8 @@ private:
 
 private:
     MediaOptions m_options;
-    std::shared_ptr<Widget> m_view;
-    std::unique_ptr<Media> m_attachedMedia;
+    std::shared_ptr<IWidget> m_view;
+    std::unique_ptr<IMedia> m_attachedMedia;
     std::unique_ptr<ITimerProvider> m_timer;
     SignalMediaFinished m_mediaFinished;
 

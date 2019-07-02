@@ -1,6 +1,7 @@
 #include "MediaParser.hpp"
-
 #include "MediaResources.hpp"
+#include "MediaParsersRepo.hpp"
+
 #include "control/common/Validators.hpp"
 
 std::istream& operator >>(std::istream& in, MediaGeometry::ScaleType& scaleType)
@@ -46,9 +47,12 @@ std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign)
     return in;
 }
 
-MediaParser::MediaParser(const xml_node& node) :
-    m_node(node)
+ParsedMedia MediaParser::parse(const xml_node& node)
 {
+    m_node = std::move(node);
+
+    MediaOptions baseOptions{type(), id(), uri(), duration(), geometry()};
+    return ParsedMedia{baseOptions, parseAdditonalOptions(m_node), parseAttachedMedia(m_node)};
 }
 
 const xml_node& MediaParser::node() const
@@ -56,31 +60,47 @@ const xml_node& MediaParser::node() const
     return m_node;
 }
 
-MediaOptions MediaParser::baseOptions()
+MediaOptions::Type MediaParser::type()
 {
-    m_id = m_node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Id));
-    m_uri = m_node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Uri));
-    m_duration = m_node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Duration));
+    auto type = m_node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Type));
+    auto render = m_node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Render));
 
-    return MediaOptions{id(), uri(), duration(), geometry()};
+    return {type, render};
 }
 
 int MediaParser::id()
 {
-    return m_id;
+    return m_node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Id));
 }
 
 Uri MediaParser::uri()
 {
-    return Validators::validateUri(m_uri);
+    auto uri = m_node.get_optional<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Uri));
+    return Validators::validateUri(uri);
 }
 
 int MediaParser::duration()
 {
-    return m_duration;
+    return m_node.get<int>(ResourcesXlf::attr(ResourcesXlf::Media::Duration));
 }
 
 MediaGeometry MediaParser::geometry()
 {
     return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
+}
+
+std::unique_ptr<ParsedMedia> MediaParser::parseAttachedMedia(const xml_node& node)
+{
+    for(auto [nodeName, attachedNode] : node)
+    {
+        MediaOptions::Type type{nodeName, ResourcesXlf::Media::NativeRender};
+        auto&& parser = MediaParsersRepo::get(type);
+
+        if(parser)
+        {
+            return std::make_unique<ParsedMedia>(parser->parse(attachedNode));
+        }
+    }
+
+    return {};
 }

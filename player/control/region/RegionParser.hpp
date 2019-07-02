@@ -1,18 +1,18 @@
 #pragma once
 
 #include "constants.hpp"
-#include "RegionOptions.hpp"
+#include "ParsedRegion.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
 class RegionParser
 {
 public: 
-    RegionParser(const xml_node& regionNode);
-    RegionOptions parse();
+    ParsedRegion parse(const xml_node& node);
 
 private:
-    xml_node m_regionNode;
+    std::vector<ParsedMedia> parseMedia(int regionWidth, int regionHeight, const xml_node& node);
+    MediaOptions::Type parseMediaType(const xml_node& node);
 
 };
 

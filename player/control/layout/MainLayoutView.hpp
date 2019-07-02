@@ -1,15 +1,16 @@
 #pragma once
 
+#include "IMainLayoutView.hpp"
 #include "control/common/Widget.hpp"
 
 #include <gtkmm/overlay.h>
 
-class MainLayoutView : public Widget
+class MainLayoutView : public Widget<IMainLayoutView>
 {
 public:
     struct WidgetInfo
     {
-        std::shared_ptr<Widget> widget;
+        std::shared_ptr<IWidget> widget;
         int x;
         int y;
         int z;
@@ -19,10 +20,9 @@ public:
 
     MainLayoutView(int width, int height);
 
-    void addRegion(const std::shared_ptr<Widget>& child, int x, int y, int z);
-    void reorderRegion(const std::shared_ptr<Widget>& child, int z);
-    void addBackground(const std::shared_ptr<Widget>& mainChild);
-    bool hasBackground() const;
+    void addRegion(const std::shared_ptr<IWidget>& child, int x, int y, int z) override;
+    void reorderRegion(const std::shared_ptr<IWidget>& child, int z) override;
+    void addBackground(const std::shared_ptr<IWidget>& mainChild) override;
 
     void showAll() override;
     void setSize(int width, int height) override;
@@ -40,7 +40,7 @@ private:
 
 private:
     Gtk::Overlay m_handler;
-    std::shared_ptr<Widget> m_mainChild;
+    std::shared_ptr<IWidget> m_mainChild;
     WidgetsWithInfo m_regions;
     int m_xOffset = 0;
     int m_yOffset = 0;

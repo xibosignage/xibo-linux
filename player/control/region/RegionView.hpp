@@ -1,16 +1,16 @@
 #pragma once
 
+#include "IRegionView.hpp"
 #include "control/common/Widget.hpp"
 
 #include <gtkmm/fixed.h>
 
-class RegionView : public Widget
+class RegionView : public Widget<IRegionView>
 {
 public:
     RegionView(int width, int height);
 
-    void addMedia(const std::shared_ptr<Widget>& child, int left, int top);
-    void setSize(int width, int height) override;
+    void addMedia(const std::shared_ptr<IWidget>& child, int left, int top) override;
     void scale(double scaleX, double scaleY) override;
 
     Gtk::Fixed& get() override;
@@ -20,6 +20,6 @@ private:
 
 private:
     Gtk::Fixed m_handler;
-    std::vector<std::shared_ptr<Widget>> m_media;
+    std::vector<std::shared_ptr<IWidget>> m_media;
 
 };

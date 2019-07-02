@@ -14,9 +14,9 @@ MainLayoutView::MainLayoutView(int width, int height) :
     setSize(width, height);
 }
 
-void MainLayoutView::addRegion(const std::shared_ptr<Widget>& child, int x, int y, int z)
+void MainLayoutView::addRegion(const std::shared_ptr<IWidget>& child, int x, int y, int z)
 {
-    m_handler.add_overlay(child->get());
+    m_handler.add_overlay(getHandler(*child));
 
     WidgetInfo info{child, x, y, z};
     m_regions.emplace_back(info);
@@ -37,25 +37,20 @@ void MainLayoutView::reorderRegions()
     for(std::size_t i = 0; i != m_regions.size(); ++i)
     {
         auto&& widget = m_regions[i].widget;
-        m_handler.reorder_overlay(widget->get(), static_cast<int>(i));
+        m_handler.reorder_overlay(getHandler(*widget), static_cast<int>(i));
     }
 }
 
-void MainLayoutView::reorderRegion(const std::shared_ptr<Widget>& child, int z)
+void MainLayoutView::reorderRegion(const std::shared_ptr<IWidget>& child, int z)
 {
-    m_handler.reorder_overlay(child->get(), z);
+    m_handler.reorder_overlay(getHandler(*child), z);
 }
 
-void MainLayoutView::addBackground(const std::shared_ptr<Widget>& mainChild)
+void MainLayoutView::addBackground(const std::shared_ptr<IWidget>& mainChild)
 {
-    m_handler.add(mainChild->get());
+    m_handler.add(getHandler(*mainChild));
 
     m_mainChild = mainChild;
-}
-
-bool MainLayoutView::hasBackground() const
-{
-    return m_mainChild != nullptr;
 }
 
 void MainLayoutView::showAll()
@@ -130,7 +125,7 @@ bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& al
 
 MainLayoutView::WidgetsWithInfo::iterator MainLayoutView::findRegion(Gtk::Widget* widget)
 {
-    return std::find_if(m_regions.begin(), m_regions.end(), [widget](const auto& child){
-        return &child.widget->get() == widget;
+    return std::find_if(m_regions.begin(), m_regions.end(), [this, widget](const auto& child){
+        return &getHandler(*child.widget) == widget;
     });
 }

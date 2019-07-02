@@ -1,19 +1,18 @@
 #include "Media.hpp"
 
 #include "constants.hpp"
-
 #include "utils/TimerProvider.hpp"
 
 #include "common/logger/Logging.hpp"
 
-Media::Media(const MediaOptions& model, const std::shared_ptr<Widget>& view) :
-    m_options(model),
+Media::Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view) :
+    m_options(options),
     m_view(view),
     m_timer(std::make_unique<TimerProvider>())
 {
 }
 
-void Media::attachMedia(std::unique_ptr<Media>&& attachedMedia)
+void Media::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
 {
     m_attachedMedia = std::move(attachedMedia);
 }
@@ -73,9 +72,9 @@ void Media::onStopped()
     }
 }
 
-std::shared_ptr<Widget> Media::view() const
+SignalMediaFinished Media::mediaFinished()
 {
-    return m_view;
+    return m_mediaFinished;
 }
 
 MediaGeometry::Align Media::align() const
@@ -88,7 +87,7 @@ MediaGeometry::Valign Media::valign() const
     return m_options.geometry.valign;
 }
 
-SignalMediaFinished Media::mediaFinished()
+std::shared_ptr<IWidget> Media::view()
 {
-    return m_mediaFinished;
+    return m_view;
 }

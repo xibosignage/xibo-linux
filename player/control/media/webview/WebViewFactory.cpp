@@ -1,37 +1,34 @@
 #include "WebViewFactory.hpp"
 #include "WebView.hpp"
+#include "WebViewResources.hpp"
+
+#include "control/media/Media.hpp"
+#include "control/region/RegionResources.hpp"
 
 #include <fstream>
 #include <regex>
 
-WebViewFactory::WebViewFactory(int width, int height, const WebViewOptions& options) :
-    m_options(options),
-    m_width(width),
-    m_height(height)
+std::unique_ptr<IMedia> WebViewFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
+    int width = std::stoi(options.at(ResourcesXlf::Region::Width));
+    int height = std::stoi(options.at(ResourcesXlf::Region::Height));
+    auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(ResourcesXlf::WebView::Transparency)));
+
+    return std::make_unique<Media>(baseOptions, createView(baseOptions.uri, width, height, transparency));
 }
 
-std::unique_ptr<Media> WebViewFactory::create()
-{
-    return std::make_unique<Media>(m_options, createView(m_width, m_height));
-}
-
-std::shared_ptr<Widget> WebViewFactory::createView(int width, int height)
+std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, int height, WebViewOptions::Transparency transparency)
 {
     auto webview = std::make_shared<WebView>(width, height);
 
-//    updateFileWidth(m_options.uri, width);
-    webview->load(m_options.uri);
-    if(m_options.transparency == WebViewOptions::Transparency::Enable)
+    webview->load(uri);
+    if(transparency == WebViewOptions::Transparency::Enable)
     {
         webview->enableTransparency();
     }
 
     return webview;
 }
-
-//#include "common/logger/Logging.hpp"
-//#include <iostream>
 
 //void WebViewFactory::updateFileWidth(const Uri& uri, int width)
 //{

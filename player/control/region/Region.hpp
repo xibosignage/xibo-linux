@@ -1,24 +1,24 @@
 #pragma once
 
-#include "control/media/Media.hpp"
-#include "RegionOptions.hpp"
-#include "RegionView.hpp"
+#include "IRegion.hpp"
+#include "IRegionView.hpp"
+#include "ParsedRegion.hpp"
+
+#include "control/media/IMedia.hpp"
 
 #include <vector>
 #include <boost/noncopyable.hpp>
-#include <sigc++/signal.h>
 
-using SignalRegionExpired = sigc::signal<void(int)>;
-
-class Region : private boost::noncopyable
+class Region : public IRegion, private boost::noncopyable
 {
 public:
-    Region(const RegionOptions& options, const std::shared_ptr<RegionView>& view);
+    Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionView>& view);
 
-    void addMedia(std::unique_ptr<Media>&& media);
-    void start();
-    SignalRegionExpired expired();
-    std::shared_ptr<RegionView> view() const;
+    void addMedia(std::unique_ptr<IMedia>&& media, int x, int y) override;
+    void start() override;
+    SignalRegionExpired expired() override;
+
+    std::shared_ptr<IRegionView> view() override;
 
 private:
     void placeMedia(size_t mediaIndex);
@@ -30,9 +30,10 @@ private:
     bool isExpired() const;
 
 private:
-    RegionOptions m_options;
-    std::shared_ptr<RegionView> m_view;
-    std::vector<std::unique_ptr<Media>> m_media;
+    int m_id;
+    RegionOptions::Loop m_loop;
+    std::shared_ptr<IRegionView> m_view;
+    std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
     SignalRegionExpired m_regionExpired;
 

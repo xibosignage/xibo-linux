@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IVideoWindow.hpp"
 #include "control/common/Widget.hpp"
 #include "control/media/MediaGeometry.hpp"
 
@@ -9,12 +10,12 @@
 
 using OnDrawnCallback = std::function<bool(const Cairo::RefPtr<Cairo::Context>&)>;
 
-class VideoWindow : public Widget
+class VideoWindow : public Widget<IVideoWindow>
 {
 public:
     VideoWindow(int width, int height);
 
-    void drawFrame(const std::shared_ptr<XiboVideoFrame>& frame);
+    void drawFrame(const std::shared_ptr<XiboVideoFrame>& frame) override;
 
     Gtk::DrawingArea& get() override;
 

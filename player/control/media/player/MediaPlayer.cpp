@@ -69,7 +69,7 @@ void MediaPlayer::init()
     m_decodebin->signalNoMorePads().connect(sigc::mem_fun(*this, &MediaPlayer::noMorePads));
 }
 
-void MediaPlayer::setOutputWindow(const std::shared_ptr<VideoWindow>& window)
+void MediaPlayer::setOutputWindow(const std::shared_ptr<IVideoWindow>& window)
 {
     m_outputWindow = window;
 
@@ -82,7 +82,7 @@ void MediaPlayer::setOutputWindow(const std::shared_ptr<VideoWindow>& window)
     gst_xibovideosink_set_handler(sink, m_outputWindow);
 }
 
-std::shared_ptr<VideoWindow> MediaPlayer::outputWindow() const
+std::shared_ptr<IVideoWindow> MediaPlayer::outputWindow() const
 {
     return m_outputWindow;
 }

@@ -89,11 +89,11 @@ int MainWindow::y() const
     return m_yPos;
 }
 
-void MainWindow::setWidget(const std::shared_ptr<Widget>& child)
+void MainWindow::setWidget(const std::shared_ptr<IWidget>& child)
 {
     removeWidget();
 
-    m_handler.add(child->get());
+    m_handler.add(getHandler(*child));
     m_child = child;
 }
 

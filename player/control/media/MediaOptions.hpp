@@ -5,6 +5,11 @@
 
 struct MediaOptions
 {
+    struct Type{
+        std::string type;
+        std::string render;
+    } type;
+
     int id;
     Uri uri;
     int duration;

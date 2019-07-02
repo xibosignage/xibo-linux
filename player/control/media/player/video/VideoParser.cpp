@@ -1,27 +1,21 @@
 #include "VideoParser.hpp"
 
 #include "control/media/player/MediaPlayerResources.hpp"
-#include "control/media/MediaResources.hpp"
+#include "control/media/creators/MediaResources.hpp"
 
 const bool DEFAULT_VIDEO_MUTED = false;
 const bool DEFAULT_VIDEO_LOOPED = false;
 const MediaGeometry::ScaleType DEFAULT_VIDEO_SCALE_TYPE = MediaGeometry::ScaleType::Scaled;
 
-VideoParser::VideoParser(const xml_node& node) :
-    MediaParser(node)
+ExtraOptions VideoParser::parseAdditonalOptions(const xml_node& node)
 {
-}
+    auto muted = node.get<bool>(ResourcesXlf::option(ResourcesXlf::Player::Mute), DEFAULT_VIDEO_MUTED);
+    auto looped = node.get<bool>(ResourcesXlf::option(ResourcesXlf::Player::Loop), DEFAULT_VIDEO_LOOPED);
 
-MediaPlayerOptions VideoParser::parse()
-{
-    auto options = baseOptions();
-    auto muted = node().get<bool>(ResourcesXlf::option(ResourcesXlf::Player::Mute), DEFAULT_VIDEO_MUTED);
-    auto looped = node().get<bool>(ResourcesXlf::option(ResourcesXlf::Player::Loop), DEFAULT_VIDEO_LOOPED);
-
-    return MediaPlayerOptions{options,
-                              static_cast<MediaPlayerOptions::Mute>(muted),
-                              static_cast<MediaPlayerOptions::Loop>(looped),
-                              MAX_VOLUME};
+    return {
+        {ResourcesXlf::Player::Mute, std::to_string(muted)},
+        {ResourcesXlf::Player::Loop, std::to_string(looped)}
+    };
 }
 
 MediaGeometry VideoParser::geometry()

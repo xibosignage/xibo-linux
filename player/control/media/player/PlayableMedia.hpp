@@ -1,13 +1,13 @@
 #pragma once
 
 #include "MediaPlayerOptions.hpp"
-#include "MediaPlayer.hpp"
+#include "IMediaPlayer.hpp"
 #include "control/media/Media.hpp"
 
 class PlayableMedia : public Media
 {
 public:
-    PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<MediaPlayer>&& player);
+    PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player);
 
 protected:
     void onStarted() override;
@@ -18,6 +18,6 @@ private:
     void onPlaybackFinished(const MediaPlayerOptions& options);
 
 private:
-    std::unique_ptr<MediaPlayer> m_player;
+    std::unique_ptr<IMediaPlayer> m_player;
 
 };

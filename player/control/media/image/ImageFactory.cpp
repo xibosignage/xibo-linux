@@ -1,26 +1,26 @@
 #include "ImageFactory.hpp"
 
 #include "control/common/Image.hpp"
+#include "control/media/Media.hpp"
+#include "control/region/RegionResources.hpp"
+
 #include "common/FilePath.hpp"
 
-ImageFactory::ImageFactory(int width, int height, const ImageOptions& options) :
-    m_options(options),
-    m_width(width),
-    m_height(height)
+std::unique_ptr<IMedia> ImageFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
+    int width = std::stoi(options.at(ResourcesXlf::Region::Width));
+    int height = std::stoi(options.at(ResourcesXlf::Region::Height));
+
+    auto view = createView(baseOptions.uri, width, height, baseOptions.geometry.scaleType);
+    return std::make_unique<Media>(baseOptions, view);
 }
 
-std::unique_ptr<Media> ImageFactory::create()
-{
-    return std::make_unique<Media>(m_options, createView(m_width, m_height));
-}
-
-std::shared_ptr<Widget> ImageFactory::createView(int width, int height)
+std::shared_ptr<IImage> ImageFactory::createView(const Uri& uri, int width, int height, MediaGeometry::ScaleType scaleType)
 {
     auto image = std::make_shared<Image>(width, height);
 
-    bool isScaled = m_options.geometry.scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    image->loadFromFile(m_options.uri.path(), isScaled);
+    bool isScaled = scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
+    image->loadFromFile(uri.path(), isScaled);
 
     return image;
 }

@@ -1,18 +1,19 @@
 #include "MainWindowController.hpp"
+#include "IMainWindow.hpp"
 
-#include "StatusScreen.hpp"
-
-#include "control/layout/MainLayoutView.hpp"
-#include "control/common/MainCompositor.hpp"
-#include "control/common/Image.hpp"
 #include "config.hpp"
+#include "XlfLayoutFetcher.hpp"
+
+#include "control/common/Image.hpp"
+#include "control/layout/IMainLayoutView.hpp"
+
 #include "managers/XiboLayoutScheduler.hpp"
 
 namespace ph = std::placeholders;
 
 const std::string STATUS_SCREEN_KEY = "i";
 
-MainWindowController::MainWindowController(const std::shared_ptr<MainWindow>& window, XiboLayoutScheduler& scheduler) :
+MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, XiboLayoutScheduler& scheduler) :
     m_window(window), m_scheduler(scheduler)
 {
     m_window->disableWindowDecoration();
@@ -49,10 +50,10 @@ void MainWindowController::showLayout(int layoutId)
     m_window->showAll();
 }
 
-std::unique_ptr<MainLayout> MainWindowController::createLayout(int layoutId)
+
+std::unique_ptr<IMainLayout> MainWindowController::createLayout(int layoutId)
 {
-    MainCompositor parser;
-    auto layout = parser.parseLayout(layoutId);
+    auto layout = XlfLayoutFetcher{}.fetch(layoutId);
 
     layout->expired().connect([this](){
         updateLayout(m_scheduler.nextLayoutId());
@@ -74,7 +75,7 @@ StatusScreenRequested MainWindowController::statusScreenRequested()
     return m_statusScrenRequested;
 }
 
-std::shared_ptr<Widget> MainWindowController::createSplashScreen()
+std::shared_ptr<IImage> MainWindowController::createSplashScreen()
 {
     auto spashImage = std::make_shared<Image>(m_window->width(), m_window->height());
 
@@ -83,7 +84,7 @@ std::shared_ptr<Widget> MainWindowController::createSplashScreen()
     return spashImage;
 }
 
-void MainWindowController::scaleLayout(const std::shared_ptr<MainLayoutView>& layout)
+void MainWindowController::scaleLayout(const std::shared_ptr<IMainLayoutView>& layout)
 {
     double scaleX = static_cast<double>(m_window->width()) / layout->width();
     double scaleY = static_cast<double>(m_window->height()) / layout->height();

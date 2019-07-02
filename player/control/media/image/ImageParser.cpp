@@ -1,23 +1,10 @@
 #include "ImageParser.hpp"
 
-#include "control/media/MediaResources.hpp"
+#include "control/media/creators/MediaResources.hpp"
 
 const MediaGeometry::ScaleType DEFAULT_SCALE_TYPE = MediaGeometry::ScaleType::Scaled;
 const MediaGeometry::Align DEFAULT_ALIGN = MediaGeometry::Align::Center;
 const MediaGeometry::Valign DEFAULT_VALIGN = MediaGeometry::Valign::Middle;
-
-ImageParser::ImageParser(const xml_node& node) :
-    MediaParser(node)
-{
-
-}
-
-ImageOptions ImageParser::parse()
-{
-    auto options = baseOptions();
-
-    return ImageOptions{options};
-}
 
 MediaGeometry ImageParser::geometry()
 {
@@ -28,3 +15,7 @@ MediaGeometry ImageParser::geometry()
     return MediaGeometry{scaleType, align, valign};
 }
 
+ExtraOptions ImageParser::parseAdditonalOptions(const xml_node& /*node*/)
+{
+    return {};
+}

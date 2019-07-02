@@ -12,6 +12,8 @@
 #include "control/StatusScreenFormatter.hpp"
 #include "control/StatusScreen.hpp"
 #include "control/media/player/video/XiboVideoSink.hpp"
+#include "control/media/creators/MediaParsersRepo.hpp"
+#include "control/media/creators/MediaFactoriesRepo.hpp"
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/XiboLayoutScheduler.hpp"
@@ -89,6 +91,9 @@ XiboApp::XiboApp(const std::string& name) :
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
     setupXmrManager();
+
+    MediaParsersRepo::init();
+    MediaFactoriesRepo::init();
 
     m_mainLoop->setShutdownAction([this](){
         m_windowController.reset();

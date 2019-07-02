@@ -1,4 +1,5 @@
 #include "XiboVideoSink.hpp"
+#include "XiboVideoFrame.hpp"
 
 #include <glibmm/main.h>
 
@@ -41,7 +42,7 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
     g_object_class->finalize = gst_xibovideosink_finalize;
 }
 
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<VideoWindow>& handler)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<IVideoWindow>& handler)
 {
     sink->handler = handler;
 }

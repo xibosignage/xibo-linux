@@ -1,8 +1,9 @@
 #include "PlayableMedia.hpp"
 
 #include "control/media/Media.hpp"
+#include "video/IVideoWindow.hpp"
 
-PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<MediaPlayer>&& player) :
+PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player) :
     Media(options, player->outputWindow()),
     m_player(std::move(player))
 {

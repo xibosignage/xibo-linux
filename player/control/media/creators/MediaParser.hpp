@@ -1,7 +1,7 @@
 #pragma once
 
 #include "constants.hpp"
-#include "MediaOptions.hpp"
+#include "ParsedMedia.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -12,23 +12,20 @@ std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign);
 class MediaParser
 {
 public:
-    MediaParser(const xml_node& node);
     virtual ~MediaParser() = default;
-
-    MediaOptions baseOptions();
+    virtual ParsedMedia parse(const xml_node& node);
 
 protected:
     const xml_node& node() const;
 
+    virtual MediaOptions::Type type();
     virtual int id();
     virtual Uri uri();
     virtual int duration();
     virtual MediaGeometry geometry();
+    virtual ExtraOptions parseAdditonalOptions(const xml_node& node) = 0;
+    virtual std::unique_ptr<ParsedMedia> parseAttachedMedia(const xml_node& node);
 
 private:
     xml_node m_node;
-    int m_id;
-    boost::optional<std::string> m_uri;
-    int m_duration;
-
 };
