@@ -20,9 +20,9 @@ public:
 
     MainLayoutView(int width, int height);
 
-    void addRegion(const std::shared_ptr<IWidget>& child, int x, int y, int z) override;
-    void reorderRegion(const std::shared_ptr<IWidget>& child, int z) override;
-    void addBackground(const std::shared_ptr<IWidget>& mainChild) override;
+    void addChild(const std::shared_ptr<IWidget>& child, int x, int y, int z) override;
+    void reorderChild(const std::shared_ptr<IWidget>& child, int z) override;
+    void setMainChild(const std::shared_ptr<IWidget>& mainChild) override;
 
     void showAll() override;
     void setSize(int width, int height) override;
@@ -31,17 +31,18 @@ public:
     Gtk::Overlay& get() override;
 
 private:
+    void removePreviousMainChild();
     void sortRegionsByZindex();
-    void reorderRegions();
-    bool onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc);
-    WidgetsWithInfo::iterator findRegion(Gtk::Widget* widget);
-    void scaleRegions(double scaleX, double scaleY);
+    void reorderChildren();
+    bool onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc);
+    WidgetsWithInfo::iterator findChild(Gtk::Widget* widget);
+    void scaleChildren(double scaleX, double scaleY);
     void updateOffsets();
 
 private:
     Gtk::Overlay m_handler;
     std::shared_ptr<IWidget> m_mainChild;
-    WidgetsWithInfo m_regions;
+    WidgetsWithInfo m_children;
     int m_xOffset = 0;
     int m_yOffset = 0;
 

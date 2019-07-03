@@ -10,13 +10,9 @@ Region::Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionVi
     m_view->shown().connect(sigc::mem_fun(this, &Region::start));
 }
 
-#include "common/logger/Logging.hpp"
-
 void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));
-
-    Log::debug("{} {}", x, y);
 
     m_view->addMedia(media->view(), x, y);
     m_media.emplace_back(std::move(media));

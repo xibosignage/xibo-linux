@@ -46,7 +46,7 @@ void MainWindowController::showLayout(int layoutId)
 {
     m_layout = createLayout(layoutId);
 
-    m_window->setWidget(m_layout->view());
+    m_window->setMainLayout(m_layout->view());
     m_window->showAll();
 }
 
@@ -66,7 +66,7 @@ std::unique_ptr<IMainLayout> MainWindowController::createLayout(int layoutId)
 
 void MainWindowController::showSplashScreen()
 {
-    m_window->setWidget(createSplashScreen());
+    m_window->setMainLayout(createSplashScreen());
     m_window->showAll();
 }
 

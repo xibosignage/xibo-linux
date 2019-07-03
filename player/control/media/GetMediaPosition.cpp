@@ -7,7 +7,7 @@ GetMediaPosition::GetMediaPosition(int regionWidth, int regionHeight) :
 {
 }
 
-int GetMediaPosition::getMediaLeft(int width, MediaGeometry::Align align) const
+int GetMediaPosition::getMediaX(int width, MediaGeometry::Align align) const
 {
     switch(align)
     {
@@ -21,7 +21,7 @@ int GetMediaPosition::getMediaLeft(int width, MediaGeometry::Align align) const
     return INVALID_POS;
 }
 
-int GetMediaPosition::getMediaTop(int height, MediaGeometry::Valign valign) const
+int GetMediaPosition::getMediaY(int height, MediaGeometry::Valign valign) const
 {
     switch(valign)
     {

@@ -14,7 +14,7 @@ void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int 
 {
     region->expired().connect(std::bind(&MainLayout::onRegionExpired, this, ph::_1));
 
-    m_view->addRegion(region->view(), x, y, z);
+    m_view->addChild(region->view(), x, y, z);
     m_regions.emplace_back(std::move(region));
 }
 

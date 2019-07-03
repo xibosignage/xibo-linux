@@ -14,7 +14,8 @@ public:
     virtual int y() const = 0;
     virtual void move(int x, int y) = 0;
 
-    virtual void setWidget(const std::shared_ptr<IWidget>& child) = 0;
+    virtual void setMainLayout(const std::shared_ptr<IWidget>& child) = 0;
+    virtual void addOverlayLayout(const std::shared_ptr<IWidget>& child, int zorder) = 0;
     virtual void disableWindowResize() = 0;
     virtual void disableWindowDecoration() = 0;
     virtual void setKeepAbove(bool keepAbove) = 0;

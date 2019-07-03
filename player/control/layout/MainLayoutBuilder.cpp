@@ -23,7 +23,7 @@ std::shared_ptr<IMainLayoutView> MainLayoutBuilder::createView(const LayoutOptio
 {
     auto layoutView = std::make_shared<MainLayoutView>(options.width, options.height);
 
-    layoutView->addBackground(createBackground(options));
+    layoutView->setMainChild(createBackground(options));
 
     return layoutView;
 }

@@ -6,7 +6,7 @@ MainLayoutView::MainLayoutView(int width, int height) :
     Widget(m_handler)
 {
     m_handler.signal_get_child_position().
-            connect(sigc::mem_fun(*this, &MainLayoutView::onGetRegionPosition), false);
+            connect(sigc::mem_fun(*this, &MainLayoutView::onGetChildPosition), false);
 
     m_handler.property_halign().set_value(Gtk::ALIGN_CENTER);
     m_handler.property_valign().set_value(Gtk::ALIGN_CENTER);
@@ -14,43 +14,52 @@ MainLayoutView::MainLayoutView(int width, int height) :
     setSize(width, height);
 }
 
-void MainLayoutView::addRegion(const std::shared_ptr<IWidget>& child, int x, int y, int z)
+void MainLayoutView::addChild(const std::shared_ptr<IWidget>& child, int x, int y, int z)
 {
     m_handler.add_overlay(getHandler(*child));
 
     WidgetInfo info{child, x, y, z};
-    m_regions.emplace_back(info);
+    m_children.emplace_back(info);
 
     sortRegionsByZindex();
-    reorderRegions();
+    reorderChildren();
 }
 
 void MainLayoutView::sortRegionsByZindex()
 {
-    std::stable_sort(m_regions.begin(), m_regions.end(), [=](const auto& first, const auto& second){
+    std::stable_sort(m_children.begin(), m_children.end(), [=](const auto& first, const auto& second){
         return first.z < second.z;
     });
 }
 
-void MainLayoutView::reorderRegions()
+void MainLayoutView::reorderChildren()
 {
-    for(std::size_t i = 0; i != m_regions.size(); ++i)
+    for(std::size_t i = 0; i != m_children.size(); ++i)
     {
-        auto&& widget = m_regions[i].widget;
+        auto&& widget = m_children[i].widget;
         m_handler.reorder_overlay(getHandler(*widget), static_cast<int>(i));
     }
 }
 
-void MainLayoutView::reorderRegion(const std::shared_ptr<IWidget>& child, int z)
+void MainLayoutView::reorderChild(const std::shared_ptr<IWidget>& child, int z)
 {
     m_handler.reorder_overlay(getHandler(*child), z);
 }
 
-void MainLayoutView::addBackground(const std::shared_ptr<IWidget>& mainChild)
+void MainLayoutView::setMainChild(const std::shared_ptr<IWidget>& mainChild)
 {
-    m_handler.add(getHandler(*mainChild));
+    removePreviousMainChild();
 
+    m_handler.add(getHandler(*mainChild));
     m_mainChild = mainChild;
+}
+
+void MainLayoutView::removePreviousMainChild()
+{
+    if(m_mainChild)
+    {
+        m_handler.remove();
+    }
 }
 
 void MainLayoutView::showAll()
@@ -58,7 +67,7 @@ void MainLayoutView::showAll()
     Widget::showAll();
     m_mainChild->showAll();
 
-    for(auto&& childInfo : m_regions)
+    for(auto&& childInfo : m_children)
     {
         childInfo.widget->showAll();
     }
@@ -75,7 +84,7 @@ void MainLayoutView::scale(double scaleX, double scaleY)
     Widget::scale(scaleX, scaleY);
     m_mainChild->scale(scaleX, scaleY);
     updateOffsets();
-    scaleRegions(scaleX, scaleY);
+    scaleChildren(scaleX, scaleY);
 }
 
 void MainLayoutView::updateOffsets()
@@ -91,9 +100,9 @@ void MainLayoutView::updateOffsets()
     }
 }
 
-void MainLayoutView::scaleRegions(double scaleX, double scaleY)
+void MainLayoutView::scaleChildren(double scaleX, double scaleY)
 {
-    for(auto&& childInfo : m_regions)
+    for(auto&& childInfo : m_children)
     {
         childInfo.widget->scale(scaleX, scaleY);
 
@@ -107,10 +116,10 @@ Gtk::Overlay& MainLayoutView::get()
     return m_handler;
 }
 
-bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
+bool MainLayoutView::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
 {
-    auto it = findRegion(widget);
-    if(it != m_regions.end())
+    auto it = findChild(widget);
+    if(it != m_children.end())
     {
         WidgetInfo info = *it;
 
@@ -123,9 +132,9 @@ bool MainLayoutView::onGetRegionPosition(Gtk::Widget* widget, Gdk::Rectangle& al
     return false;
 }
 
-MainLayoutView::WidgetsWithInfo::iterator MainLayoutView::findRegion(Gtk::Widget* widget)
+MainLayoutView::WidgetsWithInfo::iterator MainLayoutView::findChild(Gtk::Widget* widget)
 {
-    return std::find_if(m_regions.begin(), m_regions.end(), [this, widget](const auto& child){
+    return std::find_if(m_children.begin(), m_children.end(), [this, widget](const auto& child){
         return &getHandler(*child.widget) == widget;
     });
 }
