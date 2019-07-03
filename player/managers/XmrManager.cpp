@@ -53,7 +53,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 
             processXmrMessage(xmrMessage);
 
-            m_info.lastMessageDt = boost::posix_time::second_clock::universal_time();
+            m_info.lastMessageDt = boost::posix_time::second_clock::local_time();
         }
         catch (std::exception& e)
         {
@@ -62,7 +62,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        m_info.lastHeartbeatDt = boost::posix_time::second_clock::universal_time();
+        m_info.lastHeartbeatDt = boost::posix_time::second_clock::local_time();
     }
 }
 
