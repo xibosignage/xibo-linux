@@ -16,8 +16,6 @@ void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));
 
-    Log::debug("{} {}", x, y);
-
     m_view->addMedia(media->view(), x, y);
     m_media.emplace_back(std::move(media));
 }
