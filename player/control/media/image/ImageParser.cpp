@@ -6,6 +6,8 @@ const MediaGeometry::ScaleType DEFAULT_SCALE_TYPE = MediaGeometry::ScaleType::Sc
 const MediaGeometry::Align DEFAULT_ALIGN = MediaGeometry::Align::Center;
 const MediaGeometry::Valign DEFAULT_VALIGN = MediaGeometry::Valign::Middle;
 
+#include "common/logger/Logging.hpp"
+
 MediaGeometry ImageParser::geometry()
 {
     auto scaleType = node().get<MediaGeometry::ScaleType>(ResourcesXlf::option(ResourcesXlf::Media::Geometry::ScaleType), DEFAULT_SCALE_TYPE);

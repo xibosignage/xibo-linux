@@ -15,18 +15,17 @@ std::unique_ptr<IMedia> AudioFactory::createImpl(const MediaOptions& baseOptions
 
 MediaPlayerOptions AudioFactory::createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    auto muted = static_cast<MediaPlayerOptions::Mute>(std::stoi(options.at(ResourcesXlf::Player::Mute)));
     auto looped = static_cast<MediaPlayerOptions::Loop>(std::stoi(options.at(ResourcesXlf::Player::Loop)));
     int volume = std::stoi(options.at(ResourcesXlf::Player::Volume));
 
-    return MediaPlayerOptions{baseOptions, muted, looped, volume};
+    return MediaPlayerOptions{baseOptions, MediaPlayerOptions::Mute::Disable, looped, volume};
 }
 
 std::unique_ptr<IMediaPlayer> AudioFactory::createPlayer(const MediaPlayerOptions& options)
 {
     auto player = std::make_unique<MediaPlayer>();
 
-    player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MIN_VOLUME : MAX_VOLUME);
+    player->setVolume(options.volume);
     player->load(options.uri);
 
     return player;

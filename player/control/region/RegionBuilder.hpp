@@ -20,6 +20,6 @@ private:
     std::shared_ptr<IRegionView> createView(const RegionOptions& options);
 
     void addMedia(IRegion& region, const std::vector<ParsedMedia>& media);
-    std::pair<int, int> getMediaPosition(IMedia& media);
+    std::pair<int, int> getMediaPosInRegion(IRegion& region, IMedia& media);
 
 };

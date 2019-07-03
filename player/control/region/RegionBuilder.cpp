@@ -33,20 +33,21 @@ void RegionBuilder::addMedia(IRegion& region, const std::vector<ParsedMedia>& me
         {
             auto media = factory->create(parsedMedia);
 
-            auto [left, top] = getMediaPosition(*media);
-            region.addMedia(std::move(media), left, top);
+            auto [x, y] = getMediaPosInRegion(region, *media);
+            region.addMedia(std::move(media), x, y);
         }
     }
 }
 
-std::pair<int, int> RegionBuilder::getMediaPosition(IMedia& media)
+std::pair<int, int> RegionBuilder::getMediaPosInRegion(IRegion& region, IMedia& media)
 {
-    auto view = media.view();
-    if(view)
+    auto regionView = region.view();
+    auto mediaView = media.view();
+    if(regionView && mediaView)
     {
-        GetMediaPosition positionCalc{view->width(), view->height()};
-        int left = positionCalc.getMediaLeft(view->width(), media.align());
-        int top = positionCalc.getMediaTop(view->height(), media.valign());
+        GetMediaPosition positionCalc{regionView->width(), regionView->height()};
+        int left = positionCalc.getMediaLeft(mediaView->width(), media.align());
+        int top = positionCalc.getMediaTop(mediaView->height(), media.valign());
 
         return {left, top};
     }

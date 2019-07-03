@@ -7,5 +7,5 @@
 class IRegionView : public IWidget
 {
 public:
-    virtual void addMedia(const std::shared_ptr<IWidget>& child, int left, int top) = 0;
+    virtual void addMedia(const std::shared_ptr<IWidget>& child, int x, int y) = 0;
 };
