@@ -17,6 +17,7 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
     m_window(window), m_scheduler(scheduler)
 {
     m_window->disableWindowDecoration();
+    m_window->setCursorVisible(false);
     m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
 }
 
