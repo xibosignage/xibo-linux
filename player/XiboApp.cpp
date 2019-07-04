@@ -33,6 +33,8 @@
 #include <glibmm/main.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <boost/date_time/time_clock.hpp>
+#include <gdk/gdkx.h>
+#include <X11/extensions/scrnsaver.h>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
@@ -158,6 +160,10 @@ int XiboApp::run()
 {
     m_mainWindow = std::make_shared<MainWindow>();
     m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_scheduler);
+
+    GdkDisplay* display = m_mainWindow->get().get_display()->gobj();
+    auto x11Display = gdk_x11_display_get_xdisplay(display);
+    XScreenSaverSuspend(x11Display, true);
 
     auto statusScreen = std::make_shared<StatusScreen>(640, 480);
     m_windowController->statusScreenRequested().connect([this, statusScreen](){

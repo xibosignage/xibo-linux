@@ -83,7 +83,7 @@ Gst::RefPtr<Gst::Pad> Gst::Element::staticPad(std::string_view name)
 
 Gst::RefPtr<Gst::Element> Gst::Element::create(std::string_view name)
 {
-    return std::shared_ptr<Gst::Element>(new Gst::Element(name));
+    return Gst::RefPtr<Gst::Element>(new Gst::Element(name));
 }
 
 bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, Gst::SeekType startType, gint64 start, Gst::SeekType stopType, gint64 stop)

@@ -9,7 +9,7 @@ namespace Gst {
     class Capsfilter;
     class Decodebin;
     class Element;
-    class FileSrc;
+    class UriSrc;
     class Message;
     class Pad;
     class Pipeline;

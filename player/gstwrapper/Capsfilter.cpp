@@ -8,7 +8,7 @@ Gst::Capsfilter::Capsfilter() :
 
 Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()
 {
-    return std::shared_ptr<Gst::Capsfilter>(new Gst::Capsfilter);
+    return Gst::RefPtr<Gst::Capsfilter>(new Gst::Capsfilter);
 }
 
 void Gst::Capsfilter::setCaps(Gst::RefPtr<Gst::Caps> caps)

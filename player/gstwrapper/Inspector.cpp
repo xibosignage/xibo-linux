@@ -7,7 +7,7 @@ namespace ph = std::placeholders;
 
 Gst::RefPtr<Gst::Inspector> Gst::Inspector::create(unsigned timeoutSeconds)
 {
-    return std::shared_ptr<Gst::Inspector>(new Gst::Inspector(timeoutSeconds));
+    return Gst::RefPtr<Gst::Inspector>(new Gst::Inspector(timeoutSeconds));
 }
 
 Gst::Inspector::Inspector(unsigned int timeoutSeconds)

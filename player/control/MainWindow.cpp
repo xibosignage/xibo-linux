@@ -5,7 +5,7 @@
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
     const std::string DEFAULT_STYLE = "window { background-color: black; }";
 #else
-    const std::string DEFAULT_STYLE = "GtkMainWindow { background-color: black; }";
+    const std::string DEFAULT_STYLE = "GtkWindow#mainWindow { background-color: black; }";
 #endif
 
 MainWindow::MainWindow() :
@@ -14,6 +14,7 @@ MainWindow::MainWindow() :
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
     loadDefaultStyle();
 
+    m_handler.set_name("mainWindow");
     m_handler.add_events(Gdk::KEY_PRESS_MASK);
     m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
         m_keyPressed.emit(event->string);

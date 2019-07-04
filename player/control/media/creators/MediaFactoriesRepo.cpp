@@ -10,6 +10,7 @@ void MediaFactoriesRepo::init()
 {
     add({ResourcesXlf::Media::ImageType, ResourcesXlf::Media::NativeRender}, std::make_unique<ImageFactory>());
     add({ResourcesXlf::Media::VideoType, ResourcesXlf::Media::NativeRender}, std::make_unique<VideoFactory>());
+    add({ResourcesXlf::Media::LocalVideoType, ResourcesXlf::Media::NativeRender}, std::make_unique<VideoFactory>());
     add({ResourcesXlf::Media::AudioType, ResourcesXlf::Media::NativeRender}, std::make_unique<AudioFactory>());
     add({ResourcesXlf::Media::TextType, ResourcesXlf::Media::NativeRender}, std::make_unique<WebViewFactory>());
     add({ResourcesXlf::Media::EmbeddedType, ResourcesXlf::Media::NativeRender}, std::make_unique<WebViewFactory>());

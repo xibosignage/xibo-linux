@@ -132,6 +132,8 @@ std::string Uri::schemeToString(Uri::Scheme scheme) const
             return "http://";
         case Uri::Scheme::HTTPS:
             return "https://";
+        case Uri::Scheme::RTSP:
+            return "rtsp://";
         default:
             return {};
     }

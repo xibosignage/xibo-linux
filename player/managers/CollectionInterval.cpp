@@ -1,4 +1,5 @@
 #include "CollectionInterval.hpp"
+#include "config.hpp"
 
 #include "networking/xmds/XmdsRequestSender.hpp"
 
@@ -53,7 +54,9 @@ void CollectionInterval::collect(CollectionResultCallback callback)
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
 
-        auto registerDisplayResult = m_xmdsSender.registerDisplay(121, "1.8", "Display").get();
+        auto registerDisplayResult = m_xmdsSender.registerDisplay(ProjectResources::codeVersion(),
+                                                                  ProjectResources::version(),
+                                                                  "Display").get();
         onDisplayRegistered(registerDisplayResult, session);
     });
 }

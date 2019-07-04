@@ -22,7 +22,7 @@ Gst::Pipeline::~Pipeline()
 
 Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create()
 {
-    return std::shared_ptr<Gst::Pipeline>(new Gst::Pipeline{});
+    return Gst::RefPtr<Gst::Pipeline>(new Gst::Pipeline{});
 }
 
 Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::add(Gst::RefPtr<Gst::Element> other)

@@ -16,7 +16,9 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host, const std::string&
 {
 }
 
-boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
+boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(const std::string& clientCode,
+                                                                                          const std::string& clientVersion,
+                                                                                          const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = m_serverKey;

@@ -7,7 +7,10 @@
 const std::regex URI_REGEX(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?([\/?].*))");
 const std::regex IP_REGEX("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
 
-const std::map<std::string, Uri::Scheme> DEFAULT_SCHEMES{{"https://", Uri::Scheme::HTTPS}, {"http://", Uri::Scheme::HTTP}, {"file://", Uri::Scheme::File}};
+const std::map<std::string, Uri::Scheme> DEFAULT_SCHEMES{{"https://", Uri::Scheme::HTTPS},
+                                                         {"http://", Uri::Scheme::HTTP},
+                                                         {"rtsp://", Uri::Scheme::RTSP},
+                                                         {"file://", Uri::Scheme::File}};
 
 const std::size_t URL_PARTS_COUNT = 5;
 

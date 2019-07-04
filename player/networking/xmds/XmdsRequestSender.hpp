@@ -19,7 +19,9 @@ class XmdsRequestSender
 public:
     XmdsRequestSender(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    boost::future<ResponseResult<RegisterDisplay::Result>> registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName);
+    boost::future<ResponseResult<RegisterDisplay::Result>> registerDisplay(const std::string& clientCode,
+                                                                           const std::string& clientVersion,
+                                                                           const std::string& displayName);
     boost::future<ResponseResult<RequiredFiles::Result>> requiredFiles();
     boost::future<ResponseResult<Schedule::Result>> schedule();
     boost::future<ResponseResult<GetResource::Result>> getResource(int layoutId, int regionId, int mediaId);

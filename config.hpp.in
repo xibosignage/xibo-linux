@@ -13,12 +13,14 @@ namespace ProjectResources
 {
     inline std::string version()
     {
-        return "1.8";
+        const char* version = getenv("SNAP_VERSION");
+        return version == nullptr ? "null" : version;
     }
 
-    inline int codeVersion()
+    inline std::string codeVersion()
     {
-        return 108;
+        const char* revision = getenv("SNAP_REVISION");
+        return revision == nullptr ? "null" : revision;
     }
 
     inline FilePath buildDirectory()
