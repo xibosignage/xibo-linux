@@ -19,7 +19,7 @@ int main(int /*argc*/, char** /*argv*/)
     auto app = Gtk::Application::create();
     auto ui = Gtk::Builder::create_from_file(ProjectResources::buildDirectory() / Resources::UiFile);
 
-    auto logger = Logger::create(LOGGER, createLoggerSinks());
+    auto logger = XiboLogger::create(SpdLogger, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 

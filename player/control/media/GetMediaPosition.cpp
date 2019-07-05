@@ -14,11 +14,11 @@ int GetMediaPosition::getMediaLeft(int width, MediaGeometry::Align align) const
     case MediaGeometry::Align::Center:
         return (m_regionWidth - width) / 2;
     case MediaGeometry::Align::Left:
-        return DEFAULT_XPOS;
+        return DefaultXPos;
     case MediaGeometry::Align::Right:
         return m_regionWidth - width;
     }
-    return INVALID_POS;
+    return InvalidPos;
 }
 
 int GetMediaPosition::getMediaTop(int height, MediaGeometry::Valign valign) const
@@ -28,9 +28,9 @@ int GetMediaPosition::getMediaTop(int height, MediaGeometry::Valign valign) cons
     case MediaGeometry::Valign::Middle:
         return (m_regionHeight - height) / 2;
     case MediaGeometry::Valign::Top:
-        return DEFAULT_YPOS;
+        return DefaultYPos;
     case MediaGeometry::Valign::Bottom:
         return m_regionHeight - height;
     }
-    return INVALID_POS;
+    return InvalidPos;
 }

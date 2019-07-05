@@ -3,9 +3,9 @@
 #include <gtkmm/cssprovider.h>
 
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
-    const std::string DEFAULT_STYLE = "window { background-color: black; }";
+    const std::string DefaultStyle = "window { background-color: black; }";
 #else
-    const std::string DEFAULT_STYLE = "GtkWindow#mainWindow { background-color: black; }";
+    const std::string DefaultStyle = "GtkWindow#mainWindow { background-color: black; }";
 #endif
 
 MainWindow::MainWindow() :
@@ -51,7 +51,7 @@ void MainWindow::loadDefaultStyle()
     Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
     Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
 
-    if(css_provider->load_from_data(DEFAULT_STYLE))
+    if(css_provider->load_from_data(DefaultStyle))
     {
         Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
         style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);

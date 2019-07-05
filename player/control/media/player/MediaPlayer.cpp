@@ -24,7 +24,7 @@
 
 namespace ph = std::placeholders;
 
-const int INSPECTOR_TIMEOUT = 5;
+const int InspectorTimeout = 5;
 
 MediaPlayer::MediaPlayer()
 {
@@ -47,7 +47,7 @@ void MediaPlayer::createGstElements()
     m_videoScale = Gst::VideoScale::create();
     m_videoSink = Gst::Element::create("xibovideosink");
     m_capsfilter = Gst::Capsfilter::create();
-    m_inspector = Gst::Inspector::create(INSPECTOR_TIMEOUT);
+    m_inspector = Gst::Inspector::create(InspectorTimeout);
 
     m_audioConverter = Gst::AudioConvert::create();
     m_volume = Gst::Volume::create();
@@ -138,7 +138,7 @@ void MediaPlayer::stopPlayback()
 
 void MediaPlayer::setVolume(int volume)
 {
-    m_volume->setVolume(volume / static_cast<double>(MAX_VOLUME));
+    m_volume->setVolume(volume / static_cast<double>(MaxVolume));
 }
 
 SignalPlaybackFinished MediaPlayer::playbackFinished()

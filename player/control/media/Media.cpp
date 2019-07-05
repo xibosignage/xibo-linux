@@ -28,7 +28,7 @@ void Media::startTimer(int duration)
 {
     if(duration > 0)
     {
-        m_timer->startOnce(static_cast<unsigned int>(duration) * MSECS, [this]{
+        m_timer->startOnce(static_cast<unsigned int>(duration) * MSecs, [this]{
             m_mediaFinished.emit();
         });
     }

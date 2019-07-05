@@ -1,9 +1,9 @@
 #include "LayoutSchedule.hpp"
 
-const size_t FIRST_ITEM_INDEX = 0;
+const size_t FirstItemIndex = 0;
 
 LayoutSchedule::LayoutSchedule() :
-    m_nextLayoutIndex{FIRST_ITEM_INDEX}
+    m_nextLayoutIndex{FirstItemIndex}
 {
 }
 
@@ -70,7 +70,7 @@ size_t LayoutSchedule::increaseLayoutIndex(std::size_t index) const
     size_t nextLayoutIndex = index + 1;
 
     if(nextLayoutIndex >= m_scheduledLayouts.size())
-        return FIRST_ITEM_INDEX;
+        return FirstItemIndex;
 
     return nextLayoutIndex;
 }

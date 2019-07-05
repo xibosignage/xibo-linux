@@ -30,7 +30,7 @@ public:
 
         request.method(m_method);
         request.target(m_uri.path());
-        request.version(DEFAULT_HTTP_VERSION);
+        request.version(DefaultHttpVersion);
         request.set(http::field::host, m_uri.host());
         if(auto credentials = m_uri.credentials())
         {

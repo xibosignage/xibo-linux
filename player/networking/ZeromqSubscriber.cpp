@@ -31,8 +31,8 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host)
 {
     zmq::socket_t socket{m_context, ZMQ_SUB};
     tryConnect(socket, host);
-    socket.setsockopt(ZMQ_SUBSCRIBE, HEARTBEAT_CHANNEL, std::strlen(HEARTBEAT_CHANNEL));
-    socket.setsockopt(ZMQ_SUBSCRIBE, XMR_CHANNEL, std::strlen(XMR_CHANNEL));
+    socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
+    socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
 
     while(!m_stopped)
     {

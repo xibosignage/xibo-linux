@@ -44,7 +44,7 @@ XmrStatus XmrManager::status()
 
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
-    if(multipart[CHANNEL_PART] == XMR_CHANNEL)
+    if(multipart[CHANNEL_PART] == XmrChannel)
     {
         try
         {

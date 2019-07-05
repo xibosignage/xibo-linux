@@ -52,5 +52,5 @@ std::pair<int, int> RegionBuilder::getMediaPosInRegion(IRegion& region, IMedia& 
         return {left, top};
     }
 
-    return {DEFAULT_XPOS, DEFAULT_YPOS};
+    return {DefaultXPos, DefaultYPos};
 }

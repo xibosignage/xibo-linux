@@ -4,7 +4,7 @@
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 
-const std::map<Uri::Scheme, unsigned short> DEFAULT_PORTS{{Uri::Scheme::HTTPS, 443}, {Uri::Scheme::HTTP, 80}};
+const std::map<Uri::Scheme, unsigned short> DefaultPorts{{Uri::Scheme::HTTPS, 443}, {Uri::Scheme::HTTP, 80}};
 
 Uri::Authority::Authority(boost::optional<std::string> userinfo, const std::string& host, boost::optional<unsigned short> port) :
     m_userinfo(userinfo), m_host{host}, m_port{port}
@@ -104,7 +104,7 @@ unsigned short Uri::port() const
 
     auto optPort = m_authority.optionalPort();
 
-    return optPort ? optPort.value() : DEFAULT_PORTS.at(m_scheme);
+    return optPort ? optPort.value() : DefaultPorts.at(m_scheme);
 }
 
 Uri::Authority::HostType Uri::hostType() const

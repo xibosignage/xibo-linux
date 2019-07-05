@@ -1,7 +1,7 @@
 #include "Logging.hpp"
 
-std::shared_ptr<Logger> Log::logger()
+std::shared_ptr<XiboLogger> Log::logger()
 {
-    static auto logger = Logger::get();
+    static auto logger = XiboLogger::get();
     return logger;
 }

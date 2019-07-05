@@ -12,12 +12,14 @@
 
 namespace http = boost::beast::http;
 
+const std::string DefaultHttpTarget = "/";
+
 class ProxyHttpRequest
 {
 public:
     ProxyHttpRequest(http::verb method, const ProxyInfo& info, const Uri& uri, const std::string& body) :
         m_method(method),
-        m_proxyUri(info.host + DEFAULT_HTTP_TARGET),
+        m_proxyUri(info.host + DefaultHttpTarget),
         m_username(info.username),
         m_password(info.password),
         m_uri(uri),
@@ -36,7 +38,7 @@ public:
 
         request.method(m_method);
         request.target(m_uri.string());
-        request.version(DEFAULT_HTTP_VERSION);
+        request.version(DefaultHttpVersion);
         request.set(http::field::host, m_uri.host());
         if(auto credentials = getCredentials())
         {

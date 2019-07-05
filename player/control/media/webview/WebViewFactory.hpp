@@ -12,5 +12,5 @@ protected:
 
 private:
     std::shared_ptr<IWebView> createView(const Uri& uri, int width, int height, WebViewOptions::Transparency transparency);
-//    void updateFileWidth(const Uri& uri, int width);
+    void updateViewPortWidth(const Uri& uri, int width);
 };

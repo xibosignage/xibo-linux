@@ -40,7 +40,7 @@ std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = Logger::create(LOGGER, createLoggerSinks());
+    auto logger = XiboLogger::create(SpdLogger, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
@@ -87,9 +87,9 @@ XiboApp::XiboApp(const std::string& name) :
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_playerSettingsManager->load();
-    m_scheduleManager->load(ProjectResources::configDirectory() / DEFAULT_SCHEDULE_FILE);
+    m_scheduleManager->load(ProjectResources::configDirectory() / DefaultScheduleFile);
     m_scheduler->reloadSchedule(m_scheduleManager->schedule());
-    m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);
+    m_fileManager->loadCache(Resources::resDirectory() / DefaultCacheFile);
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
     setupXmrManager();
@@ -226,7 +226,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     }
     else
     {
-        if(m_scheduler->currentLayoutId() == EMPTY_LAYOUT_ID)
+        if(m_scheduler->currentLayoutId() == EmptyLayoutId)
         {
             m_windowController->updateLayout(m_scheduler->nextLayoutId());
         }

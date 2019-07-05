@@ -14,7 +14,7 @@ int XiboLayoutScheduler::nextLayoutId()
     m_currentLayoutId = nextScheduledLayoutId();
 
     auto&& defaultLayout = m_schedule.defaultLayout();
-    if(m_currentLayoutId == EMPTY_LAYOUT_ID && isLayoutValid(defaultLayout.dependants))
+    if(m_currentLayoutId == EmptyLayoutId && isLayoutValid(defaultLayout.dependants))
     {
         m_currentLayoutId = defaultLayout.id;
     }
@@ -65,7 +65,7 @@ int XiboLayoutScheduler::nextScheduledLayoutId()
         }
     }
 
-    return EMPTY_LAYOUT_ID;
+    return EmptyLayoutId;
 }
 
 bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const

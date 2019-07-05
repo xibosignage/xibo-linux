@@ -4,15 +4,21 @@
 
 #include "control/media/Media.hpp"
 #include "control/region/RegionResources.hpp"
+#include "common/FilePath.hpp"
+#include "common/FileSystem.hpp"
 
 #include <fstream>
 #include <regex>
+
+const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 
 std::unique_ptr<IMedia> WebViewFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
     int width = std::stoi(options.at(ResourcesXlf::Region::Width));
     int height = std::stoi(options.at(ResourcesXlf::Region::Height));
     auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(ResourcesXlf::WebView::Transparency)));
+
+    updateViewPortWidth(baseOptions.uri, width);
 
     return std::make_unique<Media>(baseOptions, createView(baseOptions.uri, width, height, transparency));
 }
@@ -30,16 +36,19 @@ std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, 
     return webview;
 }
 
-//void WebViewFactory::updateFileWidth(const Uri& uri, int width)
-//{
-//    std::ifstream in(uri.path());
-//    std::ofstream out("temp.txt");
-//    std::string line;
+void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
+{
+    std::string fileContent;
+    {
+        std::ifstream stream(uri.path());
+        std::stringstream buffer;
+        buffer << stream.rdbuf();
 
-//    const std::regex viewPortWidth{"[[ViewPortWidth]]"};
-
-//    while(std::getline(in, line))
-//    {
-//        out << std::regex_replace(line, viewPortWidth, std::to_string(width)) << std::endl;
-//    }
-//}
+        std::regex_search(fileContent, ViewPortWidth);
+        fileContent = std::regex_replace(buffer.str(), ViewPortWidth, "$1 " + std::to_string(width) + "$3");
+    }
+    {
+        std::ofstream stream(uri.path(), std::ios::out | std::ios::trunc);
+        stream << fileContent;
+    }
+}

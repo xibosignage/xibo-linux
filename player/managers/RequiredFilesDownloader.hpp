@@ -37,7 +37,7 @@ private:
         {
             Log::trace(file);
 
-            if(!isFileInCache(file))
+            if(shouldBeDownloaded(file))
             {
                 results.emplace_back(downloadRequiredFile(file));
             }
@@ -62,17 +62,38 @@ private:
         return items;
     }
 
-    bool isFileInCache(const RegularFile& file) const;
-    bool isFileInCache(const ResourceFile& resource) const;
+    template<typename RequiredFileType>
+    void saveFile(const std::string& fileName, const std::string& fileContent);
+
+    template<typename RequiredFileType>
+    bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName)
+    {
+        auto [error, fileContent] = result;
+        if(!error)
+        {
+            saveFile<RequiredFileType>(fileName, fileContent);
+
+            Log::debug("[{}] Downloaded", fileName);
+            return true;
+        }
+        else
+        {
+            Log::error("[{}] Download error: {}", fileName, error);
+            return false;
+        }
+    }
+
+    bool shouldBeDownloaded(const RegularFile& file) const;
+    bool shouldBeDownloaded(const ResourceFile& resource) const;
 
     DownloadResult downloadRequiredFile(const ResourceFile& res);
     DownloadResult downloadRequiredFile(const RegularFile& file);
     DownloadResult downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
     DownloadResult downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
-    bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName);
 
 private:
     XmdsRequestSender& m_xmdsRequestSender;
     std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
 
 };
+
