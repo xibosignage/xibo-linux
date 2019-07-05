@@ -5,20 +5,21 @@
 #include "common/FilePath.hpp"
 #include "common/FileSystem.hpp"
 
-const std::string DEFAULT_RESOURCES_DIR = "resources";
-const std::string DEFAULT_CACHE_FILE = "cachedFiles.xml";
-const std::string DEFAULT_SCHEDULE_FILE = "schedule.xml";
+const std::string DefaultCacheFile = "cachedFiles.xml";
+const std::string DefaultScheduleFile = "schedule.xml";
 
 namespace ProjectResources
 {
     inline std::string version()
     {
-        return "1.8";
+        const char* version = getenv("SNAP_VERSION");
+        return version == nullptr ? "null" : version;
     }
 
-    inline int codeVersion()
+    inline std::string codeVersion()
     {
-        return 108;
+        const char* revision = getenv("SNAP_REVISION");
+        return revision == nullptr ? "null" : revision;
     }
 
     inline FilePath buildDirectory()

@@ -37,7 +37,7 @@ private:
     std::shared_ptr<IVideoWindow> m_outputWindow;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
-    Gst::RefPtr<Gst::FileSrc> m_source;
+    Gst::RefPtr<Gst::UriSrc> m_source;
     Gst::RefPtr<Gst::Decodebin> m_decodebin;
     Gst::RefPtr<Gst::Volume> m_volume;
     Gst::RefPtr<Gst::VideoConvert> m_videoConverter;

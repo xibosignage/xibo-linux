@@ -7,7 +7,7 @@ Gst::Queue::Queue() :
 
 Gst::RefPtr<Gst::Queue> Gst::Queue::create()
 {
-    return std::shared_ptr<Gst::Queue>(new Gst::Queue);
+    return Gst::RefPtr<Gst::Queue>(new Gst::Queue);
 }
 
 void Gst::Queue::setMaxSizeBuffers(int maxSizeBuffers)

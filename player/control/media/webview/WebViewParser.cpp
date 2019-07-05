@@ -8,13 +8,13 @@
 #include <fstream>
 #include <boost/algorithm/string/replace.hpp>
 
-const bool DEFAULT_TRANSPARENCY = true;
-const int DEFAULT_WEBVIEW_MODE = 0;
-const int NATIVE_MODEID = 1;
+const bool DefaultTransparency = true;
+const int DefaultWebviewMode = 0;
+const int NativeModeid = 1;
 
-const std::string DEFAULT_NATIVE_SCHEME = "file://";
-const std::regex DURATION_REGEX("DURATION=([0-9]+)");
-const std::string DEFAULT_WEBVIEW_EXTENSION = ".html";
+const std::string DefaultNativeScheme = "file://";
+const std::regex DurationRegex("DURATION=([0-9]+)");
+const std::string DefaultWebviewExtension = ".html";
 
 int WebViewParser::duration()
 {
@@ -24,8 +24,8 @@ int WebViewParser::duration()
 
 ExtraOptions WebViewParser::parseAdditonalOptions(const xml_node& node)
 {
-    auto transparency = node.get<bool>(ResourcesXlf::option(ResourcesXlf::WebView::Transparency), DEFAULT_TRANSPARENCY);
-    auto mode = node.get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DEFAULT_WEBVIEW_MODE);
+    auto transparency = node.get<bool>(ResourcesXlf::option(ResourcesXlf::WebView::Transparency), DefaultTransparency);
+    auto mode = node.get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DefaultWebviewMode);
 
     return {
         {ResourcesXlf::WebView::Transparency, std::to_string(transparency)},
@@ -39,25 +39,25 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 
     std::smatch matchedGroups;
     std::string line;
-    const int DURATION_GROUP = 1;
+    const int DurationGroup = 1;
 
     while(std::getline(in, line))
     {
-        if(std::regex_search(line, matchedGroups, DURATION_REGEX) && matchedGroups.size() > 1)
+        if(std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1)
             break;
     }
 
-    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DURATION_GROUP].str()) : std::optional<int>{};
+    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
 }
 
 Uri WebViewParser::uri()
 {
-    auto mode = node().get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DEFAULT_WEBVIEW_MODE);
+    auto mode = node().get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DefaultWebviewMode);
 
-    if(mode != NATIVE_MODEID)
+    if(mode != NativeModeid)
     {
-        auto fileName = std::to_string(id()) + DEFAULT_WEBVIEW_EXTENSION;
-        return Uri(DEFAULT_NATIVE_SCHEME + (Resources::resDirectory() / fileName).string());
+        auto fileName = std::to_string(id()) + DefaultWebviewExtension;
+        return Uri(DefaultNativeScheme + (Resources::resDirectory() / fileName).string());
     }
     else
     {

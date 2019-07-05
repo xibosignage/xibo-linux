@@ -10,7 +10,7 @@
 std::string XmlLogsRetriever::retrieveLogs()
 {
     auto&& xmlLogsRepo = XmlLogsRepo::get();
-    Logger::get()->flush();
+    XiboLogger::get()->flush();
 
     auto logs = formatLogs(xmlLogsRepo.buffer());
     xmlLogsRepo.clear();

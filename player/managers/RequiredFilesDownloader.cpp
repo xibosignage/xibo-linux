@@ -28,7 +28,7 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile&
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
 
-        return processDownloadedContent(ResponseContentResult{error, result.resource}, fileName);
+        return processDownloadedContent<ResourceFile>(ResponseContentResult{error, result.resource}, fileName);
     });
 }
 
@@ -47,40 +47,38 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
 {
     return HttpManager::instance().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
-        return processDownloadedContent(future.get(), fileName);
+        return processDownloadedContent<RegularFile>(future.get(), fileName);
     });
 }
 
 DownloadResult RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
 {
     return m_xmdsFileDownloader->download(fileId, fileType, fileSize).then([this, fileName](boost::future<XmdsResponseResult> future){
-        return processDownloadedContent(future.get(), fileName);
+        return processDownloadedContent<RegularFile>(future.get(), fileName);
     });
 }
 
-bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResult& result, const std::string& fileName)
+bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    auto [error, fileContent] = result;
-    if(!error)
+    return !Managers::fileManager().isFileInCache(file.name, file.md5);
+}
+
+bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
+{
+    return true;
+}
+
+template<>
+void RequiredFilesDownloader::saveFile<RegularFile>(const std::string& fileName, const std::string& fileContent)
+{
+    Managers::fileManager().saveFile(fileName, fileContent);
+}
+
+template<>
+void RequiredFilesDownloader::saveFile<ResourceFile>(const std::string& fileName, const std::string& fileContent)
+{
+    if(!Managers::fileManager().isFileInCache(fileName, Utils::md5hash(fileContent)))
     {
         Managers::fileManager().saveFile(fileName, fileContent);
-
-        Log::debug("[{}] Downloaded", fileName);
-        return true;
     }
-    else
-    {
-        Log::error("[{}] Download error: {}", fileName, error);
-        return false;
-    }
-}
-
-bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
-{
-    return Managers::fileManager().isFileInCache(file.name, file.md5);
-}
-
-bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
-{
-    return false;
 }

@@ -1,6 +1,6 @@
 #include "Region.hpp"
 
-const int FIRST_CONTENT_INDEX = 0;
+const int FirstContentIndex = 0;
 
 Region::Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionView>& view) :
     m_id(id),
@@ -20,7 +20,7 @@ void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 
 void Region::start()
 {
-    placeMedia(FIRST_CONTENT_INDEX);
+    placeMedia(FirstContentIndex);
 }
 
 SignalRegionExpired Region::expired()
@@ -60,7 +60,7 @@ void Region::onMediaDurationTimeout()
 
 bool Region::isExpired() const
 {
-    return m_currentMediaIndex == FIRST_CONTENT_INDEX;
+    return m_currentMediaIndex == FirstContentIndex;
 }
 
 bool Region::shouldBeMediaReplaced() const
@@ -73,7 +73,7 @@ size_t Region::getNextMediaIndex() const
     size_t nextContentIndex = m_currentMediaIndex + 1;
 
     if(nextContentIndex >= m_media.size())
-        return FIRST_CONTENT_INDEX;
+        return FirstContentIndex;
 
     return nextContentIndex;
 }

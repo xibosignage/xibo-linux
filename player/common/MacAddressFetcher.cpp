@@ -8,9 +8,9 @@
 
 #include <boost/format.hpp>
 
-const std::size_t CONFIG_BUFFER_SIZE = 1024;
-const std::size_t MAC_ADDRESS_BUFFER = 100;
-const int INVALID_SOCKET = -1;
+const std::size_t ConfigBufferSize = 1024;
+const std::size_t MacAddressBuffer = 100;
+const int InvalidSocket = -1;
 
 MacAddressError::MacAddressError(std::string_view error) : m_error(error)
 {
@@ -25,7 +25,7 @@ boost::optional<std::string> MacAddressFetcher::get()
 {
     try
     {
-        char buffer[CONFIG_BUFFER_SIZE];
+        char buffer[ConfigBufferSize];
 
         auto socket = openSocket();
         auto interfaceConfig = getInterfaceConfig(socket, buffer);
@@ -43,7 +43,7 @@ boost::optional<std::string> MacAddressFetcher::get()
 SocketDescriptor MacAddressFetcher::openSocket()
 {
     SocketDescriptor sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if(sock == INVALID_SOCKET)
+    if(sock == InvalidSocket)
     {
         throw MacAddressError{"Socket was not opened"};
     }
@@ -53,7 +53,7 @@ SocketDescriptor MacAddressFetcher::openSocket()
 ifconf MacAddressFetcher::getInterfaceConfig(SocketDescriptor socket, char* buffer)
 {
     ifconf interfaceConfig;
-    interfaceConfig.ifc_len = CONFIG_BUFFER_SIZE;
+    interfaceConfig.ifc_len = ConfigBufferSize;
     interfaceConfig.ifc_buf = buffer;
 
     if(!ioctl(socket, SIOCGIFCONF, &interfaceConfig))
@@ -89,7 +89,7 @@ std::string MacAddressFetcher::retrieveMacAddress(SocketDescriptor socket, ifreq
 {
     if(!ioctl(socket, SIOCGIFHWADDR, &interfaceRequest))
     {
-        char macAddress[MAC_ADDRESS_BUFFER] = {0};
+        char macAddress[MacAddressBuffer] = {0};
         unsigned char* mac = reinterpret_cast<unsigned char*>(interfaceRequest.ifr_hwaddr.sa_data);
 
         std::sprintf(macAddress, "%.2x:%.2x:%.2x:%.2x:%.2x:%.2x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);

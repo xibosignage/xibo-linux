@@ -24,6 +24,6 @@ private:
 
 private:
     LayoutSchedule m_schedule;
-    int m_currentLayoutId = EMPTY_LAYOUT_ID;
+    int m_currentLayoutId = EmptyLayoutId;
 
 };

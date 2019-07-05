@@ -5,18 +5,19 @@
 #include <gtkmm/cssprovider.h>
 
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
-    const std::string DEFAULT_STYLE = "window { background-color: black; }";
+    const std::string DefaultStyle = "window { background-color: black; }";
 #else
-    const std::string DEFAULT_STYLE = "GtkMainWindow { background-color: black; }";
+    const std::string DefaultStyle = "GtkWindow#mainWindow { background-color: black; }";
 #endif
 
 MainWindow::MainWindow() :
     Widget(m_handler),
-    m_layout(std::make_unique<MainLayoutView>(MIN_DISPLAY_WIDTH, MIN_DISPLAY_HEIGHT))
+    m_layout(std::make_unique<MainLayoutView>(MinDisplayWidth, MinDisplayHeight))
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
     loadDefaultStyle();
 
+    m_handler.set_name("mainWindow");
     m_handler.add(getHandler(*m_layout));
     m_handler.add_events(Gdk::KEY_PRESS_MASK);
     m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
@@ -54,7 +55,7 @@ void MainWindow::loadDefaultStyle()
     Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
     Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
 
-    if(css_provider->load_from_data(DEFAULT_STYLE))
+    if(css_provider->load_from_data(DefaultStyle))
     {
         Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
         style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -101,7 +102,7 @@ void MainWindow::setMainLayout(const std::shared_ptr<IWidget>& child)
 
 void MainWindow::addOverlayLayout(const std::shared_ptr<IWidget>& child, int zorder)
 {
-    m_layout->addChild(child, DEFAULT_XPOS, DEFAULT_YPOS, zorder);
+    m_layout->addChild(child, DefaultXPos, DefaultYPos, zorder);
 }
 
 void MainWindow::move(int x, int y)

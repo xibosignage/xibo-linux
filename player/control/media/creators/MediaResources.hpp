@@ -14,6 +14,7 @@ namespace ResourcesXlf::Media
 
     const std::string AudioType = "audio";
     const std::string VideoType = "video";
+    const std::string LocalVideoType = "localvideo";
     const std::string ImageType = "image";
     const std::string TextType = "text";
     const std::string EmbeddedType = "embedded";

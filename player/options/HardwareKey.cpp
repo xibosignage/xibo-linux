@@ -7,7 +7,7 @@
 #include <boost/process/child.hpp>
 #include <boost/process/io.hpp>
 
-const std::string UNDEFINED_MAC_ADDRESS = "00:00:00:00:00:00";
+const std::string UndefinedMacAddress = "00:00:00:00:00:00";
 
 std::string HardwareKey::generate()
 {
@@ -42,7 +42,7 @@ inline void HardwareKey::nativeCpuid(unsigned int* eax, unsigned int* ebx, unsig
 
 std::string HardwareKey::macAddress()
 {
-    return MacAddressFetcher::get().value_or(UNDEFINED_MAC_ADDRESS);
+    return MacAddressFetcher::get().value_or(UndefinedMacAddress);
 }
 
 std::string HardwareKey::volumeSerial()

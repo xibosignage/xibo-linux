@@ -11,18 +11,19 @@
 
 namespace ph = std::placeholders;
 
-const std::string STATUS_SCREEN_KEY = "i";
+const std::string StatusScreenKey = "i";
 
 MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, XiboLayoutScheduler& scheduler) :
     m_window(window), m_scheduler(scheduler)
 {
     m_window->disableWindowDecoration();
+    m_window->setCursorVisible(false);
     m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
 }
 
 void MainWindowController::onKeyPressed(const std::string& pressedKey)
 {
-    if(pressedKey == STATUS_SCREEN_KEY)
+    if(pressedKey == StatusScreenKey)
     {
         m_statusScrenRequested.emit();
     }
@@ -32,7 +33,7 @@ void MainWindowController::updateLayout(int layoutId)
 {
     m_layout.reset();
 
-    if(layoutId != EMPTY_LAYOUT_ID)
+    if(layoutId != EmptyLayoutId)
     {
         showLayout(layoutId);
     }

@@ -4,7 +4,8 @@
 #include "FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 
-const unsigned int RSA_KEY_LENGTH = 1024;
+const unsigned int RsaKeyLength = 1024;
+
 
 RsaManager& RsaManager::instance()
 {
@@ -19,7 +20,7 @@ void RsaManager::load()
 
     if(!FileSystem::exists(publicKeyPath) || !FileSystem::exists(privateKeyPath))
     {
-        m_keys = CryptoUtils::generateRsaKeys(RSA_KEY_LENGTH);
+        m_keys = CryptoUtils::generateRsaKeys(RsaKeyLength);
         CryptoUtils::saveRsaKeys(m_keys, publicKeyPath, privateKeyPath);
     }
     else

@@ -38,6 +38,7 @@ public:
     {
         HTTP,
         HTTPS,
+        RTSP,
         File,
         Invalid
     };

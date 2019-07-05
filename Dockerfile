@@ -16,7 +16,8 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libgstreamer-plugins-bad1.0-dev \
   gstreamer1.0-libav \
   libwebkitgtk-3.0-dev \
-  gstreamer1.0-tools
+  gstreamer1.0-tools \
+  libxss-dev
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   mesa-common-dev \

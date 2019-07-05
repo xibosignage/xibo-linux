@@ -33,12 +33,14 @@
 #include <glibmm/main.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <boost/date_time/time_clock.hpp>
+#include <gdk/gdkx.h>
+#include <X11/extensions/scrnsaver.h>
 
 std::unique_ptr<XiboApp> XiboApp::m_app;
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = Logger::create(LOGGER, createLoggerSinks());
+    auto logger = XiboLogger::create(SpdLogger, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);
     logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
 
@@ -85,9 +87,9 @@ XiboApp::XiboApp(const std::string& name) :
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_playerSettingsManager->load();
-    m_scheduleManager->load(ProjectResources::configDirectory() / DEFAULT_SCHEDULE_FILE);
+    m_scheduleManager->load(ProjectResources::configDirectory() / DefaultScheduleFile);
     m_scheduler->reloadSchedule(m_scheduleManager->schedule());
-    m_fileManager->loadCache(Resources::resDirectory() / DEFAULT_CACHE_FILE);
+    m_fileManager->loadCache(Resources::resDirectory() / DefaultCacheFile);
     HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
     setupXmrManager();
@@ -159,6 +161,10 @@ int XiboApp::run()
     m_mainWindow = std::make_shared<MainWindow>();
     m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_scheduler);
 
+    GdkDisplay* display = m_mainWindow->get().get_display()->gobj();
+    auto x11Display = gdk_x11_display_get_xdisplay(display);
+    XScreenSaverSuspend(x11Display, true);
+
     auto statusScreen = std::make_shared<StatusScreen>(640, 480);
     m_windowController->statusScreenRequested().connect([this, statusScreen](){
         StatusInfo info{collectGeneralInfo(), m_collectionInterval->status(), m_scheduler->status(), m_xmrManager->status()};
@@ -220,7 +226,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     }
     else
     {
-        if(m_scheduler->currentLayoutId() == EMPTY_LAYOUT_ID)
+        if(m_scheduler->currentLayoutId() == EmptyLayoutId)
         {
             m_windowController->updateLayout(m_scheduler->nextLayoutId());
         }

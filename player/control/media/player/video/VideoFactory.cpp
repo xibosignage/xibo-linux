@@ -23,14 +23,14 @@ MediaPlayerOptions VideoFactory::createPlayerOptions(const MediaOptions& baseOpt
     auto muted = static_cast<MediaPlayerOptions::Mute>(std::stoi(options.at(ResourcesXlf::Player::Mute)));
     auto looped = static_cast<MediaPlayerOptions::Loop>(std::stoi(options.at(ResourcesXlf::Player::Loop)));
 
-    return MediaPlayerOptions{baseOptions, muted, looped, MAX_VOLUME};
+    return MediaPlayerOptions{baseOptions, muted, looped, MaxVolume};
 }
 
 std::unique_ptr<IMediaPlayer> VideoFactory::createPlayer(const MediaPlayerOptions& options, int width, int height)
 {
     auto player = std::make_unique<MediaPlayer>();
 
-    player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MIN_VOLUME : MAX_VOLUME);
+    player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MinVolume : MaxVolume);
     player->load(options.uri);
     player->setOutputWindow(createView(width, height, options.geometry.scaleType, player->mediaInfo()));
 

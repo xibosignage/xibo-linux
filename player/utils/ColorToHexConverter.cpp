@@ -2,11 +2,11 @@
 
 #include <regex>
 
-const int SHORT_COLOR_WITHOUT_ALPHA = 3;
-const int SHORT_COLOR_WITH_ALPHA = 4;
-const int LONG_COLOR_WITHOUT_ALPHA = 6;
-const int COLOR_BASE = 16;
-const std::string DEFAULT_ALPHA_CHANNEL = "FF";
+const int ShortColorWithoutAlpha = 3;
+const int ShortColorWithAlpha = 4;
+const int LongColorWithoutAlpha = 6;
+const int ColorBase = 16;
+const std::string DefaultAlphaChannel = "FF";
 
 uint32_t ColorToHexConverter::colorToHex(const std::string& color)
 {
@@ -16,7 +16,7 @@ uint32_t ColorToHexConverter::colorToHex(const std::string& color)
     auto colorWithoutNumberSign = removeNumberSign(color);
     auto longColorWithAlpha = convertToLongColorWithAlpha(colorWithoutNumberSign);
 
-    return static_cast<uint32_t>(std::stoul(longColorWithAlpha, nullptr, COLOR_BASE));
+    return static_cast<uint32_t>(std::stoul(longColorWithAlpha, nullptr, ColorBase));
 }
 
 bool ColorToHexConverter::isValidColor(const std::string& color) const
@@ -50,7 +50,7 @@ std::string ColorToHexConverter::convertToLongColorWithAlpha(const std::string& 
 
 bool ColorToHexConverter::isShortColor(const std::string& color) const
 {
-    return color.size() == SHORT_COLOR_WITH_ALPHA || color.size() == SHORT_COLOR_WITHOUT_ALPHA;
+    return color.size() == ShortColorWithAlpha || color.size() == ShortColorWithoutAlpha;
 }
 
 std::string ColorToHexConverter::convertShortToLongColor(const std::string& shortColor)
@@ -70,11 +70,11 @@ std::string ColorToHexConverter::doubleDigit(char digit)
 
 bool ColorToHexConverter::isColorWithoutAlpha(const std::string& color) const
 {
-    return color.size() == LONG_COLOR_WITHOUT_ALPHA;
+    return color.size() == LongColorWithoutAlpha;
 }
 
 std::string ColorToHexConverter::appendDefaultAlphaChannel(const std::string& longColorWithoutAlpha)
 {
-    return longColorWithoutAlpha + DEFAULT_ALPHA_CHANNEL;
+    return longColorWithoutAlpha + DefaultAlphaChannel;
 }
 

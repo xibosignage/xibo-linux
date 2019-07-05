@@ -59,6 +59,15 @@ std::string Utils::md5hash(std::string_view data)
     return stream.str();
 }
 
+
+std::string Utils::md5hashFromFile(const FilePath& path)
+{
+    std::ifstream in{path};
+    std::string fileContent{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
+
+    return md5hash(fileContent.data());
+}
+
 std::string Utils::toBase64(const std::string& text)
 {
     return boost::beast::detail::base64_encode(text);
@@ -68,3 +77,5 @@ std::string Utils::fromBase64(const std::string& text)
 {
     return boost::beast::detail::base64_decode(text);
 }
+
+

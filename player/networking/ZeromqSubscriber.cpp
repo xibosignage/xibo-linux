@@ -30,9 +30,9 @@ void ZeromqSubscriber::run(const std::string& host)
 void ZeromqSubscriber::processMessageQueue(const std::string& host)
 {
     zmq::socket_t socket{m_context, ZMQ_SUB};
-    socket.connect(host);
-    socket.setsockopt(ZMQ_SUBSCRIBE, HEARTBEAT_CHANNEL, std::strlen(HEARTBEAT_CHANNEL));
-    socket.setsockopt(ZMQ_SUBSCRIBE, XMR_CHANNEL, std::strlen(XMR_CHANNEL));
+    tryConnect(socket, host);
+    socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
+    socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
 
     while(!m_stopped)
     {
@@ -45,6 +45,18 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host)
             if(ex.num() != ETERM)
                 throw;
         }
+    }
+}
+
+void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host)
+{
+    try
+    {
+        socket.connect(host);
+    }
+    catch(zmq::error_t&)
+    {
+        Log::error("Unsuccesful connection to {}", host);
     }
 }
 

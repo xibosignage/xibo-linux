@@ -5,8 +5,8 @@
 #include "control/media/creators/MediaParsersRepo.hpp"
 #include "control/media/creators/MediaResources.hpp"
 
-const int DEFAULT_REGION_ZINDEX = 0;
-const bool DEFAULT_REGION_LOOP = false;
+const int DefaultRegionZindex = 0;
+const bool DefaultRegionLoop = false;
 
 ParsedRegion RegionParser::parse(const xml_node& node)
 {
@@ -17,8 +17,8 @@ ParsedRegion RegionParser::parse(const xml_node& node)
     region.options.height = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Height)));
     region.options.left = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Left)));
     region.options.top = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Top)));
-    region.options.zindex = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Zindex), DEFAULT_REGION_ZINDEX);
-    region.options.loop = static_cast<RegionOptions::Loop>(node.get<bool>(ResourcesXlf::option(ResourcesXlf::Region::Loop), DEFAULT_REGION_LOOP));
+    region.options.zindex = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Zindex), DefaultRegionZindex);
+    region.options.loop = static_cast<RegionOptions::Loop>(node.get<bool>(ResourcesXlf::option(ResourcesXlf::Region::Loop), DefaultRegionLoop));
     region.media = parseMedia(region.options.width, region.options.height, node);
 
     return region;

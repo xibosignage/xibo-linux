@@ -4,8 +4,7 @@
 #include "control/region/RegionParser.hpp"
 #include "control/common/Validators.hpp"
 
-const std::string DEFAULT_COLOR = "#000";
-
+const std::string DefaultColor = "#000";
 
 ParsedLayout MainLayoutParser::parse(const xml_node& node)
 {
@@ -32,7 +31,7 @@ uint32_t MainLayoutParser::getColor(const xml_node& node)
 {
     auto color = node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::MainLayout::BackgroundColor));
 
-    color = color.empty() ? DEFAULT_COLOR : color;
+    color = color.empty() ? DefaultColor : color;
 
     return Validators::validateColor(color);
 }

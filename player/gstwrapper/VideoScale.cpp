@@ -7,5 +7,5 @@ Gst::VideoScale::VideoScale() :
 
 Gst::RefPtr<Gst::VideoScale> Gst::VideoScale::create()
 {
-    return std::shared_ptr<Gst::VideoScale>(new Gst::VideoScale);
+    return Gst::RefPtr<Gst::VideoScale>(new Gst::VideoScale);
 }

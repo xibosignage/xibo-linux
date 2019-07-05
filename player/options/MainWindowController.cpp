@@ -85,7 +85,9 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress, co
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
-        auto connectionResult = xmdsRequester.registerDisplay(121, "1.8", "Display").then([](auto future){
+        auto connectionResult = xmdsRequester.registerDisplay(ProjectResources::codeVersion(),
+                                                              ProjectResources::version(),
+                                                              "Display").then([](auto future){
             auto [error, result] = future.get();
 
             if(!error)
