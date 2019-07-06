@@ -5,7 +5,7 @@
 
 namespace ph = std::placeholders;
 
-MainLayout::MainLayout(const std::shared_ptr<IMainLayoutView>& view) :
+MainLayout::MainLayout(const std::shared_ptr<IOverlayLayout>& view) :
     m_view(view)
 {
 }
@@ -23,7 +23,17 @@ SignalLayoutExpired MainLayout::expired()
     return m_layoutExpired;
 }
 
-std::shared_ptr<IMainLayoutView> MainLayout::view()
+void MainLayout::restart()
+{
+    m_expiredRegions.clear();
+
+    for(auto&& region : m_regions)
+    {
+        region->start();
+    }
+}
+
+std::shared_ptr<IOverlayLayout> MainLayout::view()
 {
     return m_view;
 }

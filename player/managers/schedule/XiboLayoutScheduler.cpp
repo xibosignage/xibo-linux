@@ -22,6 +22,21 @@ int XiboLayoutScheduler::nextLayoutId()
     return m_currentLayoutId;
 }
 
+std::vector<int> XiboLayoutScheduler::nextOverlayLayoutsIds()
+{
+    std::vector<int> overlayLayoutsIds;
+
+    for(auto&& layout : m_schedule.overlayLayouts())
+    {
+        if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
+        {
+            overlayLayoutsIds.emplace_back(layout.id);
+        }
+    }
+
+    return overlayLayoutsIds;
+}
+
 int XiboLayoutScheduler::currentLayoutId() const
 {
     return m_currentLayoutId;
@@ -31,7 +46,19 @@ SchedulerStatus XiboLayoutScheduler::status()
 {
     SchedulerStatus status;
 
-    for(auto&& layout : m_schedule.layouts())
+    collectLayoutListStatus(status, m_schedule.regularLayouts());
+    collectLayoutListStatus(status, m_schedule.overlayLayouts());
+
+    status.generatedTime = m_schedule.generatedTime();
+    status.currentLayout = m_currentLayoutId;
+
+    return status;
+}
+
+template<typename LayoutsList>
+void XiboLayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts)
+{
+    for(auto&& layout : layouts)
     {
         if(isLayoutValid(layout.dependants))
         {
@@ -46,18 +73,14 @@ SchedulerStatus XiboLayoutScheduler::status()
             status.invalidLayouts.emplace_back(layout.id);
         }
     }
-
-    status.generatedTime = m_schedule.generatedTime();
-    status.currentLayout = m_currentLayoutId;
-
-    return status;
 }
 
 int XiboLayoutScheduler::nextScheduledLayoutId()
 {
-    for(size_t i = 0; i != m_schedule.scheduledLayoutsCount(); ++i)
+    auto&& regularLayouts = m_schedule.regularLayouts();
+    for(size_t i = 0; i != regularLayouts.size(); ++i)
     {
-        auto&& layout = m_schedule.nextScheduledLayout();
+        auto&& layout = regularLayouts.nextLayout();
 
         if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
         {
@@ -83,7 +106,7 @@ bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) cons
 bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) const
 {
     for(auto&& dependant : m_schedule.globalDependants())
-    {        
+    {
         if(!FileSystem::exists(Resources::resDirectory() / dependant))
         {
             return false;

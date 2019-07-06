@@ -21,6 +21,8 @@ namespace XmdsResources
         const std::string Schedule = "schedule";
         const std::string Layout = "layout";
         const std::string DefaultLayout = "default";
+        const std::string Overlays = "overlays";
+        const std::string OverlayLayout = "overlay";
         const std::string GlobalDependants = "dependants";
 
         namespace LayoutAttrs

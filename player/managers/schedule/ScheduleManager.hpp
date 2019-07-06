@@ -16,6 +16,7 @@ private:
 
     ScheduledLayout parseScheduledLayout(const xml_node& layoutNode);
     DefaultScheduledLayout parseDefaultLayout(const xml_node& layoutNode);
+    OverlayLayoutsList parseOverlayLayouts(const xml_node& overlaysNode);
     std::vector<std::string> parseDependants(const xml_node& dependantsNode);
 
 private:

@@ -1,5 +1,6 @@
 #include "MainWindow.hpp"
-#include "control/layout/MainLayoutView.hpp"
+
+#include "control/common/OverlayLayout.hpp"
 #include "constants.hpp"
 
 #include <gtkmm/cssprovider.h>
@@ -12,7 +13,7 @@
 
 MainWindow::MainWindow() :
     Widget(m_handler),
-    m_layout(std::make_unique<MainLayoutView>(MinDisplayWidth, MinDisplayHeight))
+    m_layout(std::make_unique<OverlayLayout>(MinDisplayWidth, MinDisplayHeight))
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
     loadDefaultStyle();
@@ -100,9 +101,14 @@ void MainWindow::setMainLayout(const std::shared_ptr<IWidget>& child)
     m_layout->setMainChild(child);
 }
 
-void MainWindow::addOverlayLayout(const std::shared_ptr<IWidget>& child, int zorder)
+void MainWindow::setOverlays(const std::vector<std::shared_ptr<IOverlayLayout>>& children)
 {
-    m_layout->addChild(child, DefaultXPos, DefaultYPos, zorder);
+    m_layout->removeChildren();
+
+    for(auto&& child : children)
+    {
+        m_layout->addChild(child, DefaultXPos, DefaultYPos, 0);
+    }
 }
 
 void MainWindow::move(int x, int y)

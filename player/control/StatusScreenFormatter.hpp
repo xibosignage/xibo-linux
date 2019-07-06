@@ -1,9 +1,9 @@
 #pragma once
 
-#include "managers/SchedulerStatus.hpp"
 #include "GeneralInfo.hpp"
 #include "managers/CmsStatus.hpp"
 #include "managers/XmrStatus.hpp"
+#include "managers/schedule/SchedulerStatus.hpp"
 
 struct StatusInfo
 {

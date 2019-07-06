@@ -14,13 +14,14 @@
 #include "control/media/player/video/XiboVideoSink.hpp"
 #include "control/media/creators/MediaParsersRepo.hpp"
 #include "control/media/creators/MediaFactoriesRepo.hpp"
+#include "control/layout/LayoutsManager.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/XiboLayoutScheduler.hpp"
+#include "managers/schedule/XiboLayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrManager.hpp"
-#include "managers/ScheduleManager.hpp"
+#include "managers/schedule/ScheduleManager.hpp"
 
 #include "networking/HttpManager.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
@@ -77,7 +78,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
     m_xmrManager(std::make_unique<XmrManager>()),
-    m_scheduleManager(std::make_unique<ScheduleManager>())
+    m_scheduleManager(std::make_unique<ScheduleManager>()),
+    m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
 {
     if(!FileSystem::exists(ProjectResources::cmsSettings()))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -98,7 +100,7 @@ XiboApp::XiboApp(const std::string& name) :
     MediaFactoriesRepo::init();
 
     m_mainLoop->setShutdownAction([this](){
-        m_windowController.reset();
+        m_layoutsManager.reset();
         m_xmrManager->stop();
         HttpManager::instance().shutdown();
         if(m_collectionInterval)
@@ -159,7 +161,7 @@ ScreenShoter& XiboApp::screenShoter()
 int XiboApp::run()
 {
     m_mainWindow = std::make_shared<MainWindow>();
-    m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_scheduler);
+    m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_layoutsManager);
 
     GdkDisplay* display = m_mainWindow->get().get_display()->gobj();
     auto x11Display = gdk_x11_display_get_xdisplay(display);
@@ -180,7 +182,9 @@ int XiboApp::run()
     updateSettings(m_playerSettingsManager->settings());
 
     m_collectionInterval->startRegularCollection();
-    m_windowController->updateLayout(m_scheduler->nextLayoutId());
+    m_layoutsManager->fetchAllLayouts();
+
+    m_mainWindow->showAll();
 
     return m_mainLoop->run(*m_mainWindow);
 }
@@ -228,7 +232,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     {
         if(m_scheduler->currentLayoutId() == EmptyLayoutId)
         {
-            m_windowController->updateLayout(m_scheduler->nextLayoutId());
+            m_layoutsManager->fetchMainLayout(m_scheduler->nextLayoutId());
         }
     }
 }

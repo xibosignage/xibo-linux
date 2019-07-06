@@ -35,6 +35,8 @@ LayoutSchedule ScheduleManager::parseSchedule(const xml_node& scheduleXml)
             schedule.addScheduledLayout(parseScheduledLayout(node));
         else if(name == Resources::DefaultLayout)
             schedule.updateDefaultLayout(parseDefaultLayout(node));
+        else if(name == Resources::Overlays)
+            schedule.addOverlayLayouts(parseOverlayLayouts(node));
         else if(name == Resources::GlobalDependants)
             schedule.updateDependants(parseDependants(node));
     }
@@ -78,6 +80,18 @@ DefaultScheduledLayout ScheduleManager::parseDefaultLayout(const xml_node& layou
     }
 
     return layout;
+}
+
+OverlayLayoutsList ScheduleManager::parseOverlayLayouts(const xml_node& overlaysNode)
+{
+    OverlayLayoutsList overlayLayouts;
+
+    for(auto [name, node] : overlaysNode)
+    {
+        overlayLayouts.addLayout(parseScheduledLayout(node));
+    }
+
+    return overlayLayouts;
 }
 
 std::vector<std::string> ScheduleManager::parseDependants(const xml_node& dependantsNode)

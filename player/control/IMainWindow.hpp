@@ -3,9 +3,11 @@
 #include "control/common/IWidget.hpp"
 
 #include <memory>
+#include <vector>
 #include <sigc++/signal.h>
 
 using SignalKeyPressed = sigc::signal<void(std::string)>;
+class IOverlayLayout;
 
 class IMainWindow : public IWidget
 {
@@ -15,7 +17,7 @@ public:
     virtual void move(int x, int y) = 0;
 
     virtual void setMainLayout(const std::shared_ptr<IWidget>& child) = 0;
-    virtual void addOverlayLayout(const std::shared_ptr<IWidget>& child, int zorder) = 0;
+    virtual void setOverlays(const std::vector<std::shared_ptr<IOverlayLayout>>& children) = 0;
     virtual void disableWindowResize() = 0;
     virtual void disableWindowDecoration() = 0;
     virtual void setKeepAbove(bool keepAbove) = 0;

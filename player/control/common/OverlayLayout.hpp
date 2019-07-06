@@ -1,11 +1,11 @@
 #pragma once
 
-#include "IMainLayoutView.hpp"
+#include "IOverlayLayout.hpp"
 #include "control/common/Widget.hpp"
 
 #include <gtkmm/overlay.h>
 
-class MainLayoutView : public Widget<IMainLayoutView>
+class OverlayLayout : public Widget<IOverlayLayout>
 {
 public:
     struct WidgetInfo
@@ -18,9 +18,10 @@ public:
 
     using WidgetsWithInfo = std::vector<WidgetInfo>;
 
-    MainLayoutView(int width, int height);
+    OverlayLayout(int width, int height);
 
     void addChild(const std::shared_ptr<IWidget>& child, int x, int y, int z) override;
+    void removeChildren() override;
     void reorderChild(const std::shared_ptr<IWidget>& child, int z) override;
     void setMainChild(const std::shared_ptr<IWidget>& mainChild) override;
 

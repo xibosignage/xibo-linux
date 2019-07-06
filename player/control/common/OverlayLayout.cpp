@@ -1,12 +1,12 @@
-#include "MainLayoutView.hpp"
+#include "OverlayLayout.hpp"
 
 #include <gtkmm/window.h>
 
-MainLayoutView::MainLayoutView(int width, int height) :
+OverlayLayout::OverlayLayout(int width, int height) :
     Widget(m_handler)
 {
     m_handler.signal_get_child_position().
-            connect(sigc::mem_fun(*this, &MainLayoutView::onGetChildPosition), false);
+            connect(sigc::mem_fun(*this, &OverlayLayout::onGetChildPosition), false);
 
     m_handler.property_halign().set_value(Gtk::ALIGN_CENTER);
     m_handler.property_valign().set_value(Gtk::ALIGN_CENTER);
@@ -14,7 +14,7 @@ MainLayoutView::MainLayoutView(int width, int height) :
     setSize(width, height);
 }
 
-void MainLayoutView::addChild(const std::shared_ptr<IWidget>& child, int x, int y, int z)
+void OverlayLayout::addChild(const std::shared_ptr<IWidget>& child, int x, int y, int z)
 {
     m_handler.add_overlay(getHandler(*child));
 
@@ -25,14 +25,23 @@ void MainLayoutView::addChild(const std::shared_ptr<IWidget>& child, int x, int 
     reorderChildren();
 }
 
-void MainLayoutView::sortRegionsByZindex()
+void OverlayLayout::removeChildren()
+{
+    for(auto&& child : m_children)
+    {
+        m_handler.Gtk::Container::remove(getHandler(*child.widget));
+    }
+    m_children.clear();
+}
+
+void OverlayLayout::sortRegionsByZindex()
 {
     std::stable_sort(m_children.begin(), m_children.end(), [=](const auto& first, const auto& second){
         return first.z < second.z;
     });
 }
 
-void MainLayoutView::reorderChildren()
+void OverlayLayout::reorderChildren()
 {
     for(std::size_t i = 0; i != m_children.size(); ++i)
     {
@@ -41,12 +50,12 @@ void MainLayoutView::reorderChildren()
     }
 }
 
-void MainLayoutView::reorderChild(const std::shared_ptr<IWidget>& child, int z)
+void OverlayLayout::reorderChild(const std::shared_ptr<IWidget>& child, int z)
 {
     m_handler.reorder_overlay(getHandler(*child), z);
 }
 
-void MainLayoutView::setMainChild(const std::shared_ptr<IWidget>& mainChild)
+void OverlayLayout::setMainChild(const std::shared_ptr<IWidget>& mainChild)
 {
     removePreviousMainChild();
 
@@ -54,7 +63,7 @@ void MainLayoutView::setMainChild(const std::shared_ptr<IWidget>& mainChild)
     m_mainChild = mainChild;
 }
 
-void MainLayoutView::removePreviousMainChild()
+void OverlayLayout::removePreviousMainChild()
 {
     if(m_mainChild)
     {
@@ -62,10 +71,14 @@ void MainLayoutView::removePreviousMainChild()
     }
 }
 
-void MainLayoutView::showAll()
+void OverlayLayout::showAll()
 {
     Widget::showAll();
-    m_mainChild->showAll();
+
+    if(m_mainChild)
+    {
+        m_mainChild->showAll();
+    }
 
     for(auto&& childInfo : m_children)
     {
@@ -73,21 +86,24 @@ void MainLayoutView::showAll()
     }
 }
 
-void MainLayoutView::setSize(int width, int height)
+void OverlayLayout::setSize(int width, int height)
 {
     m_handler.set_size_request(width, height);
-    updateOffsets();
+//    updateOffsets();
 }
 
-void MainLayoutView::scale(double scaleX, double scaleY)
+void OverlayLayout::scale(double scaleX, double scaleY)
 {
     Widget::scale(scaleX, scaleY);
-    m_mainChild->scale(scaleX, scaleY);
-    updateOffsets();
+    if(m_mainChild)
+    {
+        m_mainChild->scale(scaleX, scaleY);
+    }
+//    updateOffsets();
     scaleChildren(scaleX, scaleY);
 }
 
-void MainLayoutView::updateOffsets()
+void OverlayLayout::updateOffsets()
 {
     Gtk::Window* parent = static_cast<Gtk::Window*>(m_handler.get_toplevel());
     if(parent->get_is_toplevel())
@@ -100,7 +116,7 @@ void MainLayoutView::updateOffsets()
     }
 }
 
-void MainLayoutView::scaleChildren(double scaleX, double scaleY)
+void OverlayLayout::scaleChildren(double scaleX, double scaleY)
 {
     for(auto&& childInfo : m_children)
     {
@@ -111,12 +127,13 @@ void MainLayoutView::scaleChildren(double scaleX, double scaleY)
     }
 }
 
-Gtk::Overlay& MainLayoutView::get()
+Gtk::Overlay& OverlayLayout::get()
 {
     return m_handler;
 }
 
-bool MainLayoutView::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
+
+bool OverlayLayout::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
 {
     auto it = findChild(widget);
     if(it != m_children.end())
@@ -132,7 +149,7 @@ bool MainLayoutView::onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& all
     return false;
 }
 
-MainLayoutView::WidgetsWithInfo::iterator MainLayoutView::findChild(Gtk::Widget* widget)
+OverlayLayout::WidgetsWithInfo::iterator OverlayLayout::findChild(Gtk::Widget* widget)
 {
     return std::find_if(m_children.begin(), m_children.end(), [this, widget](const auto& child){
         return &getHandler(*child.widget) == widget;

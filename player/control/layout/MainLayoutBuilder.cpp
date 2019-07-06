@@ -1,27 +1,14 @@
 #include "MainLayoutBuilder.hpp"
-#include "MainLayout.hpp"
-#include "MainLayoutView.hpp"
 #include "ParsedLayout.hpp"
 
-#include "control/region/RegionBuilder.hpp"
-#include "control/region/Region.hpp"
+#include "control/common/Image.hpp"
+#include "control/common/OverlayLayout.hpp"
 
 #include "common/FilePath.hpp"
-#include "control/common/Image.hpp"
 
-std::unique_ptr<IMainLayout> MainLayoutBuilder::build(const ParsedLayout& parsedLayout)
+std::shared_ptr<IOverlayLayout> MainLayoutBuilder::createView(const LayoutOptions& options)
 {
-    auto layoutView = createView(parsedLayout.options);
-    auto layout = std::make_unique<MainLayout>(layoutView);
-
-    addRegions(*layout, parsedLayout.regions);
-
-    return layout;
-}
-
-std::shared_ptr<IMainLayoutView> MainLayoutBuilder::createView(const LayoutOptions& options)
-{
-    auto layoutView = std::make_shared<MainLayoutView>(options.width, options.height);
+    auto layoutView = std::make_shared<OverlayLayout>(options.width, options.height);
 
     layoutView->setMainChild(createBackground(options));
 
@@ -38,15 +25,4 @@ std::shared_ptr<IImage> MainLayoutBuilder::createBackground(const LayoutOptions&
         background->setColor(options.backgroundColor);
 
     return background;
-}
-
-void MainLayoutBuilder::addRegions(IMainLayout& layout, const std::vector<ParsedRegion>& regions)
-{
-    for(auto&& parsedRegion : regions)
-    {
-        RegionBuilder regionBuilder;
-
-        auto&& options = parsedRegion.options;
-        layout.addRegion(regionBuilder.build(parsedRegion), options.left, options.top, options.zindex);
-    }
 }

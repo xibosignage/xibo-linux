@@ -6,7 +6,7 @@
 using SignalLayoutExpired = sigc::signal<void()>;
 
 class IRegion;
-class IMainLayoutView;
+class IOverlayLayout;
 
 class IMainLayout
 {
@@ -16,6 +16,8 @@ public:
     virtual void addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z) = 0;
     virtual SignalLayoutExpired expired() = 0;
 
-    virtual std::shared_ptr<IMainLayoutView> view() = 0;
+    virtual void restart() = 0;
+
+    virtual std::shared_ptr<IOverlayLayout> view() = 0;
 
 };
