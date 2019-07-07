@@ -1,4 +1,4 @@
-#include "HttpManager.hpp"
+#include "HttpClient.hpp"
 
 #include "common/logger/Logging.hpp"
 #include "common/uri/Uri.hpp"
@@ -8,12 +8,12 @@
 #include "HttpRequest.hpp"
 #include "ProxyHttpRequest.hpp"
 
-const int DEFAULT_CONCURRENT_REQUESTS = 4;
+const int DefaultConcurrentRequests = 4;
 
-HttpManager::HttpManager() :
+HttpClient::HttpClient() :
     m_work{m_ioc}
 {
-    for(int i = 0; i != DEFAULT_CONCURRENT_REQUESTS; ++i)
+    for(int i = 0; i != DefaultConcurrentRequests; ++i)
     {
         m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
             Log::trace("HTTP thread started");
@@ -23,18 +23,18 @@ HttpManager::HttpManager() :
     }
 }
 
-HttpManager::~HttpManager()
+HttpClient::~HttpClient()
 {
     shutdown();
 }
 
-HttpManager& HttpManager::instance()
+HttpClient& HttpClient::instance()
 {
-    static HttpManager manager;
+    static HttpClient manager;
     return manager;
 }
 
-void HttpManager::shutdown()
+void HttpClient::shutdown()
 {
     if(!m_ioc.stopped())
     {
@@ -43,7 +43,7 @@ void HttpManager::shutdown()
     }
 }
 
-void HttpManager::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
+void HttpClient::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
 {
     if(!host.empty())
     {
@@ -51,7 +51,7 @@ void HttpManager::setProxyServer(const std::string& host, const std::string& use
     }
 }
 
-void HttpManager::cancelActiveSession()
+void HttpClient::cancelActiveSession()
 {
     for(auto&& session : m_activeSessions)
     {
@@ -62,17 +62,17 @@ void HttpManager::cancelActiveSession()
     }
 }
 
-boost::future<HttpResponseResult> HttpManager::get(const Uri& uri)
+boost::future<HttpResponseResult> HttpClient::get(const Uri& uri)
 {
     return send(http::verb::get, uri, {});
 }
 
-boost::future<HttpResponseResult> HttpManager::post(const Uri& uri, const std::string& body)
+boost::future<HttpResponseResult> HttpClient::post(const Uri& uri, const std::string& body)
 {
     return send(http::verb::post, uri, body);
 }
 
-boost::future<HttpResponseResult> HttpManager::send(http::verb method, const Uri& uri, const std::string& body)
+boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri& uri, const std::string& body)
 {
     if(m_ioc.stopped()) return managerStoppedError();
 
@@ -93,7 +93,7 @@ boost::future<HttpResponseResult> HttpManager::send(http::verb method, const Uri
     }
 }
 
-boost::future<HttpResponseResult> HttpManager::managerStoppedError()
+boost::future<HttpResponseResult> HttpClient::managerStoppedError()
 {
     boost::promise<HttpResponseResult> result;
     result.set_value(HttpResponseResult{PlayerError{PlayerError::Type::HTTP, "Manager Stopped"}, {}});

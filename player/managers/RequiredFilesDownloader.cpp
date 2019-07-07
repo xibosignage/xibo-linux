@@ -4,7 +4,7 @@
 
 #include "networking/xmds/XmdsFileDownloader.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "networking/HttpManager.hpp"
+#include "networking/HttpClient.hpp"
 
 #include "utils/Managers.hpp"
 #include "utils/Resources.hpp"
@@ -46,7 +46,7 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 
 DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
 {
-    return HttpManager::instance().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
+    return HttpClient::instance().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
         return processDownloadedContent<RegularFile>(future.get(), fileName);
     });
 }

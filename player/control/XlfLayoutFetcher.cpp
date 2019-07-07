@@ -19,7 +19,7 @@ std::unique_ptr<IMainLayout> XlfLayoutFetcher::fetch(int layoutId)
 FilePath XlfLayoutFetcher::getXlfPath(int layoutId)
 {
     auto xlfFile = std::to_string(layoutId) + ".xlf";
-    return Resources::resDirectory() / xlfFile;
+    return Resources::directory() / xlfFile;
 }
 
 ParsedLayout XlfLayoutFetcher::parseLayoutFromNode(const xml_node& node)

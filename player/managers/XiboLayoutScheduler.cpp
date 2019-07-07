@@ -84,7 +84,7 @@ bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependan
 {
     for(auto&& dependant : m_schedule.globalDependants())
     {        
-        if(!FileSystem::exists(Resources::resDirectory() / dependant))
+        if(!FileSystem::exists(Resources::directory() / dependant))
         {
             return false;
         }
@@ -92,7 +92,7 @@ bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependan
 
     for(auto&& dependant : dependants)
     {
-        if(!FileSystem::exists(Resources::resDirectory() / dependant))
+        if(!FileSystem::exists(Resources::directory() / dependant))
         {
             return false;
         }

@@ -8,7 +8,7 @@
 
 class MainLoop;
 class XmdsRequestSender;
-class HttpManager;
+class HttpClient;
 class XiboLayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
@@ -19,6 +19,7 @@ class XmrManager;
 class MainWindowController;
 class MainWindow;
 class ScheduleManager;
+class XiboWebServer;
 struct PlayerSettings;
 
 class XiboApp
@@ -30,8 +31,10 @@ public:
 
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
+
     FileCacheManager& fileManager();
     ScreenShoter& screenShoter();
+    XiboWebServer& webserver();
 
     int run();
 
@@ -61,6 +64,7 @@ private:
     std::shared_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<MainWindowController> m_windowController;
     std::unique_ptr<ScheduleManager> m_scheduleManager;
+    std::shared_ptr<XiboWebServer> m_webserver;
     CmsSettings m_cmsSettings;
 
     static std::unique_ptr<XiboApp> m_app;

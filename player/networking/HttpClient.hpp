@@ -15,12 +15,12 @@ using HttpResponseResult = ResponseResult<std::string>;
 class HttpSession;
 class Uri;
 
-class HttpManager : private boost::noncopyable
+class HttpClient : private boost::noncopyable
 {
 public:
-    ~HttpManager();
+    ~HttpClient();
 
-    static HttpManager& instance();
+    static HttpClient& instance();
 
     void shutdown();
     void setProxyServer(const std::string& host, const std::string& username, const std::string& password);
@@ -28,7 +28,7 @@ public:
     boost::future<HttpResponseResult> post(const Uri& uri, const std::string& body);
 
 private:
-    HttpManager();
+    HttpClient();
 
     boost::future<HttpResponseResult> send(boost::beast::http::verb method, const Uri& uri, const std::string& body);
 

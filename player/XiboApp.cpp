@@ -22,7 +22,8 @@
 #include "managers/XmrManager.hpp"
 #include "managers/ScheduleManager.hpp"
 
-#include "networking/HttpManager.hpp"
+#include "networking/WebServer.hpp"
+#include "networking/HttpClient.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "networking/xmds/SoapRequestSender.hpp"
 
@@ -77,7 +78,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
     m_xmrManager(std::make_unique<XmrManager>()),
-    m_scheduleManager(std::make_unique<ScheduleManager>())
+    m_scheduleManager(std::make_unique<ScheduleManager>()),
+    m_webserver(std::make_shared<XiboWebServer>())
 {
     if(!FileSystem::exists(ProjectResources::cmsSettings()))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -89,8 +91,11 @@ XiboApp::XiboApp(const std::string& name) :
     m_playerSettingsManager->load();
     m_scheduleManager->load(ProjectResources::configDirectory() / DefaultScheduleFile);
     m_scheduler->reloadSchedule(m_scheduleManager->schedule());
-    m_fileManager->loadCache(Resources::resDirectory() / DefaultCacheFile);
-    HttpManager::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
+    m_fileManager->loadCache(Resources::directory() / DefaultCacheFile);
+    m_webserver->setRootDirectory(Resources::directory());
+    m_webserver->run(m_playerSettingsManager->settings().embeddedServerPort);
+    Log::debug(m_webserver->address());
+    HttpClient::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
     setupXmrManager();
 
@@ -100,7 +105,7 @@ XiboApp::XiboApp(const std::string& name) :
     m_mainLoop->setShutdownAction([this](){
         m_windowController.reset();
         m_xmrManager->stop();
-        HttpManager::instance().shutdown();
+        HttpClient::instance().shutdown();
         if(m_collectionInterval)
         {
             m_collectionInterval->stop();
@@ -154,6 +159,11 @@ FileCacheManager& XiboApp::fileManager()
 ScreenShoter& XiboApp::screenShoter()
 {
     return *m_screenShoter;
+}
+
+XiboWebServer& XiboApp::webserver()
+{
+    return *m_webserver;
 }
 
 int XiboApp::run()

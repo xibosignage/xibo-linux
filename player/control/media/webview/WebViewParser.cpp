@@ -1,6 +1,10 @@
 #include "WebViewParser.hpp"
 
 #include "utils/Resources.hpp"
+#include "utils/Managers.hpp"
+
+#include "networking/WebServer.hpp"
+
 #include "control/media/creators/MediaResources.hpp"
 #include "control/media/webview/WebViewResources.hpp"
 
@@ -12,7 +16,6 @@ const bool DefaultTransparency = true;
 const int DefaultWebviewMode = 0;
 const int NativeModeid = 1;
 
-const std::string DefaultNativeScheme = "file://";
 const std::regex DurationRegex("DURATION=([0-9]+)");
 const std::string DefaultWebviewExtension = ".html";
 
@@ -57,7 +60,7 @@ Uri WebViewParser::uri()
     if(mode != NativeModeid)
     {
         auto fileName = std::to_string(id()) + DefaultWebviewExtension;
-        return Uri(DefaultNativeScheme + (Resources::resDirectory() / fileName).string());
+        return Uri{Managers::webserver().address() + fileName};
     }
     else
     {
