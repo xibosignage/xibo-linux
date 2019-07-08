@@ -46,10 +46,10 @@ std::pair<int, int> RegionBuilder::getMediaPosInRegion(IRegion& region, IMedia& 
     if(regionView && mediaView)
     {
         GetMediaPosition positionCalc{regionView->width(), regionView->height()};
-        int left = positionCalc.getMediaLeft(mediaView->width(), media.align());
-        int top = positionCalc.getMediaTop(mediaView->height(), media.valign());
+        int x = positionCalc.getMediaX(mediaView->width(), media.align());
+        int y = positionCalc.getMediaY(mediaView->height(), media.valign());
 
-        return {left, top};
+        return {x, y};
     }
 
     return {DefaultXPos, DefaultYPos};

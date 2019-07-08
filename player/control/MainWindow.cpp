@@ -1,5 +1,8 @@
 #include "MainWindow.hpp"
 
+#include "control/common/OverlayLayout.hpp"
+#include "constants.hpp"
+
 #include <gtkmm/cssprovider.h>
 
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
@@ -9,12 +12,14 @@
 #endif
 
 MainWindow::MainWindow() :
-    Widget(m_handler)
+    Widget(m_handler),
+    m_layout(std::make_unique<OverlayLayout>(MinDisplayWidth, MinDisplayHeight))
 {
     m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
     loadDefaultStyle();
 
     m_handler.set_name("mainWindow");
+    m_handler.add(getHandler(*m_layout));
     m_handler.add_events(Gdk::KEY_PRESS_MASK);
     m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
         m_keyPressed.emit(event->string);
@@ -26,14 +31,14 @@ void MainWindow::showAll()
 {
     Widget::showAll();
 
-    m_child->showAll();
+    m_layout->showAll();
 }
 
 void MainWindow::scale(double scaleX, double scaleY)
 {
     Widget::scale(scaleX, scaleX);
 
-    m_child->scale(scaleX, scaleY);
+    m_layout->scale(scaleX, scaleY);
 }
 
 void MainWindow::onRealized()
@@ -63,6 +68,7 @@ void MainWindow::setSize(int width, int height)
     m_originalWidth = width;
     m_originalHeight = height;
 
+    m_layout->setSize(width, height);
     setWindowSize(width, height);
 }
 
@@ -90,21 +96,18 @@ int MainWindow::y() const
     return m_yPos;
 }
 
-void MainWindow::setWidget(const std::shared_ptr<IWidget>& child)
+void MainWindow::setMainLayout(const std::shared_ptr<IWidget>& child)
 {
-    removeWidget();
-
-    m_handler.add(getHandler(*child));
-    m_child = child;
+    m_layout->setMainChild(child);
 }
 
-void MainWindow::removeWidget()
+void MainWindow::setOverlays(const std::vector<std::shared_ptr<IOverlayLayout>>& children)
 {
-    if(m_child)
-    {
-        m_handler.remove();
+    m_layout->removeChildren();
 
-        m_child.reset();
+    for(auto&& child : children)
+    {
+        m_layout->addChild(child, DefaultXPos, DefaultYPos, 0);
     }
 }
 

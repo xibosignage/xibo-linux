@@ -11,12 +11,16 @@ class XiboLayoutScheduler
 public:
     void reloadSchedule(LayoutSchedule&& schedule);
     int nextLayoutId();
+    std::vector<int> nextOverlayLayoutsIds();
     int currentLayoutId() const;
 
     SchedulerStatus status();
 
 private:
     int nextScheduledLayoutId();
+
+    template<typename LayoutsList>
+    void collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts);
 
     bool isLayoutOnSchedule(const ScheduledLayout& layout) const;
     bool isLayoutValid(const std::vector<std::string>& dependants) const;

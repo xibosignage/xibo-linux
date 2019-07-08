@@ -2,23 +2,48 @@
 #include "IMainWindow.hpp"
 
 #include "config.hpp"
-#include "XlfLayoutFetcher.hpp"
 
+#include "control/layout/LayoutsManager.hpp"
 #include "control/common/Image.hpp"
-#include "control/layout/IMainLayoutView.hpp"
-
-#include "managers/XiboLayoutScheduler.hpp"
+#include "control/common/IOverlayLayout.hpp"
 
 namespace ph = std::placeholders;
 
 const std::string StatusScreenKey = "i";
 
-MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, XiboLayoutScheduler& scheduler) :
-    m_window(window), m_scheduler(scheduler)
+#include "common/logger/Logging.hpp"
+
+MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
+    m_window(window), m_layoutsManager(layoutsManager)
 {
     m_window->disableWindowDecoration();
     m_window->setCursorVisible(false);
     m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
+
+    m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout){
+        if(layout)
+        {
+            scaleLayout(layout);
+
+            m_window->setMainLayout(layout);
+            layout->showAll();
+        }
+        else
+        {
+            showSplashScreen();
+        }
+    });
+
+    m_layoutsManager.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays){
+        for(auto&& layout : overlays)
+        {
+            scaleLayout(layout);
+            layout->showAll();
+        }
+
+        Log::debug("updated");
+        m_window->setOverlays(overlays);
+    });
 }
 
 void MainWindowController::onKeyPressed(const std::string& pressedKey)
@@ -29,46 +54,11 @@ void MainWindowController::onKeyPressed(const std::string& pressedKey)
     }
 }
 
-void MainWindowController::updateLayout(int layoutId)
-{
-    m_layout.reset();
-
-    if(layoutId != EmptyLayoutId)
-    {
-        showLayout(layoutId);
-    }
-    else
-    {
-        showSplashScreen();
-    }
-}
-
-void MainWindowController::showLayout(int layoutId)
-{
-    m_layout = createLayout(layoutId);
-
-    m_window->setWidget(m_layout->view());
-    m_window->showAll();
-}
-
-
-std::unique_ptr<IMainLayout> MainWindowController::createLayout(int layoutId)
-{
-    auto layout = XlfLayoutFetcher{}.fetch(layoutId);
-
-    layout->expired().connect([this](){
-        updateLayout(m_scheduler.nextLayoutId());
-    });
-
-    scaleLayout(layout->view());
-
-    return layout;
-}
-
 void MainWindowController::showSplashScreen()
 {
-    m_window->setWidget(createSplashScreen());
-    m_window->showAll();
+    auto splashScreen = createSplashScreen();
+    m_window->setMainLayout(splashScreen);
+    splashScreen->show();
 }
 
 StatusScreenRequested MainWindowController::statusScreenRequested()
@@ -85,7 +75,7 @@ std::shared_ptr<IImage> MainWindowController::createSplashScreen()
     return spashImage;
 }
 
-void MainWindowController::scaleLayout(const std::shared_ptr<IMainLayoutView>& layout)
+void MainWindowController::scaleLayout(const std::shared_ptr<IOverlayLayout>& layout)
 {
     double scaleX = static_cast<double>(m_window->width()) / layout->width();
     double scaleY = static_cast<double>(m_window->height()) / layout->height();
@@ -107,6 +97,7 @@ void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensio
     }
 }
 
+// move to MainWindow
 void MainWindowController::setWindowSize(int width, int height)
 {
     if(width != m_window->width() || height != m_window->height())
@@ -115,6 +106,7 @@ void MainWindowController::setWindowSize(int width, int height)
     }
 }
 
+// move to MainWindow
 void MainWindowController::setWindowPos(int x, int y)
 {
     if(x != m_window->x() || y != m_window->y())
