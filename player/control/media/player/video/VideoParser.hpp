@@ -1,15 +1,11 @@
 #pragma once
 
-#include "control/media/MediaParser.hpp"
-#include "control/media/player/MediaPlayerOptions.hpp"
+#include "control/media/creators/MediaParser.hpp"
 
 class VideoParser : public MediaParser
 {
-public:
-    VideoParser(const xml_node& node);
-    MediaPlayerOptions parse();
-
 protected:
+    ExtraOptions parseAdditonalOptions(const xml_node& node) override;
     MediaGeometry geometry() override;
 
 };

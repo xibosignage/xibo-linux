@@ -30,7 +30,7 @@ void Gst::Decodebin::noMorePadsMem(GstElement*, gpointer)
 
 Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
 {
-    return std::shared_ptr<Gst::Decodebin>(new Gst::Decodebin);
+    return Gst::RefPtr<Gst::Decodebin>(new Gst::Decodebin);
 }
 
 sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& Gst::Decodebin::signalPadAdded()

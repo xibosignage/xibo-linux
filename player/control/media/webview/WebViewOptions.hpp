@@ -2,7 +2,7 @@
 
 #include "control/media/MediaOptions.hpp"
 
-struct WebViewOptions : public MediaOptions
+struct WebViewOptions : MediaOptions
 {
     enum Transparency
     {

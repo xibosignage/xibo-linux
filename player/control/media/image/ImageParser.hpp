@@ -1,16 +1,11 @@
 #pragma once
 
-#include "control/media/MediaParser.hpp"
-
-#include "ImageOptions.hpp"
+#include "control/media/creators/MediaParser.hpp"
 
 class ImageParser : public MediaParser
 {
-public:
-    ImageParser(const xml_node& node);
-    ImageOptions parse();
-
 protected:
     MediaGeometry geometry() override;
+    ExtraOptions parseAdditonalOptions(const xml_node& node) override;
 
 };

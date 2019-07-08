@@ -4,6 +4,6 @@
 
 namespace ResourcesXlf::WebView
 {
-    const std::string Transparent = "transparency";
+    const std::string Transparency = "transparency";
     const std::string ModeId = "modeid";
 }

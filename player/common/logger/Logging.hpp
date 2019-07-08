@@ -4,7 +4,7 @@
 
 namespace Log
 {
-    std::shared_ptr<Logger> logger();
+    std::shared_ptr<XiboLogger> logger();
 
     template<typename... Args>
     void trace(const char* fmt, const Args&... args)

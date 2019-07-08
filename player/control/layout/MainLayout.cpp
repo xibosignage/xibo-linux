@@ -1,19 +1,20 @@
 #include "MainLayout.hpp"
 
+#include "control/region/IRegionView.hpp"
 #include "common/logger/Logging.hpp"
 
 namespace ph = std::placeholders;
 
-MainLayout::MainLayout(const std::shared_ptr<MainLayoutView>& view) :
+MainLayout::MainLayout(const std::shared_ptr<IOverlayLayout>& view) :
     m_view(view)
 {
 }
 
-void MainLayout::addRegion(std::unique_ptr<Region>&& region, int left, int top, int zindex)
+void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z)
 {
     region->expired().connect(std::bind(&MainLayout::onRegionExpired, this, ph::_1));
 
-    m_view->addRegion(region->view(), left, top, zindex);
+    m_view->addChild(region->view(), x, y, z);
     m_regions.emplace_back(std::move(region));
 }
 
@@ -22,7 +23,17 @@ SignalLayoutExpired MainLayout::expired()
     return m_layoutExpired;
 }
 
-std::shared_ptr<MainLayoutView> MainLayout::view() const
+void MainLayout::restart()
+{
+    m_expiredRegions.clear();
+
+    for(auto&& region : m_regions)
+    {
+        region->start();
+    }
+}
+
+std::shared_ptr<IOverlayLayout> MainLayout::view()
 {
     return m_view;
 }

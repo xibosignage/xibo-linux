@@ -1,22 +1,14 @@
 #pragma once
 
-#include "control/media/MediaFactory.hpp"
-#include "ImageOptions.hpp"
+#include "control/media/creators/MediaFactory.hpp"
 
-class Widget;
+class IImage;
 
 class ImageFactory : public MediaFactory
 {
-public:
-    ImageFactory(int width, int height, const ImageOptions& options);
-
-    std::unique_ptr<Media> create() override;
+protected:
+    std::unique_ptr<IMedia> createImpl(const MediaOptions& baseOptions, const ExtraOptions& options) override;
 
 private:
-    std::shared_ptr<Widget> createView(int width, int height);
-
-private:
-    ImageOptions m_options;
-    int m_width;
-    int m_height;
+    std::shared_ptr<IImage> createView(const Uri& uri, int width, int height, MediaGeometry::ScaleType scaleType);
 };

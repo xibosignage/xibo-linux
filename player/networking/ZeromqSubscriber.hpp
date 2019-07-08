@@ -21,6 +21,7 @@ public:
 
 private:
     void processMessageQueue(const std::string& host);
+    void tryConnect(zmq::socket_t& socket, const std::string& host);
     MultiPartMessage recvAll(zmq::socket_t& socket);
 
 private:

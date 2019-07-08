@@ -1,35 +1,29 @@
 #pragma once
 
+#include "IMediaPlayer.hpp"
 #include "gstwrapper/GstFwd.hpp"
-#include "gstwrapper/Inspector.hpp"
 #include "video/VideoWindow.hpp"
 
 #include <functional>
-#include <sigc++/signal.h>
 
-class Uri;
-class Widget;
-using SignalPlaybackFinished = sigc::signal<void()>;
-
-class MediaPlayer
+class MediaPlayer : public IMediaPlayer
 {
 public:
-    MediaPlayer(Widget& outputWindow);
     MediaPlayer();
-    ~MediaPlayer();
+    ~MediaPlayer() override;
 
-    void setOutputWindow(const std::shared_ptr<VideoWindow>& window);
-    std::shared_ptr<VideoWindow> outputWindow() const;
+    void setOutputWindow(const std::shared_ptr<IVideoWindow>& window) override;
+    std::shared_ptr<IVideoWindow> outputWindow() const override;
 
-    void load(const Uri& uri);
-    void setVolume(int volume);
+    void load(const Uri& uri) override;
+    void setVolume(int volume) override;
 
-    void play();
-    void stopAndRemove();
-    void stopPlayback();
+    void play() override;
+    void stopAndRemove() override;
+    void stopPlayback() override;
 
-    SignalPlaybackFinished playbackFinished();
-    Gst::InspectorResult mediaInfo() const;
+    SignalPlaybackFinished playbackFinished() override;
+    Gst::InspectorResult mediaInfo() const override;
 
 private:
     bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
@@ -40,10 +34,10 @@ private:
     void createGstElements();
 
 private:
-    std::shared_ptr<VideoWindow> m_outputWindow;
+    std::shared_ptr<IVideoWindow> m_outputWindow;
 
     Gst::RefPtr<Gst::Pipeline> m_pipeline;
-    Gst::RefPtr<Gst::FileSrc> m_source;
+    Gst::RefPtr<Gst::UriSrc> m_source;
     Gst::RefPtr<Gst::Decodebin> m_decodebin;
     Gst::RefPtr<Gst::Volume> m_volume;
     Gst::RefPtr<Gst::VideoConvert> m_videoConverter;

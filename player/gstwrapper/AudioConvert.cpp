@@ -7,5 +7,5 @@ Gst::AudioConvert::AudioConvert() :
 
 Gst::RefPtr<Gst::AudioConvert> Gst::AudioConvert::create()
 {
-    return std::shared_ptr<Gst::AudioConvert>(new Gst::AudioConvert);
+    return Gst::RefPtr<Gst::AudioConvert>(new Gst::AudioConvert);
 }

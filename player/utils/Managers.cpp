@@ -1,7 +1,5 @@
 #include "Managers.hpp"
-
 #include "XiboApp.hpp"
-#include "ScreenShoter.hpp"
 
 FileCacheManager& Managers::fileManager()
 {
@@ -11,4 +9,9 @@ FileCacheManager& Managers::fileManager()
 ScreenShoter& Managers::screenShoter()
 {
     return XiboApp::app().screenShoter();
+}
+
+XiboWebServer& Managers::webserver()
+{
+    return XiboApp::app().webserver();
 }

@@ -5,24 +5,21 @@
 
 using xml_node = boost::property_tree::ptree;
 
-const std::string LOGGER = "logger";
-const char* const XMR_CHANNEL = "playerLinux";
-const char* const HEARTBEAT_CHANNEL = "H";
+const std::string SpdLogger = "logger";
+const char* const XmrChannel = "playerLinux";
+const char* const HeartbeatChannel = "H";
 
-const unsigned int MSECS = 1000;
-const int MAX_VOLUME = 100;
-const int MIN_VOLUME = 0;
+const unsigned int MSecs = 1000;
+const int MaxVolume = 100;
+const int MinVolume = 0;
 
-const int MIN_DISPLAY_WIDTH = 160;
-const int MAX_DISPLAY_WIDTH = 9999;
-const int MIN_DISPLAY_HEIGHT = 120;
-const int MAX_DISPLAY_HEIGHT = 9999;
+const int MinDisplayWidth = 160;
+const int MaxDisplayWidth = 9999;
+const int MinDisplayHeight = 120;
+const int MaxDisplayHeight = 9999;
 
-const int MIN_XPOS = 0;
-const int MIN_YPOS = 0;
-const int DEFAULT_XPOS = 0;
-const int DEFAULT_YPOS = 0;
-const int INVALID_POS = -1;
+const int DefaultXPos = 0;
+const int DefaultYPos = 0;
+const int InvalidPos = -1;
 
-const int DEFAULT_HTTP_VERSION = 11;
-const std::string DEFAULT_HTTP_TARGET = "/";
+const int DefaultHttpVersion = 11;

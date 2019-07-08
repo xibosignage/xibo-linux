@@ -1,24 +1,56 @@
 #include "RegionParser.hpp"
-
 #include "RegionResources.hpp"
 
-const int DEFAULT_REGION_ZINDEX = 0;
-const bool DEFAULT_REGION_LOOP = false;
+#include "control/media/creators/MediaParser.hpp"
+#include "control/media/creators/MediaParsersRepo.hpp"
+#include "control/media/creators/MediaResources.hpp"
 
-RegionParser::RegionParser(const xml_node& regionNode) :
-    m_regionNode(regionNode)
+const int DefaultRegionZindex = 0;
+const bool DefaultRegionLoop = false;
+
+ParsedRegion RegionParser::parse(const xml_node& node)
 {
+    ParsedRegion region;
+
+    region.options.id = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Id));
+    region.options.width = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Width)));
+    region.options.height = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Height)));
+    region.options.left = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Left)));
+    region.options.top = static_cast<int>(node.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Top)));
+    region.options.zindex = node.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Zindex), DefaultRegionZindex);
+    region.options.loop = static_cast<RegionOptions::Loop>(node.get<bool>(ResourcesXlf::option(ResourcesXlf::Region::Loop), DefaultRegionLoop));
+    region.media = parseMedia(region.options.width, region.options.height, node);
+
+    return region;
 }
 
-RegionOptions RegionParser::parse()
+std::vector<ParsedMedia> RegionParser::parseMedia(int regionWidth, int regionHeight, const xml_node& node)
 {
-    int id = m_regionNode.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Id));
-    int width = static_cast<int>(m_regionNode.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Width)));
-    int height = static_cast<int>(m_regionNode.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Height)));
-    int left = static_cast<int>(m_regionNode.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Left)));
-    int top = static_cast<int>(m_regionNode.get<float>(ResourcesXlf::attr(ResourcesXlf::Region::Top)));
-    int zindex = m_regionNode.get<int>(ResourcesXlf::attr(ResourcesXlf::Region::Zindex), DEFAULT_REGION_ZINDEX);
-    auto loop = m_regionNode.get<bool>(ResourcesXlf::option(ResourcesXlf::Region::Loop), DEFAULT_REGION_LOOP);
+    std::vector<ParsedMedia> media;
 
-    return RegionOptions{id, width, height, left, top, zindex, static_cast<RegionOptions::Loop>(loop)};
+    for(auto [nodeName, mediaNode] : node)
+    {
+        if(nodeName != ResourcesXlf::MediaNode) continue;
+
+        auto&& parser = MediaParsersRepo::get(parseMediaType(mediaNode));
+        if(parser)
+        {
+            auto parsedMedia = parser->parse(mediaNode);
+
+            parsedMedia.extraOptions.emplace(ResourcesXlf::Region::Width, std::to_string(regionWidth));
+            parsedMedia.extraOptions.emplace(ResourcesXlf::Region::Height, std::to_string(regionHeight));
+
+            media.emplace_back(std::move(parsedMedia));
+        }
+    }
+
+    return media;
+}
+
+MediaOptions::Type RegionParser::parseMediaType(const xml_node& node)
+{
+    auto type = node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Type));
+    auto render = node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Render));
+
+    return {type, render};
 }

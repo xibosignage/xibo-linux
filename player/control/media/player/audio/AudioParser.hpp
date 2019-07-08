@@ -1,17 +1,16 @@
 #pragma once
 
-#include "control/media/MediaParser.hpp"
-#include "control/media/player/MediaPlayerOptions.hpp"
+#include "control/media/creators/MediaParser.hpp"
 
 class AudioParser : public MediaParser
 {
 public:
-    AudioParser(const xml_node& node);
-    MediaPlayerOptions parse();
-    MediaPlayerOptions parseMainNode();
-    MediaPlayerOptions parseAdditionalNode();
+    ParsedMedia parse(const xml_node& node) override;
+
+protected:
+    ExtraOptions parseAdditonalOptions(const xml_node& node) override;
 
 private:
-    bool m_isAdditionalNode = false;
+    ParsedMedia parseAdditionalNode(const xml_node& node);
 
 };

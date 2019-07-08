@@ -1,4 +1,5 @@
 #include "CollectionInterval.hpp"
+#include "config.hpp"
 
 #include "networking/xmds/XmdsRequestSender.hpp"
 
@@ -11,11 +12,11 @@
 #include <glibmm/main.h>
 #include <boost/date_time/time_clock.hpp>
 
-const uint DEFAULT_INTERVAL = 900;
+const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
-    m_xmdsSender{xmdsSender}, m_intervalTimer{std::make_unique<TimerProvider>()}, m_collectInterval{DEFAULT_INTERVAL}
+    m_xmdsSender{xmdsSender}, m_intervalTimer{std::make_unique<TimerProvider>()}, m_collectInterval{DefaultInterval}
 {
 }
 
@@ -53,7 +54,9 @@ void CollectionInterval::collect(CollectionResultCallback callback)
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
 
-        auto registerDisplayResult = m_xmdsSender.registerDisplay(121, "1.8", "Display").get();
+        auto registerDisplayResult = m_xmdsSender.registerDisplay(ProjectResources::codeVersion(),
+                                                                  ProjectResources::version(),
+                                                                  "Display").get();
         onDisplayRegistered(registerDisplayResult, session);
     });
 }

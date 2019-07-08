@@ -13,8 +13,4 @@ namespace ResourcesXlf
     const std::string LayoutNode = "layout";
     const std::string RegionNode = "region";
     const std::string MediaNode = "media";
-
-    const std::string AudioType = "audio";
-    const std::string VideoType = "video";
-    const std::string ImageType = "image";
 }

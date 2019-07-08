@@ -36,7 +36,7 @@ namespace RegisterDisplay
         Field<std::string> displayName{"displayName"};
         Field<std::string> clientType{"clientType"};
         Field<std::string> clientVersion{"clientVersion"};
-        Field<int> clientCode{"clientCode"};
+        Field<std::string> clientCode{"clientCode"};
         Field<std::string> macAddress{"macAddress"};
         Field<std::string> xmrChannel{"xmrChannel"};
         Field<std::string> xmrPubKey{"xmrPubKey"};

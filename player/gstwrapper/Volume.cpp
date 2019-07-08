@@ -7,7 +7,7 @@ Gst::Volume::Volume() :
 
 Gst::RefPtr<Gst::Volume> Gst::Volume::create()
 {
-    return std::shared_ptr<Gst::Volume>(new Gst::Volume);
+    return Gst::RefPtr<Gst::Volume>(new Gst::Volume);
 }
 
 void Gst::Volume::setVolume(double volume)

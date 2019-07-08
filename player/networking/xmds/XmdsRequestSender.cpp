@@ -5,27 +5,29 @@
 #include "common/MacAddressFetcher.hpp"
 #include "common/RsaManager.hpp"
 
-const std::string DEFAULT_CLIENT_TYPE = "linux";
-const std::string UNDEFINED_MAC_ADDRESS = "00:00:00:00:00:00";
-const std::string XMDS_TARGET = "/xmds.php?v=5";
+const std::string DefaultClientType = "linux";
+const std::string UndefinedMacAddress = "00:00:00:00:00:00";
+const std::string XmdsTarget = "/xmds.php?v=5";
 
 XmdsRequestSender::XmdsRequestSender(const std::string& host, const std::string& serverKey, const std::string& hardwareKey) :
-    m_uri(host + XMDS_TARGET),
+    m_uri(host + XmdsTarget),
     m_serverKey(serverKey),
     m_hardwareKey(hardwareKey)
 {
 }
 
-boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(int clientCode, const std::string& clientVersion, const std::string& displayName)
+boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(const std::string& clientCode,
+                                                                                          const std::string& clientVersion,
+                                                                                          const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
-    request.clientType = DEFAULT_CLIENT_TYPE;
+    request.clientType = DefaultClientType;
     request.clientCode = clientCode;
     request.clientVersion = clientVersion;
-    request.macAddress = MacAddressFetcher::get().value_or(UNDEFINED_MAC_ADDRESS);
-    request.xmrChannel = XMR_CHANNEL;
+    request.macAddress = MacAddressFetcher::get().value_or(UndefinedMacAddress);
+    request.xmrChannel = XmrChannel;
     request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName;
 

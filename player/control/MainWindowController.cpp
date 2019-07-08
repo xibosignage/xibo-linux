@@ -1,72 +1,64 @@
 #include "MainWindowController.hpp"
+#include "IMainWindow.hpp"
 
-#include "StatusScreen.hpp"
-
-#include "control/layout/MainLayoutView.hpp"
-#include "control/common/MainCompositor.hpp"
-#include "control/common/Image.hpp"
 #include "config.hpp"
-#include "managers/XiboLayoutScheduler.hpp"
+
+#include "control/layout/LayoutsManager.hpp"
+#include "control/common/Image.hpp"
+#include "control/common/IOverlayLayout.hpp"
 
 namespace ph = std::placeholders;
 
-const std::string STATUS_SCREEN_KEY = "i";
+const std::string StatusScreenKey = "i";
 
-MainWindowController::MainWindowController(const std::shared_ptr<MainWindow>& window, XiboLayoutScheduler& scheduler) :
-    m_window(window), m_scheduler(scheduler)
+#include "common/logger/Logging.hpp"
+
+MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
+    m_window(window), m_layoutsManager(layoutsManager)
 {
     m_window->disableWindowDecoration();
+    m_window->setCursorVisible(false);
     m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
+
+    m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout){
+        if(layout)
+        {
+            scaleLayout(layout);
+
+            m_window->setMainLayout(layout);
+            layout->showAll();
+        }
+        else
+        {
+            showSplashScreen();
+        }
+    });
+
+    m_layoutsManager.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays){
+        for(auto&& layout : overlays)
+        {
+            scaleLayout(layout);
+            layout->showAll();
+        }
+
+        Log::debug("updated");
+        m_window->setOverlays(overlays);
+    });
 }
 
 void MainWindowController::onKeyPressed(const std::string& pressedKey)
 {
-    if(pressedKey == STATUS_SCREEN_KEY)
+    if(pressedKey == StatusScreenKey)
     {
         m_statusScrenRequested.emit();
     }
 }
 
-void MainWindowController::updateLayout(int layoutId)
-{
-    m_layout.reset();
-
-    if(layoutId != EMPTY_LAYOUT_ID)
-    {
-        showLayout(layoutId);
-    }
-    else
-    {
-        showSplashScreen();
-    }
-}
-
-void MainWindowController::showLayout(int layoutId)
-{
-    m_layout = createLayout(layoutId);
-
-    m_window->setWidget(m_layout->view());
-    m_window->showAll();
-}
-
-std::unique_ptr<MainLayout> MainWindowController::createLayout(int layoutId)
-{
-    MainCompositor parser;
-    auto layout = parser.parseLayout(layoutId);
-
-    layout->expired().connect([this](){
-        updateLayout(m_scheduler.nextLayoutId());
-    });
-
-    scaleLayout(layout->view());
-
-    return layout;
-}
-
 void MainWindowController::showSplashScreen()
 {
-    m_window->setWidget(createSplashScreen());
-    m_window->showAll();
+    auto splashScreen = createSplashScreen();
+    m_window->setMainLayout(splashScreen);
+    splashScreen->show();
 }
 
 StatusScreenRequested MainWindowController::statusScreenRequested()
@@ -74,7 +66,7 @@ StatusScreenRequested MainWindowController::statusScreenRequested()
     return m_statusScrenRequested;
 }
 
-std::shared_ptr<Widget> MainWindowController::createSplashScreen()
+std::shared_ptr<IImage> MainWindowController::createSplashScreen()
 {
     auto spashImage = std::make_shared<Image>(m_window->width(), m_window->height());
 
@@ -83,7 +75,7 @@ std::shared_ptr<Widget> MainWindowController::createSplashScreen()
     return spashImage;
 }
 
-void MainWindowController::scaleLayout(const std::shared_ptr<MainLayoutView>& layout)
+void MainWindowController::scaleLayout(const std::shared_ptr<IOverlayLayout>& layout)
 {
     double scaleX = static_cast<double>(m_window->width()) / layout->width();
     double scaleY = static_cast<double>(m_window->height()) / layout->height();
@@ -105,6 +97,7 @@ void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensio
     }
 }
 
+// move to MainWindow
 void MainWindowController::setWindowSize(int width, int height)
 {
     if(width != m_window->width() || height != m_window->height())
@@ -113,6 +106,7 @@ void MainWindowController::setWindowSize(int width, int height)
     }
 }
 
+// move to MainWindow
 void MainWindowController::setWindowPos(int x, int y)
 {
     if(x != m_window->x() || y != m_window->y())

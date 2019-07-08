@@ -1,18 +1,19 @@
 #pragma once
 
 #include "constants.hpp"
-#include "MainLayoutOptions.hpp"
+#include "ParsedLayout.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
 class MainLayoutParser
 {
 public:
-    MainLayoutParser(const xml_node& node);
-    MainLayoutOptions parse();
+    ParsedLayout parse(const xml_node& node);
 
 private:
-    boost::property_tree::ptree m_layoutNode;
+    Uri getUri(const xml_node& node);
+    uint32_t getColor(const xml_node& node);
 
+    std::vector<ParsedRegion> parseRegions(const xml_node& node);
 };
 

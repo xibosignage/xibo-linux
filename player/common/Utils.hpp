@@ -13,6 +13,7 @@ namespace Utils
     xml_node parseJsonFromString(const std::string& json);
     std::string xmlTreeToEscapedString(const xml_node& node);
     std::string md5hash(std::string_view data);
+    std::string md5hashFromFile(const FilePath& path);
     std::string toBase64(const std::string& text);
     std::string fromBase64(const std::string& text);
 }

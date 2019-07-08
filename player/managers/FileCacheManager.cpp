@@ -31,7 +31,7 @@ bool FileCacheManager::isFileInCache(const std::string& fileName, const std::str
 
 void FileCacheManager::saveFile(const std::string& fileName, const std::string& fileContent)
 {
-    auto filePath = Resources::resDirectory() / fileName;
+    auto filePath = Resources::directory() / fileName;
 
     std::ofstream out(filePath.string());
     out << fileContent;

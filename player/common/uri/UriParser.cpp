@@ -4,28 +4,31 @@
 #include "logger/Logging.hpp"
 #include <boost/format.hpp>
 
-const std::regex URI_REGEX(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?([\/?].*))");
-const std::regex IP_REGEX("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
+const std::regex UriRegex(R"(([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/:]+)(?::(\d{1,5}))?)?([\/?].*))");
+const std::regex IpRegex("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
 
-const std::map<std::string, Uri::Scheme> DEFAULT_SCHEMES{{"https://", Uri::Scheme::HTTPS}, {"http://", Uri::Scheme::HTTP}, {"file://", Uri::Scheme::File}};
+const std::map<std::string, Uri::Scheme> DefaultSchemes{{"https://", Uri::Scheme::HTTPS},
+                                                         {"http://", Uri::Scheme::HTTP},
+                                                         {"rtsp://", Uri::Scheme::RTSP},
+                                                         {"file://", Uri::Scheme::File}};
 
-const std::size_t URL_PARTS_COUNT = 5;
+const std::size_t UrlPartsCount = 5;
 
-const std::size_t SCHEME_PART = 1;
-const std::size_t USERINFO_PART = 2;
-const std::size_t HOST_PART = 3;
-const std::size_t PORT_PART = 4;
-const std::size_t PATH_PART = 5;
+const std::size_t SchemePart = 1;
+const std::size_t UserinfoPart = 2;
+const std::size_t HostPart = 3;
+const std::size_t PortPart = 4;
+const std::size_t PathPart = 5;
 
 Uri UriParser::parse(const std::string& rawUri)
 {
     auto urlParts = parseInternal(rawUri);
 
-    auto scheme = getScheme(urlParts[SCHEME_PART].str());
-    auto userinfo = getUserInfo(urlParts[USERINFO_PART].str());
-    auto host = urlParts[HOST_PART].str();
-    auto port = getPortNumber(urlParts[PORT_PART].str());
-    auto path = urlParts[PATH_PART].str();
+    auto scheme = getScheme(urlParts[SchemePart].str());
+    auto userinfo = getUserInfo(urlParts[UserinfoPart].str());
+    auto host = urlParts[HostPart].str();
+    auto port = getPortNumber(urlParts[PortPart].str());
+    auto path = urlParts[PathPart].str();
 
     return Uri{scheme, Uri::Authority{userinfo, host, port}, path};
 }
@@ -33,7 +36,7 @@ Uri UriParser::parse(const std::string& rawUri)
 std::smatch UriParser::parseInternal(const std::string& rawUri)
 {
     std::smatch urlMatch;
-    auto valid = std::regex_match(rawUri, urlMatch, URI_REGEX) && urlMatch.size() > URL_PARTS_COUNT;
+    auto valid = std::regex_match(rawUri, urlMatch, UriRegex) && urlMatch.size() > UrlPartsCount;
     if(valid)
     {
         return urlMatch;
@@ -46,7 +49,7 @@ Uri::Scheme UriParser::getScheme(const std::string& scheme)
 {
     try
     {
-        return DEFAULT_SCHEMES.at(scheme);
+        return DefaultSchemes.at(scheme);
     }
     catch(std::out_of_range&)
     {
@@ -69,7 +72,7 @@ Uri::Authority::HostType UriParser::getHostType(const std::string& host)
     if(host.empty()) return Uri::Authority::HostType::Invalid;
 
     std::smatch baseMatch;
-    if(std::regex_match(host, baseMatch, IP_REGEX))
+    if(std::regex_match(host, baseMatch, IpRegex))
     {
         return Uri::Authority::HostType::IP;
     }

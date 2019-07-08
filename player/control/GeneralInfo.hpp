@@ -6,7 +6,7 @@ struct GeneralInfo
 {
     boost::posix_time::ptime currentDT;
     std::string projectVersion;
-    int codeVersion;
+    std::string codeVersion;
     std::string cmsAddress;
     std::string resourcesPath;
     std::string displayName;

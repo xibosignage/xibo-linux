@@ -55,8 +55,7 @@ private:
     {
         using namespace std::chrono;
 
-        auto secondSinceEpoch = duration_cast<seconds>(tp.time_since_epoch()).count();
-        return boost::posix_time::to_simple_string(boost::posix_time::seconds(secondSinceEpoch));
+        return boost::posix_time::to_simple_string(boost::posix_time::from_time_t(system_clock::to_time_t(tp)));
     }
 
     std::string formatLogLevel(spdlog::level::level_enum level)

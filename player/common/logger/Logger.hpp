@@ -5,11 +5,11 @@
 #include <spdlog/logger.h>
 #include <spdlog/fmt/ostr.h>
 
-class Logger
+class XiboLogger
 {
 public:
-    static std::shared_ptr<Logger> create(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks);
-    static std::shared_ptr<Logger> get();
+    static std::shared_ptr<XiboLogger> create(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks);
+    static std::shared_ptr<XiboLogger> get();
 
     void setLevel(LoggingLevel level);
     void setPattern(const std::string& pattern);
@@ -28,10 +28,10 @@ public:
     }
 
 private:
-    Logger(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks);
+    XiboLogger(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks);
     spdlog::level::level_enum toSpdlogLevel(LoggingLevel level);
 
-    static std::shared_ptr<Logger> globalLogger;
+    static std::shared_ptr<XiboLogger> globalLogger;
 
 private:
     std::shared_ptr<spdlog::logger> m_combinedLogger;

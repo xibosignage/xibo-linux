@@ -7,5 +7,5 @@ Gst::VideoConvert::VideoConvert() :
 
 Gst::RefPtr<Gst::VideoConvert> Gst::VideoConvert::create()
 {
-    return std::shared_ptr<Gst::VideoConvert>(new Gst::VideoConvert);
+    return Gst::RefPtr<Gst::VideoConvert>(new Gst::VideoConvert);
 }

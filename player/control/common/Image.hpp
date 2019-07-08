@@ -1,12 +1,11 @@
 #pragma once
 
-#include "control/common/Widget.hpp"
+#include "IImage.hpp"
+#include "Widget.hpp"
 
 #include <gtkmm/image.h>
 
-class FilePath;
-
-class Image : public Widget
+class Image : public Widget<IImage>
 {
 public:
     Image(int width, int height);
@@ -15,8 +14,8 @@ public:
     int height() const override;
     void setSize(int width, int height) override;
 
-    void setColor(uint32_t hex_color_number);
-    void loadFromFile(const FilePath& path, bool preserveAspectRatio);
+    void setColor(uint32_t hex_color_number) override;
+    void loadFromFile(const FilePath& path, bool preserveAspectRatio) override;
 
     Gtk::Image& get() override;
 

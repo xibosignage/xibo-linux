@@ -7,6 +7,6 @@ Gst::AutoAudioSink::AutoAudioSink() :
 
 Gst::RefPtr<Gst::AutoAudioSink> Gst::AutoAudioSink::create()
 {
-    return std::shared_ptr<Gst::AutoAudioSink>(new Gst::AutoAudioSink);
+    return Gst::RefPtr<Gst::AutoAudioSink>(new Gst::AutoAudioSink);
 }
 

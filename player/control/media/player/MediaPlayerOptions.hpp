@@ -2,7 +2,7 @@
 
 #include "control/media/MediaOptions.hpp"
 
-struct MediaPlayerOptions : public MediaOptions
+struct MediaPlayerOptions : MediaOptions
 {
     enum class Mute
     {

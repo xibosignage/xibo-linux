@@ -3,7 +3,7 @@
 #include "Soap.hpp"
 
 #include "utils/Managers.hpp"
-#include "networking/HttpManager.hpp"
+#include "networking/HttpClient.hpp"
 #include "networking/ResponseResult.hpp"
 
 namespace SoapRequestHelper
@@ -25,7 +25,7 @@ namespace SoapRequestHelper
 
         Soap::RequestSerializer<Request> serializer{soapRequest};
 
-        return HttpManager::instance().post(uri, serializer.string()).then([](boost::future<HttpResponseResult> future){
+        return HttpClient::instance().post(uri, serializer.string()).then([](boost::future<HttpResponseResult> future){
             return onResponseReceived<Result>(future.get());
         });
     }

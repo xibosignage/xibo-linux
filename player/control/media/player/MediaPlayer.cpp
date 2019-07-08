@@ -9,7 +9,7 @@
 #include "gstwrapper/VideoScale.hpp"
 #include "gstwrapper/Queue.hpp"
 #include "gstwrapper/Decodebin.hpp"
-#include "gstwrapper/FileSrc.hpp"
+#include "gstwrapper/UriSrc.hpp"
 #include "gstwrapper/AutoAudioSink.hpp"
 #include "gstwrapper/Element.hpp"
 #include "gstwrapper/Pad.hpp"
@@ -24,7 +24,7 @@
 
 namespace ph = std::placeholders;
 
-const int INSPECTOR_TIMEOUT = 5;
+const int InspectorTimeout = 5;
 
 MediaPlayer::MediaPlayer()
 {
@@ -40,7 +40,6 @@ MediaPlayer::~MediaPlayer()
 void MediaPlayer::createGstElements()
 {
     m_pipeline = Gst::Pipeline::create();
-    m_source = Gst::FileSrc::create();
     m_decodebin = Gst::Decodebin::create();
 
     m_videoConverter = Gst::VideoConvert::create();
@@ -48,13 +47,13 @@ void MediaPlayer::createGstElements()
     m_videoScale = Gst::VideoScale::create();
     m_videoSink = Gst::Element::create("xibovideosink");
     m_capsfilter = Gst::Capsfilter::create();
-    m_inspector = Gst::Inspector::create(INSPECTOR_TIMEOUT);
+    m_inspector = Gst::Inspector::create(InspectorTimeout);
 
     m_audioConverter = Gst::AudioConvert::create();
     m_volume = Gst::Volume::create();
     m_audioSink = Gst::AutoAudioSink::create();
 
-    if(!m_pipeline || !m_source || !m_decodebin || !m_videoConverter || !m_videoScale ||
+    if(!m_pipeline || !m_decodebin || !m_videoConverter || !m_videoScale ||
        !m_videoSink || !m_queue || !m_capsfilter || !m_audioConverter || !m_volume || !m_audioSink)
     {
         throw std::runtime_error("[MediaPlayer] One element could not be created");
@@ -69,7 +68,7 @@ void MediaPlayer::init()
     m_decodebin->signalNoMorePads().connect(sigc::mem_fun(*this, &MediaPlayer::noMorePads));
 }
 
-void MediaPlayer::setOutputWindow(const std::shared_ptr<VideoWindow>& window)
+void MediaPlayer::setOutputWindow(const std::shared_ptr<IVideoWindow>& window)
 {
     m_outputWindow = window;
 
@@ -82,14 +81,15 @@ void MediaPlayer::setOutputWindow(const std::shared_ptr<VideoWindow>& window)
     gst_xibovideosink_set_handler(sink, m_outputWindow);
 }
 
-std::shared_ptr<VideoWindow> MediaPlayer::outputWindow() const
+std::shared_ptr<IVideoWindow> MediaPlayer::outputWindow() const
 {
     return m_outputWindow;
 }
 
 void MediaPlayer::load(const Uri& uri)
 {
-    m_source->setLocation(uri.path());
+    m_source = Gst::UriSrc::create(uri.scheme());
+    m_source->setLocation(uri);
 
     inspectFile(uri);
 }
@@ -138,7 +138,7 @@ void MediaPlayer::stopPlayback()
 
 void MediaPlayer::setVolume(int volume)
 {
-    m_volume->setVolume(volume / static_cast<double>(MAX_VOLUME));
+    m_volume->setVolume(volume / static_cast<double>(MaxVolume));
 }
 
 SignalPlaybackFinished MediaPlayer::playbackFinished()

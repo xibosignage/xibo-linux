@@ -27,7 +27,7 @@ struct PlayerSettings
     Field<int> screenshotInterval{"screenshotInterval", 0};
     Field<int> screenshotSize{"screenshotSize", 0};
     Field<int> maxLogFilesUploads{"maxLogFilesUploads", 1};
-    Field<int> embeddedServerPort{"embeddedServerPort", 0};
+    Field<unsigned short> embeddedServerPort{"embeddedServerPort", 1234};
     Field<bool> preventSleep{"preventSleep", false};
     Field<std::string> displayName{"displayName"};
     Field<bool> screenshotRequested{"screenshotRequested", false};
