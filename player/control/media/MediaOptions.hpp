@@ -1,6 +1,8 @@
 #pragma once
 
 #include "common/uri/Uri.hpp"
+
+#include "../common/transitions/Transition.hpp"
 #include "MediaGeometry.hpp"
 
 struct MediaOptions
@@ -14,4 +16,6 @@ struct MediaOptions
     Uri uri;
     int duration;
     MediaGeometry geometry;
+    boost::optional<Transition> inTrans;
+    boost::optional<Transition> outTrans;
 };

@@ -19,6 +19,9 @@ public:
     virtual int width() const = 0;
     virtual int height() const = 0;
 
+    virtual void setOpacity(double value) = 0;
+    virtual double opacity() const = 0;
+
     virtual SignalShown shown() = 0;
 
 };

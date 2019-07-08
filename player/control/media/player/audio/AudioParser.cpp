@@ -46,5 +46,5 @@ ParsedMedia AudioParser::parseAdditionalNode(const xml_node& node)
     auto volume = uriNode.get<int>(ResourcesXlf::attr(ResourcesXlf::Player::Volume), MaxVolume);
     options.emplace(ResourcesXlf::Player::Volume, std::to_string(volume));
 
-    return ParsedMedia{MediaOptions{type, id, uri, DefaultDuration, {}}, options, nullptr};
+    return ParsedMedia{MediaOptions{type, id, uri, DefaultDuration, {}, {}, {}}, options, nullptr};
 }

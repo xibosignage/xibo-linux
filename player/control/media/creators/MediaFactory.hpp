@@ -3,6 +3,7 @@
 #include "ParsedMedia.hpp"
 
 class IMedia;
+class TransitionExecutor;
 
 class MediaFactory
 {
@@ -15,5 +16,8 @@ protected:
 
 private:
     void attachAdditionalMedia(IMedia& media, const ParsedMedia& additionalMedia);
+
+    template<Transition::Heading heading>
+    std::unique_ptr<TransitionExecutor> createTransition(IMedia& media, const boost::optional<Transition>& transition);
 
 };

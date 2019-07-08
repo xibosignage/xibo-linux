@@ -24,6 +24,7 @@ private:
     void placeMedia(size_t mediaIndex);
     void removeMedia(size_t mediaIndex);
     void onMediaDurationTimeout();
+    void onMediaRemoved();
 
     bool shouldBeMediaReplaced() const;
     size_t getNextMediaIndex() const;

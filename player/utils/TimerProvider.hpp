@@ -19,6 +19,7 @@ public:
 
 private:
     bool onTimeout(std::function<void()> handler);
+    bool onTimeout(std::function<bool()> handler);
 
 private:
     bool m_active = false;

@@ -62,6 +62,16 @@ public:
         return height;
     }
 
+    void setOpacity(double value) override
+    {
+        m_widget.set_opacity(value);
+    }
+
+    double opacity() const override
+    {
+        return m_widget.get_opacity();
+    }
+
     SignalShown shown() override
     {
         return m_shown;

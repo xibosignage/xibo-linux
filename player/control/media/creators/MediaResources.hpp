@@ -40,4 +40,28 @@ namespace ResourcesXlf::Media
         const std::string BottomValign = "bottom";
     }
 
+    namespace Tranisiton
+    {
+        const std::string FadeIn = "fadeIn";
+        const std::string FadeOut = "fadeOut";
+        const std::string Fly = "fly";
+
+        const std::string N = "N";
+        const std::string NE = "NE";
+        const std::string E = "E";
+        const std::string SE = "SE";
+        const std::string S = "S";
+        const std::string SW = "SW";
+        const std::string W = "W";
+        const std::string NW = "NW";
+
+        const std::string InType = "transIn";
+        const std::string InDirection = "transInDirection";
+        const std::string InDuration = "transInDuration";
+
+        const std::string OutType = "transOut";
+        const std::string OutDirection = "transOutDirection";
+        const std::string OutDuration = "transOutDuration";
+    }
+
 }

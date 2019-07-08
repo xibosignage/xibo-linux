@@ -47,11 +47,50 @@ std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign)
     return in;
 }
 
+
+std::istream& operator >>(std::istream& in, Transition::Type& type)
+{
+    std::string temp;
+    in >> temp;
+
+    if(temp == ResourcesXlf::Media::Tranisiton::Fly)
+        type = Transition::Type::Fly;
+    else if(temp == ResourcesXlf::Media::Tranisiton::FadeIn || temp == ResourcesXlf::Media::Tranisiton::FadeOut)
+        type = Transition::Type::Fade;
+
+    return in;
+}
+
+std::istream& operator >>(std::istream& in, Transition::Direction& direction)
+{
+    std::string temp;
+    in >> temp;
+
+    if(temp == ResourcesXlf::Media::Tranisiton::N)
+        direction = Transition::Direction::N;
+    else if(temp == ResourcesXlf::Media::Tranisiton::NE)
+        direction = Transition::Direction::NE;
+    else if(temp == ResourcesXlf::Media::Tranisiton::E)
+        direction = Transition::Direction::E;
+    else if(temp == ResourcesXlf::Media::Tranisiton::SE)
+        direction = Transition::Direction::SE;
+    else if(temp == ResourcesXlf::Media::Tranisiton::S)
+        direction = Transition::Direction::S;
+    else if(temp == ResourcesXlf::Media::Tranisiton::SW)
+        direction = Transition::Direction::SW;
+    else if(temp == ResourcesXlf::Media::Tranisiton::W)
+        direction = Transition::Direction::W;
+    else if(temp == ResourcesXlf::Media::Tranisiton::NW)
+        direction = Transition::Direction::NW;
+
+    return in;
+}
+
 ParsedMedia MediaParser::parse(const xml_node& node)
 {
     m_node = std::move(node);
 
-    MediaOptions baseOptions{type(), id(), uri(), duration(), geometry()};
+    MediaOptions baseOptions{type(), id(), uri(), duration(), geometry(), inTransition(), outTransition()};
     return ParsedMedia{baseOptions, parseAdditonalOptions(m_node), parseAttachedMedia(m_node)};
 }
 
@@ -100,6 +139,38 @@ std::unique_ptr<ParsedMedia> MediaParser::parseAttachedMedia(const xml_node& nod
         {
             return std::make_unique<ParsedMedia>(parser->parse(attachedNode));
         }
+    }
+
+    return {};
+}
+
+boost::optional<Transition> MediaParser::inTransition()
+{
+    if(auto type = m_node.get_optional<Transition::Type>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::InType)))
+    {
+        Transition trans;
+
+        trans.type = type.value();
+        trans.direction = m_node.get<Transition::Direction>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::InDirection));
+        trans.duration = m_node.get<int>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::InDuration));
+
+        return trans;
+    }
+
+    return {};
+}
+
+boost::optional<Transition> MediaParser::outTransition()
+{
+    if(auto type = m_node.get_optional<Transition::Type>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::OutType)))
+    {
+        Transition trans;
+
+        trans.type = type.value();
+        trans.direction = m_node.get<Transition::Direction>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::OutDirection));
+        trans.duration = m_node.get<int>(ResourcesXlf::option(ResourcesXlf::Media::Tranisiton::OutDuration));
+
+        return trans;
     }
 
     return {};

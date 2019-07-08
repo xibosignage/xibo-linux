@@ -22,6 +22,8 @@ void Media::start()
     startAttachedMedia();
     startTimer(m_options.duration);
     onStarted();
+
+    applyInTransition();
 }
 
 void Media::startTimer(int duration)
@@ -52,8 +54,30 @@ void Media::onStarted()
 
 void Media::stop()
 {
-    stopAttachedMedia();
-    onStopped();
+    auto stopAction = [this]() {
+        stopAttachedMedia();
+        onStopped();
+    };
+
+    if(m_outTransition)
+    {
+        m_outTransition->finished().connect(stopAction);
+        m_outTransition->apply();
+    }
+    else
+    {
+        stopAction();
+    }
+}
+
+void Media::setInTransition(std::unique_ptr<TransitionExecutor>&& transition)
+{
+    m_inTransition = std::move(transition);
+}
+
+void Media::setOutTransition(std::unique_ptr<TransitionExecutor>&& transition)
+{
+    m_outTransition = std::move(transition);
 }
 
 void Media::stopAttachedMedia()
@@ -64,17 +88,32 @@ void Media::stopAttachedMedia()
     }
 }
 
+void Media::applyInTransition()
+{
+    if(m_inTransition)
+    {
+        m_inTransition->apply();
+    }
+}
+
 void Media::onStopped()
 {
     if(m_view)
     {
         m_view->hide();
     }
+
+    m_mediaRemoved.emit();
 }
 
 SignalMediaFinished Media::mediaFinished()
 {
     return m_mediaFinished;
+}
+
+SignalMediaRemoved Media::mediaRemoved()
+{
+    return m_mediaRemoved;
 }
 
 MediaGeometry::Align Media::align() const
