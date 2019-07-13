@@ -4,6 +4,8 @@
 #include "constants.hpp"
 
 #include <gtkmm/cssprovider.h>
+#include <X11/extensions/scrnsaver.h>
+#include <gdk/gdkx.h>
 
 #if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
     const std::string DefaultStyle = "window { background-color: black; }";
@@ -49,6 +51,10 @@ void MainWindow::onRealized()
         auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
         window->set_cursor(cursor);
     }
+
+    GdkDisplay* display = m_handler.get_display()->gobj();
+    auto x11Display = gdk_x11_display_get_xdisplay(display);
+    XScreenSaverSuspend(x11Display, true);
 }
 
 void MainWindow::loadDefaultStyle()
