@@ -1,8 +1,8 @@
 name: xibo-player
-version: 1.8-alpha8
+version: 1.8-R1
 summary: Xibo Linux Player
-description: Test snap package for Xibo Linux Player
-grade: devel
+description: Xibo for Linux Digital Signage Player
+grade: stable
 confinement: strict
 
 slots:
