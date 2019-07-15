@@ -42,6 +42,7 @@ parts:
       - usr/lib/x86_64-linux-gnu
     stage-packages:
       - libgstreamer1.0-0
+      - libxss1
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
       - libcanberra-gtk3-module
