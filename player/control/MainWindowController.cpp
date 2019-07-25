@@ -11,8 +11,6 @@ namespace ph = std::placeholders;
 
 const std::string StatusScreenKey = "i";
 
-#include "common/logger/Logging.hpp"
-
 MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
     m_window(window), m_layoutsManager(layoutsManager)
 {
@@ -40,8 +38,6 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
             scaleLayout(layout);
             layout->showAll();
         }
-
-        Log::debug("updated");
         m_window->setOverlays(overlays);
     });
 }

@@ -8,11 +8,13 @@
 class LayoutsList
 {
 public:
+    using ConstIterator = std::vector<ScheduledLayout>::const_iterator;
+
     void addLayout(ScheduledLayout&& layout);
     size_t size() const;
 
-    std::vector<ScheduledLayout>::const_iterator begin() const;
-    std::vector<ScheduledLayout>::const_iterator end() const;
+    ConstIterator begin() const;
+    ConstIterator end() const;
 
 protected:
     std::vector<ScheduledLayout> m_layoutList;
@@ -37,7 +39,7 @@ public:
 const size_t FirstItemIndex = 0;
 
 template<typename Base>
-class SavedPositionLayoutsList : public Base
+class SequentialLayoutsList : public Base
 {
 public:
     ScheduledLayout nextLayout() const
@@ -65,5 +67,5 @@ private:
 
 };
 
-using RegularLayoutsList = SavedPositionLayoutsList<SortedLayoutsList<LayoutsList>>;
+using RegularLayoutsList = SequentialLayoutsList<SortedLayoutsList<LayoutsList>>;
 using OverlayLayoutsList = SortedLayoutsList<LayoutsList>;
