@@ -10,6 +10,7 @@ void MediaParsersRepo::init()
 {
     add({ResourcesXlf::Media::ImageType, ResourcesXlf::Media::NativeRender}, std::make_unique<ImageParser>());
     add({ResourcesXlf::Media::VideoType, ResourcesXlf::Media::NativeRender}, std::make_unique<VideoParser>());
+    add({ResourcesXlf::Media::HlsType, ResourcesXlf::Media::HtmlRender}, std::make_unique<VideoParser>());
     add({ResourcesXlf::Media::LocalVideoType, ResourcesXlf::Media::NativeRender}, std::make_unique<VideoParser>());
     add({ResourcesXlf::Media::AudioType, ResourcesXlf::Media::NativeRender}, std::make_unique<AudioParser>());
     add({ResourcesXlf::Media::TextType, ResourcesXlf::Media::NativeRender}, std::make_unique<WebViewParser>());
