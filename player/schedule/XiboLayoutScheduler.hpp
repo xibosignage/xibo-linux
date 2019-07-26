@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
+#include "ParsedLayoutSchedule.hpp"
 #include "SchedulerStatus.hpp"
 
 #include <memory>
@@ -9,7 +9,7 @@
 class XiboLayoutScheduler
 {
 public:
-    void reloadSchedule(LayoutSchedule&& schedule);
+    void reloadSchedule(ParsedLayoutSchedule&& schedule);
     int nextLayoutId();
     std::vector<int> nextOverlayLayoutsIds();
     int currentLayoutId() const;
@@ -27,7 +27,6 @@ private:
     size_t increaseLayoutIndex(std::size_t index) const;
 
 private:
-    LayoutSchedule m_schedule;
     int m_currentLayoutId = EmptyLayoutId;
 
 };

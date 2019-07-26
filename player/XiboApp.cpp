@@ -17,11 +17,13 @@
 #include "control/layout/LayoutsManager.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/schedule/XiboLayoutScheduler.hpp"
 #include "managers/FileCacheManager.hpp"
 #include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrManager.hpp"
-#include "managers/schedule/ScheduleManager.hpp"
+
+#include "schedule/ScheduleSerializer.hpp"
+#include "schedule/ScheduleManager.hpp"
+#include "schedule/XiboLayoutScheduler.hpp"
 
 #include "networking/WebServer.hpp"
 #include "networking/HttpClient.hpp"
@@ -77,7 +79,7 @@ XiboApp::XiboApp(const std::string& name) :
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_playerSettingsManager(std::make_unique<PlayerSettingsManager>(ProjectResources::playerSettings())),
     m_xmrManager(std::make_unique<XmrManager>()),
-    m_scheduleManager(std::make_unique<ScheduleManager>()),
+    m_scheduleManager(std::make_unique<ScheduleManager>(std::make_unique<ScheduleSerializer>())),
     m_webserver(std::make_shared<XiboWebServer>()),
     m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
 {

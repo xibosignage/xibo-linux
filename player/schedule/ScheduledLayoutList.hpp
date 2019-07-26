@@ -5,12 +5,14 @@
 #include <vector>
 #include <algorithm>
 
-class LayoutsList
+class LayoutList
 {
 public:
     using ConstIterator = std::vector<ScheduledLayout>::const_iterator;
 
     void addLayout(ScheduledLayout&& layout);
+    void clear();
+
     size_t size() const;
 
     ConstIterator begin() const;
@@ -22,24 +24,7 @@ protected:
 };
 
 template<typename Base>
-class SortedLayoutsList : public Base
-{
-public:
-    void addLayout(ScheduledLayout&& layout)
-    {
-        Base::addLayout(std::move(layout));
-
-        std::stable_sort(this->m_layoutList.begin(), this->m_layoutList.end(), [](const auto& first, const auto& second){
-            return first.priority > second.priority;
-        });
-    }
-
-};
-
-const size_t FirstItemIndex = 0;
-
-template<typename Base>
-class SequentialLayoutsList : public Base
+class SequentialLayoutList : public Base
 {
 public:
     ScheduledLayout nextLayout() const
@@ -52,6 +37,8 @@ public:
     }
 
 private:
+    const size_t FirstItemIndex = 0;
+
     size_t increaseLayoutIndex(std::size_t index) const
     {
         size_t nextLayoutIndex = index + 1;
@@ -67,5 +54,34 @@ private:
 
 };
 
-using RegularLayoutsList = SequentialLayoutsList<SortedLayoutsList<LayoutsList>>;
-using OverlayLayoutsList = SortedLayoutsList<LayoutsList>;
+template<typename Base>
+class PriorityLayoutList : public Base
+{
+public:
+    void addLayout(ScheduledLayout&& layout)
+    {
+        if(layout.priority >= highestPriority())
+        {
+            if(layout.priority > highestPriority())
+            {
+                Base::clear();
+            }
+            Base::addLayout(std::move(layout));
+        }
+    }
+
+private:
+    const int DefaultPriority = 0;
+
+    int highestPriority() const
+    {
+        if(this->m_layoutList.empty())
+            return DefaultPriority;
+
+        return this->m_layoutList.front().priority;
+    }
+};
+
+
+using RegularLayoutList = SequentialLayoutList<PriorityLayoutList<LayoutList>>;
+using OverlayLayoutList = PriorityLayoutList<LayoutList>;

@@ -1,50 +1,69 @@
-#include "ScheduleManager.hpp"
+#include "ScheduleSerializer.hpp"
 
 #include "networking/xmds/Resources.hpp"
+#include "common/FilePath.hpp"
 #include "common/Utils.hpp"
-#include "common/FileSystem.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
 namespace Resources = XmdsResources::Schedule;
 
-void ScheduleManager::load(const FilePath& path)
+const char* ScheduleParseException::what() const noexcept
 {
-    if(FileSystem::exists(path))
+    return "Schedule is invalid";
+}
+
+ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
+{
+    try
     {
         boost::property_tree::ptree tree;
         boost::property_tree::read_xml(path.string(), tree);
 
-        m_schedule = parseSchedule(tree);
+        return parseScheduleImpl(tree);
     }
-
-    m_path = path;
+    catch (std::exception&)
+    {
+        throw ScheduleParseException{};
+    }
 }
 
-LayoutSchedule ScheduleManager::parseSchedule(const xml_node& scheduleXml)
+ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
 {
-    LayoutSchedule schedule;
+    try
+    {
+        return parseScheduleImpl(Utils::parseXmlFromString(xmlSchedule));
+    }
+    catch (std::exception&)
+    {
+        throw ScheduleParseException{};
+    }
+}
+
+ParsedLayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node &scheduleXml)
+{    
+    ParsedLayoutSchedule schedule;
     auto rootNode = scheduleXml.get_child(Resources::Schedule);
     auto attrs = rootNode.get_child(Resources::Attrs);
 
-    schedule.updateGeneratedTime(attrs.get<std::string>("generated"));
+    schedule.generatedTime = attrs.get<std::string>("generated");
 
     for(auto [name, node] : rootNode)
     {
         if(name == Resources::Layout)
-            schedule.addScheduledLayout(parseScheduledLayout(node));
+            schedule.regularLayouts.emplace_back(parseScheduledLayout(node));
         else if(name == Resources::DefaultLayout)
-            schedule.updateDefaultLayout(parseDefaultLayout(node));
+            schedule.defaultLayout = parseDefaultLayout(node);
         else if(name == Resources::Overlays)
-            schedule.addOverlayLayouts(parseOverlayLayouts(node));
+            schedule.overlayLayouts = parseOverlayLayouts(node);
         else if(name == Resources::GlobalDependants)
-            schedule.updateDependants(parseDependants(node));
+            schedule.globalDependants = parseDependants(node);
     }
 
     return schedule;
 }
 
-ScheduledLayout ScheduleManager::parseScheduledLayout(const xml_node& layoutNode)
+ScheduledLayout ScheduleSerializer::parseScheduledLayout(const xml_node& layoutNode)
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
@@ -65,7 +84,7 @@ ScheduledLayout ScheduleManager::parseScheduledLayout(const xml_node& layoutNode
     return layout;
 }
 
-DefaultScheduledLayout ScheduleManager::parseDefaultLayout(const xml_node& layoutNode)
+DefaultScheduledLayout ScheduleSerializer::parseDefaultLayout(const xml_node& layoutNode)
 {
     namespace LayoutAttrs = Resources::LayoutAttrs;
 
@@ -82,19 +101,19 @@ DefaultScheduledLayout ScheduleManager::parseDefaultLayout(const xml_node& layou
     return layout;
 }
 
-OverlayLayoutsList ScheduleManager::parseOverlayLayouts(const xml_node& overlaysNode)
+std::vector<ScheduledLayout> ScheduleSerializer::parseOverlayLayouts(const xml_node& overlaysNode)
 {
-    OverlayLayoutsList overlayLayouts;
+    std::vector<ScheduledLayout> overlayLayouts;
 
     for(auto [name, node] : overlaysNode)
     {
-        overlayLayouts.addLayout(parseScheduledLayout(node));
+        overlayLayouts.emplace_back(parseScheduledLayout(node));
     }
 
     return overlayLayouts;
 }
 
-std::vector<std::string> ScheduleManager::parseDependants(const xml_node& dependantsNode)
+std::vector<std::string> ScheduleSerializer::parseDependants(const xml_node& dependantsNode)
 {
     std::vector<std::string> dependants;
 
@@ -104,17 +123,4 @@ std::vector<std::string> ScheduleManager::parseDependants(const xml_node& depend
     }
 
     return dependants;
-}
-
-void ScheduleManager::update(const std::string& scheduleXml)
-{
-    m_schedule = parseSchedule(Utils::parseXmlFromString(scheduleXml));
-
-    std::ofstream out(m_path.string());
-    out << scheduleXml;
-}
-
-LayoutSchedule ScheduleManager::schedule() const
-{
-    return m_schedule;
 }
