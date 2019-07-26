@@ -1,10 +1,10 @@
 #pragma once
 
-#include <boost/date_time/posix_time/ptime.hpp>
+#include "common/DateTime.hpp"
 
 struct CmsStatus
 {
     bool registered;
-    boost::posix_time::ptime lastChecked;
+    DateTime lastChecked;
     size_t requiredFiles;
 };

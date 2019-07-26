@@ -4,13 +4,14 @@
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include "common/logger/Logging.hpp"
+#include "common/DateTimeProvider.hpp"
+
 #include "utils/TimerProvider.hpp"
 #include "utils/ScreenShoter.hpp"
 #include "utils/Managers.hpp"
 #include "xmlsink/XmlLogsRetriever.hpp"
 
 #include <glibmm/main.h>
-#include <boost/date_time/time_clock.hpp>
 
 const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
@@ -82,7 +83,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         if(!displayError)
         {
             m_registered = true;
-            m_lastChecked = boost::posix_time::second_clock::local_time();
+            m_lastChecked = DateTimeProvider::now();
             m_settingsUpdated.emit(result.playerSettings);
 
             auto requiredFilesResult = m_xmdsSender.requiredFiles().get();

@@ -3,6 +3,7 @@
 #include "networking/xmds/Resources.hpp"
 #include "common/Utils.hpp"
 #include "common/FileSystem.hpp"
+#include "common/DateTimeProvider.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -53,8 +54,8 @@ ScheduledLayout ScheduleManager::parseScheduledLayout(const xml_node& layoutNode
 
     layout.scheduleId = attrs.get<int>(LayoutAttrs::ScheduleId);
     layout.id = attrs.get<int>(LayoutAttrs::Id);
-    layout.startDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::StartDT));
-    layout.endDT = boost::posix_time::time_from_string(attrs.get<std::string>(LayoutAttrs::EndDT));
+    layout.startDT = DateTimeProvider::fromString(attrs.get<std::string>(LayoutAttrs::StartDT));
+    layout.endDT = DateTimeProvider::fromString(attrs.get<std::string>(LayoutAttrs::EndDT));
     layout.priority = attrs.get<int>(LayoutAttrs::Priority);
 
     if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))

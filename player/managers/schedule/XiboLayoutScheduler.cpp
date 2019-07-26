@@ -2,6 +2,7 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/FileSystem.hpp"
+#include "common/DateTimeProvider.hpp"
 #include "utils/Resources.hpp"
 
 void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
@@ -93,7 +94,7 @@ int XiboLayoutScheduler::nextScheduledLayoutId()
 
 bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
 {
-    auto currentDT = boost::posix_time::second_clock::local_time();
+    auto currentDT = DateTimeProvider::now();
 
     if(currentDT >= layout.startDT && currentDT < layout.endDT)
     {
