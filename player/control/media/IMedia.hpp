@@ -7,7 +7,6 @@
 #include <sigc++/sigc++.h>
 
 using SignalMediaFinished = sigc::signal<void()>;
-using SignalMediaRemoved = sigc::signal<void()>;
 class TransitionExecutor;
 
 class IMedia
@@ -23,7 +22,6 @@ public:
     virtual void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
 
     virtual SignalMediaFinished mediaFinished() = 0;
-    virtual SignalMediaRemoved mediaRemoved() = 0;
 
     virtual MediaGeometry::Align align() const = 0;
     virtual MediaGeometry::Valign valign() const = 0;

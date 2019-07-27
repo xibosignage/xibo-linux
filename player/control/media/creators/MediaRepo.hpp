@@ -11,9 +11,10 @@ class MediaRepo : public Repository<RepoType, StoredType>
 public:
     static boost::optional<StoredType&> get(const MediaOptions::Type& mediaType)
     {
-        if(mediaType.render == ResourcesXlf::Media::HtmlRender)
+        // FIXME while adding plugging support
+        if(mediaType.type != ResourcesXlf::Media::HlsType && mediaType.render == ResourcesXlf::Media::HtmlRender)
         {
-            return MediaRepo::instance().getObject(mediaType.render);
+            return Repository<RepoType, StoredType>::get(ResourcesXlf::Media::HtmlRender);
         }
         return Repository<RepoType, StoredType>::get(mediaType.type + mediaType.render);
     }

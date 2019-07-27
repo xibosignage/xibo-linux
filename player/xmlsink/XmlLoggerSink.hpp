@@ -5,11 +5,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/details/file_helper.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <sstream>
 #include <mutex>
 
 #include "XmlLogsRepo.hpp"
+#include "common/DateTimeProvider.hpp"
 
 template<typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>
@@ -53,9 +53,9 @@ private:
 
     std::string formatDateTime(std::chrono::system_clock::time_point tp)
     {
-        using namespace std::chrono;
+        auto dt = DateTimeProvider::fromTimeT(std::chrono::system_clock::to_time_t(tp));
 
-        return boost::posix_time::to_simple_string(boost::posix_time::from_time_t(system_clock::to_time_t(tp)));
+        return DateTimeProvider::toString(dt, "%Y-%m-%d %H:%M:%S");
     }
 
     std::string formatLogLevel(spdlog::level::level_enum level)

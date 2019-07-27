@@ -21,7 +21,6 @@ public:
     void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
 
     SignalMediaFinished mediaFinished() override;
-    SignalMediaRemoved mediaRemoved() override;
 
     MediaGeometry::Align align() const override;
     MediaGeometry::Valign valign() const override;
@@ -47,6 +46,5 @@ private:
     std::unique_ptr<TransitionExecutor> m_inTransition;
     std::unique_ptr<TransitionExecutor> m_outTransition;
     SignalMediaFinished m_mediaFinished;
-    SignalMediaRemoved m_mediaRemoved;
 
 };

@@ -1,14 +1,13 @@
 #pragma once
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-
+#include "common/DateTime.hpp"
 #include "networking/ZeromqSubscriber.hpp"
 #include "XmrStatus.hpp"
 
 struct XmrMessage
 {
     std::string action;
-    boost::posix_time::ptime createdDt;
+    DateTime createdDt;
     int ttl;
 };
 
@@ -29,7 +28,6 @@ private:
     void processMultipartMessage(const MultiPartMessage& message);
     std::string decryptMessage(const std::string& key, const std::string& message);
     XmrMessage parseMessage(const std::string& jsonMessage);
-    boost::posix_time::ptime parseDateTime(const std::string& dt);
     void processXmrMessage(const XmrMessage& message);
     bool isMessageExpired(const XmrMessage& message);
 

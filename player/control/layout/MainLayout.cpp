@@ -40,12 +40,11 @@ std::shared_ptr<IOverlayLayout> MainLayout::view()
 
 void MainLayout::onRegionExpired(int regionId)
 {
-    Log::debug("Region expired");
+    Log::trace("Region {} expired", regionId);
     m_expiredRegions.insert(regionId);
 
     if(areAllRegionsExpired())
     {
-        Log::debug("Duration expired layout sent");
         m_layoutExpired.emit();
     }
 }

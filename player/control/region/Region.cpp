@@ -13,7 +13,6 @@ Region::Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionVi
 void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));
-    media->mediaRemoved().connect(std::bind(&Region::onMediaRemoved, this));
 
     m_view->addMedia(media->view(), x, y);
     m_media.emplace_back(std::move(media));
@@ -50,17 +49,13 @@ void Region::onMediaDurationTimeout()
     if(shouldBeMediaReplaced())
     {
         removeMedia(m_currentMediaIndex);
+        placeMedia(getNextMediaIndex());
     }
 
     if(isExpired())
     {
         m_regionExpired.emit(m_id);
     }
-}
-
-void Region::onMediaRemoved()
-{
-    placeMedia(getNextMediaIndex());
 }
 
 bool Region::isExpired() const

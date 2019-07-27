@@ -6,6 +6,7 @@
 #include "control/region/RegionResources.hpp"
 #include "common/FilePath.hpp"
 #include "common/FileSystem.hpp"
+#include "utils/Resources.hpp"
 
 #include <fstream>
 #include <regex>
@@ -38,9 +39,11 @@ std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, 
 
 void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
 {
+    auto filename = uri.path().substr(1);
+    auto path = Resources::directory() / filename;
     std::string fileContent;
     {
-        std::ifstream stream(uri.path());
+        std::ifstream stream(path);
         std::stringstream buffer;
         buffer << stream.rdbuf();
 
@@ -48,7 +51,7 @@ void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
         fileContent = std::regex_replace(buffer.str(), ViewPortWidth, "$1 " + std::to_string(width) + "$3");
     }
     {
-        std::ofstream stream(uri.path(), std::ios::out | std::ios::trunc);
+        std::ofstream stream(path, std::ios::out | std::ios::trunc);
         stream << fileContent;
     }
 }

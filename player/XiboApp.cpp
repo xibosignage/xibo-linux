@@ -198,7 +198,7 @@ GeneralInfo XiboApp::collectGeneralInfo()
     GeneralInfo info;
     auto&& settings = m_playerSettingsManager->settings();
 
-    info.currentDT = boost::posix_time::second_clock::local_time();
+    info.currentDT = DateTimeProvider::now();
     info.cmsAddress = m_cmsSettings.cmsAddress;
     info.resourcesPath = m_cmsSettings.resourcesPath;
     info.codeVersion = ProjectResources::codeVersion();

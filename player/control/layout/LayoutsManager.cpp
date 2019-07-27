@@ -2,6 +2,7 @@
 
 #include "config.hpp"
 #include "XlfLayoutFetcher.hpp"
+#include "common/logger/Logging.hpp"
 
 #include "control/common/Image.hpp"
 #include "control/common/IOverlayLayout.hpp"
@@ -66,6 +67,8 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
     auto layout = LayoutFetcher{}.fetch(layoutId);
 
     layout->expired().connect([this, layoutId](){
+        Log::trace("Layout {} expired", layoutId);
+
         if constexpr(std::is_same_v<LayoutFetcher, XlfMainLayoutFetcher>)
         {
             fetchMainLayout(m_scheduler.nextLayoutId());

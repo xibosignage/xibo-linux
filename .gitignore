@@ -11,3 +11,5 @@ WORK
 pch.py
 url_regex.txt
 old_watchdog
+*.json
+commits_config

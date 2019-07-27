@@ -10,12 +10,12 @@ size_t LayoutsList::size() const
     return m_layoutList.size();
 }
 
-std::vector<ScheduledLayout>::const_iterator LayoutsList::begin() const
+LayoutsList::ConstIterator LayoutsList::begin() const
 {
     return m_layoutList.begin();
 }
 
-std::vector<ScheduledLayout>::const_iterator LayoutsList::end() const
+LayoutsList::ConstIterator LayoutsList::end() const
 {
     return m_layoutList.end();
 }
