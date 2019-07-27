@@ -18,7 +18,6 @@
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/FileCacheManager.hpp"
-#include "managers/PlayerSettingsManager.hpp"
 #include "managers/XmrManager.hpp"
 
 #include "schedule/ScheduleSerializer.hpp"
@@ -30,8 +29,9 @@
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "networking/xmds/SoapRequestSender.hpp"
 
-#include "common/CmsSettingsManager.hpp"
-#include "common/RsaManager.hpp"
+#include "common/settings/CmsSettingsManager.hpp"
+#include "common/settings/PlayerSettingsManager.hpp"
+#include "common/crypto/RsaManager.hpp"
 
 #include <gst/gst.h>
 #include <glibmm/main.h>

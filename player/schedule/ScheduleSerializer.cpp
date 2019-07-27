@@ -1,9 +1,8 @@
 #include "ScheduleSerializer.hpp"
 
 #include "networking/xmds/Resources.hpp"
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 #include "common/Utils.hpp"
-#include "common/FileSystem.hpp"
 #include "common/DateTimeProvider.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
@@ -15,7 +14,7 @@ const char* ScheduleParseException::what() const noexcept
     return "Schedule is invalid";
 }
 
-ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
+LayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
 {
     try
     {
@@ -30,7 +29,7 @@ ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
     }
 }
 
-ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
+LayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
 {
     try
     {
@@ -42,9 +41,9 @@ ParsedLayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSch
     }
 }
 
-ParsedLayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node &scheduleXml)
+LayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node &scheduleXml)
 {    
-    ParsedLayoutSchedule schedule;
+    LayoutSchedule schedule;
     auto rootNode = scheduleXml.get_child(Resources::Schedule);
     auto attrs = rootNode.get_child(Resources::Attrs);
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "common/SettingsManager.hpp"
-
+#include "SettingsManager.hpp"
 #include "PlayerSettings.hpp"
 
 class PlayerSettingsManager : public SettingsManager<PlayerSettings>

@@ -1,6 +1,6 @@
 #include "Resources.hpp"
 
-#include "common/FileSystem.hpp"
+#include "common/fs/FileSystem.hpp"
 
 FilePath Resources::directory_;
 

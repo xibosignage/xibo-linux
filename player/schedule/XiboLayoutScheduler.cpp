@@ -1,11 +1,11 @@
 #include "XiboLayoutScheduler.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/FileSystem.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "common/DateTimeProvider.hpp"
 #include "utils/Resources.hpp"
 
-void XiboLayoutScheduler::reloadSchedule(ParsedLayoutSchedule&& schedule)
+void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
 //    m_schedule = std::move(schedule);
 }

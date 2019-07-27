@@ -7,7 +7,7 @@
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 
-#include "common/CmsSettingsManager.hpp"
+#include "common/settings/CmsSettingsManager.hpp"
 #include "Resources.hpp"
 
 class MainWindowController

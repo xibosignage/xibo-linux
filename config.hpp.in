@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "common/FilePath.hpp"
-#include "common/FileSystem.hpp"
+#include "common/fs/FilePath.hpp"
+#include "common/fs/FileSystem.hpp"
 
 const std::string DefaultCacheFile = "cachedFiles.xml";
 const std::string DefaultScheduleFile = "schedule.xml";

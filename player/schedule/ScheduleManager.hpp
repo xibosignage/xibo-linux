@@ -1,22 +1,24 @@
 #pragma once
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 #include "ParsedLayoutSchedule.hpp"
-
-class ScheduleSerializer;
+#include "IScheduleSerializer.hpp"
 
 class ScheduleManager
 {
 public:
-    ScheduleManager(std::unique_ptr<ScheduleSerializer>&& serializer);
+    ScheduleManager(std::unique_ptr<IScheduleSerializer>&& serializer);
 
     void load(const FilePath& path);
     void update(const std::string& schedule);
-    ParsedLayoutSchedule schedule() const;
+    LayoutSchedule schedule() const;
 
 private:
-    std::unique_ptr<ScheduleSerializer> m_serializer;
-    ParsedLayoutSchedule m_cachedSchedule;
+    void writeToFile(const std::string& scheduleXml);
+
+private:
+    std::unique_ptr<IScheduleSerializer> m_serializer;
+    LayoutSchedule m_cachedSchedule;
     FilePath m_path;
 
 };

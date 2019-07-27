@@ -5,7 +5,7 @@
 #include "common/DateTimeProvider.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/Utils.hpp"
-#include "common/RsaManager.hpp"
+#include "common/crypto/RsaManager.hpp"
 
 const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;

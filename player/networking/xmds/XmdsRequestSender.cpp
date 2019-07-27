@@ -3,7 +3,7 @@
 #include "Resources.hpp"
 
 #include "common/MacAddressFetcher.hpp"
-#include "common/RsaManager.hpp"
+#include "common/crypto/RsaManager.hpp"
 
 const std::string DefaultClientType = "linux";
 const std::string UndefinedMacAddress = "00:00:00:00:00:00";

@@ -1,11 +1,11 @@
 #include "ScheduleManager.hpp"
 #include "ScheduleSerializer.hpp"
 
-#include "common/FileSystem.hpp"
+#include "common/fs/FileSystem.hpp"
 
 #include <fstream>
 
-ScheduleManager::ScheduleManager(std::unique_ptr<ScheduleSerializer>&& serializer) :
+ScheduleManager::ScheduleManager(std::unique_ptr<IScheduleSerializer>&& serializer) :
     m_serializer(std::move(serializer))
 {
 }
@@ -22,13 +22,17 @@ void ScheduleManager::load(const FilePath& path)
 
 void ScheduleManager::update(const std::string& scheduleXml)
 {
-    m_cachedSchedule = m_serializer->parseSchedule(scheduleXml);
+    auto schedule = m_serializer->parseSchedule(scheduleXml);
 
-    std::ofstream out(m_path.string());
-    out << scheduleXml;
+    if(schedule != m_cachedSchedule)
+    {
+        m_cachedSchedule = std::move(schedule);
+
+        FileSystem::writeToFile(m_path, scheduleXml);
+    }
 }
 
-ParsedLayoutSchedule ScheduleManager::schedule() const
+LayoutSchedule ScheduleManager::schedule() const
 {
     return m_cachedSchedule;
 }

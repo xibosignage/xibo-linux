@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/SettingsManager.hpp"
+#include "SettingsManager.hpp"
 #include "CmsSettings.hpp"
 
 class CmsSettingsManager : public SettingsManager<CmsSettings>

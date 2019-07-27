@@ -1,5 +1,5 @@
 #include "CryptoUtils.hpp"
-#include "FilePath.hpp"
+#include "fs/FilePath.hpp"
 
 #include <cryptopp/files.h>
 #include <cryptopp/arc4.h>

@@ -5,7 +5,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 #include "common/JoinableThread.hpp"
 
 namespace beast = boost::beast;

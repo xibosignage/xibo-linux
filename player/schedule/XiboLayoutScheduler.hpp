@@ -9,7 +9,7 @@
 class XiboLayoutScheduler
 {
 public:
-    void reloadSchedule(ParsedLayoutSchedule&& schedule);
+    void reloadSchedule(LayoutSchedule&& schedule);
     int nextLayoutId();
     std::vector<int> nextOverlayLayoutsIds();
     int currentLayoutId() const;

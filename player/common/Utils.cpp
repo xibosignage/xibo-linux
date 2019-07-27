@@ -1,6 +1,6 @@
 #include "Utils.hpp"
 
-#include "FilePath.hpp"
+#include "fs/FilePath.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/property_tree/json_parser.hpp>

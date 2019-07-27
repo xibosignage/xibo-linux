@@ -3,7 +3,7 @@
 #include <memory>
 #include <spdlog/common.h>
 
-#include "common/CmsSettings.hpp"
+#include "common/settings/CmsSettings.hpp"
 #include "control/GeneralInfo.hpp"
 
 class MainLoop;

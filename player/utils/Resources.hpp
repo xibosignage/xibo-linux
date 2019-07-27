@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 
 class Resources
 {

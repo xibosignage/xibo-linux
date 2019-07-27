@@ -2,7 +2,7 @@
 
 #include "ScheduleItem.hpp"
 
-struct ParsedLayoutSchedule
+struct LayoutSchedule
 {
     std::string generatedTime;
     std::vector<std::string> globalDependants;
@@ -10,3 +10,6 @@ struct ParsedLayoutSchedule
     std::vector<ScheduledLayout> overlayLayouts;
     DefaultScheduledLayout defaultLayout;
 };
+
+bool operator== (const LayoutSchedule& first, const LayoutSchedule& second);
+bool operator!= (const LayoutSchedule& first, const LayoutSchedule& second);

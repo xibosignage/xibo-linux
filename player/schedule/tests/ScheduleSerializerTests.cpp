@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "ScheduleSerializer.hpp"
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 
 const std::string XmlToParse = R"(<?xml version="1.0"?>
                                <schedule generated="2019-01-08 08:00:00" fitlerFrom="2019-07-26 07:00:00" fitlerTo="2019-07-28 07:00:00">
@@ -64,7 +64,7 @@ void assertDependants(const std::vector<std::string>& dependants)
     EXPECT_EQ(dependants[1], "global2.txt");
 }
 
-void assertSchedule(const ParsedLayoutSchedule& schedule)
+void assertSchedule(const LayoutSchedule& schedule)
 {
     ASSERT_EQ(schedule.regularLayouts.size(), 1);
     ASSERT_EQ(schedule.overlayLayouts.size(), 1);

@@ -4,7 +4,7 @@
 #include "control/media/Media.hpp"
 #include "control/region/RegionResources.hpp"
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 
 std::unique_ptr<IMedia> ImageFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
 {

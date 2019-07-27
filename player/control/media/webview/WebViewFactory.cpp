@@ -4,8 +4,8 @@
 
 #include "control/media/Media.hpp"
 #include "control/region/RegionResources.hpp"
-#include "common/FilePath.hpp"
-#include "common/FileSystem.hpp"
+#include "common/fs/FilePath.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "utils/Resources.hpp"
 
 #include <fstream>

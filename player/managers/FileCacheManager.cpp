@@ -1,7 +1,7 @@
 #include "FileCacheManager.hpp"
 
 #include "utils/Resources.hpp"
-#include "common/FileSystem.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "common/Utils.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>

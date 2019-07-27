@@ -1,7 +1,7 @@
 #include <boost/process/child.hpp>
 #include <iostream>
 
-#include "common/FileSystem.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "config.hpp"
 
 int main()

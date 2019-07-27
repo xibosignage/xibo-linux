@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Field.hpp"
-#include "FilePath.hpp"
-#include "FileSystem.hpp"
+#include "common/Field.hpp"
+#include "common/fs/FilePath.hpp"
+#include "common/fs/FileSystem.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
