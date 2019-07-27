@@ -62,7 +62,7 @@ private:
     int m_collectInterval;
     bool m_started = false;
     bool m_registered = false;
-    boost::posix_time::ptime m_lastChecked;
+    DateTime m_lastChecked;
     size_t m_requiredFiles = 0;
     SignalSettingsUpdated m_settingsUpdated;
     SignalScheduleUpdated m_scheduleUpdated;

@@ -5,12 +5,11 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/details/file_helper.h>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
 #include <sstream>
 #include <mutex>
 
 #include "XmlLogsRepo.hpp"
+#include "common/DateTimeProvider.hpp"
 
 template<typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>
@@ -54,23 +53,9 @@ private:
 
     std::string formatDateTime(std::chrono::system_clock::time_point tp)
     {
-        std::stringstream stream;
+        auto dt = DateTimeProvider::fromTimeT(std::chrono::system_clock::to_time_t(tp));
 
-        auto facet = new boost::posix_time::time_facet();
-        facet->format("%Y-%m-%d %H:%M:%S");
-
-        stream.imbue(std::locale(std::locale::classic(), facet));
-        stream << local_ptime_from_utc_time_t(std::chrono::system_clock::to_time_t(tp));
-
-        return stream.str();
-    }
-
-    boost::posix_time::ptime local_ptime_from_utc_time_t(std::time_t const t)
-    {
-        using boost::date_time::c_local_adjustor;
-        using boost::posix_time::from_time_t;
-        using boost::posix_time::ptime;
-        return c_local_adjustor<ptime>::utc_to_local(from_time_t(t));
+        return DateTimeProvider::toString(dt, "%Y-%m-%d %H:%M:%S");
     }
 
     std::string formatLogLevel(spdlog::level::level_enum level)

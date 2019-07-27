@@ -1,6 +1,8 @@
 #include "XmrManager.hpp"
 
 #include "constants.hpp"
+
+#include "common/DateTimeProvider.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/Utils.hpp"
 #include "common/RsaManager.hpp"
@@ -53,7 +55,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 
             processXmrMessage(xmrMessage);
 
-            m_info.lastMessageDt = boost::posix_time::second_clock::local_time();
+            m_info.lastMessageDt = DateTimeProvider::now();
         }
         catch (std::exception& e)
         {
@@ -62,7 +64,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        m_info.lastHeartbeatDt = boost::posix_time::second_clock::local_time();
+        m_info.lastHeartbeatDt = DateTimeProvider::now();
     }
 }
 
@@ -84,22 +86,10 @@ XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 
     XmrMessage message;
     message.action = tree.get<std::string>("action");
-    message.createdDt = parseDateTime(tree.get<std::string>("createdDt"));
+    message.createdDt = DateTimeProvider::fromIsoExtendedString(tree.get<std::string>("createdDt"));
     message.ttl = tree.get<int>("ttl");
 
     return message;
-}
-
-boost::posix_time::ptime XmrManager::parseDateTime(const std::string& dt)
-{
-    auto dtFacet = new boost::posix_time::time_input_facet;
-    dtFacet->set_iso_extended_format();
-
-    boost::posix_time::ptime posixDt;
-    std::istringstream iss{dt};
-    iss >> posixDt;
-
-    return posixDt;
 }
 
 void XmrManager::processXmrMessage(const XmrMessage& message)
@@ -118,8 +108,8 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 
 bool XmrManager::isMessageExpired(const XmrMessage& message)
 {
-    auto resultDt = message.createdDt + boost::posix_time::seconds(message.ttl);
-    if(resultDt < boost::posix_time::second_clock::universal_time())
+    auto resultDt = message.createdDt + DateTimeSeconds(message.ttl);
+    if(resultDt < DateTimeProvider::nowUtc())
     {
         return true;
     }

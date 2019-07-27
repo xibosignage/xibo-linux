@@ -1,10 +1,10 @@
 #pragma once
 
-#include <boost/date_time/posix_time/ptime.hpp>
+#include "common/DateTime.hpp"
 
 struct GeneralInfo
 {
-    boost::posix_time::ptime currentDT;
+    DateTime currentDT;
     std::string projectVersion;
     std::string codeVersion;
     std::string cmsAddress;

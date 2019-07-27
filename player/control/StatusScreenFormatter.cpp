@@ -1,6 +1,6 @@
 #include "StatusScreenFormatter.hpp"
 
-#include <boost/date_time/posix_time/time_formatters.hpp>
+#include "common/DateTimeProvider.hpp"
 
 std::string StatusScreenFormatter::formatInfo(const StatusInfo& info)
 {
@@ -18,7 +18,7 @@ std::string StatusScreenFormatter::formatGeneralInfo(const GeneralInfo& info)
 {
     std::stringstream out;
 
-    out << "Date - " << boost::posix_time::to_simple_string(info.currentDT) << std::endl;
+    out << "Date - " << DateTimeProvider::toString(info.currentDT) << std::endl;
     out << "Version - " << info.projectVersion << std::endl;
     out << "Code Version - " << info.codeVersion << std::endl;
     out << "Content Management System - " << info.cmsAddress << std::endl;
@@ -37,7 +37,7 @@ std::string StatusScreenFormatter::formatCmsInfo(const CmsStatus& info)
     std::stringstream out;
 
     out << "Registered - " << std::boolalpha << info.registered << std::endl; // cms
-    out << "Checked at - " << boost::posix_time::to_simple_string(info.lastChecked) << std::endl; // cms
+    out << "Checked at - " << DateTimeProvider::toString(info.lastChecked) << std::endl; // cms
 //    info << "Schedule - " << "up to date" << std::endl;
     out << "Required Files - " << info.requiredFiles << std::endl;
 //    out << "Queued Network Connections- " << "F: 0 / N: 0. HTTP: 0 / Idle: 0" << std::endl; // http manager
@@ -78,8 +78,8 @@ std::string StatusScreenFormatter::formatXmrInfo(const XmrStatus& info)
     std::stringstream out;
 
     out << "Host - " << info.host << std::endl;
-    out << "Last heartbeat - " << boost::posix_time::to_simple_string(info.lastHeartbeatDt) << std::endl;
-    out << "Last message - " << boost::posix_time::to_simple_string(info.lastMessageDt) << std::endl;
+    out << "Last heartbeat - " << DateTimeProvider::toString(info.lastHeartbeatDt) << std::endl;
+    out << "Last message - " << DateTimeProvider::toString(info.lastMessageDt) << std::endl;
 
     return out.str();
 }
