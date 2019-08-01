@@ -6,7 +6,7 @@
 
 int main()
 {
-    if(FileSystem::exists(ProjectResources::cmsSettings()))
+    if(FileSystem::exists(ProjectResources::cmsSettingsFile()))
     {
         boost::process::child playerBin{ProjectResources::playerBinary()};
 
