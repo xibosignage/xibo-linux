@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ParsedLayoutSchedule.hpp"
+#include "LayoutSchedule.hpp"
 #include "SchedulerStatus.hpp"
 
 #include <memory>
@@ -27,6 +27,7 @@ private:
     size_t increaseLayoutIndex(std::size_t index) const;
 
 private:
+    LayoutSchedule m_schedule;
     int m_currentLayoutId = EmptyLayoutId;
 
 };

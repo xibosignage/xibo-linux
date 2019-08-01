@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ParsedLayoutSchedule.hpp"
+#include "LayoutSchedule.hpp"
 
 class FilePath;
 

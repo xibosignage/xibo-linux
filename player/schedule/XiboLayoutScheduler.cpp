@@ -7,18 +7,18 @@
 
 void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-//    m_schedule = std::move(schedule);
+    m_schedule = std::move(schedule);
 }
 
 int XiboLayoutScheduler::nextLayoutId()
 {
-//    m_currentLayoutId = nextScheduledLayoutId();
+    m_currentLayoutId = nextScheduledLayoutId();
 
-//    auto&& defaultLayout = m_schedule.defaultLayout();
-//    if(m_currentLayoutId == EmptyLayoutId && isLayoutValid(defaultLayout.dependants))
-//    {
-//        m_currentLayoutId = defaultLayout.id;
-//    }
+    auto&& defaultLayout = m_schedule.defaultLayout;
+    if(m_currentLayoutId == EmptyLayoutId && isLayoutValid(defaultLayout.dependants))
+    {
+        m_currentLayoutId = defaultLayout.id;
+    }
 
     return m_currentLayoutId;
 }
@@ -27,13 +27,13 @@ std::vector<int> XiboLayoutScheduler::nextOverlayLayoutsIds()
 {
     std::vector<int> overlayLayoutsIds;
 
-//    for(auto&& layout : m_schedule.overlayLayouts())
-//    {
-//        if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
-//        {
-//            overlayLayoutsIds.emplace_back(layout.id);
-//        }
-//    }
+    for(auto&& layout : m_schedule.overlayLayouts)
+    {
+        if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
+        {
+            overlayLayoutsIds.emplace_back(layout.id);
+        }
+    }
 
     return overlayLayoutsIds;
 }
@@ -47,11 +47,11 @@ SchedulerStatus XiboLayoutScheduler::status()
 {
     SchedulerStatus status;
 
-//    collectLayoutListStatus(status, m_schedule.regularLayouts());
-//    collectLayoutListStatus(status, m_schedule.overlayLayouts());
+    collectLayoutListStatus(status, m_schedule.regularLayouts);
+    collectLayoutListStatus(status, m_schedule.overlayLayouts);
 
-//    status.generatedTime = m_schedule.generatedTime();
-//    status.currentLayout = m_currentLayoutId;
+    status.generatedTime = DateTimeProvider::toString(m_schedule.generatedTime);
+    status.currentLayout = m_currentLayoutId;
 
     return status;
 }
@@ -78,16 +78,16 @@ void XiboLayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const
 
 int XiboLayoutScheduler::nextScheduledLayoutId()
 {
-//    auto&& regularLayouts = m_schedule.regularLayouts();
-//    for(size_t i = 0; i != regularLayouts.size(); ++i)
-//    {
-//        auto&& layout = regularLayouts.nextLayout();
+    auto&& regularLayouts = m_schedule.regularLayouts;
+    for(size_t i = 0; i != regularLayouts.size(); ++i)
+    {
+        auto&& layout = regularLayouts[i];
 
-//        if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
-//        {
-//            return layout.id;
-//        }
-//    }
+        if(isLayoutOnSchedule(layout) && isLayoutValid(layout.dependants))
+        {
+            return layout.id;
+        }
+    }
 
     return EmptyLayoutId;
 }
@@ -106,21 +106,21 @@ bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) cons
 
 bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) const
 {
-//    for(auto&& dependant : m_schedule.globalDependants())
-//    {
-//        if(!FileSystem::exists(Resources::directory() / dependant))
-//        {
-//            return false;
-//        }
-//    }
+    for(auto&& dependant : m_schedule.globalDependants)
+    {
+        if(!FileSystem::exists(Resources::directory() / dependant))
+        {
+            return false;
+        }
+    }
 
-//    for(auto&& dependant : dependants)
-//    {
-//        if(!FileSystem::exists(Resources::directory() / dependant))
-//        {
-//            return false;
-//        }
-//    }
+    for(auto&& dependant : dependants)
+    {
+        if(!FileSystem::exists(Resources::directory() / dependant))
+        {
+            return false;
+        }
+    }
 
     return true;
 }

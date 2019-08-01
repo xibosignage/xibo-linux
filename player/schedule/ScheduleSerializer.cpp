@@ -47,7 +47,7 @@ LayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node &scheduleXml
     auto rootNode = scheduleXml.get_child(Resources::Schedule);
     auto attrs = rootNode.get_child(Resources::Attrs);
 
-    schedule.generatedTime = attrs.get<std::string>("generated");
+    schedule.generatedTime = DateTimeProvider::fromString(attrs.get<std::string>("generated"));
 
     for(auto [name, node] : rootNode)
     {

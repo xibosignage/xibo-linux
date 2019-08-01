@@ -1,8 +1,12 @@
 #pragma once
 
-#include "common/fs/FilePath.hpp"
-#include "ParsedLayoutSchedule.hpp"
+#include "LayoutSchedule.hpp"
 #include "IScheduleSerializer.hpp"
+#include "common/fs/FilePath.hpp"
+
+#include <sigc++/signal.h>
+
+using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
 
 class ScheduleManager
 {
@@ -11,6 +15,8 @@ public:
 
     void load(const FilePath& path);
     void update(const std::string& schedule);
+
+    SignalScheduleAvailable scheduleUpdated();
     LayoutSchedule schedule() const;
 
 private:
@@ -19,6 +25,7 @@ private:
 private:
     std::unique_ptr<IScheduleSerializer> m_serializer;
     LayoutSchedule m_cachedSchedule;
+    SignalScheduleAvailable m_scheduleUpdated;
     FilePath m_path;
 
 };

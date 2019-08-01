@@ -27,9 +27,15 @@ void ScheduleManager::update(const std::string& scheduleXml)
     if(schedule != m_cachedSchedule)
     {
         m_cachedSchedule = std::move(schedule);
-
         FileSystem::writeToFile(m_path, scheduleXml);
+
+        m_scheduleUpdated.emit(m_cachedSchedule);
     }
+}
+
+SignalScheduleAvailable ScheduleManager::scheduleUpdated()
+{
+    return m_scheduleUpdated;
 }
 
 LayoutSchedule ScheduleManager::schedule() const

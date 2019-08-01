@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 
-class LayoutList
+class LayoutContainer
 {
 public:
     using ConstIterator = std::vector<ScheduledLayout>::const_iterator;
@@ -83,5 +83,5 @@ private:
 };
 
 
-using RegularLayoutList = SequentialLayoutList<PriorityLayoutList<LayoutList>>;
-using OverlayLayoutList = PriorityLayoutList<LayoutList>;
+using RegularLayoutList = SequentialLayoutList<PriorityLayoutList<LayoutContainer>>;
+using OverlayLayoutList = PriorityLayoutList<LayoutContainer>;

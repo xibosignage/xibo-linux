@@ -4,10 +4,10 @@
 
 struct LayoutSchedule
 {
-    std::string generatedTime;
-    std::vector<std::string> globalDependants;
-    std::vector<ScheduledLayout> regularLayouts;
-    std::vector<ScheduledLayout> overlayLayouts;
+    DateTime generatedTime;
+    LayoutDependants globalDependants;
+    LayoutList regularLayouts;
+    LayoutList overlayLayouts;
     DefaultScheduledLayout defaultLayout;
 };
 

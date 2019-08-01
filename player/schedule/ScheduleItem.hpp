@@ -6,10 +6,15 @@
 
 const int EmptyLayoutId = 0;
 
+struct ScheduledLayout;
+
+using LayoutDependants = std::vector<std::string>;
+using LayoutList = std::vector<ScheduledLayout>;
+
 struct DefaultScheduledLayout
 {
     int id;
-    std::vector<std::string> dependants;
+    LayoutDependants dependants;
 };
 
 struct ScheduledLayout
@@ -19,5 +24,11 @@ struct ScheduledLayout
     int priority;
     DateTime startDT;
     DateTime endDT;
-    std::vector<std::string> dependants;
+    LayoutDependants dependants;
 };
+
+bool operator== (const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
+bool operator!= (const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
+
+bool operator== (const ScheduledLayout& first, const ScheduledLayout& second);
+bool operator!= (const ScheduledLayout& first, const ScheduledLayout& second);

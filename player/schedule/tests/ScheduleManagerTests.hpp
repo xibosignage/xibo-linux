@@ -19,29 +19,26 @@ public:
     }
 
 protected:
-    static void SetUpTestCase()
-    {
-        fs = new FakeFileSystemAdaptor;
-        FileSystem::setAdaptor(std::unique_ptr<FakeFileSystemAdaptor>(fs));
-    }
-
     static void TearDownTestCase()
     {
-        fs = nullptr;
         FileSystem::setAdaptor(std::make_unique<FileSystemAdaptor>());
     }
 
     void SetUp() override
     {
         serializer = new FakeScheduleSerializer;
+        fs = new FakeFileSystemAdaptor;
+
+        FileSystem::setAdaptor(std::unique_ptr<FakeFileSystemAdaptor>(fs));
     }
 
     void TearDown() override
     {
         serializer = nullptr;
+        fs = nullptr;
     }
 
-    static inline FakeFileSystemAdaptor* fs = nullptr;
+    FakeFileSystemAdaptor* fs = nullptr;
     FakeScheduleSerializer* serializer = nullptr;
 
 };
