@@ -11,27 +11,28 @@
 
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     m_ui(ui),
-    m_mainWindow(window),
-    m_settingsManager(ProjectResources::cmsSettings())
+    m_mainWindow(window)
 {
+    m_settings.loadFrom(ProjectResources::cmsSettingsFile());
+
     initUi();
-    updateControls(m_settingsManager.load());
+    updateControls(m_settings);
     connectSignals();
 }
 
 void MainWindowController::initUi()
 {
-    m_ui->get_widget(Resources::Ui::CmsAddressEntry, m_cmsAddress);
-    m_ui->get_widget(Resources::Ui::KeyEntry, m_key);
-    m_ui->get_widget(Resources::Ui::ResourcesPathEntry, m_resourcesPath);
+    m_ui->get_widget(Resources::Ui::CmsAddressEntry, m_cmsAddressField);
+    m_ui->get_widget(Resources::Ui::KeyEntry, m_keyField);
+    m_ui->get_widget(Resources::Ui::ResourcesPathEntry, m_resourcesPathField);
     m_ui->get_widget(Resources::Ui::BrowseResourcesButton, m_browseResourcesPath);
 
-    m_ui->get_widget(Resources::Ui::UsernameEntry, m_username);
-    m_ui->get_widget(Resources::Ui::PasswordEntry, m_password);
+    m_ui->get_widget(Resources::Ui::UsernameEntry, m_usernameField);
+    m_ui->get_widget(Resources::Ui::PasswordEntry, m_passwordField);
     m_ui->get_widget(Resources::Ui::SplashScreenPathEntry, m_splashScreenPath);
     m_ui->get_widget(Resources::Ui::BrowseSplashScreenButton, m_browseSplashScreenPath);
-    m_ui->get_widget(Resources::Ui::DomainEntry, m_domain);
-    m_ui->get_widget(Resources::Ui::DisplayIdEntry, m_displayId);
+    m_ui->get_widget(Resources::Ui::DomainEntry, m_domainField);
+    m_ui->get_widget(Resources::Ui::DisplayIdEntry, m_displayIdField);
 
     m_ui->get_widget(Resources::Ui::ConnectionStatusLabel, m_connectionStatus);
     m_ui->get_widget(Resources::Ui::SaveButton, m_saveSettings);
@@ -42,14 +43,14 @@ void MainWindowController::initUi()
 
 void MainWindowController::updateControls(const CmsSettings& settings)
 {
-    m_cmsAddress->set_text(Glib::ustring{settings.cmsAddress});
-    m_key->set_text(Glib::ustring{settings.key});
-    m_resourcesPath->set_text(Glib::ustring{settings.resourcesPath});
+    m_cmsAddressField->set_text(Glib::ustring{settings.cmsAddress()});
+    m_keyField->set_text(Glib::ustring{settings.key()});
+    m_resourcesPathField->set_text(Glib::ustring{settings.resourcesPath()});
 
-    m_username->set_text(Glib::ustring{settings.username});
-    m_password->set_text(Glib::ustring{settings.password});
-    m_domain->set_text(Glib::ustring{settings.domain});
-    m_displayId->set_text(Glib::ustring{settings.displayId});
+    m_usernameField->set_text(Glib::ustring{settings.username()});
+    m_passwordField->set_text(Glib::ustring{settings.password()});
+    m_domainField->set_text(Glib::ustring{settings.domain()});
+    m_displayIdField->set_text(Glib::ustring{settings.displayId()});
 }
 
 void MainWindowController::connectSignals()
@@ -64,17 +65,17 @@ void MainWindowController::connectSignals()
 void MainWindowController::onSaveSettingsClicked()
 {
     auto displayId = getDisplayId();
-    auto connectionResult = connectToCms(m_cmsAddress->get_text(), m_key->get_text(), displayId);
+    auto connectionResult = connectToCms(m_cmsAddressField->get_text(), m_keyField->get_text(), displayId);
 
     m_connectionStatus->set_text(connectionResult);
-    m_displayId->set_text(displayId);
+    m_displayIdField->set_text(displayId);
 
     updateSettings();
 }
 
 std::string MainWindowController::getDisplayId()
 {
-    std::string displayId = m_displayId->get_text();
+    std::string displayId = m_displayIdField->get_text();
 
     return displayId.empty() ? HardwareKey::generate() : displayId;
 }
@@ -108,17 +109,17 @@ void MainWindowController::updateSettings()
 {
     CmsSettings settings;
 
-    settings.cmsAddress = m_cmsAddress->get_text();
-    settings.key = m_key->get_text();
-    std::string path = m_resourcesPath->get_text();
-    settings.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
+    settings.setCmsAddress(m_cmsAddressField->get_text());
+    settings.setKey(m_keyField->get_text());
+    std::string path = m_resourcesPathField->get_text();
+    settings.setResourcesPath(path.empty() ? ProjectResources::defaultResourcesDir().string() : path);
 
-    settings.username = m_username->get_text();
-    settings.password = m_password->get_text();
-    settings.domain = m_domain->get_text();
-    settings.displayId = m_displayId->get_text();
+    settings.setUsername(m_usernameField->get_text());
+    settings.setPassword(m_passwordField->get_text());
+    settings.setDomain(m_domainField->get_text());
+    settings.setDisplayId(m_displayIdField->get_text());
 
-    m_settingsManager.update(settings);
+    m_settings.saveTo(ProjectResources::cmsSettingsFile());
 }
 
 void MainWindowController::onLaunchClientClicked()
@@ -143,7 +144,7 @@ void MainWindowController::onBrowseResourcesPathClicked()
     switch(result)
     {
         case(Gtk::RESPONSE_OK):
-            m_resourcesPath->set_text(dialog.get_filename());
+            m_resourcesPathField->set_text(dialog.get_filename());
             break;
         default:
             break;

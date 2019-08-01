@@ -7,7 +7,7 @@
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
 
-#include "common/settings/CmsSettingsManager.hpp"
+#include "common/settings/CmsSettings.hpp"
 #include "Resources.hpp"
 
 class MainWindowController
@@ -32,19 +32,19 @@ private:
 private:
     Glib::RefPtr<Gtk::Builder> m_ui;
     Gtk::Window* m_mainWindow;
-    CmsSettingsManager m_settingsManager;
+    CmsSettings m_settings;
 
-    Gtk::Entry* m_cmsAddress;
-    Gtk::Entry* m_key;
-    Gtk::Entry* m_resourcesPath;
+    Gtk::Entry* m_cmsAddressField;
+    Gtk::Entry* m_keyField;
+    Gtk::Entry* m_resourcesPathField;
     Gtk::Button* m_browseResourcesPath;
 
-    Gtk::Entry* m_username;
-    Gtk::Entry* m_password;
+    Gtk::Entry* m_usernameField;
+    Gtk::Entry* m_passwordField;
     Gtk::Entry* m_splashScreenPath;
     Gtk::Button* m_browseSplashScreenPath;
-    Gtk::Entry* m_domain;
-    Gtk::Entry* m_displayId;
+    Gtk::Entry* m_domainField;
+    Gtk::Entry* m_displayIdField;
 
     Gtk::Label* m_connectionStatus;
     Gtk::Button* m_saveSettings;

@@ -54,12 +54,12 @@ namespace ProjectResources
         return buildDirectory() / "splash.jpg";
     }
 
-    inline FilePath cmsSettings()
+    inline FilePath cmsSettingsFile()
     {
         return configDirectory() / "cmsSettings.xml";
     }
 
-    inline FilePath playerSettings()
+    inline FilePath playerSettingsFile()
     {
         return configDirectory() / "playerSettings.xml";
     }
