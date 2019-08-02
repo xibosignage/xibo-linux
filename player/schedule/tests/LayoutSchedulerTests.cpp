@@ -1,14 +1,14 @@
-#include "ScheduleManagerTests.hpp"
+#include "LayoutSchedulerTests.hpp"
 #include "Common.hpp"
 #include "testutils/Utils.hpp"
 
-#include "XiboLayoutScheduler.hpp"
+#include "LayoutScheduler.hpp"
 
 using namespace testing;
 
 const std::string FakeSchedule = "Fake";
 
-TEST_F(ScheduleManagerTests, UpdateWithNoPreviousSchedule)
+TEST_F(LayoutSchedulerTests, UpdateWithNoPreviousSchedule)
 {
     auto scheduler = construct();
     FakeSlot<void(const LayoutSchedule&)> slot;
@@ -19,7 +19,7 @@ TEST_F(ScheduleManagerTests, UpdateWithNoPreviousSchedule)
     ASSERT_TRUE(slot.calledOnce());
 }
 
-TEST_F(ScheduleManagerTests, UpdateTwiceWithSameSchedule)
+TEST_F(LayoutSchedulerTests, UpdateTwiceWithSameSchedule)
 {
     auto scheduler = construct();
     FakeSlot<void(const LayoutSchedule&)> slot;
@@ -31,7 +31,7 @@ TEST_F(ScheduleManagerTests, UpdateTwiceWithSameSchedule)
     ASSERT_TRUE(slot.calledOnce());
 }
 
-TEST_F(ScheduleManagerTests, UpdateWithNewSchedule)
+TEST_F(LayoutSchedulerTests, UpdateWithNewSchedule)
 {
 //    auto manager = construct();
 

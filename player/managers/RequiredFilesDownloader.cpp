@@ -8,8 +8,7 @@
 
 #include "utils/Managers.hpp"
 #include "utils/Resources.hpp"
-
-#include <fstream>
+#include "common/Utils.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     m_xmdsRequestSender(xmdsRequestSender),

@@ -7,13 +7,13 @@ TEST(RegularLayoutList, NextLayoutShouldPreservePosition)
 
     ASSERT_EQ(list.size(), 3);
 
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId);
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId + 1);
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId + 2);
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId);
 }
 
@@ -24,8 +24,8 @@ TEST(RegularLayoutList, NextLayoutWorksOnlyOnTheHighestPriorities)
 
     ASSERT_EQ(list.size(), 1);
 
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId + 2);
-    next = list.nextLayout();
+    next = list.next();
     EXPECT_EQ(next.id, DefaultId + 2);
 }

@@ -17,7 +17,7 @@ List listWithDifferentPriorities(const std::vector<int>& priorities)
     for(size_t i = 0; i != priorities.size(); ++i)
     {
         int step = static_cast<int>(i);
-        list.addLayout(ScheduleTests::scheduledLayout(DefaultSchediledId + step, DefaultId + step, priorities[i]));
+        list.add(ScheduleTests::scheduledLayout(DefaultSchediledId + step, DefaultId + step, priorities[i]));
     }
 
     return list;

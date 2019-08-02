@@ -7,9 +7,9 @@
 #include "control/common/Image.hpp"
 #include "control/common/IOverlayLayout.hpp"
 
-#include "schedule/XiboLayoutScheduler.hpp"
+#include "schedule/LayoutScheduler.hpp"
 
-LayoutsManager::LayoutsManager(XiboLayoutScheduler& scheduler) :
+LayoutsManager::LayoutsManager(LayoutScheduler& scheduler) :
     m_scheduler(scheduler)
 {
 }

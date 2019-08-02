@@ -13,26 +13,26 @@ TEST(ScheduleSerializer, LoadFromFile)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.parseSchedule(FilePath{SchedulePath}));
+    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.scheduleFrom(FilePath{SchedulePath}));
 }
 
 TEST(ScheduleSerializer, LoadFromFileInvalid)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_THROW(serializer.parseSchedule(FilePath{SchedulePathInvalid}), ScheduleParseException);
+    ASSERT_THROW(serializer.scheduleFrom(FilePath{SchedulePathInvalid}), ScheduleParseException);
 }
 
 TEST(ScheduleSerializer, LoadFromString)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.parseSchedule(ScheduleXml));
+    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.scheduleFrom(ScheduleXml));
 }
 
 TEST(ScheduleSerializer, LoadFromStringInvalid)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_THROW(serializer.parseSchedule(std::string{"invalid"}), ScheduleParseException);
+    ASSERT_THROW(serializer.scheduleFrom(std::string{"invalid"}), ScheduleParseException);
 }

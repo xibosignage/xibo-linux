@@ -4,6 +4,7 @@
 
 #include "common/DateTimeProvider.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/Parsing.hpp"
 #include "common/Utils.hpp"
 #include "common/crypto/RsaManager.hpp"
 
@@ -82,7 +83,7 @@ std::string XmrManager::decryptMessage(const std::string& encryptedBase64Key, co
 
 XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 {
-    auto tree = Utils::parseJsonFromString(jsonMessage);
+    auto tree = Parsing::jsonFromString(jsonMessage);
 
     XmrMessage message;
     message.action = tree.get<std::string>("action");

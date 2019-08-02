@@ -3,7 +3,7 @@
 #include "XmlLogsRepo.hpp"
 
 #include "common/logger/Logger.hpp"
-#include "common/Utils.hpp"
+#include "common/Parsing.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -19,8 +19,8 @@ std::string XmlLogsRetriever::retrieveLogs()
 
 std::string XmlLogsRetriever::formatLogs(const std::string& logs)
 {
-    xml_node formattedLogsNode;
-    auto logsNode =  Utils::parseXmlFromString(logs);
+    ptree_node formattedLogsNode;
+    auto logsNode =  Parsing::xmlFromString(logs);
     formattedLogsNode.add_child("logs", logsNode);
-    return Utils::xmlTreeToEscapedString(formattedLogsNode);
+    return Parsing::xmlTreeToEscapedString(formattedLogsNode);
 }

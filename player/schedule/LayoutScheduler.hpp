@@ -2,6 +2,7 @@
 
 #include "LayoutSchedule.hpp"
 #include "SchedulerStatus.hpp"
+#include "common/fs/FilePath.hpp"
 
 #include <memory>
 #include <vector>
@@ -9,10 +10,12 @@
 
 using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
 
-class XiboLayoutScheduler
+class LayoutScheduler
 {
 public:
+    void scheduleFrom(const FilePath& file);
     void reloadSchedule(LayoutSchedule&& schedule);
+
     int nextLayoutId();
     std::vector<int> nextOverlayLayoutsIds();
     int currentLayoutId() const;
@@ -32,6 +35,7 @@ private:
 
 private:
     LayoutSchedule m_schedule;
+    FilePath m_filePath;
     SignalScheduleAvailable m_scheduleUpdated;
     int m_currentLayoutId = EmptyLayoutId;
 

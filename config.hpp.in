@@ -5,9 +5,6 @@
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
 
-const std::string DefaultCacheFile = "cachedFiles.xml";
-const std::string DefaultScheduleFile = "schedule.xml";
-
 namespace ProjectResources
 {
     inline std::string version()
@@ -62,6 +59,16 @@ namespace ProjectResources
     inline FilePath playerSettingsFile()
     {
         return configDirectory() / "playerSettings.xml";
+    }
+
+    inline FilePath scheduleFile()
+    {
+        return configDirectory() / "schedule.xml";
+    }
+
+    inline FilePath cacheFile()
+    {
+        return configDirectory() / "cachedFiles.xml";
     }
 
     inline std::string playerBinary()

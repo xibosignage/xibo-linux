@@ -39,9 +39,9 @@ private:
     static boost::optional<Creator&> get(const Repository<Creator>& repo, const MediaOptions::Type& mediaType)
     {
         // FIXME while adding plugging support
-        if(mediaType.type != ResourcesXlf::Media::HlsType && mediaType.render == ResourcesXlf::Media::HtmlRender)
+        if(mediaType.type != XlfResources::Media::HlsType && mediaType.render == XlfResources::Media::HtmlRender)
         {
-            return repo.get(ResourcesXlf::Media::HtmlRender);
+            return repo.get(XlfResources::Media::HtmlRender);
         }
         return repo.get(mediaType.type + mediaType.render);
     }

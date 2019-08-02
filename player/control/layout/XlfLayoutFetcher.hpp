@@ -7,7 +7,7 @@
 #include "IMainLayout.hpp"
 
 #include "../common/XlfResources.hpp"
-#include "common/Utils.hpp"
+#include "common/Parsing.hpp"
 #include "utils/Resources.hpp"
 
 template<typename ParserType>
@@ -16,7 +16,7 @@ class XlfLayoutLoader
 public:
     static std::unique_ptr<IMainLayout> loadBy(int layoutId)
     {
-        auto rootNode = Utils::parseXmlFromPath(getXlfPath(layoutId));
+        auto rootNode = Parsing::xmlFromPath(getXlfPath(layoutId));
         return layoutFrom(rootNode);
     }
 
@@ -27,9 +27,9 @@ private:
         return Resources::directory() / xlfFile;
     }
 
-    static std::unique_ptr<IMainLayout> layoutFrom(const xml_node& root)
+    static std::unique_ptr<IMainLayout> layoutFrom(const ptree_node& root)
     {
-        auto node = root.get_child(ResourcesXlf::LayoutNode);
+        auto node = root.get_child(XlfResources::LayoutNode);
 
         ParserType parser;
         return parser.layoutFrom(node);

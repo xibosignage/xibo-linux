@@ -1,26 +1,26 @@
 #include "LayoutContainer.hpp"
 
-void LayoutContainer::addLayout(ScheduledLayout&& layout)
+void LayoutContainer::add(ScheduledLayout&& layout)
 {
-    m_layoutList.emplace_back(std::move(layout));
+    m_list.emplace_back(std::move(layout));
 }
 
 void LayoutContainer::clear()
 {
-    m_layoutList.clear();
+    m_list.clear();
 }
 
 size_t LayoutContainer::size() const
 {
-    return m_layoutList.size();
+    return m_list.size();
 }
 
 LayoutContainer::ConstIterator LayoutContainer::begin() const
 {
-    return m_layoutList.begin();
+    return m_list.begin();
 }
 
 LayoutContainer::ConstIterator LayoutContainer::end() const
 {
-    return m_layoutList.end();
+    return m_list.end();
 }

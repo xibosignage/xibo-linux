@@ -10,7 +10,7 @@
 class MainLoop;
 class XmdsRequestSender;
 class HttpClient;
-class XiboLayoutScheduler;
+class LayoutScheduler;
 class FileCacheManager;
 class CollectionInterval;
 class PlayerError;
@@ -20,7 +20,6 @@ class MainWindowController;
 class MainWindow;
 class XiboWebServer;
 class LayoutsManager;
-class ScheduleSerializer;
 
 class XiboApp
 {
@@ -54,8 +53,7 @@ private:
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
-    std::unique_ptr<XiboLayoutScheduler> m_scheduler;
-    std::unique_ptr<ScheduleSerializer> m_scheduleSerializer;
+    std::unique_ptr<LayoutScheduler> m_scheduler;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;

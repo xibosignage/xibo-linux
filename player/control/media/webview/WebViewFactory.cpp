@@ -16,9 +16,9 @@ const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 
 std::unique_ptr<IMedia> WebViewFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    int width = std::stoi(options.at(ResourcesXlf::Media::Width));
-    int height = std::stoi(options.at(ResourcesXlf::Media::Height));
-    auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(ResourcesXlf::WebView::Transparency)));
+    int width = std::stoi(options.at(XlfResources::Media::Width));
+    int height = std::stoi(options.at(XlfResources::Media::Height));
+    auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(XlfResources::WebView::Transparency)));
 
     updateViewPortWidth(baseOptions.uri, width);
 

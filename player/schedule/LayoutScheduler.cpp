@@ -1,22 +1,27 @@
-#include "XiboLayoutScheduler.hpp"
+#include "LayoutScheduler.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/fs/FileSystem.hpp"
 #include "common/DateTimeProvider.hpp"
 #include "utils/Resources.hpp"
 
-void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
+void LayoutScheduler::scheduleFrom(const FilePath& filePath)
 {
-    if(schedule != m_schedule)
+    m_filePath = filePath;
+    m_schedule.loadFrom(m_filePath);
+}
+
+void LayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
+{
+    if(m_schedule != schedule)
     {
         m_schedule = std::move(schedule);
-//        FileSystem::writeToFile(m_path, scheduleXml);
+        m_schedule.saveTo(m_filePath);
 
         m_scheduleUpdated.emit(m_schedule);
     }
 }
 
-int XiboLayoutScheduler::nextLayoutId()
+int LayoutScheduler::nextLayoutId()
 {
     m_currentLayoutId = nextScheduledLayoutId();
 
@@ -29,7 +34,7 @@ int XiboLayoutScheduler::nextLayoutId()
     return m_currentLayoutId;
 }
 
-std::vector<int> XiboLayoutScheduler::nextOverlayLayoutsIds()
+std::vector<int> LayoutScheduler::nextOverlayLayoutsIds()
 {
     std::vector<int> overlayLayoutsIds;
 
@@ -44,17 +49,17 @@ std::vector<int> XiboLayoutScheduler::nextOverlayLayoutsIds()
     return overlayLayoutsIds;
 }
 
-int XiboLayoutScheduler::currentLayoutId() const
+int LayoutScheduler::currentLayoutId() const
 {
     return m_currentLayoutId;
 }
 
-SignalScheduleAvailable XiboLayoutScheduler::scheduleUpdated()
+SignalScheduleAvailable LayoutScheduler::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
 
-SchedulerStatus XiboLayoutScheduler::status()
+SchedulerStatus LayoutScheduler::status()
 {
     SchedulerStatus status;
 
@@ -68,7 +73,7 @@ SchedulerStatus XiboLayoutScheduler::status()
 }
 
 template<typename LayoutsList>
-void XiboLayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts)
+void LayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts)
 {
     for(auto&& layout : layouts)
     {
@@ -87,7 +92,7 @@ void XiboLayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const
     }
 }
 
-int XiboLayoutScheduler::nextScheduledLayoutId()
+int LayoutScheduler::nextScheduledLayoutId()
 {
     auto&& regularLayouts = m_schedule.regularLayouts;
     for(size_t i = 0; i != regularLayouts.size(); ++i)
@@ -103,7 +108,7 @@ int XiboLayoutScheduler::nextScheduledLayoutId()
     return EmptyLayoutId;
 }
 
-bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
+bool LayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
 {
     auto currentDT = DateTimeProvider::now();
 
@@ -115,7 +120,7 @@ bool XiboLayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) cons
     return false;
 }
 
-bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) const
+bool LayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) const
 {
     for(auto&& dependant : m_schedule.globalDependants)
     {

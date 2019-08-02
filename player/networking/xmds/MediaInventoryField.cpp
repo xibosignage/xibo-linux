@@ -1,6 +1,6 @@
 #include "MediaInventoryField.hpp"
 
-#include "common/Utils.hpp"
+#include "common/Parsing.hpp"
 #include <boost/property_tree/ptree.hpp>
 
 Field<MediaInventoryItems>::Field(std::string_view name) : m_fieldName(name)
@@ -50,5 +50,5 @@ std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)
         fileAttrs.put("lastChecked", item.lastChecked());
     }
 
-    return Utils::xmlTreeToEscapedString(root);
+    return Parsing::xmlTreeToEscapedString(root);
 }

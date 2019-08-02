@@ -27,7 +27,7 @@ void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& se
                  settings.modifiedLayoutsEnabled);
 }
 
-void PlayerSettingsSerializer::loadFrom(const xml_node& node, PlayerSettings& settings)
+void PlayerSettingsSerializer::loadFrom(const ptree_node& node, PlayerSettings& settings)
 {
     namespace Settings = XmdsResources::RegisterDisplay::Settings;
 

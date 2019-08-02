@@ -3,6 +3,8 @@
 #include <string_view>
 #include <string>
 
+#include "common/Parsing.hpp"
+
 namespace XmdsResources
 {
     namespace GetResource
@@ -14,7 +16,6 @@ namespace XmdsResources
 
     namespace Schedule
     {
-        const std::string Attrs = "<xmlattr>";
         const std::string_view Name = "Schedule";
 
         const std::string ScheduleXml = "ScheduleXml";
@@ -25,15 +26,13 @@ namespace XmdsResources
         const std::string OverlayLayout = "overlay";
         const std::string GlobalDependants = "dependants";
 
-        namespace LayoutAttrs
-        {
-            const std::string ScheduleId = "scheduleid";
-            const std::string Id = "file";
-            const std::string Priority = "priority";
-            const std::string StartDT = "fromdt";
-            const std::string EndDT = "todt";
-            const std::string Dependants = "dependents";
-        }
+        const std::string Generated = Parsing::xmlAttr("generated");
+        const std::string ScheduleId = Parsing::xmlAttr("scheduleid");
+        const std::string Id = Parsing::xmlAttr("file");
+        const std::string Priority = Parsing::xmlAttr("priority");
+        const std::string StartDT = Parsing::xmlAttr("fromdt");
+        const std::string EndDT = Parsing::xmlAttr("todt");
+        const std::string LocalDependants = "dependents";
     }
 
     namespace RegisterDisplay

@@ -1,7 +1,5 @@
 #include "RegisterDisplay.hpp"
-
 #include "Resources.hpp"
-#include "common/Utils.hpp"
 
 namespace Resources = XmdsResources::RegisterDisplay;
 
@@ -28,10 +26,10 @@ Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string&
 {
 }
 
-RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::doParse(const xml_node& node)
+RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::doParse(const ptree_node& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
-    auto displayNode = Utils::parseXmlFromString(activationMessage).get_child(Resources::Display);
+    auto displayNode = Parsing::xmlFromString(activationMessage).get_child(Resources::Display);
     auto attrs = displayNode.get_child(Resources::DisplayAttrs);
 
     RegisterDisplay::Result result;

@@ -19,8 +19,7 @@
 #include "managers/FileCacheManager.hpp"
 #include "managers/XmrManager.hpp"
 
-#include "schedule/ScheduleSerializer.hpp"
-#include "schedule/XiboLayoutScheduler.hpp"
+#include "schedule/LayoutScheduler.hpp"
 
 #include "networking/WebServer.hpp"
 #include "networking/HttpClient.hpp"
@@ -73,8 +72,7 @@ void XiboApp::registerVideoSink()
 
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_scheduler(std::make_unique<XiboLayoutScheduler>()),
-    m_scheduleSerializer(std::make_unique<ScheduleSerializer>()),
+    m_scheduler(std::make_unique<LayoutScheduler>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_xmrManager(std::make_unique<XmrManager>()),
     m_webserver(std::make_shared<XiboWebServer>()),
@@ -87,9 +85,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
-    FilePath scheduleFile{ProjectResources::configDirectory() / DefaultScheduleFile};
-    m_scheduler->reloadSchedule(m_scheduleSerializer->parseSchedule(scheduleFile));
-    m_fileManager->loadCache(Resources::directory() / DefaultCacheFile);
+    m_scheduler->scheduleFrom(ProjectResources::scheduleFile());
+    m_fileManager->cacheFrom(ProjectResources::cacheFile());
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());
@@ -207,7 +204,6 @@ GeneralInfo XiboApp::collectGeneralInfo()
     return info;
 }
 
-
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {
     auto interval = std::make_unique<CollectionInterval>(xmdsManager);
@@ -215,7 +211,9 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateAndApplySettings));
     interval->scheduleUpdated().connect([this](const Schedule::Result& result){
-        m_scheduler->reloadSchedule(m_scheduleSerializer->parseSchedule(result.scheduleXml));
+        LayoutSchedule schedule;
+        schedule.loadFrom(result.scheduleXml);
+        m_scheduler->reloadSchedule(std::move(schedule));
     });
 
     return interval;

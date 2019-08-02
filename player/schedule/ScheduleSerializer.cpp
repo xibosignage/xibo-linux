@@ -2,7 +2,7 @@
 
 #include "networking/xmds/Resources.hpp"
 #include "common/fs/FilePath.hpp"
-#include "common/Utils.hpp"
+#include "common/Parsing.hpp"
 #include "common/DateTimeProvider.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
@@ -14,11 +14,18 @@ const char* ScheduleParseException::what() const noexcept
     return "Schedule is invalid";
 }
 
-LayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
+void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePath& path)
+{
+    ptree_node root;
+    auto& scheduleNode = root.add_child(Resources::Schedule, {});
+    scheduleNode.put(Resources::Generated, schedule.generatedTime);
+}
+
+LayoutSchedule ScheduleSerializer::scheduleFrom(const FilePath& path)
 {
     try
     {
-        return parseScheduleImpl(Utils::parseXmlFromPath(path));
+        return scheduleFromImpl(Parsing::xmlFromPath(path));
     }
     catch (std::exception&)
     {
@@ -26,11 +33,11 @@ LayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
     }
 }
 
-LayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
+LayoutSchedule ScheduleSerializer::scheduleFrom(const std::string& xmlSchedule)
 {
     try
     {
-        return parseScheduleImpl(Utils::parseXmlFromString(xmlSchedule));
+        return scheduleFromImpl(Parsing::xmlFromString(xmlSchedule));
     }
     catch (std::exception&)
     {
@@ -38,80 +45,72 @@ LayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
     }
 }
 
-LayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node& scheduleXml)
+LayoutSchedule ScheduleSerializer::scheduleFromImpl(const ptree_node& scheduleXml)
 {    
     LayoutSchedule schedule;
-    auto rootNode = scheduleXml.get_child(Resources::Schedule);
-    auto attrs = rootNode.get_child(Resources::Attrs);
+    auto scheduleNode = scheduleXml.get_child(Resources::Schedule);
 
-    schedule.generatedTime = DateTimeProvider::fromString(attrs.get<std::string>("generated"));
+    schedule.generatedTime = DateTimeProvider::fromString(scheduleNode.get<std::string>(Resources::Generated));
 
-    for(auto [name, node] : rootNode)
+    for(auto [name, node] : scheduleNode)
     {
         if(name == Resources::Layout)
-            schedule.regularLayouts.emplace_back(parseScheduledLayout(node));
+            schedule.regularLayouts.emplace_back(scheduledLayoutFrom(node));
         else if(name == Resources::DefaultLayout)
-            schedule.defaultLayout = parseDefaultLayout(node);
+            schedule.defaultLayout = defaultLayoutFrom(node);
         else if(name == Resources::Overlays)
-            schedule.overlayLayouts = parseOverlayLayouts(node);
+            schedule.overlayLayouts = overlayLayoutsFrom(node);
         else if(name == Resources::GlobalDependants)
-            schedule.globalDependants = parseDependants(node);
+            schedule.globalDependants = dependantsFrom(node);
     }
 
     return schedule;
 }
 
-ScheduledLayout ScheduleSerializer::parseScheduledLayout(const xml_node& layoutNode)
+ScheduledLayout ScheduleSerializer::scheduledLayoutFrom(const ptree_node& node)
 {
-    namespace LayoutAttrs = Resources::LayoutAttrs;
-
-    auto attrs = layoutNode.get_child(Resources::Attrs);
     ScheduledLayout layout;
 
-    layout.scheduleId = attrs.get<int>(LayoutAttrs::ScheduleId);
-    layout.id = attrs.get<int>(LayoutAttrs::Id);
-    layout.startDT = DateTimeProvider::fromString(attrs.get<std::string>(LayoutAttrs::StartDT));
-    layout.endDT = DateTimeProvider::fromString(attrs.get<std::string>(LayoutAttrs::EndDT));
-    layout.priority = attrs.get<int>(LayoutAttrs::Priority);
+    layout.scheduleId = node.get<int>(Resources::ScheduleId);
+    layout.id = node.get<int>(Resources::Id);
+    layout.startDT = DateTimeProvider::fromString(node.get<std::string>(Resources::StartDT));
+    layout.endDT = DateTimeProvider::fromString(node.get<std::string>(Resources::EndDT));
+    layout.priority = node.get<int>(Resources::Priority);
 
-    if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))
+    if(auto dependants = node.get_child_optional(Resources::LocalDependants))
     {
-        layout.dependants = parseDependants(dependants.value());
+        layout.dependants = dependantsFrom(dependants.value());
     }
 
     return layout;
 }
 
-DefaultScheduledLayout ScheduleSerializer::parseDefaultLayout(const xml_node& layoutNode)
+DefaultScheduledLayout ScheduleSerializer::defaultLayoutFrom(const ptree_node& node)
 {
-    namespace LayoutAttrs = Resources::LayoutAttrs;
-
-    auto attrs = layoutNode.get_child(Resources::Attrs);
     DefaultScheduledLayout layout;
 
-    layout.id = attrs.get<int>(LayoutAttrs::Id);
-
-    if(auto dependants = layoutNode.get_child_optional(LayoutAttrs::Dependants))
+    layout.id = node.get<int>(Resources::Id);
+    if(auto dependants = node.get_child_optional(Resources::LocalDependants))
     {
-        layout.dependants = parseDependants(dependants.value());
+        layout.dependants = dependantsFrom(dependants.value());
     }
 
     return layout;
 }
 
-std::vector<ScheduledLayout> ScheduleSerializer::parseOverlayLayouts(const xml_node& overlaysNode)
+std::vector<ScheduledLayout> ScheduleSerializer::overlayLayoutsFrom(const ptree_node& overlaysNode)
 {
     std::vector<ScheduledLayout> overlayLayouts;
 
     for(auto [name, node] : overlaysNode)
     {
-        overlayLayouts.emplace_back(parseScheduledLayout(node));
+        overlayLayouts.emplace_back(scheduledLayoutFrom(node));
     }
 
     return overlayLayouts;
 }
 
-std::vector<std::string> ScheduleSerializer::parseDependants(const xml_node& dependantsNode)
+std::vector<std::string> ScheduleSerializer::dependantsFrom(const ptree_node& dependantsNode)
 {
     std::vector<std::string> dependants;
 

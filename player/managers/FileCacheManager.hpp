@@ -8,7 +8,7 @@
 class FileCacheManager : private boost::noncopyable
 {
 public:
-    void loadCache(const FilePath& cacheFile);
+    void cacheFrom(const FilePath& cacheFile);
     bool isFileInCache(const std::string& fileName, const std::string& fileHash) const;
     void saveFile(const std::string& fileName, const std::string& fileContent);
 

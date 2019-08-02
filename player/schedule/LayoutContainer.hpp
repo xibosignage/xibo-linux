@@ -10,7 +10,7 @@ class LayoutContainer
 public:
     using ConstIterator = std::vector<ScheduledLayout>::const_iterator;
 
-    void addLayout(ScheduledLayout&& layout);
+    void add(ScheduledLayout&& layout);
     void clear();
 
     size_t size() const;
@@ -19,7 +19,7 @@ public:
     ConstIterator end() const;
 
 protected:
-    std::vector<ScheduledLayout> m_layoutList;
+    std::vector<ScheduledLayout> m_list;
 
 };
 
@@ -27,46 +27,46 @@ template<typename Base>
 class SequentialLayoutList : public Base
 {
 public:
-    ScheduledLayout nextLayout() const
+    ScheduledLayout next() const
     {
-        size_t layoutIndex = m_nextLayoutIndex;
+        size_t currentIndex = m_nextIndex;
 
-        m_nextLayoutIndex = increaseLayoutIndex(layoutIndex);
+        m_nextIndex = increaseIndex(currentIndex);
 
-        return this->m_layoutList[layoutIndex];
+        return this->m_list[currentIndex];
     }
 
 private:
     const size_t FirstItemIndex = 0;
 
-    size_t increaseLayoutIndex(std::size_t index) const
+    size_t increaseIndex(std::size_t index) const
     {
-        size_t nextLayoutIndex = index + 1;
+        size_t nextIndex = index + 1;
 
-        if(nextLayoutIndex >= this->m_layoutList.size())
+        if(nextIndex >= this->m_list.size())
             return FirstItemIndex;
 
-        return nextLayoutIndex;
+        return nextIndex;
     }
 
 private:
-    mutable size_t m_nextLayoutIndex = FirstItemIndex;
+    mutable size_t m_nextIndex = FirstItemIndex;
 
 };
 
-template<typename Base>
-class PriorityLayoutList : public Base
+template<typename BaseList>
+class PriorityLayoutList : public BaseList
 {
 public:
-    void addLayout(ScheduledLayout&& layout)
+    void add(ScheduledLayout&& layout)
     {
         if(layout.priority >= highestPriority())
         {
             if(layout.priority > highestPriority())
             {
-                Base::clear();
+                BaseList::clear();
             }
-            Base::addLayout(std::move(layout));
+            BaseList::add(std::move(layout));
         }
     }
 
@@ -75,10 +75,10 @@ private:
 
     int highestPriority() const
     {
-        if(this->m_layoutList.empty())
+        if(this->m_list.empty())
             return DefaultPriority;
 
-        return this->m_layoutList.front().priority;
+        return this->m_list.front().priority;
     }
 };
 

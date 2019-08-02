@@ -19,20 +19,20 @@ const int NativeModeid = 1;
 const std::regex DurationRegex("DURATION=([0-9]+)");
 const std::string DefaultWebviewExtension = ".html";
 
-int WebViewParser::durationFrom(const xml_node& node)
+int WebViewParser::durationFrom(const ptree_node& node)
 {
     auto baseDuration = MediaParser::durationFrom(node);
     return parseDuration(uriFrom(node).path()).value_or(baseDuration);
 }
 
-ExtraOptions WebViewParser::parseExtraOptionsImpl(const xml_node& node)
+ExtraOptions WebViewParser::parseExtraOptionsImpl(const ptree_node& node)
 {
-    auto transparency = node.get<bool>(ResourcesXlf::WebView::Transparency, DefaultTransparency);
-    auto mode = node.get<int>(ResourcesXlf::WebView::ModeId, DefaultWebviewMode);
+    auto transparency = node.get<bool>(XlfResources::WebView::Transparency, DefaultTransparency);
+    auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
     return {
-        {ResourcesXlf::WebView::Transparency, std::to_string(transparency)},
-        {ResourcesXlf::WebView::ModeId, std::to_string(mode)}
+        {XlfResources::WebView::Transparency, std::to_string(transparency)},
+        {XlfResources::WebView::ModeId, std::to_string(mode)}
     };
 }
 
@@ -53,9 +53,9 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
     return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
 }
 
-Uri WebViewParser::uriFrom(const xml_node& node)
+Uri WebViewParser::uriFrom(const ptree_node& node)
 {
-    auto mode = node.get<int>(ResourcesXlf::WebView::ModeId, DefaultWebviewMode);
+    auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
     if(mode != NativeModeid)
     {
@@ -64,7 +64,7 @@ Uri WebViewParser::uriFrom(const xml_node& node)
     }
     else
     {
-        auto uri = node.get<std::string>(ResourcesXlf::Media::Uri);
+        auto uri = node.get<std::string>(XlfResources::Media::Uri);
         return Uri{removeEscapedSymbolsFromUri(uri)};
     }
 }

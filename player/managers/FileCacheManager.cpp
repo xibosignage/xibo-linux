@@ -8,7 +8,7 @@
 
 using ptree = boost::property_tree::ptree;
 
-void FileCacheManager::loadCache(const FilePath& cacheFile)
+void FileCacheManager::cacheFrom(const FilePath& cacheFile)
 {
     m_cacheFilePath = cacheFile;
     loadFileHashes(cacheFile);
