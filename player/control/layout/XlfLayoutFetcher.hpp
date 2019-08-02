@@ -12,10 +12,10 @@
 #include "utils/Resources.hpp"
 
 template<typename BuilderType>
-class XlfLayoutFetcher
+class XlfLayoutLoader
 {
 public:
-    static std::unique_ptr<IMainLayout> fetch(int layoutId)
+    static std::unique_ptr<IMainLayout> loadBy(int layoutId)
     {
         auto rootNode = Utils::parseXmlFromPath(getXlfPath(layoutId));
         auto parsedLayout = parseLayoutFromNode(rootNode);
@@ -46,5 +46,5 @@ private:
     }
 };
 
-using XlfMainLayoutFetcher = XlfLayoutFetcher<MainLayoutBuilder>;
-using XlfOverlayLayoutFetcher = XlfLayoutFetcher<OverlayLayoutBuilder>;
+using XlfMainLayoutLoader = XlfLayoutLoader<MainLayoutBuilder>;
+using XlfOverlayLayoutLoader = XlfLayoutLoader<OverlayLayoutBuilder>;

@@ -6,7 +6,7 @@ template<typename T>
 class Field
 {
 public:
-    explicit Field(std::string_view name) : m_fieldName(name)
+    explicit Field(std::string_view name) : m_fieldName(name), m_value{}
     {
     }
 

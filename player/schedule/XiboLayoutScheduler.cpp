@@ -7,7 +7,13 @@
 
 void XiboLayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-    m_schedule = std::move(schedule);
+    if(schedule != m_schedule)
+    {
+        m_schedule = std::move(schedule);
+//        FileSystem::writeToFile(m_path, scheduleXml);
+
+        m_scheduleUpdated.emit(m_schedule);
+    }
 }
 
 int XiboLayoutScheduler::nextLayoutId()
@@ -41,6 +47,11 @@ std::vector<int> XiboLayoutScheduler::nextOverlayLayoutsIds()
 int XiboLayoutScheduler::currentLayoutId() const
 {
     return m_currentLayoutId;
+}
+
+SignalScheduleAvailable XiboLayoutScheduler::scheduleUpdated()
+{
+    return m_scheduleUpdated;
 }
 
 SchedulerStatus XiboLayoutScheduler::status()
@@ -108,7 +119,7 @@ bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependan
 {
     for(auto&& dependant : m_schedule.globalDependants)
     {
-        if(!FileSystem::exists(Resources::directory() / dependant))
+//        if(!FileSystem::exists(Resources::directory() / dependant))
         {
             return false;
         }
@@ -116,7 +127,7 @@ bool XiboLayoutScheduler::isLayoutValid(const std::vector<std::string>& dependan
 
     for(auto&& dependant : dependants)
     {
-        if(!FileSystem::exists(Resources::directory() / dependant))
+//        if(!FileSystem::exists(Resources::directory() / dependant))
         {
             return false;
         }

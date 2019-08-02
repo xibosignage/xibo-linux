@@ -18,9 +18,9 @@ class ScreenShoter;
 class XmrManager;
 class MainWindowController;
 class MainWindow;
-class ScheduleManager;
 class XiboWebServer;
 class LayoutsManager;
+class ScheduleSerializer;
 
 class XiboApp
 {
@@ -55,6 +55,7 @@ private:
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
     std::unique_ptr<XiboLayoutScheduler> m_scheduler;
+    std::unique_ptr<ScheduleSerializer> m_scheduleSerializer;
     std::unique_ptr<FileCacheManager> m_fileManager;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
@@ -62,7 +63,6 @@ private:
     std::unique_ptr<XmrManager> m_xmrManager;
     std::shared_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<MainWindowController> m_windowController;
-    std::unique_ptr<ScheduleManager> m_scheduleManager;
     std::shared_ptr<XiboWebServer> m_webserver;
     std::unique_ptr<LayoutsManager> m_layoutsManager;
     CmsSettings m_cmsSettings;

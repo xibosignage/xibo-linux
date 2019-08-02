@@ -20,12 +20,12 @@ void LayoutsManager::fetchAllLayouts()
     fetchOverlays(m_scheduler.nextOverlayLayoutsIds());
 }
 
-MainLayoutFetched& LayoutsManager::mainLayoutFetched()
+MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
 {
     return m_mainLayoutFetched;
 }
 
-OverlaysFetched& LayoutsManager::overlaysFetched()
+OverlaysLoaded& LayoutsManager::overlaysFetched()
 {
     return m_overlaysFetched;
 }
@@ -34,7 +34,7 @@ void LayoutsManager::fetchMainLayout(int layoutId)
 {
     if(layoutId != EmptyLayoutId)
     {
-        m_mainLayout = createLayout<XlfMainLayoutFetcher>(layoutId);
+        m_mainLayout = createLayout<XlfMainLayoutLoader>(layoutId);
         m_mainLayoutFetched.emit(m_mainLayout->view());
     }
     else
@@ -53,7 +53,7 @@ void LayoutsManager::fetchOverlays(std::vector<int> layoutsId)
 
     for(int id : layoutsId)
     {
-        auto overlayLayout = createLayout<XlfOverlayLayoutFetcher>(id);
+        auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
         overlays.emplace_back(overlayLayout->view());
         m_overlayLayouts.emplace(id, std::move(overlayLayout));
     }
@@ -61,15 +61,15 @@ void LayoutsManager::fetchOverlays(std::vector<int> layoutsId)
     m_overlaysFetched.emit(overlays);
 }
 
-template<typename LayoutFetcher>
+template<typename LayoutLoader>
 std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 {
-    auto layout = LayoutFetcher{}.fetch(layoutId);
+    auto layout = LayoutLoader::loadBy(layoutId);
 
     layout->expired().connect([this, layoutId](){
         Log::trace("Layout {} expired", layoutId);
 
-        if constexpr(std::is_same_v<LayoutFetcher, XlfMainLayoutFetcher>)
+        if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
         {
             fetchMainLayout(m_scheduler.nextLayoutId());
         }

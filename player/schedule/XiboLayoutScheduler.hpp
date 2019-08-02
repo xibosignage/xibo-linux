@@ -5,6 +5,9 @@
 
 #include <memory>
 #include <vector>
+#include <sigc++/signal.h>
+
+using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
 
 class XiboLayoutScheduler
 {
@@ -14,6 +17,7 @@ public:
     std::vector<int> nextOverlayLayoutsIds();
     int currentLayoutId() const;
 
+    SignalScheduleAvailable scheduleUpdated();
     SchedulerStatus status();
 
 private:
@@ -28,6 +32,7 @@ private:
 
 private:
     LayoutSchedule m_schedule;
+    SignalScheduleAvailable m_scheduleUpdated;
     int m_currentLayoutId = EmptyLayoutId;
 
 };

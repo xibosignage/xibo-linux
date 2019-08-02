@@ -21,7 +21,6 @@
 #include "managers/XmrManager.hpp"
 
 #include "schedule/ScheduleSerializer.hpp"
-#include "schedule/ScheduleManager.hpp"
 #include "schedule/XiboLayoutScheduler.hpp"
 
 #include "networking/WebServer.hpp"
@@ -76,9 +75,9 @@ void XiboApp::registerVideoSink()
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
     m_scheduler(std::make_unique<XiboLayoutScheduler>()),
+    m_scheduleSerializer(std::make_unique<ScheduleSerializer>()),
     m_fileManager(std::make_unique<FileCacheManager>()),
     m_xmrManager(std::make_unique<XmrManager>()),
-    m_scheduleManager(std::make_unique<ScheduleManager>(std::make_unique<ScheduleSerializer>())),
     m_webserver(std::make_shared<XiboWebServer>()),
     m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
 {
@@ -87,15 +86,15 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_cmsSettings.loadFrom(ProjectResources::cmsSettingsFile());
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
-    Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath()});
+    Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
-    m_scheduleManager->load(ProjectResources::configDirectory() / DefaultScheduleFile);
-    m_scheduler->reloadSchedule(m_scheduleManager->schedule());
+    FilePath scheduleFile{ProjectResources::configDirectory() / DefaultScheduleFile};
+    m_scheduler->reloadSchedule(m_scheduleSerializer->parseSchedule(scheduleFile));
     m_fileManager->loadCache(Resources::directory() / DefaultCacheFile);
     m_webserver->setRootDirectory(Resources::directory());
-    m_webserver->run(m_playerSettings.embeddedServerPort());
+    m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());
-    HttpClient::instance().setProxyServer(m_cmsSettings.domain(), m_cmsSettings.username(), m_cmsSettings.password());
+    HttpClient::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
     setupXmrManager();
 
@@ -180,7 +179,7 @@ int XiboApp::run()
     });
 
     m_screenShoter = std::make_unique<ScreenShoter>(*m_mainWindow);
-    m_xmdsManager = std::make_unique<XmdsRequestSender>(m_cmsSettings.cmsAddress(), m_cmsSettings.key(), m_cmsSettings.displayId());
+    m_xmdsManager = std::make_unique<XmdsRequestSender>(m_cmsSettings.cmsAddress, m_cmsSettings.key, m_cmsSettings.displayId);
     m_collectionInterval = createCollectionInterval(*m_xmdsManager);
 
     applyPlayerSettings(m_playerSettings);
@@ -198,12 +197,12 @@ GeneralInfo XiboApp::collectGeneralInfo()
     GeneralInfo info;
 
     info.currentDT = DateTimeProvider::now();
-    info.cmsAddress = m_cmsSettings.cmsAddress();
-    info.resourcesPath = m_cmsSettings.resourcesPath();
+    info.cmsAddress = m_cmsSettings.cmsAddress;
+    info.resourcesPath = m_cmsSettings.resourcesPath;
     info.codeVersion = ProjectResources::codeVersion();
     info.projectVersion = ProjectResources::version();
-    info.screenShotInterval = m_playerSettings.collectInterval();
-    info.displayName = m_playerSettings.displayName();
+    info.screenShotInterval = m_playerSettings.collectInterval;
+    info.displayName = m_playerSettings.displayName;
     info.windowWidth = m_mainWindow->width();
     info.windowHeight = m_mainWindow->height();
 
@@ -218,8 +217,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateAndApplySettings));
     interval->scheduleUpdated().connect([this](const Schedule::Result& result){
-        m_scheduleManager->update(result.scheduleXml);
-        m_scheduler->reloadSchedule(m_scheduleManager->schedule());
+        m_scheduler->reloadSchedule(m_scheduleSerializer->parseSchedule(result.scheduleXml));
     });
 
     return interval;
@@ -250,10 +248,11 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
-    Log::logger()->setLevel(settings.logLevel());
-    m_collectionInterval->updateInterval(settings.collectInterval());
-    m_xmrManager->connect(settings.xmrNetworkAddress());
-    m_windowController->updateWindowDimensions(settings.dimensions());
+    Log::logger()->setLevel(settings.logLevel);
+    m_collectionInterval->updateInterval(settings.collectInterval);
+    m_xmrManager->connect(settings.xmrNetworkAddress);
+    PlayerSettings::Dimensions dimensions{settings.width, settings.height, settings.x, settings.y};
+    m_windowController->updateWindowDimensions(dimensions);
 
     Log::debug("Player settings updated");
 }

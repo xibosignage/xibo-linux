@@ -14,6 +14,7 @@ std::unique_ptr<IMainLayout> BaseLayoutBuilder::build(const ParsedLayout& parsed
 
     return layout;
 }
+
 void BaseLayoutBuilder::addRegions(IMainLayout& layout, const std::vector<ParsedRegion>& regions)
 {
     for(auto&& parsedRegion : regions)

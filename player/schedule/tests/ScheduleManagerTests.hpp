@@ -5,17 +5,16 @@
 #include "common/fs/FileSystemAdaptor.hpp"
 #include "common/fs/FileSystem.hpp"
 
-#include "mocks/FakeScheduleSerializer.hpp"
 #include "testutils/FakeFileSystemAdaptor.hpp"
 
-class ScheduleManager;
+class XiboLayoutScheduler;
 
 class ScheduleManagerTests : public testing::Test
 {
 public:
-    std::unique_ptr<ScheduleManager> construct()
+    std::unique_ptr<XiboLayoutScheduler> construct()
     {
-        return std::make_unique<ScheduleManager>(std::unique_ptr<FakeScheduleSerializer>(serializer));
+        return std::make_unique<XiboLayoutScheduler>();
     }
 
 protected:
@@ -26,7 +25,6 @@ protected:
 
     void SetUp() override
     {
-        serializer = new FakeScheduleSerializer;
         fs = new FakeFileSystemAdaptor;
 
         FileSystem::setAdaptor(std::unique_ptr<FakeFileSystemAdaptor>(fs));
@@ -34,11 +32,9 @@ protected:
 
     void TearDown() override
     {
-        serializer = nullptr;
         fs = nullptr;
     }
 
     FakeFileSystemAdaptor* fs = nullptr;
-    FakeScheduleSerializer* serializer = nullptr;
 
 };

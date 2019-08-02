@@ -3,17 +3,19 @@
 #include "../Field.hpp"
 #include "../fs/FilePath.hpp"
 #include "../fs/FileSystem.hpp"
+#include "constants.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
-class Settings
+template<typename Settings>
+class SettingsSerializer
 {
 public:
-    virtual void loadFrom(const FilePath& file) = 0;
-    virtual void saveTo(const FilePath& file) = 0;
+    virtual void loadFrom(const FilePath& file, Settings& settings) = 0;
+    virtual void saveTo(const FilePath& file, const Settings& settings) = 0;
 
 protected:
-    ~Settings() = default;
+    ~SettingsSerializer() = default;
 
     template<typename... Args>
     void loadFromImpl(const FilePath& file, Field<Args>&... fields)

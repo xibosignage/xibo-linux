@@ -61,8 +61,4 @@ public:
 protected:
     RegisterDisplay::Result doParse(const xml_node& node) override;
 
-private:
-    void fillPlayerSettings(PlayerSettings& settings, const xml_node& display);
-    LoggingLevel toLogLevelEnum(const std::string& level);
-
 };

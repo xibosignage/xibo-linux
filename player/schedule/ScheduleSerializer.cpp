@@ -18,10 +18,7 @@ LayoutSchedule ScheduleSerializer::parseSchedule(const FilePath& path)
 {
     try
     {
-        boost::property_tree::ptree tree;
-        boost::property_tree::read_xml(path.string(), tree);
-
-        return parseScheduleImpl(tree);
+        return parseScheduleImpl(Utils::parseXmlFromPath(path));
     }
     catch (std::exception&)
     {
@@ -41,7 +38,7 @@ LayoutSchedule ScheduleSerializer::parseSchedule(const std::string& xmlSchedule)
     }
 }
 
-LayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node &scheduleXml)
+LayoutSchedule ScheduleSerializer::parseScheduleImpl(const xml_node& scheduleXml)
 {    
     LayoutSchedule schedule;
     auto rootNode = scheduleXml.get_child(Resources::Schedule);
