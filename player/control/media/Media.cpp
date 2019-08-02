@@ -12,7 +12,7 @@ Media::Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view) 
 {
 }
 
-void Media::attachMedia(std::unique_ptr<IMedia>&& attachedMedia)
+void Media::attach(std::unique_ptr<IMedia>&& attachedMedia)
 {
     m_attachedMedia = std::move(attachedMedia);
 }

@@ -3,9 +3,9 @@
 #include "utils/Resources.hpp"
 #include "utils/Managers.hpp"
 
-#include "networking/WebServer.hpp"
+#include "networking/WebServer.hpp" // FIXME remove dependency
 
-#include "control/media/creators/MediaResources.hpp"
+#include "control/media/MediaResources.hpp"
 #include "control/media/webview/WebViewResources.hpp"
 
 #include <regex>
@@ -19,16 +19,16 @@ const int NativeModeid = 1;
 const std::regex DurationRegex("DURATION=([0-9]+)");
 const std::string DefaultWebviewExtension = ".html";
 
-int WebViewParser::duration()
+int WebViewParser::durationFrom(const xml_node& node)
 {
-    auto baseDuration = MediaParser::duration();
-    return parseDuration(uri().path()).value_or(baseDuration);
+    auto baseDuration = MediaParser::durationFrom(node);
+    return parseDuration(uriFrom(node).path()).value_or(baseDuration);
 }
 
-ExtraOptions WebViewParser::parseAdditonalOptions(const xml_node& node)
+ExtraOptions WebViewParser::parseExtraOptionsImpl(const xml_node& node)
 {
-    auto transparency = node.get<bool>(ResourcesXlf::option(ResourcesXlf::WebView::Transparency), DefaultTransparency);
-    auto mode = node.get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DefaultWebviewMode);
+    auto transparency = node.get<bool>(ResourcesXlf::WebView::Transparency, DefaultTransparency);
+    auto mode = node.get<int>(ResourcesXlf::WebView::ModeId, DefaultWebviewMode);
 
     return {
         {ResourcesXlf::WebView::Transparency, std::to_string(transparency)},
@@ -53,18 +53,18 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
     return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
 }
 
-Uri WebViewParser::uri()
+Uri WebViewParser::uriFrom(const xml_node& node)
 {
-    auto mode = node().get<int>(ResourcesXlf::option(ResourcesXlf::WebView::ModeId), DefaultWebviewMode);
+    auto mode = node.get<int>(ResourcesXlf::WebView::ModeId, DefaultWebviewMode);
 
     if(mode != NativeModeid)
     {
-        auto fileName = std::to_string(id()) + DefaultWebviewExtension;
+        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
         return Uri{Managers::webserver().address() + fileName};
     }
     else
     {
-        auto uri = node().get<std::string>(ResourcesXlf::option(ResourcesXlf::Media::Uri));
+        auto uri = node.get<std::string>(ResourcesXlf::Media::Uri);
         return Uri{removeEscapedSymbolsFromUri(uri)};
     }
 }

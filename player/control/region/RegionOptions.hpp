@@ -1,9 +1,5 @@
 #pragma once
 
-#include <vector>
-
-#include "control/media/creators/ParsedMedia.hpp"
-
 struct RegionOptions
 {
     enum class Loop
@@ -19,10 +15,4 @@ struct RegionOptions
     int top;
     int zindex;
     Loop loop;
-};
-
-struct ParsedRegion
-{
-    RegionOptions options;
-    std::vector<ParsedMedia> media;
 };

@@ -2,11 +2,10 @@
 
 #include "IRegion.hpp"
 #include "IRegionView.hpp"
-#include "ParsedRegion.hpp"
+#include "RegionOptions.hpp"
 
 #include "control/media/IMedia.hpp"
 
-#include <vector>
 #include <boost/noncopyable.hpp>
 
 class Region : public IRegion, private boost::noncopyable

@@ -4,11 +4,11 @@
 
 namespace ResourcesXlf::Region
 {
-    const std::string Id = "id";
-    const std::string Width = "width";
-    const std::string Height = "height";
-    const std::string Left = "left";
-    const std::string Top = "top";
-    const std::string Zindex = "zindex";
-    const std::string Loop = "loop";
+    const std::string Id = ResourcesXlf::attr("id");
+    const std::string Width = ResourcesXlf::attr("width");
+    const std::string Height = ResourcesXlf::attr("height");
+    const std::string Left = ResourcesXlf::attr("left");
+    const std::string Top = ResourcesXlf::attr("top");
+    const std::string Zindex = ResourcesXlf::attr("zindex");
+    const std::string Loop = ResourcesXlf::option("loop");
 }

@@ -4,53 +4,32 @@
 #include <map>
 #include <boost/optional/optional.hpp>
 
-template<typename RepoType, typename StoredType, typename Key = std::string>
+template<typename StoredType, typename Key = std::string>
 class Repository
 {
-protected:
-    static boost::optional<StoredType&> get(const Key& key)
+public:
+    boost::optional<StoredType&> get(const Key& key) const
     {
-        if(instance().isInRepo(key))
+        if(isInRepo(key))
         {
-            return instance().getObject(key);
+            return *m_objects.at(key);
         }
 
         return {};
     }
 
-    static void add(const Key& key, std::unique_ptr<StoredType>&& object)
+    void add(const Key& key, std::unique_ptr<StoredType>&& object)
     {
-        instance().addObject(key, std::move(object));
+       m_objects.emplace(key, std::move(object));
     }
 
-    static RepoType& instance()
-    {
-        static RepoType repo;
-        return repo;
-    }
-
-protected:
+//private:
     bool isInRepo(const Key& key) const
     {
         return m_objects.count(key) > 0;
     }
 
-    const StoredType& getObject(const Key& key) const
-    {
-        return *m_objects.at(key);
-    }
-
-    StoredType& getObject(const Key& key)
-    {
-        return *m_objects[key];
-    }
-
-    void addObject(const Key& key, std::unique_ptr<StoredType>&& object)
-    {
-        m_objects.emplace(key, std::move(object));
-    }
-
-private:
+//private:
     std::map<Key, std::unique_ptr<StoredType>> m_objects;
 
 };

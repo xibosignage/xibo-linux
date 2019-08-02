@@ -1,18 +1,28 @@
 #pragma once
 
 #include "constants.hpp"
-#include "ParsedRegion.hpp"
+#include "RegionOptions.hpp"
+#include "control/media/MediaOptions.hpp"
 
 #include <boost/property_tree/ptree.hpp>
+
+class IRegion;
+class IRegionView;
+class IMedia;
 
 class RegionParser
 {
 public: 
-    ParsedRegion parse(const xml_node& node);
+    std::unique_ptr<IRegion> regionFrom(const xml_node& node);
+    RegionOptions optionsFrom(const xml_node& node);
 
 private:
-    std::vector<ParsedMedia> parseMedia(int regionWidth, int regionHeight, const xml_node& node);
-    MediaOptions::Type parseMediaType(const xml_node& node);
+    std::unique_ptr<IRegion> createRegion(const RegionOptions& options, const std::shared_ptr<IRegionView>& view);
+    std::shared_ptr<IRegionView> createView(const RegionOptions& options);
+
+    void addMedia(IRegion& region, const xml_node& node);
+    MediaOptions::Type mediaTypeFrom(const xml_node& node);
+    std::pair<int, int> mediaPositionInRegion(IRegion& region, IMedia& media);
 
 };
 
