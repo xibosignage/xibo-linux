@@ -1,53 +1,92 @@
 #include "MainLayoutParser.hpp"
 #include "MainLayoutResources.hpp"
+#include "MainLayout.hpp"
 
 #include "control/region/RegionParser.hpp"
 #include "control/common/Validators.hpp"
+#include "control/common/Image.hpp"
+#include "control/common/OverlayLayout.hpp"
+
+#include "common/fs/FilePath.hpp"
+#include "utils/ColorToHexConverter.hpp"
 
 const std::string DefaultColor = "#000";
 
-ParsedLayout MainLayoutParser::parse(const xml_node& node)
+std::unique_ptr<IMainLayout> MainLayoutParser::layoutFrom(const xml_node& node)
 {
-    ParsedLayout layout;
+    auto options = optionsFrom(node);
+    auto view = createView(options);
+    auto layout = createLayout(view);
 
-    layout.options.width = node.get<int>(ResourcesXlf::attr(ResourcesXlf::MainLayout::Width));
-    layout.options.height = node.get<int>(ResourcesXlf::attr(ResourcesXlf::MainLayout::Height));
-
-    layout.options.backgroundUri = getUri(node);
-    layout.options.backgroundColor = getColor(node);
-    layout.regions = parseRegions(node);
+    addRegions(*layout, node);
 
     return layout;
 }
 
-Uri MainLayoutParser::getUri(const xml_node& node)
+std::unique_ptr<IMainLayout> MainLayoutParser::createLayout(const std::shared_ptr<IOverlayLayout>& view)
 {
-    auto uri = node.get_optional<std::string>(ResourcesXlf::attr(ResourcesXlf::MainLayout::BackgroundPath));
+    return std::make_unique<MainLayout>(view);
+}
+
+LayoutOptions MainLayoutParser::optionsFrom(const xml_node& node)
+{
+    LayoutOptions options;
+
+    options.width = node.get<int>(ResourcesXlf::MainLayout::Width);
+    options.height = node.get<int>(ResourcesXlf::MainLayout::Height);
+
+    options.backgroundUri = uriFrom(node);
+    options.backgroundColor = colorFrom(node);
+
+    return options;
+}
+
+Uri MainLayoutParser::uriFrom(const xml_node& node)
+{
+    auto uri = node.get_optional<std::string>(ResourcesXlf::MainLayout::BackgroundPath);
 
     return Validators::validateUri(uri);
 }
 
-uint32_t MainLayoutParser::getColor(const xml_node& node)
+uint32_t MainLayoutParser::colorFrom(const xml_node& node)
 {
-    auto color = node.get<std::string>(ResourcesXlf::attr(ResourcesXlf::MainLayout::BackgroundColor));
+    auto color = node.get<std::string>(ResourcesXlf::MainLayout::BackgroundColor);
 
     color = color.empty() ? DefaultColor : color;
 
-    return Validators::validateColor(color);
+    ColorToHexConverter converter;
+    return converter.colorToHex(color);
 }
 
-std::vector<ParsedRegion> MainLayoutParser::parseRegions(const xml_node& node)
+std::shared_ptr<IOverlayLayout> MainLayoutParser::createView(const LayoutOptions& options)
 {
-    std::vector<ParsedRegion> regions;
+    auto view = std::make_shared<OverlayLayout>(options.width, options.height);
 
-    for(auto [nodeName, regionNode] : node)
+    view->setMainChild(createBackground(options));
+
+    return view;
+}
+
+std::shared_ptr<IImage> MainLayoutParser::createBackground(const LayoutOptions& options)
+{
+    auto background = std::make_shared<Image>(options.width, options.height);
+
+    if(options.backgroundUri.isValid())
+        background->loadFromFile(options.backgroundUri.path(), false);
+    else
+        background->setColor(options.backgroundColor);
+
+    return background;
+}
+
+void MainLayoutParser::addRegions(IMainLayout& layout, const xml_node& layoutNode)
+{
+    for(auto [nodeName, node] : layoutNode)
     {
-        if(nodeName == ResourcesXlf::RegionNode)
-        {
-            RegionParser parser;
-            regions.emplace_back(parser.parse(regionNode));
-        }
-    }
+        if(nodeName != ResourcesXlf::RegionNode) continue;
 
-    return regions;
+        RegionParser parser;
+        auto options = parser.optionsFrom(node);
+        layout.addRegion(parser.regionFrom(node), options.left, options.top, options.zindex);
+    }
 }

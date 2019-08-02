@@ -12,8 +12,7 @@
 #include "control/StatusScreenFormatter.hpp"
 #include "control/StatusScreen.hpp"
 #include "control/media/player/video/XiboVideoSink.hpp"
-#include "control/media/creators/MediaParsersRepo.hpp"
-#include "control/media/creators/MediaFactoriesRepo.hpp"
+#include "control/media/MediaCreatorsRepo.hpp"
 #include "control/layout/LayoutsManager.hpp"
 
 #include "managers/CollectionInterval.hpp"
@@ -98,8 +97,7 @@ XiboApp::XiboApp(const std::string& name) :
     RsaManager::instance().load();
     setupXmrManager();
 
-    MediaParsersRepo::init();
-    MediaFactoriesRepo::init();
+    MediaCreatorsRepo::init();
 
     m_mainLoop->setShutdownAction([this](){
         m_layoutsManager.reset();

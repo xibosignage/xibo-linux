@@ -13,7 +13,7 @@ class Media : public IMedia
 public:
     Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view);
 
-    void attachMedia(std::unique_ptr<IMedia>&& attachedMedia) override;
+    void attach(std::unique_ptr<IMedia>&& attachedMedia) override;
     void start() override;
     void stop() override;
 

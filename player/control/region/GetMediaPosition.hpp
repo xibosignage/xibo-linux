@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MediaGeometry.hpp"
+#include "control/media/MediaGeometry.hpp"
 
 #include <utility>
 

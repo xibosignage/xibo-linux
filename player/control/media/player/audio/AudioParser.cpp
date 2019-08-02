@@ -1,31 +1,29 @@
 #include "AudioParser.hpp"
 
 #include "control/media/player/MediaPlayerResources.hpp"
-#include "control/media/creators/MediaResources.hpp"
+#include "control/media/MediaResources.hpp"
 
 #include "control/common/Validators.hpp"
 
 const bool DefaultAudioLooped = false;
 const int DefaultDuration = 0;
 
-ParsedMedia AudioParser::parse(const xml_node& node)
+std::unique_ptr<IMedia> AudioParser::mediaFrom(const xml_node& node)
 {
-    bool isAdditionalNode = node.get_optional<std::string>(ResourcesXlf::attr(ResourcesXlf::Media::Type)) ? false : true;
+    bool isAdditionalNode = node.get_optional<std::string>(ResourcesXlf::Media::Type) ? false : true;
 
     if(isAdditionalNode)
     {
         return parseAdditionalNode(node);
     }
-    else
-    {
-        return MediaParser::parse(node);
-    }
+
+    return MediaParser::mediaFrom(node);
 }
 
-ExtraOptions AudioParser::parseAdditonalOptions(const xml_node& node)
+ExtraOptions AudioParser::parseExtraOptionsImpl(const xml_node& node)
 {
-    auto looped = node.get<bool>(ResourcesXlf::option(ResourcesXlf::Player::Loop), DefaultAudioLooped);
-    auto volume = node.get<int>(ResourcesXlf::option(ResourcesXlf::Player::Volume), MaxVolume);
+    auto looped = node.get<bool>(ResourcesXlf::Player::Loop, DefaultAudioLooped);
+    auto volume = node.get<int>(ResourcesXlf::Player::Volume, MaxVolume);
 
     return {
         {ResourcesXlf::Player::Loop, std::to_string(looped)},
@@ -33,18 +31,18 @@ ExtraOptions AudioParser::parseAdditonalOptions(const xml_node& node)
     };
 }
 
-ParsedMedia AudioParser::parseAdditionalNode(const xml_node& node)
+std::unique_ptr<IMedia> AudioParser::parseAdditionalNode(const xml_node& node)
 {
-    auto uriNode = node.get_child(ResourcesXlf::Media::Uri);
-    auto id = uriNode.get<int>(ResourcesXlf::attr(ResourcesXlf::Player::AudioId));
+    auto uriNode = node.get_child(ResourcesXlf::AudioNode::Uri);
+    auto id = uriNode.get<int>(ResourcesXlf::AudioNode::Id);
     auto uri = Validators::validateUri(uriNode.get_value<std::string>());
     MediaOptions::Type type{ResourcesXlf::Media::AudioType, ResourcesXlf::Media::NativeRender};
 
     ExtraOptions options;
-    auto loop = uriNode.get<bool>(ResourcesXlf::attr(ResourcesXlf::Player::Loop), DefaultAudioLooped);
+    auto loop = uriNode.get<bool>(ResourcesXlf::AudioNode::Loop, DefaultAudioLooped);
     options.emplace(ResourcesXlf::Player::Loop, std::to_string(loop));
-    auto volume = uriNode.get<int>(ResourcesXlf::attr(ResourcesXlf::Player::Volume), MaxVolume);
+    auto volume = uriNode.get<int>(ResourcesXlf::AudioNode::Volume, MaxVolume);
     options.emplace(ResourcesXlf::Player::Volume, std::to_string(volume));
 
-    return ParsedMedia{MediaOptions{type, id, uri, DefaultDuration, {}, {}, {}}, options, nullptr};
+//    return ParsedMedia{MediaOptions{type, id, uri, DefaultDuration, {}, {}, {}}, options, nullptr};
 }

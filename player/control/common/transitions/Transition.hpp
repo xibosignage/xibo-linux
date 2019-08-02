@@ -12,7 +12,7 @@ struct Transition
     {
         Fade,
         Fly
-    } type;
+    };
 
     enum class Direction
     {
@@ -24,7 +24,5 @@ struct Transition
         SW,
         W,
         NW
-    } direction;
-
-    int duration;
+    };
 };

@@ -3,7 +3,8 @@
 #include "WebViewResources.hpp"
 
 #include "control/media/Media.hpp"
-#include "control/region/RegionResources.hpp"
+#include "control/media/MediaResources.hpp"
+
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "utils/Resources.hpp"
@@ -13,10 +14,10 @@
 
 const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 
-std::unique_ptr<IMedia> WebViewFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<IMedia> WebViewFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    int width = std::stoi(options.at(ResourcesXlf::Region::Width));
-    int height = std::stoi(options.at(ResourcesXlf::Region::Height));
+    int width = std::stoi(options.at(ResourcesXlf::Media::Width));
+    int height = std::stoi(options.at(ResourcesXlf::Media::Height));
     auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(ResourcesXlf::WebView::Transparency)));
 
     updateViewPortWidth(baseOptions.uri, width);

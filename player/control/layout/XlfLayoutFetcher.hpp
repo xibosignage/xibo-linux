@@ -2,25 +2,22 @@
 
 #include "constants.hpp"
 
-#include "MainLayoutBuilder.hpp"
-#include "OverlayLayoutBuilder.hpp"
 #include "MainLayoutParser.hpp"
+#include "OverlayLayoutParser.hpp"
 #include "IMainLayout.hpp"
 
 #include "../common/XlfResources.hpp"
 #include "common/Utils.hpp"
 #include "utils/Resources.hpp"
 
-template<typename BuilderType>
+template<typename ParserType>
 class XlfLayoutLoader
 {
 public:
     static std::unique_ptr<IMainLayout> loadBy(int layoutId)
     {
         auto rootNode = Utils::parseXmlFromPath(getXlfPath(layoutId));
-        auto parsedLayout = parseLayoutFromNode(rootNode);
-
-        return buildLayout(parsedLayout);
+        return layoutFrom(rootNode);
     }
 
 private:
@@ -30,21 +27,14 @@ private:
         return Resources::directory() / xlfFile;
     }
 
-    static ParsedLayout parseLayoutFromNode(const xml_node& node)
+    static std::unique_ptr<IMainLayout> layoutFrom(const xml_node& root)
     {
-        auto layoutNode = node.get_child(ResourcesXlf::LayoutNode);
+        auto node = root.get_child(ResourcesXlf::LayoutNode);
 
-        MainLayoutParser parser;
-        return parser.parse(layoutNode);
-    }
-
-    static std::unique_ptr<IMainLayout> buildLayout(const ParsedLayout& parsedLayout)
-    {
-        BuilderType builder;
-
-        return builder.build(parsedLayout);
+        ParserType parser;
+        return parser.layoutFrom(node);
     }
 };
 
-using XlfMainLayoutLoader = XlfLayoutLoader<MainLayoutBuilder>;
-using XlfOverlayLayoutLoader = XlfLayoutLoader<OverlayLayoutBuilder>;
+using XlfMainLayoutLoader = XlfLayoutLoader<MainLayoutParser>;
+using XlfOverlayLayoutLoader = XlfLayoutLoader<OverlayLayoutParser>;

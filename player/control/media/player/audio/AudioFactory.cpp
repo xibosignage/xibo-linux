@@ -6,7 +6,7 @@
 
 #include "constants.hpp"
 
-std::unique_ptr<IMedia> AudioFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<IMedia> AudioFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
     auto playerOptions = createPlayerOptions(baseOptions, options);
 
