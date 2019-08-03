@@ -5,7 +5,7 @@
 
 class FilePath;
 
-struct ScheduleParseException : public std::exception
+struct ScheduleSerializeException : public std::exception
 {
     const char* what() const noexcept override;
 };
@@ -13,15 +13,14 @@ struct ScheduleParseException : public std::exception
 class ScheduleSerializer
 {
 public:
-    LayoutSchedule scheduleFrom(const FilePath& path);
-    LayoutSchedule scheduleFrom(const std::string& xmlSchedule);
     void scheduleTo(const LayoutSchedule& schedule, const FilePath& path);
 
 private:
-    LayoutSchedule scheduleFromImpl(const ptree_node& scheduleXml);
-    ScheduledLayout scheduledLayoutFrom(const ptree_node& layoutNode);
-    DefaultScheduledLayout defaultLayoutFrom(const ptree_node& layoutNode);
-    std::vector<ScheduledLayout> overlayLayoutsFrom(const ptree_node& overlaysNode);
-    std::vector<std::string> dependantsFrom(const ptree_node& dependantsNode);
+    void scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path);
+
+    ptree_node scheduledLayoutNode(const ScheduledLayout& layout);
+    ptree_node overlaysNode(const LayoutList& overlays);
+    ptree_node defaultLayoutNode(const DefaultScheduledLayout& layout);
+    ptree_node dependantsNode(const LayoutDependants& dependants);
 
 };

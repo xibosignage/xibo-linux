@@ -1,6 +1,6 @@
 #include "WebViewParser.hpp"
 
-#include "utils/Resources.hpp"
+#include "common/fs/Resources.hpp"
 #include "utils/Managers.hpp"
 
 #include "networking/WebServer.hpp" // FIXME remove dependency

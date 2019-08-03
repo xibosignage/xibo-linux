@@ -8,7 +8,7 @@
 
 #include "../common/XlfResources.hpp"
 #include "common/Parsing.hpp"
-#include "utils/Resources.hpp"
+#include "common/fs/Resources.hpp"
 
 template<typename ParserType>
 class XlfLayoutLoader

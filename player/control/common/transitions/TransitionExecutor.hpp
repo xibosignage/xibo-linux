@@ -2,7 +2,7 @@
 
 #include "Transition.hpp"
 #include "../IWidget.hpp"
-#include "utils/ITimerProvider.hpp"
+#include "common/dt/ITimerProvider.hpp"
 
 #include <memory>
 

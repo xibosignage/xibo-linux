@@ -10,3 +10,5 @@ using DateTime = boost::posix_time::ptime;
 using Date = boost::gregorian::date;
 using Time = boost::posix_time::time_duration;
 using DateTimeSeconds = boost::posix_time::seconds;
+using DateTimeMinutes = boost::posix_time::minutes;
+using DateTimeHours = boost::posix_time::hours;

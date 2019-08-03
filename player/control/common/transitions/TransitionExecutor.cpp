@@ -1,6 +1,6 @@
 #include "TransitionExecutor.hpp"
 
-#include "utils/TimerProvider.hpp"
+#include "common/dt/TimerProvider.hpp"
 
 TransitionExecutor::TransitionExecutor(Transition::Heading heading, int duration, const std::shared_ptr<IWidget>& media) :
     m_heading(heading), m_duration(duration), m_media(media),

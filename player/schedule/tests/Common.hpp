@@ -32,6 +32,6 @@ const std::string ScheduleXml = R"(<?xml version="1.0"?>
 namespace ScheduleTests
 {
     ScheduledLayout scheduledLayout(int scheduledId, int id, int priority);
-    LayoutSchedule layoutSchedule();
+    LayoutSchedule schedule();
 }
 

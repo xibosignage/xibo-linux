@@ -1,35 +1,31 @@
 #include "FileSystem.hpp"
 #include "FilePath.hpp"
-#include "FileSystemAdaptor.hpp"
 
-std::unique_ptr<IFileSystemAdaptor> FileSystem::fs_ = std::make_unique<FileSystemAdaptor>();
-
-void FileSystem::setAdaptor(std::unique_ptr<IFileSystemAdaptor>&& fs)
-{
-    fs_ = std::move(fs);
-}
+#include <fstream>
 
 bool FileSystem::isRegularFile(const FilePath& path)
 {
-    return fs_->isRegularFile(path);
+    return std::filesystem::is_regular_file(path);
 }
 
 bool FileSystem::exists(const FilePath& path)
 {
-    return fs_->exists(path);
+    return std::filesystem::exists(path);
 }
 
 bool FileSystem::createDirectory(const FilePath& path)
 {
-    return fs_->createDirectory(path);
+    return std::filesystem::create_directory(path);
 }
 
 FilePath FileSystem::currentPath()
 {
-    return fs_->currentPath();
+    return std::filesystem::current_path();
 }
 
 void FileSystem::writeToFile(const FilePath& path, const std::string& content)
 {
-    return fs_->writeToFile(path, content);
+    std::ofstream out(path.string());
+
+    out << content;
 }

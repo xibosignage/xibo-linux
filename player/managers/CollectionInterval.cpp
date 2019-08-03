@@ -4,9 +4,9 @@
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/DateTimeProvider.hpp"
+#include "common/dt/DateTimeProvider.hpp"
 
-#include "utils/TimerProvider.hpp"
+#include "common/dt/TimerProvider.hpp"
 #include "utils/ScreenShoter.hpp"
 #include "utils/Managers.hpp"
 #include "xmlsink/XmlLogsRetriever.hpp"

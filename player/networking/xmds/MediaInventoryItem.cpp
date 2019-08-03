@@ -12,7 +12,7 @@ MediaInventoryItem::MediaInventoryItem(const RegularFile& file, bool downloadCom
 {
     m_type = file.type;
     m_id = file.id;
-    m_md5 = file.md5;
+    m_md5 = file.hash;
 }
 
 MediaInventoryItem::MediaInventoryItem(const ResourceFile& file, bool downloadComplete) :

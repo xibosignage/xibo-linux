@@ -7,9 +7,9 @@
 #include "control/common/Image.hpp"
 #include "control/common/IOverlayLayout.hpp"
 
-#include "schedule/LayoutScheduler.hpp"
+#include "schedule/Scheduler.hpp"
 
-LayoutsManager::LayoutsManager(LayoutScheduler& scheduler) :
+LayoutsManager::LayoutsManager(Scheduler& scheduler) :
     m_scheduler(scheduler)
 {
 }

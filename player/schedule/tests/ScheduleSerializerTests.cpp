@@ -1,38 +1,23 @@
 #include <gtest/gtest.h>
 
 #include "ScheduleSerializer.hpp"
+#include "ScheduleParser.hpp"
 #include "Common.hpp"
-
 #include "common/fs/FilePath.hpp"
-#include "common/DateTimeProvider.hpp"
 
-const std::string SchedulePath = "fakeSchedule.xml";
-const std::string SchedulePathInvalid = "fakeScheduleInvalid.xml";
+const std::string ScheduleWritePath = "fakeScheduleWrite.xml";
 
-TEST(ScheduleSerializer, LoadFromFile)
+TEST(ScheduleSerializer, SaveToInvalidFile)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.scheduleFrom(FilePath{SchedulePath}));
+    ASSERT_THROW(serializer.scheduleTo(ScheduleTests::schedule(), "invalid/path"), ScheduleSerializeException);
 }
 
-TEST(ScheduleSerializer, LoadFromFileInvalid)
+TEST(ScheduleSerializer, SaveToFile)
 {
     ScheduleSerializer serializer;
+    serializer.scheduleTo(ScheduleTests::schedule(), ScheduleWritePath);
 
-    ASSERT_THROW(serializer.scheduleFrom(FilePath{SchedulePathInvalid}), ScheduleParseException);
-}
-
-TEST(ScheduleSerializer, LoadFromString)
-{
-    ScheduleSerializer serializer;
-
-    ASSERT_EQ(ScheduleTests::layoutSchedule(), serializer.scheduleFrom(ScheduleXml));
-}
-
-TEST(ScheduleSerializer, LoadFromStringInvalid)
-{
-    ScheduleSerializer serializer;
-
-    ASSERT_THROW(serializer.scheduleFrom(std::string{"invalid"}), ScheduleParseException);
+    ASSERT_EQ(ScheduleTests::schedule(), ScheduleParser{}.scheduleFrom(FilePath{ScheduleWritePath}));
 }

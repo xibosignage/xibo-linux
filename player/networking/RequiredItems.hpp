@@ -15,7 +15,7 @@ struct RegularFile
 {
     int id;
     size_t size;
-    std::string md5;
+    std::string hash;
     std::string url;
     std::string name;
     std::string type;
@@ -32,7 +32,7 @@ struct ResourceFile
 inline std::ostream& operator<<(std::ostream& out, const RegularFile& file)
 {
     out << "FileType: " << file.type << " ID: " << file.id << " Size: " << file.size << std::endl;
-    out << "MD5: " << file.md5 << " FileName: " << file.name << " DownloadType: " << static_cast<int>(file.downloadType);
+    out << "MD5: " << file.hash << " FileName: " << file.name << " DownloadType: " << static_cast<int>(file.downloadType);
     return out;
 }
 

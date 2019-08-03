@@ -1,27 +1,25 @@
-#include "LayoutScheduler.hpp"
+#include "Scheduler.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/DateTimeProvider.hpp"
-#include "utils/Resources.hpp"
+#include "common/dt/DateTimeProvider.hpp"
+#include "common/fs/FileCache.hpp"
+#include "common/fs/Resources.hpp"
 
-void LayoutScheduler::scheduleFrom(const FilePath& filePath)
+Scheduler::Scheduler(const FileCache& fileCache) :
+    m_fileCache(fileCache)
 {
-    m_filePath = filePath;
-    m_schedule.loadFrom(m_filePath);
 }
 
-void LayoutScheduler::reloadSchedule(LayoutSchedule&& schedule)
+void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
     if(m_schedule != schedule)
     {
         m_schedule = std::move(schedule);
-        m_schedule.saveTo(m_filePath);
-
         m_scheduleUpdated.emit(m_schedule);
     }
 }
 
-int LayoutScheduler::nextLayoutId()
+int Scheduler::nextLayoutId()
 {
     m_currentLayoutId = nextScheduledLayoutId();
 
@@ -34,7 +32,7 @@ int LayoutScheduler::nextLayoutId()
     return m_currentLayoutId;
 }
 
-std::vector<int> LayoutScheduler::nextOverlayLayoutsIds()
+std::vector<int> Scheduler::nextOverlayLayoutsIds()
 {
     std::vector<int> overlayLayoutsIds;
 
@@ -49,17 +47,17 @@ std::vector<int> LayoutScheduler::nextOverlayLayoutsIds()
     return overlayLayoutsIds;
 }
 
-int LayoutScheduler::currentLayoutId() const
+int Scheduler::currentLayoutId() const
 {
     return m_currentLayoutId;
 }
 
-SignalScheduleAvailable LayoutScheduler::scheduleUpdated()
+SignalScheduleAvailable Scheduler::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
 
-SchedulerStatus LayoutScheduler::status()
+SchedulerStatus Scheduler::status()
 {
     SchedulerStatus status;
 
@@ -73,7 +71,7 @@ SchedulerStatus LayoutScheduler::status()
 }
 
 template<typename LayoutsList>
-void LayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts)
+void Scheduler::collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts)
 {
     for(auto&& layout : layouts)
     {
@@ -92,7 +90,7 @@ void LayoutScheduler::collectLayoutListStatus(SchedulerStatus& status, const Lay
     }
 }
 
-int LayoutScheduler::nextScheduledLayoutId()
+int Scheduler::nextScheduledLayoutId()
 {
     auto&& regularLayouts = m_schedule.regularLayouts;
     for(size_t i = 0; i != regularLayouts.size(); ++i)
@@ -108,7 +106,7 @@ int LayoutScheduler::nextScheduledLayoutId()
     return EmptyLayoutId;
 }
 
-bool LayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
+bool Scheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
 {
     auto currentDT = DateTimeProvider::now();
 
@@ -120,11 +118,11 @@ bool LayoutScheduler::isLayoutOnSchedule(const ScheduledLayout& layout) const
     return false;
 }
 
-bool LayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) const
+bool Scheduler::isLayoutValid(const std::vector<std::string>& dependants) const
 {
     for(auto&& dependant : m_schedule.globalDependants)
     {
-//        if(!FileSystem::exists(Resources::directory() / dependant))
+        if(m_fileCache.cached(dependant))
         {
             return false;
         }
@@ -132,7 +130,7 @@ bool LayoutScheduler::isLayoutValid(const std::vector<std::string>& dependants) 
 
     for(auto&& dependant : dependants)
     {
-//        if(!FileSystem::exists(Resources::directory() / dependant))
+        if(m_fileCache.cached(dependant))
         {
             return false;
         }

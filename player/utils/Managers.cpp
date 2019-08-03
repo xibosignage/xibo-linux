@@ -1,7 +1,7 @@
 #include "Managers.hpp"
 #include "XiboApp.hpp"
 
-FileCacheManager& Managers::fileManager()
+FileCache& Managers::fileManager()
 {
     return XiboApp::app().fileManager();
 }

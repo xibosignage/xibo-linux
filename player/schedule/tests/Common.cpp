@@ -66,7 +66,7 @@ namespace ScheduleTests
         return dependants;
     }
 
-    LayoutSchedule layoutSchedule()
+    LayoutSchedule schedule()
     {
         LayoutSchedule schedule;
 

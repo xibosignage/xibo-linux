@@ -7,7 +7,7 @@
 
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "utils/Resources.hpp"
+#include "common/fs/Resources.hpp"
 
 #include <fstream>
 #include <regex>

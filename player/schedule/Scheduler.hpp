@@ -9,11 +9,12 @@
 #include <sigc++/signal.h>
 
 using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
+class FileCache;
 
-class LayoutScheduler
+class Scheduler
 {
 public:
-    void scheduleFrom(const FilePath& file);
+    Scheduler(const FileCache& fileCache);
     void reloadSchedule(LayoutSchedule&& schedule);
 
     int nextLayoutId();
@@ -34,8 +35,8 @@ private:
     size_t increaseLayoutIndex(std::size_t index) const;
 
 private:
+    const FileCache& m_fileCache;
     LayoutSchedule m_schedule;
-    FilePath m_filePath;
     SignalScheduleAvailable m_scheduleUpdated;
     int m_currentLayoutId = EmptyLayoutId;
 

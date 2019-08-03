@@ -4,7 +4,7 @@
 #include "config.hpp"
 
 #include "utils/ScreenShoter.hpp"
-#include "utils/Resources.hpp"
+#include "common/fs/Resources.hpp"
 #include "xmlsink/XmlLoggerSink.hpp"
 
 #include "control/MainWindowController.hpp"
@@ -16,10 +16,11 @@
 #include "control/layout/LayoutsManager.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/FileCacheManager.hpp"
 #include "managers/XmrManager.hpp"
 
-#include "schedule/LayoutScheduler.hpp"
+#include "schedule/Scheduler.hpp"
+#include "schedule/ScheduleParser.hpp"
+#include "schedule/ScheduleSerializer.hpp"
 
 #include "networking/WebServer.hpp"
 #include "networking/HttpClient.hpp"
@@ -29,6 +30,7 @@
 #include "common/settings/PlayerSettings.hpp"
 #include "common/settings/CmsSettings.hpp"
 #include "common/crypto/RsaManager.hpp"
+#include "common/fs/FileCache.hpp"
 
 #include <gst/gst.h>
 #include <glibmm/main.h>
@@ -72,8 +74,8 @@ void XiboApp::registerVideoSink()
 
 XiboApp::XiboApp(const std::string& name) :
     m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_scheduler(std::make_unique<LayoutScheduler>()),
-    m_fileManager(std::make_unique<FileCacheManager>()),
+    m_fileCache(std::make_unique<FileCache>()),
+    m_scheduler(std::make_unique<Scheduler>(*m_fileCache)),
     m_xmrManager(std::make_unique<XmrManager>()),
     m_webserver(std::make_shared<XiboWebServer>()),
     m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
@@ -85,8 +87,14 @@ XiboApp::XiboApp(const std::string& name) :
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
-    m_scheduler->scheduleFrom(ProjectResources::scheduleFile());
-    m_fileManager->cacheFrom(ProjectResources::cacheFile());
+    ScheduleParser parser;
+    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
+    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
+        ScheduleSerializer serializer;
+        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
+    });
+
+    m_fileCache->loadFrom(ProjectResources::cacheFile());
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());
@@ -145,9 +153,9 @@ XiboApp& XiboApp::app()
     return *m_app;
 }
 
-FileCacheManager& XiboApp::fileManager()
+FileCache& XiboApp::fileManager()
 {
-    return *m_fileManager;
+    return *m_fileCache;
 }
 
 ScreenShoter& XiboApp::screenShoter()
@@ -211,9 +219,8 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateAndApplySettings));
     interval->scheduleUpdated().connect([this](const Schedule::Result& result){
-        LayoutSchedule schedule;
-        schedule.loadFrom(result.scheduleXml);
-        m_scheduler->reloadSchedule(std::move(schedule));
+        ScheduleParser parser;
+        m_scheduler->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
     });
 
     return interval;

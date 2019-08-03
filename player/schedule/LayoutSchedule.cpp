@@ -1,5 +1,5 @@
 #include "LayoutSchedule.hpp"
-#include "ScheduleSerializer.hpp"
+#include "ScheduleParser.hpp"
 
 #include "common/Utils.hpp"
 #include "common/fs/FileSystem.hpp"
@@ -19,25 +19,4 @@ bool operator==(const LayoutSchedule& first, const LayoutSchedule& second)
 bool operator!=(const LayoutSchedule& first, const LayoutSchedule& second)
 {
     return !(first == second);
-}
-
-void LayoutSchedule::loadFrom(const FilePath& path)
-{
-    ScheduleSerializer serializer;
-
-    *this = serializer.scheduleFrom(path);
-}
-
-void LayoutSchedule::loadFrom(const std::string& xmlString)
-{
-    ScheduleSerializer serializer;
-
-    *this = serializer.scheduleFrom(xmlString);
-}
-
-void LayoutSchedule::saveTo(const FilePath& path)
-{
-    ScheduleSerializer serializer;
-
-    serializer.scheduleTo(*this, path);
 }

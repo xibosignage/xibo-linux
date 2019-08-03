@@ -6,7 +6,7 @@
 #include <vector>
 #include <map>
 
-class LayoutScheduler;
+class Scheduler;
 
 using MainLayoutLoaded = sigc::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
 using OverlaysLoaded = sigc::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
@@ -14,7 +14,7 @@ using OverlaysLoaded = sigc::signal<void(const std::vector<std::shared_ptr<IOver
 class LayoutsManager
 {
 public:
-    LayoutsManager(LayoutScheduler& scheduler);
+    LayoutsManager(Scheduler& scheduler);
 
     void fetchAllLayouts();
     void fetchMainLayout(int layoutId);
@@ -30,7 +30,7 @@ private:
 private:
     std::unique_ptr<IMainLayout> m_mainLayout;
     std::map<int, std::unique_ptr<IMainLayout>> m_overlayLayouts;
-    LayoutScheduler& m_scheduler;
+    Scheduler& m_scheduler;
 
     MainLayoutLoaded m_mainLayoutFetched;
     OverlaysLoaded m_overlaysFetched;

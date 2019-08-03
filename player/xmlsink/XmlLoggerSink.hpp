@@ -9,7 +9,7 @@
 #include <mutex>
 
 #include "XmlLogsRepo.hpp"
-#include "common/DateTimeProvider.hpp"
+#include "common/dt/DateTimeProvider.hpp"
 
 template<typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>

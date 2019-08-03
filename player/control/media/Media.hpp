@@ -3,7 +3,7 @@
 #include "IMedia.hpp"
 #include "MediaOptions.hpp"
 
-#include "utils/ITimerProvider.hpp"
+#include "common/dt/ITimerProvider.hpp"
 
 #include "control/common/transitions/TransitionExecutor.hpp"
 #include "control/common/IWidget.hpp"

@@ -33,6 +33,7 @@ namespace XmdsResources
         const std::string StartDT = Parsing::xmlAttr("fromdt");
         const std::string EndDT = Parsing::xmlAttr("todt");
         const std::string LocalDependants = "dependents";
+        const std::string DependantFile = "file";
     }
 
     namespace RegisterDisplay
