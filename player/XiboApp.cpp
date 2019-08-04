@@ -87,6 +87,8 @@ XiboApp::XiboApp(const std::string& name) :
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
+    m_fileCache->loadFrom(ProjectResources::cacheFile());
+
     ScheduleParser parser;
     m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
     m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
@@ -94,7 +96,6 @@ XiboApp::XiboApp(const std::string& name) :
         serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
     });
 
-    m_fileCache->loadFrom(ProjectResources::cacheFile());
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());

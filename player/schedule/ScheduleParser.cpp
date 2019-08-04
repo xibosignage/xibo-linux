@@ -94,9 +94,9 @@ DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const ptree_node& node)
     return layout;
 }
 
-std::vector<ScheduledLayout> ScheduleParser::overlayLayoutsFrom(const ptree_node& overlaysNode)
+LayoutList ScheduleParser::overlayLayoutsFrom(const ptree_node& overlaysNode)
 {
-    std::vector<ScheduledLayout> overlayLayouts;
+    LayoutList overlayLayouts;
 
     for(auto [name, node] : overlaysNode)
     {
@@ -106,9 +106,9 @@ std::vector<ScheduledLayout> ScheduleParser::overlayLayoutsFrom(const ptree_node
     return overlayLayouts;
 }
 
-std::vector<std::string> ScheduleParser::dependantsFrom(const ptree_node& dependantsNode)
+LayoutDependants ScheduleParser::dependantsFrom(const ptree_node& dependantsNode)
 {
-    std::vector<std::string> dependants;
+    LayoutDependants dependants;
 
     for(auto&& [name, file] : dependantsNode)
     {

@@ -1,7 +1,5 @@
 #include "SchedulerTests.hpp"
-#include "Common.hpp"
 #include "testutils/Utils.hpp"
-
 #include "Scheduler.hpp"
 
 using namespace testing;

@@ -1,4 +1,5 @@
 #include "ScheduleItem.hpp"
+
 #include "common/Utils.hpp"
 
 bool operator==(const DefaultScheduledLayout& first, const DefaultScheduledLayout& second)

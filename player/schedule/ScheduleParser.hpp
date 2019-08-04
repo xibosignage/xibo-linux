@@ -20,7 +20,7 @@ private:
     LayoutSchedule scheduleFromImpl(const ptree_node& scheduleXml);
     ScheduledLayout scheduledLayoutFrom(const ptree_node& layoutNode);
     DefaultScheduledLayout defaultLayoutFrom(const ptree_node& layoutNode);
-    std::vector<ScheduledLayout> overlayLayoutsFrom(const ptree_node& overlaysNode);
-    std::vector<std::string> dependantsFrom(const ptree_node& dependantsNode);
+    LayoutList overlayLayoutsFrom(const ptree_node& overlaysNode);
+    LayoutDependants dependantsFrom(const ptree_node& dependantsNode);
 
 };

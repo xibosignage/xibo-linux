@@ -2,8 +2,6 @@
 
 #include "ScheduleItem.hpp"
 
-class FilePath;
-
 struct LayoutSchedule
 {
     DateTime generatedTime;

@@ -11,6 +11,11 @@ namespace ScheduleTests
         return ScheduledLayout{scheduledId, id, priority, {}, {}, {}};
     }
 
+    ScheduledLayout scheduledLayout()
+    {
+        return ScheduledLayout{DefaultSchediledId, DefaultId, DefaultPriority, {}, {}, {}};
+    }
+
     DefaultScheduledLayout defaultLayout()
     {
         DefaultScheduledLayout layout;

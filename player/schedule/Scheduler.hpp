@@ -2,19 +2,18 @@
 
 #include "LayoutSchedule.hpp"
 #include "SchedulerStatus.hpp"
-#include "common/fs/FilePath.hpp"
+#include "QueueTypes.hpp"
 
-#include <memory>
-#include <vector>
+#include "common/fs/IFileCache.hpp"
+
 #include <sigc++/signal.h>
 
 using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
-class FileCache;
 
 class Scheduler
 {
 public:
-    Scheduler(const FileCache& fileCache);
+    Scheduler(const IFileCache& fileCache);
     void reloadSchedule(LayoutSchedule&& schedule);
 
     int nextLayoutId();
@@ -25,18 +24,19 @@ public:
     SchedulerStatus status();
 
 private:
-    int nextScheduledLayoutId();
+    RegularLayoutQueue regularQueueFrom(const LayoutSchedule& schedule);
+    OverlayLayoutQueue overlayQueueFrom(const LayoutSchedule& schedule);
 
-    template<typename LayoutsList>
-    void collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts);
+    template<typename LayoutsList> void collectLayoutListStatus(SchedulerStatus& status, const LayoutsList& layouts);
 
     bool isLayoutOnSchedule(const ScheduledLayout& layout) const;
-    bool isLayoutValid(const std::vector<std::string>& dependants) const;
-    size_t increaseLayoutIndex(std::size_t index) const;
+    template<typename Layout> bool isLayoutValid(const Layout& layout) const;
 
 private:
-    const FileCache& m_fileCache;
+    const IFileCache& m_fileCache;
     LayoutSchedule m_schedule;
+    RegularLayoutQueue m_regularQueue;
+    OverlayLayoutQueue m_overlayQueue;
     SignalScheduleAvailable m_scheduleUpdated;
     int m_currentLayoutId = EmptyLayoutId;
 

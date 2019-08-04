@@ -3,7 +3,7 @@
 #include "LayoutSchedule.hpp"
 
 const int DefaultSchediledId = 0;
-const int DefaultId = 0;
+const int DefaultId = 1;
 const int DefaultPriority = 0;
 
 const std::string ScheduleXml = R"(<?xml version="1.0"?>
@@ -32,6 +32,7 @@ const std::string ScheduleXml = R"(<?xml version="1.0"?>
 namespace ScheduleTests
 {
     ScheduledLayout scheduledLayout(int scheduledId, int id, int priority);
+    ScheduledLayout scheduledLayout();
     LayoutSchedule schedule();
 }
 

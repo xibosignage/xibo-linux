@@ -13,6 +13,11 @@ bool FileSystem::exists(const FilePath& path)
     return std::filesystem::exists(path);
 }
 
+bool FileSystem::remove(const FilePath& path)
+{
+    return std::filesystem::remove(path);
+}
+
 bool FileSystem::createDirectory(const FilePath& path)
 {
     return std::filesystem::create_directory(path);
