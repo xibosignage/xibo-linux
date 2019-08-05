@@ -1,4 +1,5 @@
 #include "SchedulerLayoutTests.hpp"
+#include "Scheduler.hpp"
 
 static void addToQueue(LayoutSchedule& schedule, ScheduledLayout&& type)
 {
@@ -13,7 +14,7 @@ TEST_F(SchedulerLayoutTests, NoRegularLayoutsDefaultLayoutInvalid)
     schedule.defaultLayout.id = DefaultId;
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextLayoutId(), EmptyLayoutId);
+    ASSERT_EQ(scheduler->nextLayout(), EmptyLayoutId);
 }
 
 TEST_F(SchedulerLayoutTests, NoRegularLayoutsDefaultLayoutValid)
@@ -24,7 +25,7 @@ TEST_F(SchedulerLayoutTests, NoRegularLayoutsDefaultLayoutValid)
     schedule.defaultLayout = defaultLayout(DefaultId);
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextLayoutId(), DefaultId);
+    ASSERT_EQ(scheduler->nextLayout(), DefaultId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInCache)
@@ -39,8 +40,8 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInCache)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInRange)
@@ -55,8 +56,8 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInRange)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllValid)
@@ -71,10 +72,10 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllValid)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 2);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 2);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInCache)
@@ -88,9 +89,9 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInCache)
     addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInRange)
@@ -104,9 +105,9 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInRange)
     addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesAllValid)
@@ -121,8 +122,8 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesAllValid)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesSomeInvalid)
@@ -136,6 +137,6 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesSomeInvalid)
     addToQueue(schedule, notInCacheLayout(DefaultId + 3, DefaultPriority + 3));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayoutId(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
 }

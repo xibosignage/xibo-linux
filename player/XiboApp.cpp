@@ -237,7 +237,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     {
         if(m_scheduler->currentLayoutId() == EmptyLayoutId)
         {
-            m_layoutsManager->fetchMainLayout(m_scheduler->nextLayoutId());
+            m_layoutsManager->fetchMainLayout(m_scheduler->nextLayout());
         }
     }
 }

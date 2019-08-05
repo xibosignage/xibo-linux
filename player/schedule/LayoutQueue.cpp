@@ -1,5 +1,7 @@
 #include "LayoutQueue.hpp"
 
+const int DefaultPriority = 0;
+
 void LayoutQueue::clear()
 {
     m_queue.clear();
@@ -33,4 +35,12 @@ const std::vector<ScheduledLayout>&LayoutQueue::queue() const
 const ScheduledLayout&LayoutQueue::at(size_t index) const
 {
     return m_queue.at(index);
+}
+
+int LayoutQueue::highestPriority() const
+{
+    if(empty())
+        return DefaultPriority;
+
+    return at(FirstItemIndex).priority;
 }

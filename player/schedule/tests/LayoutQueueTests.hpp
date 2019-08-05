@@ -2,7 +2,8 @@
 
 #include <gtest/gtest.h>
 
-#include "QueueTypes.hpp"
+#include "RegularLayoutQueue.hpp"
+#include "OverlayLayoutQueue.hpp"
 #include "Common.hpp"
 
 const std::vector<std::vector<int>> Priorities = {{0, 1, 2}, {0, 2, 1},

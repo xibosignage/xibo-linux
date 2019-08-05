@@ -19,6 +19,11 @@ public:
         ++*m_called;
     }
 
+    bool notCalled() const
+    {
+        return *m_called == 0;
+    }
+
     bool calledOnce() const
     {
         return *m_called == 1;

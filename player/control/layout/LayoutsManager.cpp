@@ -16,8 +16,8 @@ LayoutsManager::LayoutsManager(Scheduler& scheduler) :
 
 void LayoutsManager::fetchAllLayouts()
 {
-    fetchMainLayout(m_scheduler.nextLayoutId());
-    fetchOverlays(m_scheduler.nextOverlayLayoutsIds());
+    fetchMainLayout(m_scheduler.nextLayout());
+    fetchOverlays(m_scheduler.nextOverlayLayouts());
 }
 
 MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
@@ -71,7 +71,7 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 
         if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
         {
-            fetchMainLayout(m_scheduler.nextLayoutId());
+            fetchMainLayout(m_scheduler.nextLayout());
         }
         else
         {
