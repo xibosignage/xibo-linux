@@ -49,28 +49,29 @@ void Soap::ResponseParser<RegisterDisplay::Result>::fillPlayerSettings(PlayerSet
 {
     namespace Settings = Resources::Settings;
 
-    settings.collectInterval = display.get<int>(Settings::CollectInterval);
-    settings.downloadStartWindow = display.get<std::string>(Settings::DownloadStartWindow);
-    settings.downloadEndWindow = display.get<std::string>(Settings::DownloadEndWindow);
-    settings.statsEnabled = display.get<bool>(Settings::StatsEnabled);
-    settings.xmrNetworkAddress = display.get<std::string>(Settings::XmrNetworkAddress);
-    settings.dimensions.width = static_cast<int>(display.get<double>(Settings::Width));
-    settings.dimensions.height = static_cast<int>(display.get<double>(Settings::Height));
-    settings.dimensions.x = static_cast<int>(display.get<double>(Settings::XPos));
-    settings.dimensions.y = static_cast<int>(display.get<double>(Settings::YPos));
-    settings.logLevel = toLogLevelEnum(display.get<std::string>(Settings::LogLevel));
-    settings.shellCommandsEnabled = display.get<bool>(Settings::EnableShellCommands);
-    settings.modifiedLayoutsEnabled = display.get<bool>(Settings::ExpireModifiedLayouts);
-    settings.maxConcurrentDownloads = display.get<int>(Settings::MaxConcurrentDownloads);
+    settings.setCollectInterval(display.get<int>(Settings::CollectInterval));
+    settings.setDownloadStartWindow(display.get<std::string>(Settings::DownloadStartWindow));
+    settings.setDownloadStartWindow(display.get<std::string>(Settings::DownloadEndWindow));
+    settings.setStatsEnabled(display.get<bool>(Settings::StatsEnabled));
+    settings.setXmrNetworkAddress(display.get<std::string>(Settings::XmrNetworkAddress));
+    int width = static_cast<int>(display.get<double>(Settings::Width));
+    int height = static_cast<int>(display.get<double>(Settings::Height));
+    int x = static_cast<int>(display.get<double>(Settings::XPos));
+    int y = static_cast<int>(display.get<double>(Settings::YPos));
+    settings.setDimensions(PlayerSettings::Dimensions{width, height, x, y});
+    settings.setLogLevel(toLogLevelEnum(display.get<std::string>(Settings::LogLevel)));
+    settings.setShellCommandsEnabled(display.get<bool>(Settings::EnableShellCommands));
+    settings.setModifiedLayoutsEnabled(display.get<bool>(Settings::ExpireModifiedLayouts));
+    settings.setMaxConcurrentDownloads(display.get<int>(Settings::MaxConcurrentDownloads));
     //shellCommandAllowList
-    settings.statusLayoutUpdate = display.get<bool>(Settings::SendCurrentLayoutAsStatusUpdate);
-    settings.screenshotInterval = display.get<int>(Settings::ScreenShotRequestInterval);
-    settings.screenshotSize = display.get<int>(Settings::ScreenShotSize);
-    settings.maxLogFilesUploads = display.get<int>(Settings::MaxLogFileUploads);
-    settings.embeddedServerPort = display.get<int>(Settings::EmbeddedServerPort);
-    settings.preventSleep = display.get<bool>(Settings::PreventSleep);
-    settings.displayName = display.get<std::string>(Settings::DisplayName);
-    settings.screenshotRequested = display.get<bool>(Settings::ScreenShotRequested);
+    settings.setStatusLayoutUpdate(display.get<bool>(Settings::SendCurrentLayoutAsStatusUpdate));
+    settings.setScreenshotInterval(display.get<int>(Settings::ScreenShotRequestInterval));
+    settings.setScreenshotSize(display.get<int>(Settings::ScreenShotSize));
+    settings.setMaxLogFilesUploads(display.get<int>(Settings::MaxLogFileUploads));
+    settings.setEmbeddedServerPort(display.get<unsigned short>(Settings::EmbeddedServerPort));
+    settings.setPreventSleep(display.get<bool>(Settings::PreventSleep));
+    settings.setDisplayName(display.get<std::string>(Settings::DisplayName));
+    settings.setScreenshotSize(display.get<bool>(Settings::ScreenShotRequested));
 }
 
 

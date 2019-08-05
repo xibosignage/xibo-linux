@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BaseLayoutBuilder.hpp"
+#include "MainLayoutParser.hpp"
 
-class OverlayLayoutBuilder : public BaseLayoutBuilder
+class OverlayLayoutParser : public MainLayoutParser
 {
 protected:
     std::shared_ptr<IOverlayLayout> createView(const LayoutOptions& options) override;

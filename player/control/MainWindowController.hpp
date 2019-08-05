@@ -1,6 +1,6 @@
 #pragma once
 
-#include "managers/PlayerSettings.hpp"
+#include "common/settings/PlayerSettings.hpp"
 
 #include <memory>
 #include <sigc++/signal.h>

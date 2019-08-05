@@ -14,7 +14,7 @@ class IMedia
 public:
     virtual ~IMedia() = default;
 
-    virtual void attachMedia(std::unique_ptr<IMedia>&& attachedMedia) = 0;
+    virtual void attach(std::unique_ptr<IMedia>&& attachedMedia) = 0;
     virtual void start() = 0;
     virtual void stop() = 0;
 

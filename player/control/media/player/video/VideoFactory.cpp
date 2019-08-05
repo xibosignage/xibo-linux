@@ -3,15 +3,15 @@
 #include "control/media/player/PlayableMedia.hpp"
 #include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
-#include "control/region/RegionResources.hpp"
+#include "control/media/MediaResources.hpp"
 #include "VideoWindow.hpp"
 
 #include "constants.hpp"
 
-std::unique_ptr<IMedia> VideoFactory::createImpl(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<IMedia> VideoFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    int width = std::stoi(options.at(ResourcesXlf::Region::Width));
-    int height = std::stoi(options.at(ResourcesXlf::Region::Height));
+    int width = std::stoi(options.at(ResourcesXlf::Media::Width));
+    int height = std::stoi(options.at(ResourcesXlf::Media::Height));
     auto playerOptions = createPlayerOptions(baseOptions, options);
 
     auto videoPlayer = createPlayer(playerOptions, width, height);
