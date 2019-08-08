@@ -31,6 +31,7 @@
 #include "common/settings/CmsSettings.hpp"
 #include "common/crypto/RsaManager.hpp"
 #include "common/fs/FileCache.hpp"
+#include "common/System.hpp"
 
 #include <gst/gst.h>
 #include <glibmm/main.h>
@@ -82,6 +83,9 @@ XiboApp::XiboApp(const std::string& name) :
 {
     if(!FileSystem::exists(ProjectResources::cmsSettingsFile()))
         throw std::runtime_error("Update CMS settings using player options app");
+
+    System sys;
+    sys.preventSleep();
 
     m_cmsSettings.loadFrom(ProjectResources::cmsSettingsFile());
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
