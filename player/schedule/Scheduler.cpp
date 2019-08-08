@@ -23,22 +23,14 @@ void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 
 void Scheduler::reloadQueue()
 {
+    LayoutId current = currentLayoutId();
+    OverlaysIds overlays = overlayLayouts();
+
     m_regularQueue = regularQueueFrom(m_schedule);
     m_overlayQueue = overlayQueueFrom(m_schedule);
 
-    updateInQueue(currentLayoutId());
-}
-
-void Scheduler::updateInQueue(int id)
-{
-    if(m_regularQueue.inQueue(id))
-    {
-        m_regularQueue.setCurrentLayout(id);
-    }
-    else
-    {
-        m_layoutInterrupted.emit();
-    }
+    updateCurrentLayout(current);
+    updateCurrentOverlays(overlays);
 }
 
 RegularLayoutQueue Scheduler::regularQueueFrom(const LayoutSchedule& schedule)
@@ -74,6 +66,26 @@ OverlayLayoutQueue Scheduler::overlayQueueFrom(const LayoutSchedule& schedule)
     }
 
     return queue;
+}
+
+void Scheduler::updateCurrentLayout(LayoutId id)
+{
+    if(m_regularQueue.inQueue(id))
+    {
+        m_regularQueue.updateCurrent(id);
+    }
+    else
+    {
+        m_layoutUpdated.emit();
+    }
+}
+
+void Scheduler::updateCurrentOverlays(const OverlaysIds& ids)
+{
+    if(m_overlayQueue.overlays() != ids)
+    {
+        m_overlaysUpdated.emit();
+    }
 }
 
 bool Scheduler::layoutOnSchedule(const ScheduledLayout& layout) const
@@ -113,21 +125,19 @@ bool Scheduler::layoutValid(const Layout& layout) const
     return true;
 }
 
-int Scheduler::nextLayout()
+LayoutId Scheduler::nextLayout() const
 {
-    m_currentLayoutId = m_regularQueue.next();
-
-    return m_currentLayoutId;
+    return m_regularQueue.next();
 }
 
-std::vector<int> Scheduler::nextOverlayLayouts()
+LayoutId Scheduler::currentLayoutId() const
 {
-    return m_overlayQueue.next();
+    return m_regularQueue.current();
 }
 
-int Scheduler::currentLayoutId() const
+OverlaysIds Scheduler::overlayLayouts() const
 {
-    return m_currentLayoutId;
+    return m_overlayQueue.overlays();
 }
 
 SignalScheduleAvailable Scheduler::scheduleUpdated()
@@ -135,12 +145,17 @@ SignalScheduleAvailable Scheduler::scheduleUpdated()
     return m_scheduleUpdated;
 }
 
-SignalLayoutInterrupted Scheduler::layoutInterrupted()
+SignalLayoutsUpdated Scheduler::overlaysUpdated()
 {
-    return m_layoutInterrupted;
+    return m_overlaysUpdated;
 }
 
-SchedulerStatus Scheduler::status()
+SignalLayoutsUpdated Scheduler::layoutUpdated()
+{
+    return m_layoutUpdated;
+}
+
+SchedulerStatus Scheduler::status() const
 {
     SchedulerStatus status;
 
@@ -148,13 +163,13 @@ SchedulerStatus Scheduler::status()
     schedulerStatus(status, m_schedule.overlayLayouts);
 
     status.generatedTime = DateTimeProvider::toString(m_schedule.generatedTime);
-    status.currentLayout = m_currentLayoutId;
+    status.currentLayout = currentLayoutId();
 
     return status;
 }
 
 template<typename LayoutsList>
-void Scheduler::schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts)
+void Scheduler::schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const
 {
     for(auto&& layout : layouts)
     {

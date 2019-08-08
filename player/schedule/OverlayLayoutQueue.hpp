@@ -2,12 +2,14 @@
 
 #include "LayoutQueue.hpp"
 
+using OverlaysIds = std::vector<int>;
+
 class OverlayLayoutQueue : public LayoutQueue
 {
 public:
-    std::vector<int> next() const
+    OverlaysIds overlays() const
     {
-        std::vector<int> ids;
+        OverlaysIds ids;
 
         for(auto&& layout : queue())
         {
@@ -16,4 +18,5 @@ public:
 
         return ids;
     }
+
 };

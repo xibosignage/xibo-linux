@@ -6,12 +6,12 @@
 #include "OverlayLayoutQueue.hpp"
 #include "Common.hpp"
 
-const std::vector<std::vector<int>> Priorities = {{0, 1, 2}, {0, 2, 1},
+const std::vector<std::vector<int>> PrioritiesToTest = {{0, 1, 2}, {0, 2, 1},
                                                   {1, 2, 0}, {1, 0, 2},
                                                   {2, 1, 0}, {2, 0, 1}};
 
 template<typename Queue>
-Queue queueWithDifferentPriorities(const std::vector<int>& priorities)
+Queue queueWithPriorities(const std::vector<LayoutId>& priorities)
 {
     Queue queue;
 
@@ -27,17 +27,14 @@ Queue queueWithDifferentPriorities(const std::vector<int>& priorities)
 template<typename Queue>
 Queue queueWithSamePriorities(size_t queueSize = 3)
 {
-    std::vector<int> priorities(queueSize, DefaultPriority);
+    std::vector<LayoutId> priorities(queueSize, DefaultPriority);
 
-    return queueWithDifferentPriorities<Queue>(priorities);
+    return queueWithPriorities<Queue>(priorities);
 }
 
 template<typename T>
-struct PriorityQueueTest : public testing::Test
+struct LayoutQueueTest : public testing::Test
 {
     using QueueType = T;
 };
 
-struct PriorityQueueTestPriorities : public testing::TestWithParam<std::vector<int>>
-{
-};

@@ -1,6 +1,7 @@
-#include "SchedulerTests.hpp"
-#include "testutils/Utils.hpp"
+#include "SchedulerReloadTests.hpp"
 #include "Scheduler.hpp"
+
+#include "testutils/Utils.hpp"
 
 using namespace testing;
 
@@ -49,8 +50,8 @@ TEST_F(SchedulerTests, DefaultLayoutReloadSameQueue)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadQueue();
@@ -64,9 +65,9 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithRegularLayouts)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId);
-    auto newSchedule = makeSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId);
+    auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
@@ -81,9 +82,9 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithSameDefault)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId);
-    auto newSchedule = makeSchedule(DefaultId);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId);
+    auto newSchedule = makeRegularSchedule(DefaultId);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
@@ -97,9 +98,9 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithAnotherDefault)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId);
-    auto newSchedule = makeSchedule(DefaultId + 1);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId);
+    auto newSchedule = makeRegularSchedule(DefaultId + 1);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
@@ -113,8 +114,8 @@ TEST_F(SchedulerTests, RegularReloadSameQueue)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadQueue();
@@ -129,9 +130,9 @@ TEST_F(SchedulerTests, RegularReloadQueueWithAllNewLayouts)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
-    auto newSchedule = makeSchedule(DefaultId, DefaultId + 3, DefaultId + 4);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
+    auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 3, DefaultId + 4);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
@@ -146,9 +147,9 @@ TEST_F(SchedulerTests, RegularReloadQueueWithSomeNewLayouts)
     auto scheduler = construct();
     FakeSlot<void()> slot;
 
-    auto schedule = makeSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
-    auto newSchedule = makeSchedule(DefaultId, DefaultId + 3, DefaultId + 1, DefaultId + 4);
-    scheduler->layoutInterrupted().connect(slot);
+    auto schedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
+    auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 3, DefaultId + 1, DefaultId + 4);
+    scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
     scheduler->nextLayout(); // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
@@ -157,4 +158,35 @@ TEST_F(SchedulerTests, RegularReloadQueueWithSomeNewLayouts)
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
     ASSERT_TRUE(slot.calledOnce());
+}
+
+
+TEST_F(SchedulerTests, OverlayReloadQueueWithSameLayouts)
+{
+    auto scheduler = construct();
+    FakeSlot<void()> slot;
+
+    auto schedule = makeOverlaySchedule(DefaultId + 1, DefaultId + 2);
+    auto newSchedule = makeOverlaySchedule(DefaultId + 1, DefaultId + 2);
+    scheduler->overlaysUpdated().connect(slot);
+    scheduler->reloadSchedule(std::move(schedule));
+    scheduler->reloadSchedule(std::move(newSchedule));
+
+    EXPECT_EQ(scheduler->overlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 2}));
+    ASSERT_TRUE(slot.calledOnce());
+}
+
+TEST_F(SchedulerTests, OverlayReloadQueueWithNewLayouts)
+{
+    auto scheduler = construct();
+    FakeSlot<void()> slot;
+
+    auto schedule = makeOverlaySchedule(DefaultId + 1, DefaultId + 2);
+    auto newSchedule = makeOverlaySchedule(DefaultId + 1, DefaultId + 3);
+    scheduler->overlaysUpdated().connect(slot);
+    scheduler->reloadSchedule(std::move(schedule));
+    scheduler->reloadSchedule(std::move(newSchedule));
+
+    EXPECT_EQ(scheduler->overlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 3}));
+    ASSERT_TRUE(slot.called(2));
 }

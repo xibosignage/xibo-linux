@@ -10,7 +10,7 @@
 #include <sigc++/signal.h>
 
 using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
-using SignalLayoutInterrupted = sigc::signal<void()>;
+using SignalLayoutsUpdated = sigc::signal<void()>;
 
 class Scheduler
 {
@@ -19,20 +19,22 @@ public:
     void reloadSchedule(LayoutSchedule&& schedule);
     void reloadQueue();
 
-    int nextLayout();
-    std::vector<int> nextOverlayLayouts();
-    int currentLayoutId() const;
+    LayoutId nextLayout() const;
+    LayoutId currentLayoutId() const;
+    OverlaysIds overlayLayouts() const;
+    SchedulerStatus status() const;
 
     SignalScheduleAvailable scheduleUpdated();
-    SignalLayoutInterrupted layoutInterrupted();
-    SchedulerStatus status();
+    SignalLayoutsUpdated layoutUpdated();
+    SignalLayoutsUpdated overlaysUpdated();
 
 private:
-    void updateInQueue(int id);
+    void updateCurrentLayout(LayoutId id);
+    void updateCurrentOverlays(const OverlaysIds& ids);
     RegularLayoutQueue regularQueueFrom(const LayoutSchedule& schedule);
     OverlayLayoutQueue overlayQueueFrom(const LayoutSchedule& schedule);
 
-    template<typename LayoutsList> void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts);
+    template<typename LayoutsList> void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
     bool layoutOnSchedule(const ScheduledLayout& layout) const;
     template<typename Layout> bool layoutValid(const Layout& layout) const;
@@ -43,7 +45,6 @@ private:
     RegularLayoutQueue m_regularQueue;
     OverlayLayoutQueue m_overlayQueue;
     SignalScheduleAvailable m_scheduleUpdated;
-    SignalLayoutInterrupted m_layoutInterrupted;
-    int m_currentLayoutId = EmptyLayoutId;
-
+    SignalLayoutsUpdated m_layoutUpdated;
+    SignalLayoutsUpdated m_overlaysUpdated;
 };

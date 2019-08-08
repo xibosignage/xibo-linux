@@ -48,18 +48,39 @@ protected:
         return layout;
     }
 
+    struct RegularTag { };
+    struct OverlayTag { };
 
-    template<typename... Ids>
+    template<typename Tag, typename... Ids>
     LayoutSchedule makeSchedule(int defaultId, Ids... regularIds)
     {
         LayoutSchedule schedule;
 
         schedule.defaultLayout = defaultLayout(defaultId);
-        (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
+
+        if constexpr(std::is_same_v<Tag, RegularTag>)
+        {
+            (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
+        }
+        else
+        {
+            (schedule.overlayLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
+        }
 
         return schedule;
     }
 
+    template<typename... Ids>
+    LayoutSchedule makeRegularSchedule(int defaultId, Ids... regularIds)
+    {
+        return makeSchedule<RegularTag>(defaultId, regularIds...);
+    }
+
+    template<typename... Ids>
+    LayoutSchedule makeOverlaySchedule(Ids... regularIds)
+    {
+        return makeSchedule<OverlayTag>(DefaultId, regularIds...);
+    }
 
 protected:
     std::unique_ptr<FakeFileCache> fileCache;

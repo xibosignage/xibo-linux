@@ -5,23 +5,23 @@
 
 #include "common/dt/DateTime.hpp"
 
-const int EmptyLayoutId = 0;
-
 struct ScheduledLayout;
-
 using LayoutDependants = std::vector<std::string>;
 using LayoutList = std::vector<ScheduledLayout>;
+using LayoutId = int;
+
+const LayoutId EmptyLayoutId = 0;
 
 struct DefaultScheduledLayout
 {
-    int id;
+    LayoutId id;
     LayoutDependants dependants;
 };
 
 struct ScheduledLayout
 {
     int scheduleId;
-    int id;
+    LayoutId id;
     int priority;
     DateTime startDT;
     DateTime endDT;

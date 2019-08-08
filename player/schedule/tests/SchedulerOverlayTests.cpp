@@ -13,7 +13,7 @@ TEST_F(SchedulerLayoutTests, NoOverlayLayoutsDefaultLayoutInvalid)
 
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), std::vector<int>{});
+    ASSERT_EQ(scheduler->overlayLayouts(), std::vector<int>{});
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInCache)
@@ -27,7 +27,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInCache)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), std::vector<int>{});
+    ASSERT_EQ(scheduler->overlayLayouts(), std::vector<int>{});
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInRange)
@@ -41,7 +41,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInRange)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), std::vector<int>{});
+    ASSERT_EQ(scheduler->overlayLayouts(), std::vector<int>{});
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllValid)
@@ -55,7 +55,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllValid)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 2, DefaultId + 3}));
+    ASSERT_EQ(scheduler->overlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 2, DefaultId + 3}));
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePrioritySomeNotInCache)
@@ -68,7 +68,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePrioritySomeNotInCache)
     addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 3}));
+    ASSERT_EQ(scheduler->overlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 3}));
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePrioritySomeNotInRange)
@@ -81,7 +81,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePrioritySomeNotInRange)
     addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 3}));
+    ASSERT_EQ(scheduler->overlayLayouts(), (std::vector{DefaultId + 1, DefaultId + 3}));
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsDifferentPrioritiesAllValid)
@@ -95,7 +95,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsDifferentPrioritiesAllValid)
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), std::vector{DefaultId + 3});
+    ASSERT_EQ(scheduler->overlayLayouts(), std::vector{DefaultId + 3});
 }
 
 TEST_F(SchedulerLayoutTests, OverlayLayoutsDifferentPrioritiesSomeInvalid)
@@ -108,5 +108,5 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsDifferentPrioritiesSomeInvalid)
     addToQueue(schedule, notInCacheLayout(DefaultId + 3, DefaultPriority + 3));
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextOverlayLayouts(), std::vector{DefaultId + 1});
+    ASSERT_EQ(scheduler->overlayLayouts(), std::vector{DefaultId + 1});
 }

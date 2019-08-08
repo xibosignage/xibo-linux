@@ -17,7 +17,7 @@ LayoutsManager::LayoutsManager(Scheduler& scheduler) :
 void LayoutsManager::fetchAllLayouts()
 {
     fetchMainLayout(m_scheduler.nextLayout());
-    fetchOverlays(m_scheduler.nextOverlayLayouts());
+    fetchOverlays(m_scheduler.overlayLayouts());
 }
 
 MainLayoutLoaded& LayoutsManager::mainLayoutFetched()

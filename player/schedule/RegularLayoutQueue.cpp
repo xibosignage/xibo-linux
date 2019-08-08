@@ -1,6 +1,6 @@
 #include "RegularLayoutQueue.hpp"
 
-bool RegularLayoutQueue::inQueue(int id) const
+bool RegularLayoutQueue::inQueue(LayoutId id) const
 {
     if(!empty()) return layoutIndexBy(id).has_value();
     if(m_defaultLayout) return m_defaultLayout->id == id;
@@ -8,22 +8,33 @@ bool RegularLayoutQueue::inQueue(int id) const
     return false;
 }
 
-void RegularLayoutQueue::setCurrentLayout(int id)
+void RegularLayoutQueue::updateCurrent(LayoutId id)
 {
     auto index = layoutIndexBy(id);
     if(index)
     {
         m_nextIndex = increaseIndex(index.value());
+        m_currentId = id;
     }
 }
 
-int RegularLayoutQueue::next() const
+LayoutId RegularLayoutQueue::next() const
 {
     if(!empty())
     {
-        return nextRegularLayout().id;
+        m_currentId = nextRegularLayout().id;
     }
-    return m_defaultLayout ? m_defaultLayout->id : EmptyLayoutId;
+    else
+    {
+        m_currentId = m_defaultLayout ? m_defaultLayout->id : EmptyLayoutId;
+    }
+
+    return m_currentId;
+}
+
+LayoutId RegularLayoutQueue::current() const
+{
+    return m_currentId;
 }
 
 const ScheduledLayout& RegularLayoutQueue::nextRegularLayout() const
