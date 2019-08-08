@@ -6,10 +6,11 @@
 #include "RegularLayoutQueue.hpp"
 
 #include "common/fs/IFileCache.hpp"
+#include "common/dt/Timer.hpp"
 
 #include <sigc++/signal.h>
 
-using SignalScheduleAvailable = sigc::signal<void(const LayoutSchedule&)>;
+using SignalScheduleUpdated = sigc::signal<void(const LayoutSchedule&)>;
 using SignalLayoutsUpdated = sigc::signal<void()>;
 
 class Scheduler
@@ -24,27 +25,33 @@ public:
     OverlaysIds overlayLayouts() const;
     SchedulerStatus status() const;
 
-    SignalScheduleAvailable scheduleUpdated();
+    SignalScheduleUpdated scheduleUpdated();
     SignalLayoutsUpdated layoutUpdated();
     SignalLayoutsUpdated overlaysUpdated();
 
 private:
-    void updateCurrentLayout(LayoutId id);
-    void updateCurrentOverlays(const OverlaysIds& ids);
     RegularLayoutQueue regularQueueFrom(const LayoutSchedule& schedule);
-    OverlayLayoutQueue overlayQueueFrom(const LayoutSchedule& schedule);
+    void updateCurrentLayout(LayoutId id);
 
-    template<typename LayoutsList> void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
+    OverlayLayoutQueue overlayQueueFrom(const LayoutSchedule& schedule);
+    void updateCurrentOverlays(const OverlaysIds& ids);
+
+    void restartTimer();
+    DateTime closestLayoutDt();
 
     bool layoutOnSchedule(const ScheduledLayout& layout) const;
     template<typename Layout> bool layoutValid(const Layout& layout) const;
+
+    template<typename LayoutsList> void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
 private:
     const IFileCache& m_fileCache;
     LayoutSchedule m_schedule;
     RegularLayoutQueue m_regularQueue;
     OverlayLayoutQueue m_overlayQueue;
-    SignalScheduleAvailable m_scheduleUpdated;
+    SignalScheduleUpdated m_scheduleUpdated;
     SignalLayoutsUpdated m_layoutUpdated;
     SignalLayoutsUpdated m_overlaysUpdated;
+    Timer m_timer;
+
 };

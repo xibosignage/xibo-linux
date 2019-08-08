@@ -23,11 +23,12 @@ void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 
 void Scheduler::reloadQueue()
 {
-    LayoutId current = currentLayoutId();
-    OverlaysIds overlays = overlayLayouts();
+    auto current = currentLayoutId();
+    auto overlays = overlayLayouts();
 
     m_regularQueue = regularQueueFrom(m_schedule);
     m_overlayQueue = overlayQueueFrom(m_schedule);
+    restartTimer();
 
     updateCurrentLayout(current);
     updateCurrentOverlays(overlays);
@@ -140,7 +141,7 @@ OverlaysIds Scheduler::overlayLayouts() const
     return m_overlayQueue.overlays();
 }
 
-SignalScheduleAvailable Scheduler::scheduleUpdated()
+SignalScheduleUpdated Scheduler::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
@@ -148,6 +149,43 @@ SignalScheduleAvailable Scheduler::scheduleUpdated()
 SignalLayoutsUpdated Scheduler::overlaysUpdated()
 {
     return m_overlaysUpdated;
+}
+
+DateTime Scheduler::closestLayoutDt()
+{
+    auto now = DateTimeProvider::now();
+    DateTime closestDt;
+
+    for(auto&& layout : m_schedule.regularLayouts)
+    {
+        if(now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
+        if(now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
+    }
+
+    for(auto&& layout : m_schedule.overlayLayouts)
+    {
+        if(now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
+        if(now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
+    }
+
+    return closestDt;
+}
+
+void Scheduler::restartTimer()
+{
+    auto dt = closestLayoutDt();
+    auto duration = (dt - DateTimeProvider::now()).total_seconds();
+
+    if(!dt.is_not_a_date_time() && duration > 0)
+    {
+        Log::debug("Timer restarted with value: {}", duration);
+
+        m_timer.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
+    }
+    else
+    {
+        Log::debug("No timer detected");
+    }
 }
 
 SignalLayoutsUpdated Scheduler::layoutUpdated()

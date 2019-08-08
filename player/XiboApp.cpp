@@ -219,7 +219,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
 
     interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
     interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateAndApplySettings));
-    interval->scheduleUpdated().connect([this](const Schedule::Result& result){
+    interval->scheduleAvailable().connect([this](const Schedule::Result& result){
         ScheduleParser parser;
         m_scheduler->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
     });

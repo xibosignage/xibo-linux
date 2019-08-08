@@ -15,7 +15,7 @@ void FadeTransitionExecutor::apply()
     double step = MaxOpacity / count;
     init();
 
-    timer().start(DefaultTimerDuration, [this, step](){
+    timer().start(std::chrono::milliseconds(DefaultTimerDuration), [this, step]() {
 
         double value = nextValue(media()->opacity(), step);
         media()->setOpacity(value);

@@ -9,7 +9,6 @@ const std::string SpdLogger = "logger";
 const char* const XmrChannel = "playerLinux";
 const char* const HeartbeatChannel = "H";
 
-const unsigned int MSecs = 1000;
 const int MaxVolume = 100;
 const int MinVolume = 0;
 

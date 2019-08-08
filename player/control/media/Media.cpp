@@ -1,14 +1,12 @@
 #include "Media.hpp"
 
 #include "constants.hpp"
-#include "common/dt/TimerProvider.hpp"
-
 #include "common/logger/Logging.hpp"
 
 Media::Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view) :
     m_options(options),
     m_view(view),
-    m_timer(std::make_unique<TimerProvider>())
+    m_timer(std::make_unique<Timer>())
 {
 }
 
@@ -28,7 +26,7 @@ void Media::startTimer(int duration)
 {
     if(duration > 0)
     {
-        m_timer->startOnce(static_cast<unsigned int>(duration) * MSecs, [this]{
+        m_timer->start(std::chrono::seconds(duration), [this]{
             m_mediaFinished.emit();
         });
     }
