@@ -1,15 +1,13 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "managers/FileCacheManager.hpp"
-
 #include "networking/xmds/XmdsFileDownloader.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 #include "networking/HttpClient.hpp"
 
 #include "utils/Managers.hpp"
-#include "utils/Resources.hpp"
-
-#include <fstream>
+#include "common/fs/Resources.hpp"
+#include "common/Utils.hpp"
+#include "common/fs/FileCache.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     m_xmdsRequestSender(xmdsRequestSender),
@@ -60,7 +58,7 @@ DownloadResult RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !Managers::fileManager().isFileInCache(file.name, file.md5);
+    return !Managers::fileManager().cachedWithHash(file.name, file.hash);
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
@@ -69,16 +67,16 @@ bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
 }
 
 template<>
-void RequiredFilesDownloader::saveFile<RegularFile>(const std::string& fileName, const std::string& fileContent)
+void RequiredFilesDownloader::saveFile<RegularFile>(const std::string& file, const std::string& content)
 {
-    Managers::fileManager().saveFile(fileName, fileContent);
+    Managers::fileManager().save(file, content);
 }
 
 template<>
 void RequiredFilesDownloader::saveFile<ResourceFile>(const std::string& fileName, const std::string& fileContent)
 {
-    if(!Managers::fileManager().isFileInCache(fileName, Utils::md5hash(fileContent)))
+    if(!Managers::fileManager().cachedWithHash(fileName, Utils::md5hash(fileContent)))
     {
-        Managers::fileManager().saveFile(fileName, fileContent);
+        Managers::fileManager().save(fileName, fileContent);
     }
 }

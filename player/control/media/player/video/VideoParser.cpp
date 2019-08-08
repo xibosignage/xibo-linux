@@ -7,20 +7,20 @@ const bool DefaultVideoMuted = false;
 const bool DefaultVideoLooped = false;
 const MediaGeometry::ScaleType DefaultVideoScaleType = MediaGeometry::ScaleType::Scaled;
 
-ExtraOptions VideoParser::parseExtraOptionsImpl(const xml_node& node)
+ExtraOptions VideoParser::extraOptionsImpl(const ptree_node& node)
 {
-    auto muted = node.get<bool>(ResourcesXlf::Player::Mute, DefaultVideoMuted);
-    auto looped = node.get<bool>(ResourcesXlf::Player::Loop, DefaultVideoLooped);
+    auto muted = node.get<bool>(XlfResources::Player::Mute, DefaultVideoMuted);
+    auto looped = node.get<bool>(XlfResources::Player::Loop, DefaultVideoLooped);
 
     return {
-        {ResourcesXlf::Player::Mute, std::to_string(muted)},
-        {ResourcesXlf::Player::Loop, std::to_string(looped)}
+        {XlfResources::Player::Mute, std::to_string(muted)},
+        {XlfResources::Player::Loop, std::to_string(looped)}
     };
 }
 
-MediaGeometry VideoParser::geometryFrom(const xml_node& node)
+MediaGeometry VideoParser::geometryFrom(const ptree_node& node)
 {
-    auto scaleType = node.get<MediaGeometry::ScaleType>(ResourcesXlf::option(ResourcesXlf::Media::Geometry::ScaleType), DefaultVideoScaleType);
+    auto scaleType = node.get<MediaGeometry::ScaleType>(XlfResources::option(XlfResources::Media::Geometry::ScaleType), DefaultVideoScaleType);
 
     return MediaGeometry{scaleType, MediaGeometry::Align::Center, MediaGeometry::Valign::Middle};
 }

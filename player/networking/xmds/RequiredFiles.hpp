@@ -45,12 +45,12 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result doParse(const xml_node& node) override;
+    RequiredFiles::Result doParse(const ptree_node& node) override;
 
 private:
-    RegularFile parseRegularFile(const xml_node& attrs);
-    ResourceFile parseResourceFile(const xml_node& attrs);
-    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const xml_node& attrs);
+    RegularFile parseRegularFile(const ptree_node& attrs);
+    ResourceFile parseResourceFile(const ptree_node& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const ptree_node& attrs);
 
     bool isLayout(std::string_view type) const;
     bool isMedia(std::string_view type) const;

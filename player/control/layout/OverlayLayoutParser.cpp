@@ -1,7 +1,7 @@
 #include "OverlayLayoutParser.hpp"
 
 #include "control/common/OverlayLayout.hpp"
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 
 std::shared_ptr<IOverlayLayout> OverlayLayoutParser::createView(const LayoutOptions& options)
 {

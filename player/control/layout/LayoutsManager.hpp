@@ -6,33 +6,33 @@
 #include <vector>
 #include <map>
 
-class XiboLayoutScheduler;
+class Scheduler;
 
-using MainLayoutFetched = sigc::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
-using OverlaysFetched = sigc::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
+using MainLayoutLoaded = sigc::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
+using OverlaysLoaded = sigc::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
 
 class LayoutsManager
 {
 public:
-    LayoutsManager(XiboLayoutScheduler& scheduler);
+    LayoutsManager(Scheduler& scheduler);
 
     void fetchAllLayouts();
-    void fetchMainLayout(int layoutId);
-    void fetchOverlays(std::vector<int> layoutsId);
+    void fetchMainLayout();
+    void fetchOverlays();
 
-    MainLayoutFetched& mainLayoutFetched();
-    OverlaysFetched& overlaysFetched();
+    MainLayoutLoaded& mainLayoutFetched();
+    OverlaysLoaded& overlaysFetched();
 
 private:
-    template<typename LayoutFetcher>
+    template<typename LayoutLoader>
     std::unique_ptr<IMainLayout> createLayout(int layoutId);
 
 private:
     std::unique_ptr<IMainLayout> m_mainLayout;
     std::map<int, std::unique_ptr<IMainLayout>> m_overlayLayouts;
-    XiboLayoutScheduler& m_scheduler;
+    Scheduler& m_scheduler;
 
-    MainLayoutFetched m_mainLayoutFetched;
-    OverlaysFetched m_overlaysFetched;
+    MainLayoutLoaded m_mainLayoutFetched;
+    OverlaysLoaded m_overlaysFetched;
 
 };

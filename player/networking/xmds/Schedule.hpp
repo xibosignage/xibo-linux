@@ -36,6 +36,6 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Result doParse(const xml_node& scheduleNode) override;
+    Schedule::Result doParse(const ptree_node& scheduleNode) override;
 
 };

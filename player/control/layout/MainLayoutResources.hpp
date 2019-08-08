@@ -1,12 +1,13 @@
 #pragma once
 
 #include "control/common/XlfResources.hpp"
+#include "common/Parsing.hpp"
 
-namespace ResourcesXlf::MainLayout
+namespace XlfResources::MainLayout
 {
-    const std::string SchemaVersion = ResourcesXlf::attr("schemaVersion");
-    const std::string Width = ResourcesXlf::attr("width");
-    const std::string Height = ResourcesXlf::attr("height");
-    const std::string BackgroundPath = ResourcesXlf::attr("background");
-    const std::string BackgroundColor = ResourcesXlf::attr("bgcolor");
+    const std::string SchemaVersion = Parsing::xmlAttr("schemaVersion");
+    const std::string Width = Parsing::xmlAttr("width");
+    const std::string Height = Parsing::xmlAttr("height");
+    const std::string BackgroundPath = Parsing::xmlAttr("background");
+    const std::string BackgroundColor = Parsing::xmlAttr("bgcolor");
 }

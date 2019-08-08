@@ -7,12 +7,12 @@
 #include "control/common/Image.hpp"
 #include "control/common/OverlayLayout.hpp"
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 #include "utils/ColorToHexConverter.hpp"
 
 const std::string DefaultColor = "#000";
 
-std::unique_ptr<IMainLayout> MainLayoutParser::layoutFrom(const xml_node& node)
+std::unique_ptr<IMainLayout> MainLayoutParser::layoutFrom(const ptree_node& node)
 {
     auto options = optionsFrom(node);
     auto view = createView(options);
@@ -28,12 +28,12 @@ std::unique_ptr<IMainLayout> MainLayoutParser::createLayout(const std::shared_pt
     return std::make_unique<MainLayout>(view);
 }
 
-LayoutOptions MainLayoutParser::optionsFrom(const xml_node& node)
+LayoutOptions MainLayoutParser::optionsFrom(const ptree_node& node)
 {
     LayoutOptions options;
 
-    options.width = node.get<int>(ResourcesXlf::MainLayout::Width);
-    options.height = node.get<int>(ResourcesXlf::MainLayout::Height);
+    options.width = node.get<int>(XlfResources::MainLayout::Width);
+    options.height = node.get<int>(XlfResources::MainLayout::Height);
 
     options.backgroundUri = uriFrom(node);
     options.backgroundColor = colorFrom(node);
@@ -41,16 +41,16 @@ LayoutOptions MainLayoutParser::optionsFrom(const xml_node& node)
     return options;
 }
 
-Uri MainLayoutParser::uriFrom(const xml_node& node)
+Uri MainLayoutParser::uriFrom(const ptree_node& node)
 {
-    auto uri = node.get_optional<std::string>(ResourcesXlf::MainLayout::BackgroundPath);
+    auto uri = node.get_optional<std::string>(XlfResources::MainLayout::BackgroundPath);
 
     return Validators::validateUri(uri);
 }
 
-uint32_t MainLayoutParser::colorFrom(const xml_node& node)
+uint32_t MainLayoutParser::colorFrom(const ptree_node& node)
 {
-    auto color = node.get<std::string>(ResourcesXlf::MainLayout::BackgroundColor);
+    auto color = node.get<std::string>(XlfResources::MainLayout::BackgroundColor);
 
     color = color.empty() ? DefaultColor : color;
 
@@ -79,11 +79,11 @@ std::shared_ptr<IImage> MainLayoutParser::createBackground(const LayoutOptions& 
     return background;
 }
 
-void MainLayoutParser::addRegions(IMainLayout& layout, const xml_node& layoutNode)
+void MainLayoutParser::addRegions(IMainLayout& layout, const ptree_node& layoutNode)
 {
     for(auto [nodeName, node] : layoutNode)
     {
-        if(nodeName != ResourcesXlf::RegionNode) continue;
+        if(nodeName != XlfResources::RegionNode) continue;
 
         RegionParser parser;
         auto options = parser.optionsFrom(node);

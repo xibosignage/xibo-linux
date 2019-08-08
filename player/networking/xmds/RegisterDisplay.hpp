@@ -59,10 +59,6 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result doParse(const xml_node& node) override;
-
-private:
-    void fillPlayerSettings(PlayerSettings& settings, const xml_node& display);
-    LoggingLevel toLogLevelEnum(const std::string& level);
+    RegisterDisplay::Result doParse(const ptree_node& node) override;
 
 };

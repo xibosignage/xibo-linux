@@ -7,7 +7,7 @@
 #include "networking/xmds/Schedule.hpp"
 #include "networking/xmds/SubmitLog.hpp"
 
-#include "utils/ITimerProvider.hpp"
+#include "common/dt/Timer.hpp"
 #include "networking/ResponseResult.hpp"
 #include "common/JoinableThread.hpp"
 #include "common/Dispatcher.hpp"
@@ -15,8 +15,9 @@
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
-using SignalScheduleUpdated = Dispatcher<Schedule::Result>;
+using SignalScheduleAvailable = Dispatcher<Schedule::Result>;
 using SignalCollectionFinished = Dispatcher<PlayerError>;
+using SignalFilesDownloaded = Dispatcher<>;
 class XmdsRequestSender;
 
 struct CollectionSession
@@ -38,8 +39,9 @@ public:
     CmsStatus status();
 
     SignalSettingsUpdated& settingsUpdated();
-    SignalScheduleUpdated& scheduleUpdated();
+    SignalScheduleAvailable& scheduleAvailable();
     SignalCollectionFinished& collectionFinished();
+    SignalFilesDownloaded& filesDownloaded();
 
 private:
     void startTimer();
@@ -58,13 +60,14 @@ private:
 private:
     XmdsRequestSender& m_xmdsSender;
     std::unique_ptr<JoinableThread> m_workerThread;
-    std::unique_ptr<ITimerProvider> m_intervalTimer;
+    std::unique_ptr<Timer> m_intervalTimer;
     int m_collectInterval;
     bool m_started = false;
     bool m_registered = false;
     DateTime m_lastChecked;
     size_t m_requiredFiles = 0;
     SignalSettingsUpdated m_settingsUpdated;
-    SignalScheduleUpdated m_scheduleUpdated;
+    SignalScheduleAvailable m_scheduleAvailable;
     SignalCollectionFinished m_collectionFinished;
+    SignalFilesDownloaded m_filesDownloaded;
 };

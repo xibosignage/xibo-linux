@@ -17,7 +17,7 @@ std::vector<spdlog::sink_ptr> createLoggerSinks()
 int main(int /*argc*/, char** /*argv*/)
 {
     auto app = Gtk::Application::create();
-    auto ui = Gtk::Builder::create_from_file(ProjectResources::buildDirectory() / Resources::UiFile);
+    auto ui = Gtk::Builder::create_from_file(ProjectResources::uiFile());
 
     auto logger = XiboLogger::create(SpdLogger, createLoggerSinks());
     logger->setLevel(LoggingLevel::Debug);

@@ -2,8 +2,8 @@
 
 #include "control/common/XlfResources.hpp"
 
-namespace ResourcesXlf::WebView
+namespace XlfResources::WebView
 {
-    const std::string Transparency = ResourcesXlf::option("transparency");
-    const std::string ModeId = ResourcesXlf::option("modeid");
+    const std::string Transparency = XlfResources::option("transparency");
+    const std::string ModeId = XlfResources::option("modeid");
 }

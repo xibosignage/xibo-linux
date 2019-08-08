@@ -1,40 +1,41 @@
 #include "LayoutsManager.hpp"
-
-#include "config.hpp"
-#include "XlfLayoutFetcher.hpp"
-#include "common/logger/Logging.hpp"
-
-#include "control/common/Image.hpp"
+#include "XlfLayoutLoader.hpp"
 #include "control/common/IOverlayLayout.hpp"
 
-#include "managers/schedule/XiboLayoutScheduler.hpp"
+#include "schedule/Scheduler.hpp"
+#include "common/logger/Logging.hpp"
+#include "config.hpp"
 
-LayoutsManager::LayoutsManager(XiboLayoutScheduler& scheduler) :
+LayoutsManager::LayoutsManager(Scheduler& scheduler) :
     m_scheduler(scheduler)
 {
+    m_scheduler.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
+    m_scheduler.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
 }
 
 void LayoutsManager::fetchAllLayouts()
 {
-    fetchMainLayout(m_scheduler.nextLayoutId());
-    fetchOverlays(m_scheduler.nextOverlayLayoutsIds());
+    fetchMainLayout();
+    fetchOverlays();
 }
 
-MainLayoutFetched& LayoutsManager::mainLayoutFetched()
+MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
 {
     return m_mainLayoutFetched;
 }
 
-OverlaysFetched& LayoutsManager::overlaysFetched()
+OverlaysLoaded& LayoutsManager::overlaysFetched()
 {
     return m_overlaysFetched;
 }
 
-void LayoutsManager::fetchMainLayout(int layoutId)
+void LayoutsManager::fetchMainLayout()
 {
-    if(layoutId != EmptyLayoutId)
+    auto id = m_scheduler.nextLayout();
+
+    if(id != EmptyLayoutId)
     {
-        m_mainLayout = createLayout<XlfMainLayoutFetcher>(layoutId);
+        m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
         m_mainLayoutFetched.emit(m_mainLayout->view());
     }
     else
@@ -43,17 +44,15 @@ void LayoutsManager::fetchMainLayout(int layoutId)
     }
 }
 
-void LayoutsManager::fetchOverlays(std::vector<int> layoutsId)
+void LayoutsManager::fetchOverlays()
 {
-    if(layoutsId.empty()) return;
-
     std::vector<std::shared_ptr<IOverlayLayout>> overlays;
 
     m_overlayLayouts.clear();
 
-    for(int id : layoutsId)
+    for(int id : m_scheduler.overlayLayouts())
     {
-        auto overlayLayout = createLayout<XlfOverlayLayoutFetcher>(id);
+        auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
         overlays.emplace_back(overlayLayout->view());
         m_overlayLayouts.emplace(id, std::move(overlayLayout));
     }
@@ -61,17 +60,17 @@ void LayoutsManager::fetchOverlays(std::vector<int> layoutsId)
     m_overlaysFetched.emit(overlays);
 }
 
-template<typename LayoutFetcher>
+template<typename LayoutLoader>
 std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 {
-    auto layout = LayoutFetcher{}.fetch(layoutId);
+    auto layout = LayoutLoader::loadBy(layoutId);
 
     layout->expired().connect([this, layoutId](){
         Log::trace("Layout {} expired", layoutId);
 
-        if constexpr(std::is_same_v<LayoutFetcher, XlfMainLayoutFetcher>)
+        if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
         {
-            fetchMainLayout(m_scheduler.nextLayoutId());
+            fetchMainLayout();
         }
         else
         {

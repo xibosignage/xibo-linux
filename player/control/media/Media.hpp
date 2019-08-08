@@ -3,7 +3,7 @@
 #include "IMedia.hpp"
 #include "MediaOptions.hpp"
 
-#include "utils/ITimerProvider.hpp"
+#include "common/dt/Timer.hpp"
 
 #include "control/common/transitions/TransitionExecutor.hpp"
 #include "control/common/IWidget.hpp"
@@ -42,7 +42,7 @@ private:
     MediaOptions m_options;
     std::shared_ptr<IWidget> m_view;
     std::unique_ptr<IMedia> m_attachedMedia;
-    std::unique_ptr<ITimerProvider> m_timer;
+    std::unique_ptr<Timer> m_timer;
     std::unique_ptr<TransitionExecutor> m_inTransition;
     std::unique_ptr<TransitionExecutor> m_outTransition;
     SignalMediaFinished m_mediaFinished;

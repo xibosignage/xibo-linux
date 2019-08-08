@@ -1,10 +1,8 @@
 #include "TransitionExecutor.hpp"
 
-#include "utils/TimerProvider.hpp"
-
 TransitionExecutor::TransitionExecutor(Transition::Heading heading, int duration, const std::shared_ptr<IWidget>& media) :
     m_heading(heading), m_duration(duration), m_media(media),
-    m_timer(std::make_unique<TimerProvider>())
+    m_timer(std::make_unique<Timer>())
 {
 }
 
@@ -28,7 +26,7 @@ std::shared_ptr<IWidget> TransitionExecutor::media() const
     return m_media;
 }
 
-ITimerProvider& TransitionExecutor::timer()
+Timer& TransitionExecutor::timer()
 {
     return *m_timer;
 }

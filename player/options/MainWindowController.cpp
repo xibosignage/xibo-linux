@@ -43,14 +43,14 @@ void MainWindowController::initUi()
 
 void MainWindowController::updateControls(const CmsSettings& settings)
 {
-    m_cmsAddressField->set_text(Glib::ustring{settings.cmsAddress()});
-    m_keyField->set_text(Glib::ustring{settings.key()});
-    m_resourcesPathField->set_text(Glib::ustring{settings.resourcesPath()});
+    m_cmsAddressField->set_text(Glib::ustring{settings.cmsAddress});
+    m_keyField->set_text(Glib::ustring{settings.key});
+    m_resourcesPathField->set_text(Glib::ustring{settings.resourcesPath});
 
-    m_usernameField->set_text(Glib::ustring{settings.username()});
-    m_passwordField->set_text(Glib::ustring{settings.password()});
-    m_domainField->set_text(Glib::ustring{settings.domain()});
-    m_displayIdField->set_text(Glib::ustring{settings.displayId()});
+    m_usernameField->set_text(Glib::ustring{settings.username});
+    m_passwordField->set_text(Glib::ustring{settings.password});
+    m_domainField->set_text(Glib::ustring{settings.domain});
+    m_displayIdField->set_text(Glib::ustring{settings.displayId});
 }
 
 void MainWindowController::connectSignals()
@@ -107,17 +107,15 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress, co
 
 void MainWindowController::updateSettings()
 {
-    CmsSettings settings;
-
-    settings.setCmsAddress(m_cmsAddressField->get_text());
-    settings.setKey(m_keyField->get_text());
+    m_settings.cmsAddress = m_cmsAddressField->get_text();
+    m_settings.key = m_keyField->get_text();
     std::string path = m_resourcesPathField->get_text();
-    settings.setResourcesPath(path.empty() ? ProjectResources::defaultResourcesDir().string() : path);
+    m_settings.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
 
-    settings.setUsername(m_usernameField->get_text());
-    settings.setPassword(m_passwordField->get_text());
-    settings.setDomain(m_domainField->get_text());
-    settings.setDisplayId(m_displayIdField->get_text());
+    m_settings.username = m_usernameField->get_text();
+    m_settings.password = m_passwordField->get_text();
+    m_settings.domain = m_domainField->get_text();
+    m_settings.displayId = m_displayIdField->get_text();
 
     m_settings.saveTo(ProjectResources::cmsSettingsFile());
 }

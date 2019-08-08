@@ -2,7 +2,7 @@
 
 #include "Transition.hpp"
 #include "../IWidget.hpp"
-#include "utils/ITimerProvider.hpp"
+#include "common/dt/Timer.hpp"
 
 #include <memory>
 
@@ -22,13 +22,13 @@ protected:
     Transition::Heading heading() const;
     int duration() const;
     std::shared_ptr<IWidget> media() const;
-    ITimerProvider& timer();
+    Timer& timer();
 
 private:
     Transition::Heading m_heading;
     int m_duration;
     std::shared_ptr<IWidget> m_media;
-    std::unique_ptr<ITimerProvider> m_timer;
+    std::unique_ptr<Timer> m_timer;
     SignalFinished m_finished;
 
 };

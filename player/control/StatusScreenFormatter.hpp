@@ -3,7 +3,7 @@
 #include "GeneralInfo.hpp"
 #include "managers/CmsStatus.hpp"
 #include "managers/XmrStatus.hpp"
-#include "managers/schedule/SchedulerStatus.hpp"
+#include "schedule/SchedulerStatus.hpp"
 
 struct StatusInfo
 {

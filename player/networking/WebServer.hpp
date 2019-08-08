@@ -5,7 +5,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 #include "common/JoinableThread.hpp"
 
 namespace beast = boost::beast;
@@ -59,6 +59,7 @@ class XiboWebServer : public std::enable_shared_from_this<XiboWebServer>
 {
 public:
     XiboWebServer();
+    ~XiboWebServer();
 
     std::string address() const;
     void run(unsigned short port);

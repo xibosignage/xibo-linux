@@ -39,6 +39,6 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetResource::Result doParse(const xml_node& node) override;
+    GetResource::Result doParse(const ptree_node& node) override;
 
 };

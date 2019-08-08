@@ -7,9 +7,9 @@ class FilePath;
 class WebViewParser : public MediaParser
 {
 protected:
-    Uri uriFrom(const xml_node& node) override;
-    int durationFrom(const xml_node& node) override;
-    ExtraOptions parseExtraOptionsImpl(const xml_node& node) override;
+    Uri uriFrom(const ptree_node& node) override;
+    int durationFrom(const ptree_node& node) override;
+    ExtraOptions extraOptionsImpl(const ptree_node& node) override;
 
 private:
     std::optional<int> parseDuration(const FilePath& path);

@@ -2,18 +2,26 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-using xml_node = boost::property_tree::ptree;
-
+using ptree_node = boost::property_tree::ptree;
 class FilePath;
 
 namespace Utils
 {
-    xml_node parseXmlFromPath(const FilePath& xlfPath);
-    xml_node parseXmlFromString(const std::string& xml);
-    xml_node parseJsonFromString(const std::string& json);
-    std::string xmlTreeToEscapedString(const xml_node& node);
     std::string md5hash(std::string_view data);
     std::string md5hashFromFile(const FilePath& path);
     std::string toBase64(const std::string& text);
     std::string fromBase64(const std::string& text);
+
+    template<typename Container>
+    bool containersEqual(const Container& first, const Container& second)
+    {
+        if(first.size() != second.size()) return false;
+
+        for(size_t i = 0; i != first.size(); ++i)
+        {
+            if(first[i] != second[i]) return false;
+        }
+
+        return true;
+    }
 }

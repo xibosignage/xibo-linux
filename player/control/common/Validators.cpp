@@ -1,7 +1,7 @@
 #include "Validators.hpp"
 
-#include "utils/Resources.hpp"
-#include "common/FileSystem.hpp"
+#include "common/fs/Resources.hpp"
+#include "common/fs/FileSystem.hpp"
 
 Uri Validators::validateUri(const boost::optional<std::string>& uri)
 {

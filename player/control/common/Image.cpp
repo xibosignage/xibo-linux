@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-#include "common/FilePath.hpp"
+#include "common/fs/FilePath.hpp"
 
 Image::Image(int width, int height) :
     Widget(m_handler)

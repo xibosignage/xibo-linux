@@ -4,9 +4,9 @@
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/DateTimeProvider.hpp"
+#include "common/dt/DateTimeProvider.hpp"
 
-#include "utils/TimerProvider.hpp"
+#include "common/dt/Timer.hpp"
 #include "utils/ScreenShoter.hpp"
 #include "utils/Managers.hpp"
 #include "xmlsink/XmlLogsRetriever.hpp"
@@ -17,7 +17,7 @@ const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
-    m_xmdsSender{xmdsSender}, m_intervalTimer{std::make_unique<TimerProvider>()}, m_collectInterval{DefaultInterval}
+    m_xmdsSender{xmdsSender}, m_intervalTimer{std::make_unique<Timer>()}, m_collectInterval{DefaultInterval}
 {
 }
 
@@ -34,7 +34,7 @@ void CollectionInterval::stop()
 
 void CollectionInterval::startTimer()
 {
-    m_intervalTimer->startOnceSeconds(static_cast<unsigned int>(m_collectInterval), [=](){
+    m_intervalTimer->start(std::chrono::seconds(m_collectInterval), [=](){
         collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
     });
 }
@@ -147,14 +147,19 @@ SignalSettingsUpdated& CollectionInterval::settingsUpdated()
     return m_settingsUpdated;
 }
 
-SignalScheduleUpdated& CollectionInterval::scheduleUpdated()
+SignalScheduleAvailable& CollectionInterval::scheduleAvailable()
 {
-    return m_scheduleUpdated;
+    return m_scheduleAvailable;
 }
 
 SignalCollectionFinished& CollectionInterval::collectionFinished()
 {
     return m_collectionFinished;
+}
+
+SignalFilesDownloaded& CollectionInterval::filesDownloaded()
+{
+    return m_filesDownloaded;
 }
 
 void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session)
@@ -174,6 +179,8 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
 
         updateMediaInventory(filesResult.get());
         updateMediaInventory(resourcesResult.get());
+
+        m_filesDownloaded.emit();
     }
     else
     {
@@ -187,7 +194,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
-        m_scheduleUpdated.emit(result);
+        m_scheduleAvailable.emit(result);
     }
     else
     {
@@ -201,7 +208,7 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         auto [error, result] = future.get();
         if(error)
         {
-            Log::error("MediaInventory: {}", error);
+            Log::error("[MediaInventory] {}", error);
         }
     });
 }
@@ -233,7 +240,7 @@ void CollectionInterval::submitScreenShot()
             auto [error, result] = future.get();
             if(error)
             {
-                Log::error("SubmitScreenShot: {}", error);
+                Log::error("[SubmitScreenShot] {}", error);
             }
         });
     });

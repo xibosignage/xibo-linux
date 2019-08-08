@@ -10,8 +10,8 @@
 
 std::unique_ptr<IMedia> VideoFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    int width = std::stoi(options.at(ResourcesXlf::Media::Width));
-    int height = std::stoi(options.at(ResourcesXlf::Media::Height));
+    int width = std::stoi(options.at(XlfResources::Media::Width));
+    int height = std::stoi(options.at(XlfResources::Media::Height));
     auto playerOptions = createPlayerOptions(baseOptions, options);
 
     auto videoPlayer = createPlayer(playerOptions, width, height);
@@ -20,8 +20,8 @@ std::unique_ptr<IMedia> VideoFactory::create(const MediaOptions& baseOptions, co
 
 MediaPlayerOptions VideoFactory::createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options)
 {
-    auto muted = static_cast<MediaPlayerOptions::Mute>(std::stoi(options.at(ResourcesXlf::Player::Mute)));
-    auto looped = static_cast<MediaPlayerOptions::Loop>(std::stoi(options.at(ResourcesXlf::Player::Loop)));
+    auto muted = static_cast<MediaPlayerOptions::Mute>(std::stoi(options.at(XlfResources::Player::Mute)));
+    auto looped = static_cast<MediaPlayerOptions::Loop>(std::stoi(options.at(XlfResources::Player::Loop)));
 
     return MediaPlayerOptions{baseOptions, muted, looped, MaxVolume};
 }

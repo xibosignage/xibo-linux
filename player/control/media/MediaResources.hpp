@@ -1,18 +1,20 @@
 #pragma once
 
 #include "control/common/XlfResources.hpp"
+#include "common/Parsing.hpp"
 
-namespace ResourcesXlf::Media
+namespace XlfResources::Media
 {
-    const std::string Id = ResourcesXlf::attr("id");
-    const std::string Type = ResourcesXlf::attr("type");
-    const std::string Render = ResourcesXlf::attr("render");
-    const std::string Width = ResourcesXlf::attr("width");
-    const std::string Height = ResourcesXlf::attr("height");
-    const std::string Uri = ResourcesXlf::option("uri");
-    const std::string Duration = ResourcesXlf::attr("duration");
+    const std::string Id = Parsing::xmlAttr("id");
+    const std::string Type = Parsing::xmlAttr("type");
+    const std::string Render = Parsing::xmlAttr("render");
+    const std::string Width = Parsing::xmlAttr("width");
+    const std::string Height = Parsing::xmlAttr("height");
+    const std::string Uri = XlfResources::option("uri");
+    const std::string Duration = Parsing::xmlAttr("duration");
 
     const std::string AudioType = "audio";
+    const std::string AudioNodeType = "audionode";
     const std::string VideoType = "video";
     const std::string HlsType = "hls";
     const std::string LocalVideoType = "localvideo";
@@ -28,17 +30,17 @@ namespace ResourcesXlf::Media
 
     namespace Geometry
     {
-        const std::string ScaleType = ResourcesXlf::option("scaleType");
+        const std::string ScaleType = XlfResources::option("scaleType");
         const std::string Scaled = "center";
         const std::string Aspect = "aspect";
         const std::string Stretch = "stretch";
 
-        const std::string Align = ResourcesXlf::option("align");
+        const std::string Align = XlfResources::option("align");
         const std::string RightAlign = "right";
         const std::string CenterAlign = "center";
         const std::string LeftAlign = "left";
 
-        const std::string Valign = ResourcesXlf::option("valign");
+        const std::string Valign = XlfResources::option("valign");
         const std::string TopValign = "top";
         const std::string MiddleValign = "middle";
         const std::string BottomValign = "bottom";
@@ -59,13 +61,13 @@ namespace ResourcesXlf::Media
         const std::string W = "W";
         const std::string NW = "NW";
 
-        const std::string InType = ResourcesXlf::option("transIn");
-        const std::string InDirection = ResourcesXlf::option("transInDirection");
-        const std::string InDuration = ResourcesXlf::option("transInDuration");
+        const std::string InType = XlfResources::option("transIn");
+        const std::string InDirection = XlfResources::option("transInDirection");
+        const std::string InDuration = XlfResources::option("transInDuration");
 
-        const std::string OutType = ResourcesXlf::option("transOut");
-        const std::string OutDirection = ResourcesXlf::option("transOutDirection");
-        const std::string OutDuration = ResourcesXlf::option("transOutDuration");
+        const std::string OutType = XlfResources::option("transOut");
+        const std::string OutDirection = XlfResources::option("transOutDirection");
+        const std::string OutDuration = XlfResources::option("transOutDuration");
     }
 
 }

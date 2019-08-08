@@ -2,14 +2,20 @@
 
 #include "constants.hpp"
 
-#include "common/DateTimeProvider.hpp"
+#include "common/dt/DateTimeProvider.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/Parsing.hpp"
 #include "common/Utils.hpp"
-#include "common/RsaManager.hpp"
+#include "common/crypto/RsaManager.hpp"
 
 const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
 const size_t MESSAGE_PART = 2;
+
+XmrManager::~XmrManager()
+{
+    m_subcriber.stop();
+}
 
 void XmrManager::connect(const std::string& host)
 {
@@ -22,11 +28,6 @@ void XmrManager::connect(const std::string& host)
     m_subcriber.run(host);
 
     Log::info("Connected to XMR publisher");
-}
-
-void XmrManager::stop()
-{
-    m_subcriber.stop();
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
@@ -82,7 +83,7 @@ std::string XmrManager::decryptMessage(const std::string& encryptedBase64Key, co
 
 XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 {
-    auto tree = Utils::parseJsonFromString(jsonMessage);
+    auto tree = Parsing::jsonFromString(jsonMessage);
 
     XmrMessage message;
     message.action = tree.get<std::string>("action");

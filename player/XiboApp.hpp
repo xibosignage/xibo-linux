@@ -10,15 +10,14 @@
 class MainLoop;
 class XmdsRequestSender;
 class HttpClient;
-class XiboLayoutScheduler;
-class FileCacheManager;
+class Scheduler;
+class FileCache;
 class CollectionInterval;
 class PlayerError;
 class ScreenShoter;
 class XmrManager;
 class MainWindowController;
 class MainWindow;
-class ScheduleManager;
 class XiboWebServer;
 class LayoutsManager;
 
@@ -32,7 +31,7 @@ public:
     static XiboApp& create(const std::string& name);
     static XiboApp& app();
 
-    FileCacheManager& fileManager();
+    FileCache& fileManager();
     ScreenShoter& screenShoter();
     XiboWebServer& webserver();
 
@@ -54,15 +53,14 @@ private:
 
 private:
     std::unique_ptr<MainLoop> m_mainLoop;
-    std::unique_ptr<XiboLayoutScheduler> m_scheduler;
-    std::unique_ptr<FileCacheManager> m_fileManager;
+    std::unique_ptr<FileCache> m_fileCache;
+    std::unique_ptr<Scheduler> m_scheduler;
     std::unique_ptr<CollectionInterval> m_collectionInterval;
     std::unique_ptr<XmdsRequestSender> m_xmdsManager;
     std::unique_ptr<ScreenShoter> m_screenShoter;
     std::unique_ptr<XmrManager> m_xmrManager;
     std::shared_ptr<MainWindow> m_mainWindow;
     std::unique_ptr<MainWindowController> m_windowController;
-    std::unique_ptr<ScheduleManager> m_scheduleManager;
     std::shared_ptr<XiboWebServer> m_webserver;
     std::unique_ptr<LayoutsManager> m_layoutsManager;
     CmsSettings m_cmsSettings;
