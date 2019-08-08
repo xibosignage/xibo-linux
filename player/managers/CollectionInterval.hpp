@@ -17,6 +17,7 @@ using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
 using SignalScheduleAvailable = Dispatcher<Schedule::Result>;
 using SignalCollectionFinished = Dispatcher<PlayerError>;
+using SignalFilesDownloaded = Dispatcher<>;
 class XmdsRequestSender;
 
 struct CollectionSession
@@ -40,6 +41,7 @@ public:
     SignalSettingsUpdated& settingsUpdated();
     SignalScheduleAvailable& scheduleAvailable();
     SignalCollectionFinished& collectionFinished();
+    SignalFilesDownloaded& filesDownloaded();
 
 private:
     void startTimer();
@@ -67,4 +69,5 @@ private:
     SignalSettingsUpdated m_settingsUpdated;
     SignalScheduleAvailable m_scheduleAvailable;
     SignalCollectionFinished m_collectionFinished;
+    SignalFilesDownloaded m_filesDownloaded;
 };

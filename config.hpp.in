@@ -22,7 +22,7 @@ namespace ProjectResources
     inline FilePath buildDirectory()
     {
         const char* directory = getenv("SNAP");
-        return directory == nullptr ? FilePath{"@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"} : FilePath{directory} / "bin";
+        return directory == nullptr ? FileSystem::currentPath() : FilePath{directory} / "bin";
     }
 
     inline FilePath configDirectory()
@@ -49,6 +49,11 @@ namespace ProjectResources
     inline FilePath splashScreen()
     {
         return buildDirectory() / "splash.jpg";
+    }
+
+    inline FilePath uiFile()
+    {
+        return buildDirectory() / "ui.glade";
     }
 
     inline FilePath cmsSettingsFile()

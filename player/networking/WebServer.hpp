@@ -59,6 +59,7 @@ class XiboWebServer : public std::enable_shared_from_this<XiboWebServer>
 {
 public:
     XiboWebServer();
+    ~XiboWebServer();
 
     std::string address() const;
     void run(unsigned short port);

@@ -169,6 +169,11 @@ XiboWebServer::XiboWebServer() :
     }
 }
 
+XiboWebServer::~XiboWebServer()
+{
+    m_ioc.stop();
+}
+
 std::string XiboWebServer::address() const
 {
     return "http://" + DefaultLocalAddress + ":" + std::to_string(m_port) + "/";

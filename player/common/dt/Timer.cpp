@@ -7,7 +7,7 @@ Timer::~Timer()
 
 void Timer::stop()
 {
-    if(m_timerConnection.connected())
+    if(active())
     {
         m_timerConnection.disconnect();
     }

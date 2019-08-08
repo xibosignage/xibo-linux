@@ -14,4 +14,6 @@ int main(int /*argc*/, char** /*argv*/)
     {
         Log::error(e.what());
     }
+
+    return 0;
 }

@@ -12,6 +12,11 @@ const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
 const size_t MESSAGE_PART = 2;
 
+XmrManager::~XmrManager()
+{
+    m_subcriber.stop();
+}
+
 void XmrManager::connect(const std::string& host)
 {
     if(m_info.host == host) return;
@@ -23,11 +28,6 @@ void XmrManager::connect(const std::string& host)
     m_subcriber.run(host);
 
     Log::info("Connected to XMR publisher");
-}
-
-void XmrManager::stop()
-{
-    m_subcriber.stop();
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()

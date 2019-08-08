@@ -2,7 +2,6 @@
 
 namespace Resources
 {
-    const std::string UiFile = "ui.glade";
     const std::string SettingsSavedMessage = "Settings were successfully updated";
     const std::string ChooseResourcesFolder = "Please choose a folder for resources";
 

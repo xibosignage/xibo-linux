@@ -17,8 +17,9 @@ using ScreenshotAction = sigc::signal<void>;
 class XmrManager
 {
 public:
+    ~XmrManager();
+
     void connect(const std::string& host);
-    void stop();
 
     CollectionIntervalAction& collectionInterval();
     ScreenshotAction& screenshot();

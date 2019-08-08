@@ -107,7 +107,6 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_mainLoop->setShutdownAction([this](){
         m_layoutsManager.reset();
-        m_xmrManager->stop();
         HttpClient::instance().shutdown();
         if(m_collectionInterval)
         {
@@ -222,6 +221,9 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->scheduleAvailable().connect([this](const Schedule::Result& result){
         ScheduleParser parser;
         m_scheduler->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
+    });
+    interval->filesDownloaded().connect([this](){
+        m_scheduler->reloadQueue();
     });
 
     return interval;

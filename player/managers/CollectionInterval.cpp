@@ -157,6 +157,11 @@ SignalCollectionFinished& CollectionInterval::collectionFinished()
     return m_collectionFinished;
 }
 
+SignalFilesDownloaded& CollectionInterval::filesDownloaded()
+{
+    return m_filesDownloaded;
+}
+
 void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session)
 {
     auto [error, result] = requiredFiles;
@@ -174,6 +179,8 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
 
         updateMediaInventory(filesResult.get());
         updateMediaInventory(resourcesResult.get());
+
+        m_filesDownloaded.emit();
     }
     else
     {

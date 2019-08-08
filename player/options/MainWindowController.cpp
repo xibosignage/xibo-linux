@@ -107,17 +107,15 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress, co
 
 void MainWindowController::updateSettings()
 {
-    CmsSettings settings;
-
-    settings.cmsAddress = m_cmsAddressField->get_text();
-    settings.key = m_keyField->get_text();
+    m_settings.cmsAddress = m_cmsAddressField->get_text();
+    m_settings.key = m_keyField->get_text();
     std::string path = m_resourcesPathField->get_text();
-    settings.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
+    m_settings.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
 
-    settings.username = m_usernameField->get_text();
-    settings.password = m_passwordField->get_text();
-    settings.domain = m_domainField->get_text();
-    settings.displayId = m_displayIdField->get_text();
+    m_settings.username = m_usernameField->get_text();
+    m_settings.password = m_passwordField->get_text();
+    m_settings.domain = m_domainField->get_text();
+    m_settings.displayId = m_displayIdField->get_text();
 
     m_settings.saveTo(ProjectResources::cmsSettingsFile());
 }
