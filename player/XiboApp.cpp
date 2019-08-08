@@ -133,7 +133,7 @@ void XiboApp::setupXmrManager()
                 auto [error, result] = future.get();
                 if(error)
                 {
-                    Log::error("SubmitScreenShot: {}", error);
+                    Log::error("[SubmitScreenShot] {}", error);
                 }
             });
         });
@@ -234,13 +234,6 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
     if(error)
     {
         Log::error("[Collection interval] {}", error);
-    }
-    else
-    {
-        if(m_scheduler->currentLayoutId() == EmptyLayoutId)
-        {
-            m_layoutsManager->fetchMainLayout(m_scheduler->nextLayout());
-        }
     }
 }
 

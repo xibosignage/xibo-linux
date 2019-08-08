@@ -56,7 +56,7 @@ void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host
     }
     catch(zmq::error_t&)
     {
-        Log::error("Unsuccesful connection to {}", host);
+        Log::error("[ZeroMQ] Unsuccesful connection to {}", host);
     }
 }
 

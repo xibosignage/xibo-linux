@@ -17,8 +17,8 @@ public:
     LayoutsManager(Scheduler& scheduler);
 
     void fetchAllLayouts();
-    void fetchMainLayout(int layoutId);
-    void fetchOverlays(std::vector<int> layoutsId);
+    void fetchMainLayout();
+    void fetchOverlays();
 
     MainLayoutLoaded& mainLayoutFetched();
     OverlaysLoaded& overlaysFetched();

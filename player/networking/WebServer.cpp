@@ -127,7 +127,7 @@ void Session::onRead(beast::error_code ec, std::size_t /*bytesTransferred*/)
     }
     else
     {
-        Log::error("Error while reading request: {}", ec.message());
+        Log::error("[WebServer] Read Error: {}", ec.message());
     }
 }
 
@@ -145,7 +145,7 @@ void Session::onWrite(bool shouldBeClosed, beast::error_code ec, std::size_t /*b
     }
     else
     {
-        Log::error("Error while writing response: {}", ec.message());
+        Log::error("[WebServer] Write Error: {}", ec.message());
     }
 }
 
@@ -162,7 +162,7 @@ XiboWebServer::XiboWebServer() :
     for(int i = 0; i != DefaultThreadsCount; ++i)
     {
         m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
-            Log::trace("WebServer thread started");
+            Log::trace("[WebServer] Thread started");
 
             m_ioc.run();
         }));
@@ -194,7 +194,7 @@ void XiboWebServer::run(unsigned short port)
     }
     catch(std::exception& e)
     {
-        Log::error("Error while trying to establish server: {}", e.what());
+        Log::error("[WebServer] Establish Error: {}", e.what());
     }
 }
 
@@ -216,7 +216,7 @@ void XiboWebServer::onAccept(beast::error_code ec, tcp::socket socket)
     }
     else
     {
-        Log::error("Error while accepting the connection: {}", ec.message());
+        Log::error("[WebSerber] Accept Connection Error: {}", ec.message());
     }
 
     doAccept();

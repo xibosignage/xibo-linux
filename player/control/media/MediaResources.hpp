@@ -14,6 +14,7 @@ namespace XlfResources::Media
     const std::string Duration = Parsing::xmlAttr("duration");
 
     const std::string AudioType = "audio";
+    const std::string AudioNodeType = "audionode";
     const std::string VideoType = "video";
     const std::string HlsType = "hls";
     const std::string LocalVideoType = "localvideo";

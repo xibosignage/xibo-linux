@@ -25,7 +25,7 @@ int WebViewParser::durationFrom(const ptree_node& node)
     return parseDuration(uriFrom(node).path()).value_or(baseDuration);
 }
 
-ExtraOptions WebViewParser::parseExtraOptionsImpl(const ptree_node& node)
+ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
 {
     auto transparency = node.get<bool>(XlfResources::WebView::Transparency, DefaultTransparency);
     auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);

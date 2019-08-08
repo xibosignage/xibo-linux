@@ -88,25 +88,25 @@ std::istream& operator >>(std::istream& in, Transition::Direction& direction)
     return in;
 }
 
-std::unique_ptr<IMedia> MediaParser::mediaFrom(const ptree_node& node)
+std::unique_ptr<IMedia> MediaParser::mediaFrom(const ptree_node& node, int parentWidth, int parentHeight)
 {
     auto baseOptions = baseOptionsFrom(node);
-    auto media = createMedia(baseOptions, parseExtraOptions(node));
+    auto media = createMedia(baseOptions, extraOptions(node, parentWidth, parentHeight));
 
-    media->setInTransition(parseInTransition(node, media->view()));
-    media->setOutTransition(parseOutTransition(node, media->view()));
+    media->setInTransition(inTransitionFrom(node, media->view()));
+    media->setOutTransition(outTransitionFrom(node, media->view()));
 
-    attachAdditionalMedia(*media, node);
+    attach(*media, node);
 
     return media;
 }
 
-ExtraOptions MediaParser::parseExtraOptions(const ptree_node& node)
+ExtraOptions MediaParser::extraOptions(const ptree_node& node, int parentWidth, int parentHeight)
 {
-    auto options = parseExtraOptionsImpl(node);
+    auto options = extraOptionsImpl(node);
 
-    options.emplace(XlfResources::Media::Width, node.get<std::string>(XlfResources::Media::Width));
-    options.emplace(XlfResources::Media::Height, node.get<std::string>(XlfResources::Media::Height));
+    options.emplace(XlfResources::Media::Width, std::to_string(parentWidth));
+    options.emplace(XlfResources::Media::Height, std::to_string(parentHeight));
 
     return options;
 }
@@ -165,16 +165,16 @@ MediaGeometry MediaParser::geometryFrom(const ptree_node& /*node*/)
     return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
 }
 
-void MediaParser::attachAdditionalMedia(IMedia& media, const ptree_node& node)
+void MediaParser::attach(IMedia& media, const ptree_node& node)
 {
     for(auto [nodeName, attachedNode] : node)
     {
-        MediaOptions::Type type{nodeName, XlfResources::Media::NativeRender};
+        MediaOptions::Type type{nodeName + "node", XlfResources::Media::NativeRender};
         auto&& parser = MediaCreatorsRepo::get<MediaParser>(type);
 
         if(parser)
         {
-            media.attach(parser->mediaFrom(attachedNode));
+            media.attach(parser->mediaFrom(attachedNode, 0, 0));
         }
     }
 }
@@ -196,7 +196,7 @@ std::unique_ptr<TransitionExecutor> MediaParser::createTransition(Transition::Ty
     return nullptr;
 }
 
-std::unique_ptr<TransitionExecutor> MediaParser::parseInTransition(const ptree_node& node, const std::shared_ptr<IWidget>& view)
+std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view)
 {
     if(auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::InType))
     {
@@ -209,7 +209,7 @@ std::unique_ptr<TransitionExecutor> MediaParser::parseInTransition(const ptree_n
     return nullptr;
 }
 
-std::unique_ptr<TransitionExecutor> MediaParser::parseOutTransition(const ptree_node& node, const std::shared_ptr<IWidget>& view)
+std::unique_ptr<TransitionExecutor> MediaParser::outTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view)
 {
     if(auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::OutType))
     {

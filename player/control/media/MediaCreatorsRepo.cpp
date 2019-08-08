@@ -9,6 +9,7 @@
 #include "image/ImageParser.hpp"
 #include "webview/WebViewParser.hpp"
 #include "player/audio/AudioParser.hpp"
+#include "player/audio/AudioNodeParser.hpp"
 #include "player/video/VideoParser.hpp"
 
 Repository<MediaParser> MediaCreatorsRepo::parsers;
@@ -21,6 +22,7 @@ void MediaCreatorsRepo::init()
     add({XlfResources::Media::HlsType, XlfResources::Media::HtmlRender}, std::make_unique<VideoParser>(), std::make_unique<VideoFactory>());
     add({XlfResources::Media::LocalVideoType, XlfResources::Media::NativeRender}, std::make_unique<VideoParser>(), std::make_unique<VideoFactory>());
     add({XlfResources::Media::AudioType, XlfResources::Media::NativeRender}, std::make_unique<AudioParser>(), std::make_unique<AudioFactory>());
+    add({XlfResources::Media::AudioNodeType, XlfResources::Media::NativeRender}, std::make_unique<AudioNodeParser>(), std::make_unique<AudioFactory>());
     add({XlfResources::Media::TextType, XlfResources::Media::NativeRender}, std::make_unique<WebViewParser>(), std::make_unique<WebViewFactory>());
     add({XlfResources::Media::EmbeddedType, XlfResources::Media::NativeRender}, std::make_unique<WebViewParser>(), std::make_unique<WebViewFactory>());
     add({XlfResources::Media::TickerType, XlfResources::Media::NativeRender}, std::make_unique<WebViewParser>(), std::make_unique<WebViewFactory>());

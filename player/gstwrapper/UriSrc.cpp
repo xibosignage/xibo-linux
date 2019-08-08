@@ -31,6 +31,6 @@ void Gst::UriSrc::setLocation(const Uri& uri)
     }
     else
     {
-        Log::error("Location component is invalid");
+        Log::error("[Gst::UriSrc] Location component is invalid");
     }
 }

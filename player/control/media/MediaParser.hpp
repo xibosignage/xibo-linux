@@ -20,7 +20,7 @@ class MediaParser
 {
 public:
     virtual ~MediaParser() = default;
-    virtual std::unique_ptr<IMedia> mediaFrom(const ptree_node& node);
+    std::unique_ptr<IMedia> mediaFrom(const ptree_node& node, int parentWidth, int parentHeight);
 
 protected:
     virtual MediaOptions::Type typeFrom(const ptree_node& node);
@@ -28,16 +28,16 @@ protected:
     virtual Uri uriFrom(const ptree_node& node);
     virtual int durationFrom(const ptree_node& node);
     virtual MediaGeometry geometryFrom(const ptree_node& node);
-    virtual ExtraOptions parseExtraOptionsImpl(const ptree_node& node) = 0;
-    virtual void attachAdditionalMedia(IMedia& media, const ptree_node& node);
+    virtual ExtraOptions extraOptionsImpl(const ptree_node& node) = 0;
 
 private:
     MediaOptions baseOptionsFrom(const ptree_node& node);
-    ExtraOptions parseExtraOptions(const ptree_node& node);
+    ExtraOptions extraOptions(const ptree_node& node, int parentWidth, int parentHeight);
     std::unique_ptr<IMedia> createMedia(const MediaOptions& options, const ExtraOptions& extraOptions);
+    void attach(IMedia& media, const ptree_node& node);
 
-    std::unique_ptr<TransitionExecutor> parseInTransition(const ptree_node& node, const std::shared_ptr<IWidget>& view);
-    std::unique_ptr<TransitionExecutor> parseOutTransition(const ptree_node& node, const std::shared_ptr<IWidget>& view);
+    std::unique_ptr<TransitionExecutor> inTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
+    std::unique_ptr<TransitionExecutor> outTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
 
     template<Transition::Heading heading>
     std::unique_ptr<TransitionExecutor> createTransition(Transition::Type typeFrom,

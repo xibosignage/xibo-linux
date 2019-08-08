@@ -12,7 +12,7 @@ namespace XlfResources::Player
 
 namespace XlfResources::AudioNode
 {
-    const std::string Id = "mediaId";
+    const std::string Id = Parsing::xmlAttr("mediaId");
     const std::string Uri = "uri";
     const std::string Loop = Parsing::xmlAttr("loop");
     const std::string Volume = Parsing::xmlAttr("volume");

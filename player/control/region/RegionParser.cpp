@@ -54,10 +54,10 @@ void RegionParser::addMedia(IRegion& region, const ptree_node& regionNode)
         auto&& parser = MediaCreatorsRepo::get<MediaParser>(mediaTypeFrom(node));
         if(parser)
         {            
-            node.put(XlfResources::Media::Width, region.view()->width());
-            node.put(XlfResources::Media::Height, region.view()->height());
+            int width = region.view()->width();
+            int height = region.view()->height();
 
-            auto media = parser->mediaFrom(node);
+            auto media = parser->mediaFrom(node, width, height);
             auto [x, y] = mediaPositionInRegion(region, *media);
 
             region.addMedia(std::move(media), x, y);

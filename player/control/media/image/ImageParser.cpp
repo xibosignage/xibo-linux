@@ -15,7 +15,7 @@ MediaGeometry ImageParser::geometryFrom(const ptree_node& node)
     return MediaGeometry{scaleType, align, valign};
 }
 
-ExtraOptions ImageParser::parseExtraOptionsImpl(const ptree_node& /*node*/)
+ExtraOptions ImageParser::extraOptionsImpl(const ptree_node& /*node*/)
 {
     return {};
 }

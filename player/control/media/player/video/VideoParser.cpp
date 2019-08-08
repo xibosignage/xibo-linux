@@ -7,7 +7,7 @@ const bool DefaultVideoMuted = false;
 const bool DefaultVideoLooped = false;
 const MediaGeometry::ScaleType DefaultVideoScaleType = MediaGeometry::ScaleType::Scaled;
 
-ExtraOptions VideoParser::parseExtraOptionsImpl(const ptree_node& node)
+ExtraOptions VideoParser::extraOptionsImpl(const ptree_node& node)
 {
     auto muted = node.get<bool>(XlfResources::Player::Mute, DefaultVideoMuted);
     auto looped = node.get<bool>(XlfResources::Player::Loop, DefaultVideoLooped);

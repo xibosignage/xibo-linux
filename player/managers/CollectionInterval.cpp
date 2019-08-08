@@ -208,7 +208,7 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         auto [error, result] = future.get();
         if(error)
         {
-            Log::error("MediaInventory: {}", error);
+            Log::error("[MediaInventory] {}", error);
         }
     });
 }
@@ -240,7 +240,7 @@ void CollectionInterval::submitScreenShot()
             auto [error, result] = future.get();
             if(error)
             {
-                Log::error("SubmitScreenShot: {}", error);
+                Log::error("[SubmitScreenShot] {}", error);
             }
         });
     });

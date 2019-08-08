@@ -1,23 +1,22 @@
 #include "LayoutsManager.hpp"
-
-#include "config.hpp"
-#include "XlfLayoutFetcher.hpp"
-#include "common/logger/Logging.hpp"
-
-#include "control/common/Image.hpp"
+#include "XlfLayoutLoader.hpp"
 #include "control/common/IOverlayLayout.hpp"
 
 #include "schedule/Scheduler.hpp"
+#include "common/logger/Logging.hpp"
+#include "config.hpp"
 
 LayoutsManager::LayoutsManager(Scheduler& scheduler) :
     m_scheduler(scheduler)
 {
+    m_scheduler.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
+    m_scheduler.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
 }
 
 void LayoutsManager::fetchAllLayouts()
 {
-    fetchMainLayout(m_scheduler.nextLayout());
-    fetchOverlays(m_scheduler.overlayLayouts());
+    fetchMainLayout();
+    fetchOverlays();
 }
 
 MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
@@ -30,11 +29,13 @@ OverlaysLoaded& LayoutsManager::overlaysFetched()
     return m_overlaysFetched;
 }
 
-void LayoutsManager::fetchMainLayout(int layoutId)
+void LayoutsManager::fetchMainLayout()
 {
-    if(layoutId != EmptyLayoutId)
+    auto id = m_scheduler.nextLayout();
+
+    if(id != EmptyLayoutId)
     {
-        m_mainLayout = createLayout<XlfMainLayoutLoader>(layoutId);
+        m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
         m_mainLayoutFetched.emit(m_mainLayout->view());
     }
     else
@@ -43,15 +44,13 @@ void LayoutsManager::fetchMainLayout(int layoutId)
     }
 }
 
-void LayoutsManager::fetchOverlays(std::vector<int> layoutsId)
+void LayoutsManager::fetchOverlays()
 {
-    if(layoutsId.empty()) return;
-
     std::vector<std::shared_ptr<IOverlayLayout>> overlays;
 
     m_overlayLayouts.clear();
 
-    for(int id : layoutsId)
+    for(int id : m_scheduler.overlayLayouts())
     {
         auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
         overlays.emplace_back(overlayLayout->view());
@@ -71,7 +70,7 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 
         if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
         {
-            fetchMainLayout(m_scheduler.nextLayout());
+            fetchMainLayout();
         }
         else
         {
