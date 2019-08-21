@@ -7,8 +7,6 @@ pkg_check_modules(Glibmm REQUIRED glibmm-2.4>=2.56.0)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Gtkmm_INCLUDE_DIRS} ${GStreamer_INCLUDE_DIRS}  ${WebKit_INCLUDE_DIRS})
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
-
 add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
 
 file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
@@ -19,7 +17,6 @@ file(GLOB OTHER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.*pp
                          ${CMAKE_CURRENT_SOURCE_DIR}/gstwrapper/*.*pp)
 
 add_subdirectory(schedule)
-
 add_subdirectory(options)
 add_subdirectory(common)
 add_subdirectory(networking)
@@ -28,7 +25,4 @@ add_subdirectory(watchdog)
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${OTHER_SOURCES} ${CONTROL_SOURCES})
 target_link_libraries(${PROJECT_NAME} X11 networking schedule ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES})
 
-copy_libs("${Gtkmm_LINK_LIBRARIES}")
-copy_libs("${GStreamer_LINK_LIBRARIES}")
-copy_libs("${WebKit_LINK_LIBRARIES}")
 copy_libs("${Boost_LIBRARIES}")
