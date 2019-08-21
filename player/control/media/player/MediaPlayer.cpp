@@ -24,7 +24,7 @@
 
 namespace ph = std::placeholders;
 
-const int InspectorTimeout = 5;
+const int InspectorTimeout = 30;
 
 MediaPlayer::MediaPlayer()
 {
