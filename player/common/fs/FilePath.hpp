@@ -1,11 +1,16 @@
 #pragma once
 
-#include <filesystem>
+#include <boost/filesystem/path.hpp>
 
-class FilePath : public std::filesystem::path
+class FilePath : public boost::filesystem::path
 {
 public:
-    using std::filesystem::path::path;
+    using boost::filesystem::path::path;
 
-    FilePath(const std::filesystem::path& p) : std::filesystem::path(p) { }
+    FilePath(const boost::filesystem::path& p) : boost::filesystem::path(p) { }
+
+    operator std::string() const
+    {
+        return string();
+    }
 };

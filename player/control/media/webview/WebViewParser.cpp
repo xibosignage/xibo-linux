@@ -38,7 +38,7 @@ ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
-    std::ifstream in(path.string());
+    std::ifstream in(path);
 
     std::smatch matchedGroups;
     std::string line;

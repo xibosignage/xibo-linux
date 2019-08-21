@@ -35,7 +35,7 @@ void System::preventSleep()
     }
     catch(std::exception& e)
     {
-        Log::error("ScreenSaver wont'be suspended", e.what());
+        Log::error("ScreenSaver wont'be suspended {}", e.what());
     }
 
     if(connection) dbus_connection_unref(connection);
