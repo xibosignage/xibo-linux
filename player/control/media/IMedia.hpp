@@ -4,9 +4,9 @@
 #include "MediaGeometry.hpp"
 
 #include <memory>
-#include <sigc++/sigc++.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalMediaFinished = sigc::signal<void()>;
+using SignalMediaFinished = boost::signals2::signal<void()>;
 class TransitionExecutor;
 
 class IMedia
@@ -21,7 +21,7 @@ public:
     virtual void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
     virtual void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
 
-    virtual SignalMediaFinished mediaFinished() = 0;
+    virtual SignalMediaFinished& mediaFinished() = 0;
 
     virtual MediaGeometry::Align align() const = 0;
     virtual MediaGeometry::Valign valign() const = 0;

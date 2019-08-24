@@ -7,7 +7,7 @@ Region::Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionVi
     m_loop(loop),
     m_view(view)
 {
-    m_view->shown().connect(sigc::mem_fun(this, &Region::start));
+    m_view->shown().connect(std::bind(&Region::start, this));
 }
 
 void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
@@ -23,7 +23,7 @@ void Region::start()
     placeMedia(FirstContentIndex);
 }
 
-SignalRegionExpired Region::expired()
+SignalRegionExpired& Region::expired()
 {
     return m_regionExpired;
 }
@@ -54,7 +54,7 @@ void Region::onMediaDurationTimeout()
 
     if(isExpired())
     {
-        m_regionExpired.emit(m_id);
+        m_regionExpired(m_id);
     }
 }
 

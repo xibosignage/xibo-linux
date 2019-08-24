@@ -15,7 +15,7 @@ public:
 
     void addMedia(std::unique_ptr<IMedia>&& media, int x, int y) override;
     void start() override;
-    SignalRegionExpired expired() override;
+    SignalRegionExpired& expired() override;
 
     std::shared_ptr<IRegionView> view() override;
 

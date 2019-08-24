@@ -18,13 +18,13 @@ public:
     void show() override
     {
         m_widget.show();
-        m_shown.emit();
+        m_signalShown();
     }
 
     void showAll() override
     {
         m_widget.show();
-        m_shown.emit();
+        m_signalShown();
     }
 
     void hide() override
@@ -72,9 +72,9 @@ public:
         return m_widget.get_opacity();
     }
 
-    SignalShown shown() override
+    SignalShown& shown() override
     {
-        return m_shown;
+        return m_signalShown;
     }
 
 protected:
@@ -85,6 +85,6 @@ protected:
 
 private:
     Gtk::Widget& m_widget;
-    SignalShown m_shown;
+    SignalShown m_signalShown;
 
 };

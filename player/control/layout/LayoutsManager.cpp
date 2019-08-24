@@ -36,11 +36,11 @@ void LayoutsManager::fetchMainLayout()
     if(id != EmptyLayoutId)
     {
         m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
-        m_mainLayoutFetched.emit(m_mainLayout->view());
+        m_mainLayoutFetched(m_mainLayout->view());
     }
     else
     {
-        m_mainLayoutFetched.emit(nullptr);
+        m_mainLayoutFetched(nullptr);
     }
 }
 
@@ -57,7 +57,7 @@ void LayoutsManager::fetchOverlays()
         m_overlayLayouts.emplace(id, std::move(overlayLayout));
     }
 
-    m_overlaysFetched.emit(overlays);
+    m_overlaysFetched(overlays);
 }
 
 template<typename LayoutLoader>

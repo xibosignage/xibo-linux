@@ -27,7 +27,7 @@ void Media::startTimer(int duration)
     if(duration > 0)
     {
         m_timer->start(std::chrono::seconds(duration), [this]{
-            m_mediaFinished.emit();
+            m_mediaFinished();
         });
     }
 }
@@ -88,7 +88,7 @@ void Media::onStopped()
     }
 }
 
-SignalMediaFinished Media::mediaFinished()
+SignalMediaFinished& Media::mediaFinished()
 {
     return m_mediaFinished;
 }

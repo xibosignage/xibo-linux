@@ -4,6 +4,8 @@
 #include "networking/ZeromqSubscriber.hpp"
 #include "XmrStatus.hpp"
 
+#include <boost/signals2/signal.hpp>
+
 struct XmrMessage
 {
     std::string action;
@@ -11,8 +13,8 @@ struct XmrMessage
     int ttl;
 };
 
-using CollectionIntervalAction = sigc::signal<void>;
-using ScreenshotAction = sigc::signal<void>;
+using CollectionIntervalAction = boost::signals2::signal<void()>;
+using ScreenshotAction = boost::signals2::signal<void()>;
 
 class XmrManager
 {

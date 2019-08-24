@@ -4,9 +4,9 @@
 
 #include <memory>
 #include <vector>
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalKeyPressed = sigc::signal<void(std::string)>;
+using SignalKeyPressed = boost::signals2::signal<void(std::string)>;
 class IOverlayLayout;
 
 class IMainWindow : public IWidget
@@ -25,6 +25,6 @@ public:
     virtual void unfullscreen() = 0;
     virtual void setCursorVisible(bool cursorVisible) = 0;
 
-    virtual SignalKeyPressed keyPressed() = 0;
+    virtual SignalKeyPressed& keyPressed() = 0;
 
 };

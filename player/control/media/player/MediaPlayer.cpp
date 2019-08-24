@@ -62,10 +62,10 @@ void MediaPlayer::createGstElements()
 
 void MediaPlayer::init()
 {
-    m_pipeline->addBusWatch(sigc::mem_fun(*this, &MediaPlayer::busMessageWatch));
+    m_pipeline->addBusWatch(std::bind(&MediaPlayer::busMessageWatch, this, ph::_1));
 
-    m_decodebin->signalPadAdded().connect(sigc::mem_fun(*this, &MediaPlayer::onPadAdded));
-    m_decodebin->signalNoMorePads().connect(sigc::mem_fun(*this, &MediaPlayer::noMorePads));
+    m_decodebin->signalPadAdded().connect(std::bind(&MediaPlayer::onPadAdded, this, ph::_1));
+    m_decodebin->signalNoMorePads().connect(std::bind(&MediaPlayer::noMorePads, this));
 }
 
 void MediaPlayer::setOutputWindow(const std::shared_ptr<IVideoWindow>& window)
@@ -141,7 +141,7 @@ void MediaPlayer::setVolume(int volume)
     m_volume->setVolume(volume / static_cast<double>(MaxVolume));
 }
 
-SignalPlaybackFinished MediaPlayer::playbackFinished()
+SignalPlaybackFinished& MediaPlayer::playbackFinished()
 {
     return m_playbackFinished;
 }
@@ -166,7 +166,7 @@ bool MediaPlayer::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         {
             Log::debug("[MediaPlayer] End of stream");
             m_pipeline->setState(Gst::State::NULL_STATE);
-            m_playbackFinished.emit();
+            m_playbackFinished();
             break;
         }
         default:

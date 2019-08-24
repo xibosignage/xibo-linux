@@ -5,8 +5,7 @@
 OverlayLayout::OverlayLayout(int width, int height) :
     Widget(m_handler)
 {
-    m_handler.signal_get_child_position().
-            connect(sigc::mem_fun(*this, &OverlayLayout::onGetChildPosition), false);
+    m_handler.signal_get_child_position().connect(sigc::mem_fun(this, &OverlayLayout::onGetChildPosition), false);
 
     m_handler.property_halign().set_value(Gtk::ALIGN_CENTER);
     m_handler.property_valign().set_value(Gtk::ALIGN_CENTER);

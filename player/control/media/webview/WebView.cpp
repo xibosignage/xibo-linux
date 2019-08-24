@@ -3,6 +3,8 @@
 
 #include <webkit/webkit.h>
 
+namespace ph = std::placeholders;
+
 WebView::WebView(int width, int height) :
     Widget(m_handler)
 {
@@ -41,7 +43,7 @@ void WebView::load(const Uri& uri)
 
 void WebView::enableTransparency()
 {
-    m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screenChanged));
+    m_handler.signal_screen_changed().connect(std::bind(&WebView::screenChanged, this, ph::_1));
     screenChanged(m_handler.get_screen());
 
     webkit_web_view_set_transparent(m_webView, true);

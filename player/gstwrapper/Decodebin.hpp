@@ -1,16 +1,19 @@
 #pragma once
 
 #include "Element.hpp"
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
 namespace Gst
 {
+    using SignalPadAdded = boost::signals2::signal<void(const Gst::RefPtr<Gst::Pad>&)>;
+    using SignalsNoMorePads = boost::signals2::signal<void()>;
+
     class Decodebin : public Gst::Element
     {
     public:
         static Gst::RefPtr<Gst::Decodebin> create();
-        sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& signalPadAdded();
-        sigc::signal<void()>& signalNoMorePads();
+        SignalPadAdded& signalPadAdded();
+        SignalsNoMorePads& signalNoMorePads();
 
     private:
         Decodebin();
@@ -21,8 +24,8 @@ namespace Gst
         void noMorePadsMem(GstElement* el, gpointer data);
 
     private:
-        sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)> m_signalPadAdded;
-        sigc::signal<void()> m_signalNoMorePads;
+        SignalPadAdded m_signalPadAdded;
+        SignalsNoMorePads m_signalNoMorePads;
 
     };
 }

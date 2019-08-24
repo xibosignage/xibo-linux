@@ -1,8 +1,8 @@
 #pragma once
 
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalShown = sigc::signal<void()>;
+using SignalShown = boost::signals2::signal<void()>;
 
 class IWidget
 {
@@ -22,7 +22,7 @@ public:
     virtual void setOpacity(double value) = 0;
     virtual double opacity() const = 0;
 
-    virtual SignalShown shown() = 0;
+    virtual SignalShown& shown() = 0;
 
 };
 
