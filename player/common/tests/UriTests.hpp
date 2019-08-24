@@ -12,6 +12,7 @@ struct UriTest
             std::string path_,
             Uri::Authority::HostType hostType_  = Uri::Authority::HostType::Invalid,
             std::string str_ = {}) :
+        source(source_),
         scheme(scheme_),
         host(host_),
         port(port_),
@@ -21,6 +22,7 @@ struct UriTest
     {
     }
 
+    std::string source;
     Uri::Scheme scheme;
     std::string host;
     boost::optional<unsigned short> port;
@@ -61,6 +63,9 @@ const std::vector<UriTest> validHttpUris =
      {"http://www.site.com/xibo:1234/", Uri::Scheme::HTTP, "www.site.com", 80, "/xibo:1234/", Uri::Authority::HostType::DNS},
      {"http://www.site.com:1234", Uri::Scheme::HTTP, "www.site.com", 1234, "/", Uri::Authority::HostType::DNS, "http://www.site.com:1234/"},
      {"http://www.example.com#up", Uri::Scheme::HTTP, "www.example.com", 80, "/#up", Uri::Authority::HostType::DNS, "http://www.example.com/#up"},
+     {"https://xibo.org.uk?p=help&q=what", Uri::Scheme::HTTPS, "xibo.org.uk", 443, "/?p=help&q=what", Uri::Authority::HostType::DNS, "https://xibo.org.uk/?p=help&q=what"},
+     {"http://127.0.0.1?query", Uri::Scheme::HTTP, "127.0.0.1", 80, "/?query", Uri::Authority::HostType::IP, "http://127.0.0.1/?query"},
+     {"https://xibo.org.uk?p=help&q=what#fragment", Uri::Scheme::HTTPS, "xibo.org.uk", 443, "/?p=help&q=what#fragment", Uri::Authority::HostType::DNS, "https://xibo.org.uk/?p=help&q=what#fragment"},
      {"http://www.example.com", Uri::Scheme::HTTP, "www.example.com", 80, "/", Uri::Authority::HostType::DNS, "http://www.example.com/"},
      {"http://127.0.0.1", Uri::Scheme::HTTP, "127.0.0.1", 80, "/", Uri::Authority::HostType::IP, "http://127.0.0.1/"},
      {"http://127.0.0.1:1234", Uri::Scheme::HTTP, "127.0.0.1", 1234, "/", Uri::Authority::HostType::IP, "http://127.0.0.1:1234/"},
@@ -81,7 +86,6 @@ const std::vector<std::string> invalidUrls =
      {"127.0.0.1:1234/"}, // no scheme
      {"http://127.0.0.1:/"}, // no port but with :
      {"http://127.0.0.1:"}, // no port but with :
-     {"http://127.0.0.1?query"}, // no /
      {"http://127.0.0.1:FDFDF/dfdf"}, // wrong port format
      {"https://127.0.0.1:123456/testtarget"}, // wrong port format
      {"127.0.0.1/testtarget:123456"}, // no scheme

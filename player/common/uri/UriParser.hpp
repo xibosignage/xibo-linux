@@ -16,7 +16,7 @@ public:
 private:
     static boost::optional<std::string> getUserInfo(const std::string& userinfo);
     static boost::optional<unsigned short> getPortNumber(const std::string& port);
-    static std::string getPath(const std::string& target, const std::string& fragment);
+    static std::string getPath(const std::string& target, const std::string& query, const std::string& fragment);
 
     static std::smatch parseInternal(const std::string& rawUri);
 

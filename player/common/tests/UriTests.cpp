@@ -5,7 +5,7 @@
 
 TEST_P(UriValidHttpTests, InitializeWithValidHttpUrl)
 {
-    Uri uri{GetParam().str};
+    Uri uri{GetParam().source};
 
     ASSERT_EQ(uri.scheme(), GetParam().scheme);
     ASSERT_EQ(uri.host(), GetParam().host);
@@ -19,7 +19,7 @@ INSTANTIATE_TEST_CASE_P(Suite, UriValidHttpTests, ::testing::ValuesIn(validHttpU
 
 TEST_P(UriValidFileTests, InitializeWithValidPath)
 {
-    Uri uri{GetParam().str};
+    Uri uri{GetParam().source};
 
     ASSERT_EQ(uri.scheme(), GetParam().scheme);
     ASSERT_EQ(uri.host(), GetParam().host);

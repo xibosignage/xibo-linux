@@ -4,7 +4,7 @@
 #include "logger/Logging.hpp"
 #include <boost/format.hpp>
 
-const std::regex UriRegex(R"(^([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/?#:]+)(?::(\d{1,5}))?)?(\/[^#]*)?(#.*)?$)");
+const std::regex UriRegex(R"(^([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/?#:]+)(?::(\d{1,5}))?)?(\/[^?#]*)?(\?[^#]*)?(#.*)?$)");
 const std::regex IpRegex("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
 
 const std::map<std::string, Uri::Scheme> DefaultSchemes{{"https://", Uri::Scheme::HTTPS},
@@ -19,7 +19,8 @@ const std::size_t UserinfoPart = 2;
 const std::size_t HostPart = 3;
 const std::size_t PortPart = 4;
 const std::size_t PathPart = 5;
-const std::size_t FragmentPart = 6;
+const std::size_t QueryPart = 6;
+const std::size_t FragmentPart = 7;
 
 Uri UriParser::parse(const std::string& rawUri)
 {
@@ -29,7 +30,7 @@ Uri UriParser::parse(const std::string& rawUri)
     auto userinfo = getUserInfo(urlParts[UserinfoPart].str());
     auto host = urlParts[HostPart].str();
     auto port = getPortNumber(urlParts[PortPart].str());
-    auto path = getPath(urlParts[PathPart].str(), urlParts[FragmentPart].str());
+    auto path = getPath(urlParts[PathPart].str(), urlParts[QueryPart].str(), urlParts[FragmentPart].str());
 
     return Uri{scheme, Uri::Authority{userinfo, host, port}, path};
 }
@@ -43,7 +44,7 @@ std::smatch UriParser::parseInternal(const std::string& rawUri)
         return urlMatch;
     }
 
-    throw UriParseError{"Uri is not valid"};
+    throw UriParseError{"Uri is not valid: " + rawUri};
 }
 
 Uri::Scheme UriParser::getScheme(const std::string& scheme)
@@ -68,11 +69,11 @@ boost::optional<unsigned short> UriParser::getPortNumber(const std::string& port
     return {};
 }
 
-std::string UriParser::getPath(const std::string& target, const std::string& fragment)
+std::string UriParser::getPath(const std::string& target, const std::string& query, const std::string& fragment)
 {
     std::string finalTarget = target.empty() ? "/" : target;
 
-    return finalTarget + fragment;
+    return finalTarget + query + fragment;
 }
 
 Uri::Authority::HostType UriParser::getHostType(const std::string& host)
