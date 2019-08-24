@@ -38,6 +38,9 @@ std::string Parsing::xmlTreeToEscapedString(const ptree_node& node)
 
     boost::replace_all(xmlStr, "<", "&lt;");
     boost::replace_all(xmlStr, ">", "&gt;");
+    boost::replace_all(xmlStr, "&", "&amp;");
+    boost::replace_all(xmlStr, "'", "&apos;");
+    boost::replace_all(xmlStr, "\"", "&quot;");
 
     return xmlStr;
 }

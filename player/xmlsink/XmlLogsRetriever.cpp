@@ -20,7 +20,7 @@ std::string XmlLogsRetriever::retrieveLogs()
 std::string XmlLogsRetriever::formatLogs(const std::string& logs)
 {
     ptree_node formattedLogsNode;
-    auto logsNode =  Parsing::xmlFromString(logs);
+    auto logsNode = Parsing::xmlFromString(logs);
     formattedLogsNode.add_child("logs", logsNode);
     return Parsing::xmlTreeToEscapedString(formattedLogsNode);
 }
