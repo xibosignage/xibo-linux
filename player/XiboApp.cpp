@@ -122,7 +122,7 @@ XiboApp::XiboApp(const std::string& name) :
 void XiboApp::setupXmrManager()
 {
     m_xmrManager->collectionInterval().connect([this](){
-        Log::info("Start unscheduled collection");
+        Log::info("[CollectionInterval] Start unscheduled collection");
 
         m_collectionInterval->collect([this](const PlayerError& error){
             onCollectionFinished(error);
@@ -237,7 +237,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
 {
     if(error)
     {
-        Log::error("[Collection interval] {}", error);
+        Log::error("[CollectionInterval] {}", error);
     }
 }
 

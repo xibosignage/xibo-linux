@@ -79,7 +79,7 @@ boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri&
     auto session = std::make_shared<HttpSession>(m_ioc);
     m_activeSessions.push_back(session);
 
-    Log::debug(uri);
+    Log::trace(uri);
 
     if(m_proxyInfo)
     {

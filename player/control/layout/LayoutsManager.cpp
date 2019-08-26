@@ -36,7 +36,14 @@ void LayoutsManager::fetchMainLayout()
     if(id != EmptyLayoutId)
     {
         m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
-        m_mainLayoutFetched(m_mainLayout->view());
+        if(m_mainLayout)
+        {
+            m_mainLayoutFetched(m_mainLayout->view());
+        }
+        else
+        {
+            m_mainLayoutFetched(nullptr);
+        }
     }
     else
     {
@@ -53,8 +60,11 @@ void LayoutsManager::fetchOverlays()
     for(int id : m_scheduler.overlayLayouts())
     {
         auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
-        overlays.emplace_back(overlayLayout->view());
-        m_overlayLayouts.emplace(id, std::move(overlayLayout));
+        if(overlayLayout)
+        {
+            overlays.emplace_back(overlayLayout->view());
+            m_overlayLayouts.emplace(id, std::move(overlayLayout));
+        }
     }
 
     m_overlaysFetched(overlays);
@@ -63,21 +73,31 @@ void LayoutsManager::fetchOverlays()
 template<typename LayoutLoader>
 std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 {
-    auto layout = LayoutLoader::loadBy(layoutId);
+    try
+    {
+        auto layout = LayoutLoader::loadBy(layoutId);
 
-    layout->expired().connect([this, layoutId](){
-        Log::trace("Layout {} expired", layoutId);
+        layout->expired().connect([this, layoutId](){
+            Log::trace("Layout {} expired", layoutId);
 
-        if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
-        {
-            fetchMainLayout();
-        }
-        else
-        {
-            m_overlayLayouts[layoutId]->restart();
-        }
-    });
+            if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
+            {
+                fetchMainLayout();
+            }
+            else
+            {
+                m_overlayLayouts[layoutId]->restart();
+            }
+        });
 
-    return layout;
+        return layout;
+    }
+    catch(std::exception& e)
+    {
+        Log::error(e.what());
+        Log::info("Check resource folder to find out what happened");
+    }
+
+    return nullptr;
 }
 

@@ -41,7 +41,7 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
-    Log::debug("Collection finished. Next collection will start in {} seconds", m_collectInterval);
+    Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", m_collectInterval);
     m_collectionFinished.emit(error);
     startTimer();
 }
@@ -50,7 +50,7 @@ void CollectionInterval::collect(CollectionResultCallback callback)
 {
     m_workerThread = std::make_unique<JoinableThread>([=]()
     {
-        Log::debug("Collection started");
+        Log::debug("[CollectionInterval] Started");
 
         auto session = std::make_shared<CollectionSession>();
         session->callback = callback;
@@ -82,6 +82,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         auto displayError = getDisplayStatus(result.status);
         if(!displayError)
         {
+            Log::debug("[RegisterDisplay] Success");
+
             m_registered = true;
             m_lastChecked = DateTimeProvider::now();
             m_settingsUpdated.emit(result.playerSettings);
@@ -118,7 +120,7 @@ PlayerError CollectionInterval::getDisplayStatus(const RegisterDisplay::Result::
         case DisplayCode::Waiting:
             return {PlayerError::Type::CMS, status.message};
         default:
-            return {PlayerError::Type::CMS, "Unknown eror with RegisterDisplay"};
+            return {PlayerError::Type::CMS, "Unknown error with RegisterDisplay"};
     }
 }
 
@@ -126,7 +128,7 @@ void CollectionInterval::updateInterval(int collectInterval)
 {
     if(m_collectInterval != collectInterval)
     {
-        Log::debug("Collection interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
+        Log::debug("[CollectionInterval] Interval updated. Old: {}, New: {}", m_collectInterval, collectInterval);
         m_collectInterval = collectInterval;
     }
 }
@@ -167,6 +169,8 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if(!error)
     {
+        Log::debug("[RequiredFiles] Received");
+
         RequiredFilesDownloader downloader{m_xmdsSender};
 
         auto&& files = result.requiredFiles();
@@ -194,6 +198,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if(!error)
     {
+        Log::debug("[Schedule] Received");
         m_scheduleAvailable.emit(result);
     }
     else
@@ -210,6 +215,10 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         {
             Log::error("[MediaInventory] {}", error);
         }
+        else
+        {
+            Log::debug("[MediaInventory] Updated");
+        }
     });
 }
 
@@ -220,11 +229,11 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
     {
         if(result.success)
         {
-            Log::debug("Logs were submitted successfully");
+            Log::debug("[SubmitLogs] Submitted");
         }
         else
         {
-            Log::debug("Logs were not submited due to some error");
+            Log::debug("[SubmitLogs] Not submited due to unknown error");
         }
     }
     else
@@ -241,6 +250,10 @@ void CollectionInterval::submitScreenShot()
             if(error)
             {
                 Log::error("[SubmitScreenShot] {}", error);
+            }
+            else
+            {
+                Log::debug("[SubmitScreenShot] Submitted");
             }
         });
     });

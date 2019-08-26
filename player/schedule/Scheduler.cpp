@@ -105,11 +105,11 @@ template<typename Layout>
 bool Scheduler::layoutValid(const Layout& layout) const
 {
     auto layoutFile = std::to_string(layout.id) + ".xlf";
-    if(!m_fileCache.cached(layoutFile)) return false;
+    if(!m_fileCache.valid(layoutFile)) return false;
 
     for(auto&& dependant : layout.dependants)
     {
-        if(!m_fileCache.cached(dependant))
+        if(!m_fileCache.valid(dependant))
         {
             return false;
         }
@@ -117,7 +117,7 @@ bool Scheduler::layoutValid(const Layout& layout) const
 
     for(auto&& dependant : m_schedule.globalDependants)
     {
-        if(!m_fileCache.cached(dependant))
+        if(!m_fileCache.valid(dependant))
         {
             return false;
         }

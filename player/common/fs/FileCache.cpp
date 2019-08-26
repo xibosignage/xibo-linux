@@ -29,7 +29,7 @@ bool FileCache::cachedWithHash(const std::string& file, const std::string& targe
     return hash ? hash == targetHash : false;
 }
 
-bool FileCache::cached(const std::string& file) const
+bool FileCache::valid(const std::string& file) const
 {
     auto hash = m_fileCache.get_optional<std::string>(ptree::path_type(file, '|'));
 
