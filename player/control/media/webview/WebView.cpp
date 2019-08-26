@@ -12,8 +12,8 @@ WebView::WebView(int width, int height) :
     auto widget = Gtk::manage(Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView)));
     m_handler.add(*widget);
 
-    m_sizeAllocateConnection = widget->signal_size_allocate().connect([=](Gtk::Allocation&){
-       webkit_web_view_reload(m_webView);
+    m_sizeAllocateConnection = widget->signal_size_allocate().connect([this](Gtk::Allocation&){
+       reload();
        m_sizeAllocateConnection.disconnect();
     });
 
