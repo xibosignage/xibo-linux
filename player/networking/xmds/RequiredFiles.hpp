@@ -45,7 +45,7 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result doParse(const ptree_node& node) override;
+    RequiredFiles::Result parseBody(const ptree_node& node) override;
 
 private:
     RegularFile parseRegularFile(const ptree_node& attrs);

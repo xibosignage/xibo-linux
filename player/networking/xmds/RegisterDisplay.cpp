@@ -26,7 +26,7 @@ Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string&
 {
 }
 
-RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::doParse(const ptree_node& node)
+RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const ptree_node& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto displayNode = Parsing::xmlFromString(activationMessage).get_child(Resources::Display);

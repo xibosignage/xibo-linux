@@ -41,9 +41,10 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
-    Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", m_collectInterval);
     m_collectionFinished.emit(error);
     startTimer();
+
+    Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", m_collectInterval);
 }
 
 void CollectionInterval::collect(CollectionResultCallback callback)

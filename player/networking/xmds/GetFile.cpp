@@ -16,7 +16,7 @@ Soap::ResponseParser<GetFile::Result>::ResponseParser(const std::string& soapRes
 {
 }
 
-GetFile::Result Soap::ResponseParser<GetFile::Result>::doParse(const ptree_node& node)
+GetFile::Result Soap::ResponseParser<GetFile::Result>::parseBody(const ptree_node& node)
 {
     GetFile::Result result;
     result.base64chunk = node.get<std::string>(Resources::FileChunk);

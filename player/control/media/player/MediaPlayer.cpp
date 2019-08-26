@@ -56,7 +56,7 @@ void MediaPlayer::createGstElements()
     if(!m_pipeline || !m_decodebin || !m_videoConverter || !m_videoScale ||
        !m_videoSink || !m_queue || !m_capsfilter || !m_audioConverter || !m_volume || !m_audioSink)
     {
-        throw std::runtime_error("[MediaPlayer] One element could not be created");
+        throw std::runtime_error("[MediaPlayer] Error during creation");
     }
 }
 

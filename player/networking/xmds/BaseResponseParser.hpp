@@ -31,16 +31,33 @@ namespace Soap
                     return std::pair{makeErrorFromNode(node), Result{}};
                 }
 
-                return std::pair{PlayerError{}, doParse(bodyNode)};
+                return parseBodyImpl(bodyNode);
             }
 
             return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
         }
 
     protected:
-        virtual Result doParse(const ParsedNode& node) = 0;
+        virtual Result parseBody(const ParsedNode& node) = 0;
 
     private:
+        ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
+        {
+            using namespace std::string_literals;
+
+            try
+            {
+                return std::pair{PlayerError{}, parseBody(node)};
+            }
+            catch(std::exception& e)
+            {
+                std::string error = "Error while parsing response. Details: "s + e.what();
+
+                return std::pair{PlayerError{PlayerError::Type::SOAP, error},  Result{}};
+            }
+        }
+
+
         void tryParseResponse(const std::string& response)
         {
             try
