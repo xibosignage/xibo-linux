@@ -62,34 +62,19 @@ private:
         return items;
     }
 
-    template<typename RequiredFileType>
-    void saveFile(const std::string& fileName, const std::string& fileContent);
+    void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
+    void saveResourceFile(const std::string& filename, const std::string& fileContent);
 
-    template<typename RequiredFileType>
-    bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName)
-    {
-        auto [error, fileContent] = result;
-        if(!error)
-        {
-            saveFile<RequiredFileType>(fileName, fileContent);
-
-            Log::debug("[{}] Downloaded", fileName);
-            return true;
-        }
-        else
-        {
-            Log::error("[{}] Download error: {}", fileName, error);
-            return false;
-        }
-    }
+    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName, const std::string& hash);
+    bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
 
     bool shouldBeDownloaded(const RegularFile& file) const;
     bool shouldBeDownloaded(const ResourceFile& resource) const;
 
     DownloadResult downloadRequiredFile(const ResourceFile& res);
     DownloadResult downloadRequiredFile(const RegularFile& file);
-    DownloadResult downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
-    DownloadResult downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
+    DownloadResult downloadHttpFile(const RegularFile& file);
+    DownloadResult downloadXmdsFile(const RegularFile& file);
 
 private:
     XmdsRequestSender& m_xmdsRequestSender;

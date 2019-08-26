@@ -22,33 +22,47 @@ void FileCache::loadFileHashes(const FilePath& path)
     }
 }
 
-bool FileCache::cachedWithHash(const std::string& file, const std::string& targetHash) const
+bool FileCache::valid(const std::string& filename) const
 {
-    auto hash = m_fileCache.get_optional<std::string>(ptree::path_type(file, '|'));
+    auto node = m_fileCache.get_child_optional(ptree::path_type(filename, '|'));
 
-    return hash ? hash == targetHash : false;
+    return node.has_value() && node->get<bool>(ptree::path_type("valid", '|'));
 }
 
-bool FileCache::valid(const std::string& file) const
+bool FileCache::cached(const std::string& filename, const std::string& hash) const
 {
-    auto hash = m_fileCache.get_optional<std::string>(ptree::path_type(file, '|'));
+    auto node = m_fileCache.get_child_optional(ptree::path_type(filename, '|'));
 
-    return hash.has_value();
+    return node.has_value() && node->get<std::string>(ptree::path_type("md5", '|')) == hash;
 }
 
-void FileCache::save(const std::string& fileName, const std::string& fileContent)
+void FileCache::save(const std::string& fileName, const std::string& fileContent, const std::string& md5)
 {
     auto filePath = Resources::directory() / fileName;
 
     std::ofstream out(filePath);
     out << fileContent;
 
-    addToCache(fileName, Utils::md5hash(fileContent));
+    addToCache(fileName, Utils::md5hash(fileContent), md5);
 }
 
-void FileCache::addToCache(const std::string& name, const std::string& hash)
+void FileCache::markAsInvalid(const std::string& filename)
 {
-    m_fileCache.put(ptree::path_type(name, '|'), hash);
+    auto node = m_fileCache.get_child_optional(ptree::path_type(filename, '|'));
+
+    if(node)
+    {
+        node->put(ptree::path_type("valid", '|'), false);
+    }
+}
+
+void FileCache::addToCache(const std::string& filename, const std::string& hash, const std::string& target)
+{
+    ptree node;
+    node.put(ptree::path_type("md5", '|'), hash);
+    node.put(ptree::path_type("valid", '|'), hash == target);
+
+    m_fileCache.put_child(ptree::path_type(filename, '|'), node);
 
     saveFileHashes(m_cacheFile);
 }

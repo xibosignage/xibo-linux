@@ -6,6 +6,9 @@
 #include "common/logger/Logging.hpp"
 #include "config.hpp"
 
+#include "common/fs/FileCache.hpp"
+#include "utils/Managers.hpp"
+
 LayoutsManager::LayoutsManager(Scheduler& scheduler) :
     m_scheduler(scheduler)
 {
@@ -42,6 +45,8 @@ void LayoutsManager::fetchMainLayout()
         }
         else
         {
+            Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
+            m_scheduler.reloadQueue();
             m_mainLayoutFetched(nullptr);
         }
     }
@@ -64,6 +69,11 @@ void LayoutsManager::fetchOverlays()
         {
             overlays.emplace_back(overlayLayout->view());
             m_overlayLayouts.emplace(id, std::move(overlayLayout));
+        }
+        else
+        {
+            Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
+            m_scheduler.reloadQueue();
         }
     }
 

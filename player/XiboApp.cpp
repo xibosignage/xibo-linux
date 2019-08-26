@@ -93,13 +93,6 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_fileCache->loadFrom(ProjectResources::cacheFile());
 
-    ScheduleParser parser;
-    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
-    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
-        ScheduleSerializer serializer;
-        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
-    });
-
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());
@@ -190,6 +183,13 @@ int XiboApp::run()
     m_collectionInterval = createCollectionInterval(*m_xmdsManager);
 
     applyPlayerSettings(m_playerSettings);
+
+    ScheduleParser parser;
+    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
+    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
+        ScheduleSerializer serializer;
+        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
+    });
 
     m_collectionInterval->startRegularCollection();
     m_layoutsManager->fetchAllLayouts();
