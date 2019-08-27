@@ -30,11 +30,16 @@ ptree_node Parsing::jsonFromString(const std::string& json)
     return tree;
 }
 
-std::string Parsing::xmlTreeToEscapedString(const ptree_node& node)
+std::string Parsing::xmlTreeToString(const ptree_node& node)
 {
     std::stringstream sstream;
     boost::property_tree::write_xml(sstream, node);
-    std::string xmlStr = sstream.str();
+    return sstream.str();
+}
+
+std::string Parsing::xmlTreeToEscapedString(const ptree_node& node)
+{
+    std::string xmlStr = xmlTreeToString(node);
 
     boost::replace_all(xmlStr, "<", "&lt;");
     boost::replace_all(xmlStr, ">", "&gt;");

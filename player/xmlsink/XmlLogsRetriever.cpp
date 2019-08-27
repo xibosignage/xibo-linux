@@ -25,7 +25,8 @@ std::string XmlLogsRetriever::formatLogs(const std::string& logs)
     {
         auto logsNode = Parsing::xmlFromString(logs);
         formattedLogsNode.add_child("logs", logsNode);
-        return Parsing::xmlTreeToEscapedString(formattedLogsNode);
+
+        return Parsing::xmlTreeToString(formattedLogsNode);
     }
     catch(std::exception& e)
     {
