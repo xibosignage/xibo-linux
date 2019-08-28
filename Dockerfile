@@ -121,18 +121,19 @@ RUN curl -o /root/cppzmq.tar.gz -SL https://github.com/zeromq/cppzmq/archive/v${
     rm cppzmq.tar.gz
 
 ENV CRYPTOPP=8_1_0
+ENV CRYPTOPP_PEM=095f08ff2ef9bca7b81036a59f2395e4f08ce2e8
 RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_${CRYPTOPP}.tar.gz && \
-	curl -o /root/cryptopp_pem.zip -SL https://github.com/noloader/cryptopp-pem/archive/master.zip && \
+	curl -o /root/cryptopp_pem.zip -SL https://github.com/noloader/cryptopp-pem/archive/${CRYPTOPP_PEM}.zip && \
     cd /root && \
     tar -zxvf cryptopp.tar.gz && \
     unzip -a cryptopp_pem.zip && \
-    cp -r /root/cryptopp-pem-master/. /root/cryptopp-CRYPTOPP_${CRYPTOPP} && \
+    cp -r /root/cryptopp-pem-${CRYPTOPP_PEM}/. /root/cryptopp-CRYPTOPP_${CRYPTOPP} && \
     cd cryptopp-CRYPTOPP_${CRYPTOPP} && \
     make -j4 && \
     make install && \
     cd /root && \
     rm -r cryptopp-CRYPTOPP_${CRYPTOPP} && \
-    rm -r cryptopp-pem-master && \
+    rm -r cryptopp-pem-095f08ff2ef9bca7b81036a59f2395e4f08ce2e8 && \
     rm cryptopp.tar.gz && \
     rm cryptopp_pem.zip
 
