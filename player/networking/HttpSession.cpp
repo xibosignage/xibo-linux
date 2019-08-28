@@ -6,6 +6,8 @@
 #include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/beast/core/detail/base64.hpp>
 
+namespace ph = std::placeholders;
+
 HttpSession::HttpSession(boost::asio::io_context& ioc) : m_resolver{ioc}
 {
     ssl::context ctx{ssl::context::sslv23_client};
@@ -29,7 +31,7 @@ boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info, const 
         sessionFinished(ec);
     }
 
-    resolve(m_hostInfo.host, m_hostInfo.port, std::bind(&HttpSession::onResolved, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+    resolve(m_hostInfo.host, m_hostInfo.port, std::bind(&HttpSession::onResolved, shared_from_this(), ph::_1, ph::_2));
 
     return m_result.get_future();
 }
@@ -44,7 +46,7 @@ void HttpSession::onResolved(const boost::system::error_code& ec, ip::tcp::resol
 {
     if(!ec)
     {
-        connect(results, std::bind(&HttpSession::onConnected, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        connect(results, std::bind(&HttpSession::onConnected, shared_from_this(), ph::_1, ph::_2));
     }
     else
     {
@@ -64,11 +66,11 @@ void HttpSession::onConnected(const boost::system::error_code& ec, ip::tcp::reso
     {
         if(m_hostInfo.useSsl)
         {
-            handshake(std::bind(&HttpSession::onHandshaked, shared_from_this(), std::placeholders::_1));
+            handshake(std::bind(&HttpSession::onHandshaked, shared_from_this(), ph::_1));
         }
         else
         {
-            write(std::bind(&HttpSession::onWritten, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+            write(std::bind(&HttpSession::onWritten, shared_from_this(), ph::_1, ph::_2));
         }
     }
     else
@@ -87,7 +89,7 @@ void HttpSession::onHandshaked(const boost::system::error_code& ec)
 {
     if(!ec)
     {
-        write(std::bind(&HttpSession::onWritten, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        write(std::bind(&HttpSession::onWritten, shared_from_this(), ph::_1, ph::_2));
     }
     else
     {
@@ -112,7 +114,7 @@ void HttpSession::onWritten(const boost::system::error_code& ec, std::size_t /*b
 {
     if(!ec)
     {
-        read(std::bind(&HttpSession::onRead, shared_from_this(), std::placeholders::_1, std::placeholders::_2));
+        read(std::bind(&HttpSession::onRead, shared_from_this(), ph::_1, ph::_2));
     }
     else
     {

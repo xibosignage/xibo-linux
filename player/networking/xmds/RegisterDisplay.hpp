@@ -59,6 +59,6 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result doParse(const ptree_node& node) override;
+    RegisterDisplay::Result parseBody(const ptree_node& node) override;
 
 };

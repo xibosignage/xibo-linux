@@ -36,7 +36,7 @@ Soap::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& s
 {
 }
 
-RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::doParse(const ptree_node& node)
+RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::parseBody(const ptree_node& node)
 {
     auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
     auto filesNode = Parsing::xmlFromString(requiredFilesXml).get_child(Resources::Files);

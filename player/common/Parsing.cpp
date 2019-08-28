@@ -8,7 +8,7 @@
 ptree_node Parsing::xmlFromPath(const FilePath& xlfPath)
 {
     ptree_node tree;
-    boost::property_tree::read_xml(xlfPath.string(), tree);
+    boost::property_tree::read_xml(xlfPath, tree);
     return tree;
 }
 
@@ -30,14 +30,22 @@ ptree_node Parsing::jsonFromString(const std::string& json)
     return tree;
 }
 
-std::string Parsing::xmlTreeToEscapedString(const ptree_node& node)
+std::string Parsing::xmlTreeToString(const ptree_node& node)
 {
     std::stringstream sstream;
     boost::property_tree::write_xml(sstream, node);
-    std::string xmlStr = sstream.str();
+    return sstream.str();
+}
+
+std::string Parsing::xmlTreeToEscapedString(const ptree_node& node)
+{
+    std::string xmlStr = xmlTreeToString(node);
 
     boost::replace_all(xmlStr, "<", "&lt;");
     boost::replace_all(xmlStr, ">", "&gt;");
+    boost::replace_all(xmlStr, "&", "&amp;");
+    boost::replace_all(xmlStr, "'", "&apos;");
+    boost::replace_all(xmlStr, "\"", "&quot;");
 
     return xmlStr;
 }

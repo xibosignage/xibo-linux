@@ -6,7 +6,7 @@
 
 #include <memory>
 
-using SignalFinished = sigc::signal<void()>;
+using SignalFinished = boost::signals2::signal<void()>;
 
 class TransitionExecutor
 {

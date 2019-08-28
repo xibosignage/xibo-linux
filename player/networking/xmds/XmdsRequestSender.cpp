@@ -92,7 +92,7 @@ boost::future<ResponseResult<SubmitLog::Result>> XmdsRequestSender::submitLogs(c
     SubmitLog::Request request;
     request.serverKey = m_serverKey;
     request.hardwareKey = m_hardwareKey;
-    request.logXml = logXml;
+    request.logXml = std::string("<![CDATA[") + logXml + "]]>";
 
     return SoapRequestHelper::sendRequest<SubmitLog::Result>(m_uri, request);
 }

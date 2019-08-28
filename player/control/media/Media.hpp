@@ -20,7 +20,7 @@ public:
     void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
     void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
 
-    SignalMediaFinished mediaFinished() override;
+    SignalMediaFinished& mediaFinished() override;
 
     MediaGeometry::Align align() const override;
     MediaGeometry::Valign valign() const override;

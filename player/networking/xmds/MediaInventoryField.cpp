@@ -25,7 +25,7 @@ std::string_view Field<MediaInventoryItems>::name() const
 
 void Field<MediaInventoryItems>::setValue(MediaInventoryItems&& items)
 {
-    m_xmlItems = toXmlString(std::move(items));
+    m_xmlItems =  toXmlString(std::move(items));
 }
 
 std::string_view Field<MediaInventoryItems>::value() const
@@ -50,5 +50,5 @@ std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)
         fileAttrs.put("lastChecked", item.lastChecked());
     }
 
-    return Parsing::xmlTreeToEscapedString(root);
+    return std::string("<![CDATA[") + Parsing::xmlTreeToString(root) + "]]>";
 }

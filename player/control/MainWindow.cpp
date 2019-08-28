@@ -15,14 +15,14 @@ MainWindow::MainWindow() :
     Widget(m_handler),
     m_layout(std::make_unique<OverlayLayout>(MinDisplayWidth, MinDisplayHeight))
 {
-    m_handler.signal_realize().connect(sigc::mem_fun(*this, &MainWindow::onRealized));
+    m_handler.signal_realize().connect(std::bind(&MainWindow::onRealized, this));
     loadDefaultStyle();
 
     m_handler.set_name("mainWindow");
     m_handler.add(getHandler(*m_layout));
     m_handler.add_events(Gdk::KEY_PRESS_MASK);
     m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
-        m_keyPressed.emit(event->string);
+        m_keyPressed(event->string);
         return false;
     });
 }
@@ -165,7 +165,7 @@ void MainWindow::setCursorVisible(bool cursorVisible)
     m_cursorVisible = cursorVisible;
 }
 
-SignalKeyPressed MainWindow::keyPressed()
+SignalKeyPressed& MainWindow::keyPressed()
 {
     return m_keyPressed;
 }
@@ -184,5 +184,5 @@ void MainWindow::setWindowSize(int width, int height)
 {
     m_handler.set_default_size(width, height);
     m_handler.resize(width, height);
-    m_resizeSignal.emit();
+    m_resizeSignal();
 }

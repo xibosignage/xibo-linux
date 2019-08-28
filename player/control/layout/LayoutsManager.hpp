@@ -8,8 +8,8 @@
 
 class Scheduler;
 
-using MainLayoutLoaded = sigc::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
-using OverlaysLoaded = sigc::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
+using MainLayoutLoaded = boost::signals2::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
+using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
 
 class LayoutsManager
 {

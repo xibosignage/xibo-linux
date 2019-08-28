@@ -5,9 +5,10 @@
 #include "IMainWindow.hpp"
 
 #include <gtkmm/window.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalKeyPressed = sigc::signal<void(std::string)>;
-using SignalWindowRealized = sigc::signal<void()>;
+using SignalKeyPressed = boost::signals2::signal<void(std::string)>;
+using SignalWindowRealized = boost::signals2::signal<void()>;
 
 class MainWindow : public Widget<IMainWindow>
 {
@@ -32,7 +33,7 @@ public:
     void unfullscreen() override;
     void setCursorVisible(bool cursorVisible) override;
 
-    SignalKeyPressed keyPressed() override;
+    SignalKeyPressed& keyPressed() override;
     Gtk::Window& get() override;
 
 private:

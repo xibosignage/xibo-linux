@@ -1,9 +1,9 @@
 #pragma once
 
 #include <memory>
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalLayoutExpired = sigc::signal<void()>;
+using SignalLayoutExpired = boost::signals2::signal<void()>;
 
 class IRegion;
 class IOverlayLayout;
@@ -14,7 +14,7 @@ public:
     virtual ~IMainLayout() = default;
 
     virtual void addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z) = 0;
-    virtual SignalLayoutExpired expired() = 0;
+    virtual SignalLayoutExpired& expired() = 0;
 
     virtual void restart() = 0;
 

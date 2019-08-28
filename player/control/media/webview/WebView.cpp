@@ -3,6 +3,8 @@
 
 #include <webkit/webkit.h>
 
+namespace ph = std::placeholders;
+
 WebView::WebView(int width, int height) :
     Widget(m_handler)
 {
@@ -10,8 +12,8 @@ WebView::WebView(int width, int height) :
     auto widget = Gtk::manage(Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView)));
     m_handler.add(*widget);
 
-    m_sizeAllocateConnection = widget->signal_size_allocate().connect([=](Gtk::Allocation&){
-       webkit_web_view_reload(m_webView);
+    m_sizeAllocateConnection = widget->signal_size_allocate().connect([this](Gtk::Allocation&){
+       reload();
        m_sizeAllocateConnection.disconnect();
     });
 
@@ -41,7 +43,7 @@ void WebView::load(const Uri& uri)
 
 void WebView::enableTransparency()
 {
-    m_handler.signal_screen_changed().connect(sigc::mem_fun(*this, &WebView::screenChanged));
+    m_handler.signal_screen_changed().connect(std::bind(&WebView::screenChanged, this, ph::_1));
     screenChanged(m_handler.get_screen());
 
     webkit_web_view_set_transparent(m_webView, true);

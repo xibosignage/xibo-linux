@@ -3,14 +3,14 @@
 #include "common/settings/PlayerSettings.hpp"
 
 #include <memory>
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
 class IMainWindow;
 class IOverlayLayout;
 class IImage;
 class LayoutsManager;
 
-using StatusScreenRequested = sigc::signal<void()>;
+using StatusScreenRequested = boost::signals2::signal<void()>;
 
 class MainWindowController
 {
@@ -20,7 +20,7 @@ public:
     void updateWindowDimensions(const PlayerSettings::Dimensions& dimensions);
     void showSplashScreen();
 
-    StatusScreenRequested statusScreenRequested();
+    StatusScreenRequested& statusScreenRequested();
 
 private:
     std::shared_ptr<IImage> createSplashScreen();  

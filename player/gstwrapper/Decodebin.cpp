@@ -20,12 +20,12 @@ void Gst::Decodebin::noMorePads(GstElement* el, gpointer data)
 
 void Gst::Decodebin::onPadAddedMem(GstElement*, GstPad* pad, gpointer)
 {
-    m_signalPadAdded.emit(std::make_shared<Gst::Pad>(pad, false));
+    m_signalPadAdded(std::make_shared<Gst::Pad>(pad, false));
 }
 
 void Gst::Decodebin::noMorePadsMem(GstElement*, gpointer)
 {
-    m_signalNoMorePads.emit();
+    m_signalNoMorePads();
 }
 
 Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
@@ -33,12 +33,12 @@ Gst::RefPtr<Gst::Decodebin> Gst::Decodebin::create()
     return Gst::RefPtr<Gst::Decodebin>(new Gst::Decodebin);
 }
 
-sigc::signal<void(const Gst::RefPtr<Gst::Pad>&)>& Gst::Decodebin::signalPadAdded()
+Gst::SignalPadAdded& Gst::Decodebin::signalPadAdded()
 {
     return m_signalPadAdded;
 }
 
-sigc::signal<void()>& Gst::Decodebin::signalNoMorePads()
+Gst::SignalsNoMorePads& Gst::Decodebin::signalNoMorePads()
 {
     return m_signalNoMorePads;
 }

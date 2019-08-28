@@ -1,12 +1,12 @@
 #pragma once
 
 #include "gstwrapper/Inspector.hpp"
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
 class Uri;
 class IVideoWindow;
 
-using SignalPlaybackFinished = sigc::signal<void()>;
+using SignalPlaybackFinished = boost::signals2::signal<void()>;
 
 class IMediaPlayer
 {
@@ -23,6 +23,6 @@ public:
     virtual void stopAndRemove() = 0;
     virtual void stopPlayback() = 0;
 
-    virtual SignalPlaybackFinished playbackFinished() = 0;
+    virtual SignalPlaybackFinished& playbackFinished() = 0;
     virtual Gst::InspectorResult mediaInfo() const = 0;
 };

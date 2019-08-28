@@ -18,7 +18,7 @@ void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int 
     m_regions.emplace_back(std::move(region));
 }
 
-SignalLayoutExpired MainLayout::expired()
+SignalLayoutExpired& MainLayout::expired()
 {
     return m_layoutExpired;
 }
@@ -45,7 +45,7 @@ void MainLayout::onRegionExpired(int regionId)
 
     if(areAllRegionsExpired())
     {
-        m_layoutExpired.emit();
+        m_layoutExpired();
     }
 }
 

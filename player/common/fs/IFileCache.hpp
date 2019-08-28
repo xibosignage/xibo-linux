@@ -8,7 +8,8 @@ public:
     virtual ~IFileCache() = default;
 
     virtual void loadFrom(const FilePath& cacheFile) = 0;
-    virtual bool cachedWithHash(const std::string& file, const std::string& targetHash) const = 0;
-    virtual bool cached(const std::string& file) const = 0;
-    virtual void save(const std::string& file, const std::string& content) = 0;
+    virtual bool valid(const std::string& filename) const = 0;
+    virtual bool cached(const std::string& filename, const std::string& hash) const = 0;
+    virtual void markAsInvalid(const std::string& filename) = 0;
+    virtual void save(const std::string& filename, const std::string& content, const std::string& md5) = 0;
 };

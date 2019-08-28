@@ -9,26 +9,38 @@ namespace ProjectResources
 {
     inline std::string version()
     {
-        const char* version = getenv("SNAP_VERSION");
-        return version == nullptr ? "null" : version;
+    #ifdef SNAP_ENABLED
+        return getenv("SNAP_VERSION");
+    #else
+        return std::string{"dev-version"};
+    #endif
     }
 
     inline std::string codeVersion()
     {
-        const char* revision = getenv("SNAP_REVISION");
-        return revision == nullptr ? "null" : revision;
+    #ifdef SNAP_ENABLED
+        return getenv("SNAP_REVISION");
+    #else
+        return std::string{"dev-revision"};
+    #endif
     }
 
     inline FilePath buildDirectory()
     {
-        const char* directory = getenv("SNAP");
-        return directory == nullptr ? FileSystem::currentPath() : FilePath{directory} / "bin";
+    #ifdef SNAP_ENABLED
+        return FilePath{getenv("SNAP")} / "bin";
+    #else
+        return FileSystem::currentPath();
+    #endif
     }
 
     inline FilePath configDirectory()
     {
-        const char* directory = getenv("SNAP_USER_DATA");
-        return directory == nullptr ? FileSystem::currentPath() : FilePath{directory};
+    #ifdef SNAP_ENABLED
+        return FilePath{getenv("SNAP_USER_COMMON")};
+    #else
+        return FileSystem::currentPath();
+    #endif
     }
 
     inline FilePath publicKeyFile()
@@ -78,16 +90,22 @@ namespace ProjectResources
 
     inline std::string playerBinary()
     {
-        const char* directory = getenv("SNAP");
         auto path = buildDirectory() / "player";
-        return directory == nullptr ? path.string() : "desktop-launch " + path.string();
+    #ifdef SNAP_ENABLED
+        return "desktop-launch " + path.string();
+    #else
+        return path.string();
+    #endif
     }
 
     inline std::string optionsBinary()
     {
-        const char* directory = getenv("SNAP");
         auto path = buildDirectory() / "options";
-        return directory == nullptr ? path.string() : "desktop-launch " + path.string();
+    #ifdef SNAP_ENABLED
+        return "desktop-launch " + path.string();
+    #else
+        return path.string();
+    #endif
     }
 
 }

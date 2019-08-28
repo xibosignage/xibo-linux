@@ -8,7 +8,6 @@
 #include "control/common/IOverlayLayout.hpp"
 
 namespace ph = std::placeholders;
-
 const std::string StatusScreenKey = "i";
 
 MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
@@ -16,7 +15,7 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
 {
     m_window->disableWindowDecoration();
     m_window->setCursorVisible(false);
-    m_window->keyPressed().connect(sigc::mem_fun(this, &MainWindowController::onKeyPressed));
+    m_window->keyPressed().connect(std::bind(&MainWindowController::onKeyPressed, this, ph::_1));
 
     m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout){
         if(layout)
@@ -46,7 +45,7 @@ void MainWindowController::onKeyPressed(const std::string& pressedKey)
 {
     if(pressedKey == StatusScreenKey)
     {
-        m_statusScrenRequested.emit();
+        m_statusScrenRequested();
     }
 }
 
@@ -57,7 +56,7 @@ void MainWindowController::showSplashScreen()
     splashScreen->show();
 }
 
-StatusScreenRequested MainWindowController::statusScreenRequested()
+StatusScreenRequested& MainWindowController::statusScreenRequested()
 {
     return m_statusScrenRequested;
 }

@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.69 REQUIRED system date_time thread)
+find_package(Boost 1.69 REQUIRED filesystem system date_time thread)
 
 # modules
 include(FindSonameLib)
@@ -25,6 +25,11 @@ set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
 configure_file(config.hpp.in ${CMAKE_BINARY_DIR}/generated/config.hpp)
 configure_file(player/ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
 configure_file(player/splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
+
+option(SNAP_BUILD "Use SNAP environment during build" ON)
+if(SNAP_BUILD)
+    add_definitions(-DSNAP_ENABLED)
+endif(SNAP_BUILD)
 
 include_directories(${CMAKE_BINARY_DIR}/generated/)
 install(DIRECTORY DESTINATION ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})

@@ -1,4 +1,5 @@
 name: xibo-player
+base: core18
 version: 1.8-R2
 summary: Xibo Linux Player
 description: Xibo for Linux Digital Signage Player
@@ -14,40 +15,71 @@ slots:
 apps:
   xibo-player:
     command: desktop-launch $SNAP/bin/watchdog
-    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
+    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
 
   player:
     command: desktop-launch $SNAP/bin/player
-    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa]
+    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
-  
+
   options:
     command: desktop-launch $SNAP/bin/options
-    plugs: [gsettings, network, home, unity7, x11]
+    plugs: [gsettings, network, home, unity7, x11, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     environment:
       LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
 
 parts:
+  desktop-gtk3:
+    build-packages:
+      - build-essential
+      - libgtk-3-dev
+    make-parameters:
+      - FLAVOR=gtk3
+    plugin: make
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: gtk
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libgtk-3-0
+      - libgdk-pixbuf2.0-0
+      - libglib2.0-bin
+      - libgtk-3-bin
+      - unity-gtk3-module
+      - libappindicator3-1
+      - locales-all
+      - xdg-user-dirs
+      - ibus-gtk3
+      - libibus-1.0-5
+      - fcitx-frontend-gtk3
   player-sources:
     source: build
     plugin: dump
     prime:
       - bin
-      - usr/lib/x86_64-linux-gnu
+      - usr/lib
+      - lib
     stage-packages:
       - libgstreamer1.0-0
-      - libxss1
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
-      - libcanberra-gtk3-module
+      - gstreamer1.0-plugins-bad
       - gstreamer1.0-libav
       - gstreamer1.0-alsa
       - gstreamer1.0-pulseaudio
+      - libgtkmm-3.0-1v5
+      - libcanberra-gtk3-module
       - libwebkitgtk-3.0-0
+      - libgpm2 # gstreamer warning
     after: [desktop-gtk3] 

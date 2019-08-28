@@ -38,7 +38,7 @@ ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
-    std::ifstream in(path.string());
+    std::ifstream in(path);
 
     std::smatch matchedGroups;
     std::string line;
@@ -71,11 +71,25 @@ Uri WebViewParser::uriFrom(const ptree_node& node)
 
 std::string WebViewParser::removeEscapedSymbolsFromUri(std::string url)
 {
+    boost::replace_all(url, "%21", "!");
+    boost::replace_all(url, "%23", "#");
+    boost::replace_all(url, "%24", "$");
+    boost::replace_all(url, "%25", "%");
+    boost::replace_all(url, "%26", "&");
+    boost::replace_all(url, "%27", "'");
+    boost::replace_all(url, "%28", "(");
+    boost::replace_all(url, "%29", ")");
+    boost::replace_all(url, "%2A", "*");
+    boost::replace_all(url, "%2B", "+");
+    boost::replace_all(url, "%2C", ",");
     boost::replace_all(url, "%2F", "/");
     boost::replace_all(url, "%3A", ":");
-    boost::replace_all(url, "%3F", "?");
+    boost::replace_all(url, "%3B", ";");
     boost::replace_all(url, "%3D", "=");
-    boost::replace_all(url, "%26", "&");
+    boost::replace_all(url, "%3F", "?");
+    boost::replace_all(url, "%40", "@");
+    boost::replace_all(url, "%5B", "]");
+    boost::replace_all(url, "%5D", "[");
 
     return url;
 }

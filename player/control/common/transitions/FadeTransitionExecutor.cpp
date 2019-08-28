@@ -22,7 +22,7 @@ void FadeTransitionExecutor::apply()
 
         if(isFinished(value))
         {
-            finished().emit();
+            finished()();
             return false;
         }
 

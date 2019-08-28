@@ -55,11 +55,11 @@ void MainWindowController::updateControls(const CmsSettings& settings)
 
 void MainWindowController::connectSignals()
 {
-    m_saveSettings->signal_clicked().connect(sigc::mem_fun(this, &MainWindowController::onSaveSettingsClicked));
-    m_launchClient->signal_clicked().connect(sigc::mem_fun(this, &MainWindowController::onLaunchClientClicked));
-    m_displayAdmin->signal_clicked().connect(sigc::mem_fun(this, &MainWindowController::onDisplayAdminClicked));
-    m_browseResourcesPath->signal_clicked().connect(sigc::mem_fun(this, &MainWindowController::onBrowseResourcesPathClicked));
-    m_exit->signal_clicked().connect(sigc::mem_fun(m_mainWindow, &Gtk::Window::close));
+    m_saveSettings->signal_clicked().connect(std::bind(&MainWindowController::onSaveSettingsClicked, this));
+    m_launchClient->signal_clicked().connect(std::bind(&MainWindowController::onLaunchClientClicked, this));
+    m_displayAdmin->signal_clicked().connect(std::bind(&MainWindowController::onDisplayAdminClicked, this));
+    m_browseResourcesPath->signal_clicked().connect(std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
+    m_exit->signal_clicked().connect(std::bind(&Gtk::Window::close, m_mainWindow));
 }
 
 void MainWindowController::onSaveSettingsClicked()

@@ -15,7 +15,7 @@ public:
     MainLayout(const std::shared_ptr<IOverlayLayout>& view);
 
     void addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z) override;
-    SignalLayoutExpired expired() override;
+    SignalLayoutExpired& expired() override;
 
     void restart() override;
 

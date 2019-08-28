@@ -7,7 +7,7 @@ PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<
     Media(options, player->outputWindow()),
     m_player(std::move(player))
 {
-    mediaFinished().connect(sigc::mem_fun(this, &PlayableMedia::onMediaFinished));
+    mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
 
     m_player->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
 }
@@ -31,7 +31,7 @@ void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
 {
     if(options.duration == 0)
     {
-        mediaFinished().emit();
+        mediaFinished()();
         return;
     }
 

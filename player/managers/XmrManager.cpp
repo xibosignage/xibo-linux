@@ -99,11 +99,11 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 
     if(message.action == "collectNow")
     {
-        m_collectionIntervalAction.emit();
+        m_collectionIntervalAction();
     }
     else if(message.action == "screenShot")
     {
-        m_screenshotAction.emit();
+        m_screenshotAction();
     }
 }
 

@@ -93,13 +93,6 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_fileCache->loadFrom(ProjectResources::cacheFile());
 
-    ScheduleParser parser;
-    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
-    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
-        ScheduleSerializer serializer;
-        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
-    });
-
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
     Log::debug(m_webserver->address());
@@ -122,7 +115,7 @@ XiboApp::XiboApp(const std::string& name) :
 void XiboApp::setupXmrManager()
 {
     m_xmrManager->collectionInterval().connect([this](){
-        Log::info("Start unscheduled collection");
+        Log::info("[CollectionInterval] Start unscheduled collection");
 
         m_collectionInterval->collect([this](const PlayerError& error){
             onCollectionFinished(error);
@@ -191,6 +184,13 @@ int XiboApp::run()
 
     applyPlayerSettings(m_playerSettings);
 
+    ScheduleParser parser;
+    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
+    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
+        ScheduleSerializer serializer;
+        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
+    });
+
     m_collectionInterval->startRegularCollection();
     m_layoutsManager->fetchAllLayouts();
 
@@ -220,8 +220,8 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
 {
     auto interval = std::make_unique<CollectionInterval>(xmdsManager);
 
-    interval->collectionFinished().connect(sigc::mem_fun(this, &XiboApp::onCollectionFinished));
-    interval->settingsUpdated().connect(sigc::mem_fun(this, &XiboApp::updateAndApplySettings));
+    interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
+    interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
     interval->scheduleAvailable().connect([this](const Schedule::Result& result){
         ScheduleParser parser;
         m_scheduler->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
@@ -237,7 +237,7 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
 {
     if(error)
     {
-        Log::error("[Collection interval] {}", error);
+        Log::error("[CollectionInterval] {}", error);
     }
 }
 

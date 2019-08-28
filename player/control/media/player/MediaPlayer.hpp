@@ -22,7 +22,7 @@ public:
     void stopAndRemove() override;
     void stopPlayback() override;
 
-    SignalPlaybackFinished playbackFinished() override;
+    SignalPlaybackFinished& playbackFinished() override;
     Gst::InspectorResult mediaInfo() const override;
 
 private:
