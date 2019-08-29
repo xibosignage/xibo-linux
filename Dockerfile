@@ -141,7 +141,7 @@ RUN mkdir -p /app
 ADD . /app
 
 RUN cd /app && \
-    cmake -H. -B_build && \
+    cmake -DCMAKE_BUILD_TYPE=Release -H. -B_build && \
     cd _build && \
     make -j4 && \
     make install

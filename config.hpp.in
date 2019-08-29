@@ -43,6 +43,13 @@ namespace ProjectResources
     #endif
     }
 
+#ifdef SNAP_ENABLED
+    inline FilePath oldConfigDirectory()
+    {
+        return FilePath{getenv("SNAP_USER_DATA")};
+    }
+#endif
+
     inline FilePath publicKeyFile()
     {
         return configDirectory() / "id_rsa.pub";

@@ -49,6 +49,8 @@ private:
     void updateAndApplySettings(const PlayerSettings& settings);
     void applyPlayerSettings(const PlayerSettings& settings);
 
+    void setupNewConfigDir();
+
     GeneralInfo collectGeneralInfo();
 
 private:

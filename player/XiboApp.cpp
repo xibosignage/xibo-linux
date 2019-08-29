@@ -89,6 +89,8 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_cmsSettings.loadFrom(ProjectResources::cmsSettingsFile());
     m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
+
+    setupNewConfigDir();
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
     m_fileCache->loadFrom(ProjectResources::cacheFile());
@@ -258,4 +260,36 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
     m_windowController->updateWindowDimensions(dimensions);
 
     Log::debug("Player settings updated");
+}
+
+void XiboApp::setupNewConfigDir()
+{
+#ifdef SNAP_ENABLED
+    try
+    {
+        auto oldConfigDir = ProjectResources::oldConfigDirectory();
+        auto configDir = ProjectResources::configDirectory();
+        if(FileSystem::exists(oldConfigDir / "cmsSettings.xml"))
+        {
+            std::vector<std::string> filesToCopy{"cmsSettings.xml", "playerSettings.xml", "schedule.xml", "id_rsa", "id_rsa.pub"};
+            for(auto&& file : filesToCopy)
+            {
+                if(FileSystem::exists(oldConfigDir / file))
+                {
+                    FileSystem::copy(oldConfigDir / file, configDir / file);
+                }
+            }
+
+            if(m_cmsSettings.resourcesPath == oldConfigDir)
+            {
+                m_cmsSettings.resourcesPath = configDir;
+                m_cmsSettings.saveTo(ProjectResources::cmsSettingsFile());
+            }
+        }
+    }
+    catch(std::exception& e)
+    {
+        Log::error("Error during setting up new config directory: {}", e.what());
+    }
+#endif
 }

@@ -126,7 +126,7 @@ void MainWindowController::onLaunchClientClicked()
 
     m_mainWindow->close();
 
-    player.wait();
+    player.detach();
 }
 
 void MainWindowController::onBrowseResourcesPathClicked()
