@@ -10,7 +10,7 @@ class FileSystem
 public:
     static bool isRegularFile(const FilePath& path);
     static bool isDirectory(const FilePath& path);
-    static void copyRecursive(const FilePath& source, const FilePath& dest, const std::set<FilePath>& exceptions = {});
+    static void move(const FilePath& source, const FilePath& dest);
     static void copy(const FilePath& source, const FilePath& dest);
     static bool exists(const FilePath& path);
     static bool empty(const FilePath& path);

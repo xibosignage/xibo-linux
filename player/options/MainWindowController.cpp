@@ -13,7 +13,7 @@ MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefP
     m_ui(ui),
     m_mainWindow(window)
 {
-    m_settings.loadFrom(ProjectResources::cmsSettingsFile());
+    m_settings.loadFrom(ProjectResources::cmsSettingsPath());
 
     initUi();
     updateControls(m_settings);
@@ -117,7 +117,7 @@ void MainWindowController::updateSettings()
     m_settings.domain = m_domainField->get_text();
     m_settings.displayId = m_displayIdField->get_text();
 
-    m_settings.saveTo(ProjectResources::cmsSettingsFile());
+    m_settings.saveTo(ProjectResources::cmsSettingsPath());
 }
 
 void MainWindowController::onLaunchClientClicked()

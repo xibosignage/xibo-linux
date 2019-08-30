@@ -25,10 +25,11 @@ namespace ProjectResources
     #endif
     }
 
+    const std::string BuildDir = "bin";
     inline FilePath buildDirectory()
     {
     #ifdef SNAP_ENABLED
-        return FilePath{getenv("SNAP")} / "bin";
+        return FilePath{getenv("SNAP")} / BuildDir;
     #else
         return FileSystem::currentPath();
     #endif
@@ -50,54 +51,64 @@ namespace ProjectResources
     }
 #endif
 
-    inline FilePath publicKeyFile()
+    const std::string PublicKeyFile = "id_rsa.pub";
+    inline FilePath publicKeyPath()
     {
-        return configDirectory() / "id_rsa.pub";
+        return configDirectory() / PublicKeyFile;
     }
 
-    inline FilePath privateKeyFile()
+    const std::string PrivateKeyFile = "id_rsa";
+    inline FilePath privateKeyPath()
     {
-        return configDirectory() / "id_rsa";
+        return configDirectory() / PrivateKeyFile;
     }
 
+    const std::string ResourcesDir = "resources";
     inline FilePath defaultResourcesDir()
     {
-        return configDirectory() / "resources";
+        return configDirectory() / ResourcesDir;
     }
 
+    const std::string SplashImage = "splash.jpg";
     inline FilePath splashScreen()
     {
-        return buildDirectory() / "splash.jpg";
+        return buildDirectory() / SplashImage;
     }
 
+    const std::string UiGlade = "ui.glade";
     inline FilePath uiFile()
     {
-        return buildDirectory() / "ui.glade";
+        return buildDirectory() / UiGlade;
     }
 
-    inline FilePath cmsSettingsFile()
+    const std::string CmsSettingsFile = "cmsSettings.xml";
+    inline FilePath cmsSettingsPath()
     {
-        return configDirectory() / "cmsSettings.xml";
+        return configDirectory() / CmsSettingsFile;
     }
 
-    inline FilePath playerSettingsFile()
+    const std::string PlayerSettingsFile = "playerSettings.xml";
+    inline FilePath playerSettingsPath()
     {
-        return configDirectory() / "playerSettings.xml";
+        return configDirectory() / PlayerSettingsFile;
     }
 
-    inline FilePath scheduleFile()
+    const std::string ScheduleFile = "schedule.xml";
+    inline FilePath schedulePath()
     {
-        return configDirectory() / "schedule.xml";
+        return configDirectory() / ScheduleFile;
     }
 
-    inline FilePath cacheFile()
+    const std::string CacheFile = "cacheFile.xml";
+    inline FilePath cachePath()
     {
-        return configDirectory() / "cachedFiles.xml";
+        return configDirectory() / CacheFile;
     }
 
+    const std::string PlayerBin = "player";
     inline std::string playerBinary()
     {
-        auto path = buildDirectory() / "player";
+        auto path = buildDirectory() / PlayerBin;
     #ifdef SNAP_ENABLED
         return "desktop-launch " + path.string();
     #else

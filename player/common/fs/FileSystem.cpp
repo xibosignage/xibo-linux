@@ -16,23 +16,12 @@ bool FileSystem::isDirectory(const FilePath& path)
     return fs::is_directory(path);
 }
 
-void FileSystem::copyRecursive(const FilePath& source, const FilePath& dest, const std::set<FilePath>& exceptions)
+void FileSystem::move(const FilePath& source, const FilePath& dest)
 {
-    if(!isDirectory(source) || !isDirectory(dest) || empty(source)) return;
-
-    for(fs::directory_iterator file{source}; file != fs::directory_iterator{}; ++file)
+    if(exists(source))
     {
-        fs::path current(file->path());
-        if(exceptions.count(current) > 0) continue;
-
-        if(fs::is_directory(current))
-        {
-            copyRecursive(current, dest / current.filename());
-        }
-        else
-        {
-            fs::copy_file(current, dest / current.filename());
-        }
+        copy(source, dest);
+        removeAll(source);
     }
 }
 

@@ -81,19 +81,17 @@ XiboApp::XiboApp(const std::string& name) :
     m_webserver(std::make_shared<XiboWebServer>()),
     m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
 {
-    if(!FileSystem::exists(ProjectResources::cmsSettingsFile()))
+    if(!FileSystem::exists(ProjectResources::cmsSettingsPath()))
         throw std::runtime_error("Update CMS settings using player options app");
 
     System sys;
     sys.preventSleep();
 
-    m_cmsSettings.loadFrom(ProjectResources::cmsSettingsFile());
-    m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
-
-    setupNewConfigDir();
+    m_cmsSettings.loadFrom(ProjectResources::cmsSettingsPath());
+    m_playerSettings.loadFrom(ProjectResources::playerSettingsPath());
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
-    m_fileCache->loadFrom(ProjectResources::cacheFile());
+    m_fileCache->loadFrom(ProjectResources::cachePath());
 
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
@@ -187,10 +185,10 @@ int XiboApp::run()
     applyPlayerSettings(m_playerSettings);
 
     ScheduleParser parser;
-    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
+    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::schedulePath()));
     m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
         ScheduleSerializer serializer;
-        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
+        serializer.scheduleTo(schedule, ProjectResources::schedulePath());
     });
 
     m_collectionInterval->startRegularCollection();
@@ -248,7 +246,7 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
     applyPlayerSettings(settings);
 
     m_playerSettings = std::move(settings);
-    m_playerSettings.saveTo(ProjectResources::playerSettingsFile());
+    m_playerSettings.saveTo(ProjectResources::playerSettingsPath());
 }
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
@@ -260,36 +258,4 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
     m_windowController->updateWindowDimensions(dimensions);
 
     Log::debug("Player settings updated");
-}
-
-void XiboApp::setupNewConfigDir()
-{
-#ifdef SNAP_ENABLED
-    try
-    {
-        auto oldConfigDir = ProjectResources::oldConfigDirectory();
-        auto configDir = ProjectResources::configDirectory();
-        if(FileSystem::exists(oldConfigDir / "cmsSettings.xml"))
-        {
-            std::vector<std::string> filesToCopy{"cmsSettings.xml", "playerSettings.xml", "schedule.xml", "id_rsa", "id_rsa.pub"};
-            for(auto&& file : filesToCopy)
-            {
-                if(FileSystem::exists(oldConfigDir / file))
-                {
-                    FileSystem::copy(oldConfigDir / file, configDir / file);
-                }
-            }
-
-            if(m_cmsSettings.resourcesPath == oldConfigDir)
-            {
-                m_cmsSettings.resourcesPath = configDir;
-                m_cmsSettings.saveTo(ProjectResources::cmsSettingsFile());
-            }
-        }
-    }
-    catch(std::exception& e)
-    {
-        Log::error("Error during setting up new config directory: {}", e.what());
-    }
-#endif
 }
