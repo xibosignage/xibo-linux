@@ -15,8 +15,8 @@ RsaManager& RsaManager::instance()
 
 void RsaManager::load()
 {
-    auto publicKeyPath = ProjectResources::publicKeyFile();
-    auto privateKeyPath = ProjectResources::privateKeyFile();
+    auto publicKeyPath = ProjectResources::publicKeyPath();
+    auto privateKeyPath = ProjectResources::privateKeyPath();
 
     if(!FileSystem::exists(publicKeyPath) || !FileSystem::exists(privateKeyPath))
     {

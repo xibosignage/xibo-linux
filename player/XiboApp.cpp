@@ -81,17 +81,17 @@ XiboApp::XiboApp(const std::string& name) :
     m_webserver(std::make_shared<XiboWebServer>()),
     m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
 {
-    if(!FileSystem::exists(ProjectResources::cmsSettingsFile()))
+    if(!FileSystem::exists(ProjectResources::cmsSettingsPath()))
         throw std::runtime_error("Update CMS settings using player options app");
 
     System sys;
     sys.preventSleep();
 
-    m_cmsSettings.loadFrom(ProjectResources::cmsSettingsFile());
-    m_playerSettings.loadFrom(ProjectResources::playerSettingsFile());
+    m_cmsSettings.loadFrom(ProjectResources::cmsSettingsPath());
+    m_playerSettings.loadFrom(ProjectResources::playerSettingsPath());
     Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
 
-    m_fileCache->loadFrom(ProjectResources::cacheFile());
+    m_fileCache->loadFrom(ProjectResources::cachePath());
 
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
@@ -185,10 +185,10 @@ int XiboApp::run()
     applyPlayerSettings(m_playerSettings);
 
     ScheduleParser parser;
-    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::scheduleFile()));
+    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::schedulePath()));
     m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule){
         ScheduleSerializer serializer;
-        serializer.scheduleTo(schedule, ProjectResources::scheduleFile());
+        serializer.scheduleTo(schedule, ProjectResources::schedulePath());
     });
 
     m_collectionInterval->startRegularCollection();
@@ -246,7 +246,7 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
     applyPlayerSettings(settings);
 
     m_playerSettings = std::move(settings);
-    m_playerSettings.saveTo(ProjectResources::playerSettingsFile());
+    m_playerSettings.saveTo(ProjectResources::playerSettingsPath());
 }
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
