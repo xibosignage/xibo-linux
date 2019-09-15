@@ -3,7 +3,7 @@
 #include "networking/xmds/Resources.hpp"
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 #include "common/Parsing.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
@@ -46,7 +46,7 @@ LayoutSchedule ScheduleParser::scheduleFromImpl(const ptree_node& scheduleXml)
     LayoutSchedule schedule;
     auto scheduleNode = scheduleXml.get_child(Resources::Schedule);
 
-    schedule.generatedTime = DateTimeProvider::fromString(scheduleNode.get<std::string>(Resources::Generated));
+    schedule.generatedTime = DateTime::fromString(scheduleNode.get<std::string>(Resources::Generated));
 
     for(auto [name, node] : scheduleNode)
     {
@@ -69,8 +69,8 @@ ScheduledLayout ScheduleParser::scheduledLayoutFrom(const ptree_node& node)
 
     layout.scheduleId = node.get<int>(Resources::ScheduleId);
     layout.id = node.get<int>(Resources::Id);
-    layout.startDT = DateTimeProvider::fromString(node.get<std::string>(Resources::StartDT));
-    layout.endDT = DateTimeProvider::fromString(node.get<std::string>(Resources::EndDT));
+    layout.startDT = DateTime::fromString(node.get<std::string>(Resources::StartDT));
+    layout.endDT = DateTime::fromString(node.get<std::string>(Resources::EndDT));
     layout.priority = node.get<int>(Resources::Priority);
 
     if(auto dependants = node.get_child_optional(Resources::LocalDependants))

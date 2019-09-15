@@ -1,7 +1,7 @@
 #include "Scheduler.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 #include "common/fs/Resources.hpp"
 
 Scheduler::Scheduler(const IFileCache& fileCache) :
@@ -92,7 +92,7 @@ void Scheduler::updateCurrentOverlays(const OverlaysIds& ids)
 
 bool Scheduler::layoutOnSchedule(const ScheduledLayout& layout) const
 {
-    auto currentDT = DateTimeProvider::now();
+    auto currentDT = DateTime::now();
 
     if(currentDT >= layout.startDT && currentDT < layout.endDT)
     {
@@ -154,7 +154,7 @@ SignalLayoutsUpdated& Scheduler::overlaysUpdated()
 
 DateTime Scheduler::closestLayoutDt()
 {
-    auto now = DateTimeProvider::now();
+    auto now = DateTime::now();
     DateTime closestDt;
 
     for(auto&& layout : m_schedule.regularLayouts)
@@ -175,9 +175,9 @@ DateTime Scheduler::closestLayoutDt()
 void Scheduler::restartTimer()
 {
     auto dt = closestLayoutDt();
-    auto duration = (dt - DateTimeProvider::now()).total_seconds();
+    auto duration = (dt - DateTime::now()).total_seconds();
 
-    if(!dt.is_not_a_date_time() && duration > 0)
+    if(dt.isValid() && duration > 0)
     {
         Log::debug("Timer restarted with value: {}", duration);
 
@@ -201,7 +201,7 @@ SchedulerStatus Scheduler::status() const
     schedulerStatus(status, m_schedule.regularLayouts);
     schedulerStatus(status, m_schedule.overlayLayouts);
 
-    status.generatedTime = DateTimeProvider::toString(m_schedule.generatedTime);
+    status.generatedTime = DateTime::toString(m_schedule.generatedTime);
     status.currentLayout = currentLayoutId();
 
     return status;

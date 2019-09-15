@@ -9,7 +9,7 @@
 #include <mutex>
 
 #include "XmlLogsRepo.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 
 template<typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>
@@ -53,9 +53,9 @@ private:
 
     std::string formatDateTime(std::chrono::system_clock::time_point tp)
     {
-        auto dt = DateTimeProvider::fromTimeT(std::chrono::system_clock::to_time_t(tp));
+        auto dt = DateTime::localFromTimestamp(std::chrono::system_clock::to_time_t(tp));
 
-        return DateTimeProvider::toString(dt, "%Y-%m-%d %H:%M:%S");
+        return DateTime::toString(dt, "%Y-%m-%d %H:%M:%S");
     }
 
     std::string formatLogLevel(spdlog::level::level_enum level)

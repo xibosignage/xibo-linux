@@ -202,7 +202,7 @@ GeneralInfo XiboApp::collectGeneralInfo()
 {
     GeneralInfo info;
 
-    info.currentDT = DateTimeProvider::now();
+    info.currentDT = DateTime::now();
     info.cmsAddress = m_cmsSettings.cmsAddress;
     info.resourcesPath = m_cmsSettings.resourcesPath;
     info.codeVersion = ProjectResources::codeVersion();

@@ -3,8 +3,8 @@
 namespace ScheduleTests
 {
 
-    const DateTime StartDt{Date(1970, 1, 1), Time(1, 0, 0)};
-    const DateTime EndDt{Date(2038, 1, 19), Time(3, 14, 7)};
+    const DateTime StartDt{DateTime::Date(1970, 1, 1), DateTime::Time(1, 0, 0)};
+    const DateTime EndDt{DateTime::Date(2038, 1, 19), DateTime::Time(3, 14, 7)};
 
     ScheduledLayout scheduledLayout(int scheduledId, int id, int priority)
     {
@@ -75,7 +75,7 @@ namespace ScheduleTests
     {
         LayoutSchedule schedule;
 
-        schedule.generatedTime = DateTime(Date(2019, 1, 8), Time(8, 0, 0));
+        schedule.generatedTime = DateTime(DateTime::Date(2019, 1, 8), DateTime::Time(8, 0, 0));
         schedule.defaultLayout = defaultLayout();
         schedule.regularLayouts = regularLayouts();
         schedule.overlayLayouts = overlayLayouts();

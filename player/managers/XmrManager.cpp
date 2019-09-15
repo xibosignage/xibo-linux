@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/Parsing.hpp"
 #include "common/Utils.hpp"
@@ -56,7 +56,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 
             processXmrMessage(xmrMessage);
 
-            m_info.lastMessageDt = DateTimeProvider::now();
+            m_info.lastMessageDt = DateTime::now();
         }
         catch (std::exception& e)
         {
@@ -65,7 +65,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        m_info.lastHeartbeatDt = DateTimeProvider::now();
+        m_info.lastHeartbeatDt = DateTime::now();
     }
 }
 
@@ -87,7 +87,7 @@ XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 
     XmrMessage message;
     message.action = tree.get<std::string>("action");
-    message.createdDt = DateTimeProvider::fromIsoExtendedString(tree.get<std::string>("createdDt"));
+    message.createdDt = DateTime::fromIsoExtendedString(tree.get<std::string>("createdDt"));
     message.ttl = tree.get<int>("ttl");
 
     return message;
@@ -109,8 +109,8 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 
 bool XmrManager::isMessageExpired(const XmrMessage& message)
 {
-    auto resultDt = message.createdDt + DateTimeSeconds(message.ttl);
-    if(resultDt < DateTimeProvider::nowUtc())
+    auto resultDt = message.createdDt + DateTime::Seconds(message.ttl);
+    if(resultDt < DateTime::nowUtc())
     {
         return true;
     }

@@ -10,8 +10,8 @@ protected:
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
         ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(false));
-        layout.startDT = DateTimeProvider::now() - DateTimeHours(1);
-        layout.endDT = DateTimeProvider::now() + DateTimeHours(1);
+        layout.startDT = DateTime::now() - DateTime::Hours(1);
+        layout.endDT = DateTime::now() + DateTime::Hours(1);
 
         return layout;}
 
@@ -20,8 +20,8 @@ protected:
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
         ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
-        layout.startDT = DateTimeProvider::now() + DateTimeHours(1);
-        layout.endDT = DateTimeProvider::now() + DateTimeHours(2);
+        layout.startDT = DateTime::now() + DateTime::Hours(1);
+        layout.endDT = DateTime::now() + DateTime::Hours(2);
 
         return layout;
     }

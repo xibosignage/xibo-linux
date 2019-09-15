@@ -4,7 +4,7 @@
 
 #include "FakeFileCache.hpp"
 #include "Common.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 
 class Scheduler;
 
@@ -42,8 +42,8 @@ protected:
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
         ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
-        layout.startDT = DateTimeProvider::now() - DateTimeHours(1);
-        layout.endDT = DateTimeProvider::now() + DateTimeHours(1);
+        layout.startDT = DateTime::now() - DateTime::Hours(1);
+        layout.endDT = DateTime::now() + DateTime::Hours(1);
 
         return layout;
     }

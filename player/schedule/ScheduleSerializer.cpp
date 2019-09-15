@@ -2,7 +2,7 @@
 
 #include "networking/xmds/Resources.hpp"
 #include "common/fs/FilePath.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 #include "common/Parsing.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
@@ -30,7 +30,7 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
 {
     ptree_node root;
     auto& scheduleNode = root.add_child(Resources::Schedule, {});
-    scheduleNode.put(Resources::Generated, DateTimeProvider::toString(schedule.generatedTime));
+    scheduleNode.put(Resources::Generated, DateTime::toString(schedule.generatedTime));
 
     for(auto&& layout : schedule.regularLayouts)
     {
@@ -49,8 +49,8 @@ ptree_node ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout
     ptree_node node;
 
     node.put(Resources::Id, layout.id);
-    node.put(Resources::StartDT, DateTimeProvider::toString(layout.startDT));
-    node.put(Resources::EndDT, DateTimeProvider::toString(layout.endDT));
+    node.put(Resources::StartDT, DateTime::toString(layout.startDT));
+    node.put(Resources::EndDT, DateTime::toString(layout.endDT));
     node.put(Resources::ScheduleId, layout.scheduleId);
     node.put(Resources::Priority, layout.priority);
     node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));

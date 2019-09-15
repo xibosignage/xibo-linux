@@ -4,7 +4,7 @@
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include "common/dt/DateTime.hpp"
 
 #include "common/dt/Timer.hpp"
 #include "utils/ScreenShoter.hpp"
@@ -86,7 +86,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             Log::debug("[RegisterDisplay] Success");
 
             m_registered = true;
-            m_lastChecked = DateTimeProvider::now();
+            m_lastChecked = DateTime::now();
             m_settingsUpdated.emit(result.playerSettings);
 
             auto requiredFilesResult = m_xmdsSender.requiredFiles().get();

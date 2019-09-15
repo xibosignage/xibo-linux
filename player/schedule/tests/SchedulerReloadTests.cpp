@@ -39,7 +39,7 @@ TEST_F(SchedulerTests, UpdateWithNewSchedule)
     scheduler->reloadSchedule(ScheduleTests::schedule());
 
     auto schedule = ScheduleTests::schedule();
-    schedule.generatedTime += DateTimeHours(1);
+    schedule.generatedTime = schedule.generatedTime + DateTime::Hours(1);
     scheduler->reloadSchedule(std::move(schedule));
 
     ASSERT_TRUE(slot.called(2));
