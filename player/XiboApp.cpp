@@ -95,6 +95,7 @@ XiboApp::XiboApp(const std::string& name) :
 
     m_webserver->setRootDirectory(Resources::directory());
     m_webserver->run(m_playerSettings.embeddedServerPort);
+
     Log::debug(m_webserver->address());
     HttpClient::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
     RsaManager::instance().load();
@@ -192,8 +193,6 @@ int XiboApp::run()
     });
 
     m_collectionInterval->startRegularCollection();
-    m_layoutsManager->fetchAllLayouts();
-
     m_mainWindow->showAll();
 
     return m_mainLoop->run(*m_mainWindow);

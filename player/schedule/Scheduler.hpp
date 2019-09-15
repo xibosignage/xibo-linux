@@ -8,10 +8,10 @@
 #include "common/fs/IFileCache.hpp"
 #include "common/dt/Timer.hpp"
 
-#include <sigc++/signal.h>
+#include <boost/signals2/signal.hpp>
 
-using SignalScheduleUpdated = sigc::signal<void(const LayoutSchedule&)>;
-using SignalLayoutsUpdated = sigc::signal<void()>;
+using SignalScheduleUpdated = boost::signals2::signal<void(const LayoutSchedule&)>;
+using SignalLayoutsUpdated = boost::signals2::signal<void()>;
 
 class Scheduler
 {
@@ -25,9 +25,9 @@ public:
     OverlaysIds overlayLayouts() const;
     SchedulerStatus status() const;
 
-    SignalScheduleUpdated scheduleUpdated();
-    SignalLayoutsUpdated layoutUpdated();
-    SignalLayoutsUpdated overlaysUpdated();
+    SignalScheduleUpdated& scheduleUpdated();
+    SignalLayoutsUpdated& layoutUpdated();
+    SignalLayoutsUpdated& overlaysUpdated();
 
 private:
     RegularLayoutQueue regularQueueFrom(const LayoutSchedule& schedule);

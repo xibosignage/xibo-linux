@@ -10,12 +10,13 @@ Scheduler::Scheduler(const IFileCache& fileCache) :
 {
 }
 
+// TODO make an optional to differentiate between empty and non-inialized schedule
 void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
     if(m_schedule != schedule)
     {
         m_schedule = std::move(schedule);
-        m_scheduleUpdated.emit(m_schedule);
+        m_scheduleUpdated(m_schedule);
 
         reloadQueue();
     }
@@ -77,7 +78,7 @@ void Scheduler::updateCurrentLayout(LayoutId id)
     }
     else
     {
-        m_layoutUpdated.emit();
+        m_layoutUpdated();
     }
 }
 
@@ -85,7 +86,7 @@ void Scheduler::updateCurrentOverlays(const OverlaysIds& ids)
 {
     if(m_overlayQueue.overlays() != ids)
     {
-        m_overlaysUpdated.emit();
+        m_overlaysUpdated();
     }
 }
 
@@ -141,12 +142,12 @@ OverlaysIds Scheduler::overlayLayouts() const
     return m_overlayQueue.overlays();
 }
 
-SignalScheduleUpdated Scheduler::scheduleUpdated()
+SignalScheduleUpdated& Scheduler::scheduleUpdated()
 {
     return m_scheduleUpdated;
 }
 
-SignalLayoutsUpdated Scheduler::overlaysUpdated()
+SignalLayoutsUpdated& Scheduler::overlaysUpdated()
 {
     return m_overlaysUpdated;
 }
@@ -188,7 +189,7 @@ void Scheduler::restartTimer()
     }
 }
 
-SignalLayoutsUpdated Scheduler::layoutUpdated()
+SignalLayoutsUpdated& Scheduler::layoutUpdated()
 {
     return m_layoutUpdated;
 }
