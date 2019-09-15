@@ -45,7 +45,7 @@ private:
         message += "date=\"" + formatDateTime(msg.time) + "\"";
         message += "category=\"" + formatLogLevel(msg.level) + "\">";
         message += "<thread>" + std::to_string(msg.thread_id) + "</thread>";
-        message += "<message>" + fmt::to_string(msg.raw) + "</message>";
+        message += "<message>" + fmt::to_string(msg.payload) + "</message>";
         message += "</log>";
 
         return message;
