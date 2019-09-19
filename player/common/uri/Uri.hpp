@@ -39,7 +39,7 @@ public:
         HTTP,
         HTTPS,
         RTSP,
-        File,
+        FILE,
         Invalid
     };
 

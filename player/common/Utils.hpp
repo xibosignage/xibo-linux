@@ -12,6 +12,9 @@ namespace Utils
     std::string toBase64(const std::string& text);
     std::string fromBase64(const std::string& text);
 
+    template<typename T>
+    std::string toString(T val);
+
     template<typename Container>
     bool containersEqual(const Container& first, const Container& second)
     {

@@ -50,11 +50,13 @@ protected:
 private:
     RegularFile parseRegularFile(const ptree_node& attrs);
     ResourceFile parseResourceFile(const ptree_node& attrs);
-    std::pair<std::string, std::string> parseFileNameAndPath(DownloadType dType, std::string_view fType, const ptree_node& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(RegularFile::DownloadType dType,
+                                                             std::string_view fType,
+                                                             const ptree_node& attrs);
 
     bool isLayout(std::string_view type) const;
     bool isMedia(std::string_view type) const;
     bool isResource(std::string_view type) const;
-    DownloadType toDownloadType(std::string_view type);
+    RegularFile::DownloadType toDownloadType(std::string_view type);
 
 };

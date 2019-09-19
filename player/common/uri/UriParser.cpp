@@ -10,7 +10,7 @@ const std::regex IpRegex("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){
 const std::map<std::string, Uri::Scheme> DefaultSchemes{{"https://", Uri::Scheme::HTTPS},
                                                          {"http://", Uri::Scheme::HTTP},
                                                          {"rtsp://", Uri::Scheme::RTSP},
-                                                         {"file://", Uri::Scheme::File}};
+                                                         {"file://", Uri::Scheme::FILE}};
 
 const std::size_t UrlPartsCount = 5;
 

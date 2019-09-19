@@ -12,7 +12,7 @@ Uri Validators::validateUri(const boost::optional<std::string>& uri)
         if(!FileSystem::isRegularFile(fullPath))
             return Uri{uri.value()};
 
-        return Uri{Uri::Scheme::File, fullPath.string()};
+        return Uri{Uri::Scheme::FILE, fullPath.string()};
     }
     return {};
 }

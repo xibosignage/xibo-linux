@@ -1,10 +1,39 @@
 #include "Uri.hpp"
 #include "UriParser.hpp"
+#include "Utils.hpp"
 
 #include <iostream>
 #include <boost/algorithm/string/replace.hpp>
 
 const std::map<Uri::Scheme, unsigned short> DefaultPorts{{Uri::Scheme::HTTPS, 443}, {Uri::Scheme::HTTP, 80}};
+
+template<>
+std::string Utils::toString(Uri::Scheme val)
+{
+    switch (val)
+    {
+        case Uri::Scheme::HTTP: return "HTTP";
+        case Uri::Scheme::HTTPS: return "HTTPS";
+        case Uri::Scheme::RTSP: return "RTSP";
+        case Uri::Scheme::FILE: return "FILE";
+        case Uri::Scheme::Invalid: return "Invalid";
+    }
+
+    return "unknown";
+}
+
+template<>
+std::string Utils::toString(Uri::Authority::HostType val)
+{
+    switch (val)
+    {
+        case Uri::Authority::HostType::DNS: return "DNS";
+        case Uri::Authority::HostType::IP: return "IP";
+        case Uri::Authority::HostType::Invalid: return "Invalid";
+    }
+
+    return "unknown";
+}
 
 Uri::Authority::Authority(boost::optional<std::string> userinfo, const std::string& host, boost::optional<unsigned short> port) :
     m_userinfo(userinfo), m_host{host}, m_port{port}
@@ -143,7 +172,7 @@ std::string Uri::schemeToString(Uri::Scheme scheme) const
 {
     switch(scheme)
     {
-        case Uri::Scheme::File:
+        case Uri::Scheme::FILE:
             return "file://";
         case Uri::Scheme::HTTP:
             return "http://";
@@ -165,8 +194,8 @@ std::string Uri::portToString(boost::optional<unsigned short> port) const
 
 std::ostream& operator <<(std::ostream& out, const Uri& uri)
 {
-    return out << "Scheme: " <<  static_cast<int>(uri.scheme())
-               << " HostType: " <<  static_cast<int>(uri.hostType())
+    return out << "Scheme: " << Utils::toString(uri.scheme())
+               << " HostType: " << Utils::toString(uri.hostType())
                << " Host: " << uri.host()
                << " Port: " << uri.port()
                << " Target: " << uri.path();

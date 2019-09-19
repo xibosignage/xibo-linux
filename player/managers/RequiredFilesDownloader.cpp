@@ -80,7 +80,7 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile&
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    if(file.downloadType == DownloadType::HTTP)
+    if(file.downloadType == RegularFile::DownloadType::HTTP)
     {
         return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future){
             return onRegularFileDownloaded(future.get(), file.name, file.hash);

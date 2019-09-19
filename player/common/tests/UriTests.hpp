@@ -74,10 +74,10 @@ const std::vector<UriTest> validHttpUris =
 
 
 const std::vector<UriTest> validFileUris =
-    {{"file://www.example.com/home/test/folder/", Uri::Scheme::File, "www.example.com", {}, "/home/test/folder/", Uri::Authority::HostType::DNS},
-     {"file://127.0.0.1/home/test/folder/", Uri::Scheme::File, "127.0.0.1", {}, "/home/test/folder/", Uri::Authority::HostType::IP},
-     {"file:///home/test/folder/", Uri::Scheme::File, {}, {}, "/home/test/folder/"},
-     {"file:///home/test/folder/file.html", Uri::Scheme::File, {}, {}, "/home/test/folder/file.html"}};
+    {{"file://www.example.com/home/test/folder/", Uri::Scheme::FILE, "www.example.com", {}, "/home/test/folder/", Uri::Authority::HostType::DNS},
+     {"file://127.0.0.1/home/test/folder/", Uri::Scheme::FILE, "127.0.0.1", {}, "/home/test/folder/", Uri::Authority::HostType::IP},
+     {"file:///home/test/folder/", Uri::Scheme::FILE, {}, {}, "/home/test/folder/"},
+     {"file:///home/test/folder/file.html", Uri::Scheme::FILE, {}, {}, "/home/test/folder/file.html"}};
 
 const std::vector<std::string> invalidUrls =
     {{"127.0.0.1"}, // no scheme

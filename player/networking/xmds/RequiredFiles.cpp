@@ -99,30 +99,31 @@ bool Soap::ResponseParser<RequiredFiles::Result>::isResource(std::string_view ty
     return type == Resources::ResourceType;
 }
 
-DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
+RegularFile::DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
 {
     if(type == Resources::RegularFile::HttpDownload)
-        return DownloadType::HTTP;
+        return RegularFile::DownloadType::HTTP;
     else if(type == Resources::RegularFile::XmdsDownload)
-        return DownloadType::XMDS;
+        return RegularFile::DownloadType::XMDS;
 
-    return DownloadType::Invalid;
+    return RegularFile::DownloadType::Invalid;
 }
-
 
 // NOTE: workaround because filePath and fileName from RequiredFiles request are a bit clumsy to parse directly
 std::pair<std::string, std::string>
-Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(DownloadType dType, std::string_view fType, const ptree_node& attrs)
+Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(RegularFile::DownloadType dType,
+                                                                  std::string_view fType,
+                                                                  const ptree_node& attrs)
 {
     std::string path, name;
 
     switch(dType)
     {
-        case DownloadType::HTTP:
+        case RegularFile::DownloadType::HTTP:
             path = attrs.get<std::string>(Resources::RegularFile::Path);
             name = attrs.get<std::string>(Resources::RegularFile::Name);
             break;
-        case DownloadType::XMDS:
+        case RegularFile::DownloadType::XMDS:
             name = attrs.get<std::string>(Resources::RegularFile::Path);
             if(isLayout(fType))
             {

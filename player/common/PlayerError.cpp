@@ -1,6 +1,21 @@
 #include "PlayerError.hpp"
+#include "Utils.hpp"
 
 #include <iostream>
+
+template<>
+std::string Utils::toString(PlayerError::Type type)
+{
+    switch (type)
+    {
+        case PlayerError::Type::Success: return "Success";
+        case PlayerError::Type::HTTP: return "HTTP";
+        case PlayerError::Type::SOAP: return "SOAP";
+        case PlayerError::Type::CMS: return "CMS";
+    }
+
+    return "unknown";
+}
 
 PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : m_type(type), m_message(message)
 {
@@ -18,19 +33,7 @@ PlayerError::Type PlayerError::type() const noexcept
 
 std::string PlayerError::name() const
 {
-    switch(m_type)
-    {
-        case PlayerError::Type::HTTP:
-            return "HTTP";
-        case PlayerError::Type::SOAP:
-            return "SOAP";
-        case PlayerError::Type::CMS:
-            return "CMS";
-        default:
-            break;
-    }
-
-    return {};
+    return Utils::toString(m_type);
 }
 
 std::string PlayerError::message() const

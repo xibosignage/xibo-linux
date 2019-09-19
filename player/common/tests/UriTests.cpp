@@ -39,9 +39,9 @@ INSTANTIATE_TEST_CASE_P(Suite, UriInvalidTests, ::testing::ValuesIn(invalidUrls)
 
 TEST(UriManualInit, SchemeAndPath)
 {
-    Uri uri{Uri::Scheme::File, "/my/path"};
+    Uri uri{Uri::Scheme::FILE, "/my/path"};
 
-    ASSERT_EQ(uri.scheme(), Uri::Scheme::File);
+    ASSERT_EQ(uri.scheme(), Uri::Scheme::FILE);
     ASSERT_EQ(uri.path(), "/my/path");
     ASSERT_EQ(uri.host(), std::string{});
     ASSERT_EQ(uri.hostType(), Uri::Authority::HostType::Invalid);

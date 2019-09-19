@@ -1,7 +1,22 @@
 #include "RegisterDisplay.hpp"
 #include "Resources.hpp"
+#include "common/Utils.hpp"
 
 namespace Resources = XmdsResources::RegisterDisplay;
+
+template<>
+std::string Utils::toString(RegisterDisplay::Result::Status::Code val)
+{
+    switch (val)
+    {
+        case RegisterDisplay::Result::Status::Code::Ready: return "Ready";
+        case RegisterDisplay::Result::Status::Code::Added: return "Added";
+        case RegisterDisplay::Result::Status::Code::Waiting: return "Waiting";
+        case RegisterDisplay::Result::Status::Code::Invalid: return "Invalid";
+    }
+
+    return "unknown";
+}
 
 Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
 {
