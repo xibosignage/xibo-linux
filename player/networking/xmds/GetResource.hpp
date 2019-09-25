@@ -1,38 +1,37 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+#include "BaseResponseParser.hpp"
+#include "Soap.hpp"
 
 #include "common/Field.hpp"
 
 namespace GetResource
 {
-    struct Result
-    {
-        std::string resource;
-    };
+struct Result
+{
+    std::string resource;
+};
 
-    struct Request
-    {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<int> layoutId{"layoutId"};
-        Field<std::string> regionId{"regionId"};
-        Field<std::string> mediaId{"mediaId"};
-    };
+struct Request
+{
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+    Field<int> layoutId{"layoutId"};
+    Field<std::string> regionId{"regionId"};
+    Field<std::string> mediaId{"mediaId"};
+};
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
 {
 public:
     RequestSerializer(const GetResource::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
 {
 public:
@@ -40,5 +39,4 @@ public:
 
 protected:
     GetResource::Result parseBody(const ptree_node& node) override;
-
 };

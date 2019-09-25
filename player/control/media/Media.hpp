@@ -5,8 +5,8 @@
 
 #include "common/dt/Timer.hpp"
 
-#include "control/common/transitions/TransitionExecutor.hpp"
 #include "control/common/IWidget.hpp"
+#include "control/common/transitions/TransitionExecutor.hpp"
 
 class Media : public IMedia
 {
@@ -46,5 +46,4 @@ private:
     std::unique_ptr<TransitionExecutor> m_inTransition;
     std::unique_ptr<TransitionExecutor> m_outTransition;
     SignalMediaFinished m_mediaFinished;
-
 };

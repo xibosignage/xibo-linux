@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SettingsSerializer.hpp"
 #include "PlayerSettings.hpp"
+#include "SettingsSerializer.hpp"
 
 class PlayerSettingsSerializer : public SettingsSerializer<PlayerSettings>
 {
@@ -12,5 +12,4 @@ public:
 
 private:
     LoggingLevel toLogLevelEnum(const std::string& level);
-
 };

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <zmq.hpp>
 #include <atomic>
+#include <zmq.hpp>
 
 #include "common/Dispatcher.hpp"
 #include "common/JoinableThread.hpp"
@@ -29,5 +29,4 @@ private:
     MessageReceived m_messageReceived;
     std::atomic<bool> m_stopped = false;
     zmq::context_t m_context;
-
 };

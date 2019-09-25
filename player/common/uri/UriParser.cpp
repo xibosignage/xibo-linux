@@ -4,13 +4,15 @@
 #include "logger/Logging.hpp"
 #include <boost/format.hpp>
 
-const std::regex UriRegex(R"(^([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/?#:]+)(?::(\d{1,5}))?)?(\/[^?#]*)?(\?[^#]*)?(#.*)?$)");
-const std::regex IpRegex("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
+const std::regex
+    UriRegex(R"(^([^:\/?#]+:\/\/)(?:(?:(.+(?::.+)?)@)?([^\/?#:]+)(?::(\d{1,5}))?)?(\/[^?#]*)?(\?[^#]*)?(#.*)?$)");
+const std::regex
+    IpRegex("(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])");
 
 const std::map<std::string, Uri::Scheme> DefaultSchemes{{"https://", Uri::Scheme::HTTPS},
-                                                         {"http://", Uri::Scheme::HTTP},
-                                                         {"rtsp://", Uri::Scheme::RTSP},
-                                                         {"file://", Uri::Scheme::FILE}};
+                                                        {"http://", Uri::Scheme::HTTP},
+                                                        {"rtsp://", Uri::Scheme::RTSP},
+                                                        {"file://", Uri::Scheme::FILE}};
 
 const std::size_t UrlPartsCount = 5;
 
@@ -39,7 +41,7 @@ std::smatch UriParser::parseInternal(const std::string& rawUri)
 {
     std::smatch urlMatch;
     auto valid = std::regex_match(rawUri, urlMatch, UriRegex) && urlMatch.size() > UrlPartsCount;
-    if(valid)
+    if (valid)
     {
         return urlMatch;
     }
@@ -53,7 +55,7 @@ Uri::Scheme UriParser::getScheme(const std::string& scheme)
     {
         return DefaultSchemes.at(scheme);
     }
-    catch(std::out_of_range&)
+    catch (std::out_of_range&)
     {
         auto formatted = boost::format("%1% scheme is not supported") % scheme;
         throw UriParseError{formatted.str()};
@@ -62,7 +64,7 @@ Uri::Scheme UriParser::getScheme(const std::string& scheme)
 
 boost::optional<unsigned short> UriParser::getPortNumber(const std::string& port)
 {
-    if(!port.empty())
+    if (!port.empty())
     {
         return static_cast<unsigned short>(std::stoi(port));
     }
@@ -78,10 +80,10 @@ std::string UriParser::getPath(const std::string& target, const std::string& que
 
 Uri::Authority::HostType UriParser::getHostType(const std::string& host)
 {
-    if(host.empty()) return Uri::Authority::HostType::Invalid;
+    if (host.empty()) return Uri::Authority::HostType::Invalid;
 
     std::smatch baseMatch;
-    if(std::regex_match(host, baseMatch, IpRegex))
+    if (std::regex_match(host, baseMatch, IpRegex))
     {
         return Uri::Authority::HostType::IP;
     }
@@ -93,7 +95,7 @@ Uri::Authority::HostType UriParser::getHostType(const std::string& host)
 
 boost::optional<std::string> UriParser::getUserInfo(const std::string& userinfo)
 {
-    if(userinfo.empty()) return {};
+    if (userinfo.empty()) return {};
 
     return userinfo;
 }

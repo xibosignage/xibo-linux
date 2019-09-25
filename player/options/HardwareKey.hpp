@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <boost/process/io.hpp>
+#include <string>
 
 class HardwareKey
 {
@@ -14,5 +14,4 @@ private:
     static std::string macAddress();
     static std::string volumeSerial();
     static std::string retrieveVolumeSerial(boost::process::ipstream& stream);
-
 };

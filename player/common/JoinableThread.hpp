@@ -5,7 +5,7 @@
 class JoinableThread
 {
 public:
-    template<typename Callable>
+    template <typename Callable>
     JoinableThread(Callable startingPoint)
     {
         m_thread = std::make_unique<std::thread>(startingPoint);
@@ -13,7 +13,7 @@ public:
 
     ~JoinableThread()
     {
-        if(m_thread && m_thread->joinable())
+        if (m_thread && m_thread->joinable())
         {
             m_thread->join();
         }
@@ -21,5 +21,4 @@ public:
 
 private:
     std::unique_ptr<std::thread> m_thread;
-
 };

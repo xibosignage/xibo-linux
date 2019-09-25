@@ -17,5 +17,4 @@ private:
 
 private:
     RsaKeyPair m_keys;
-
 };

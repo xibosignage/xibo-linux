@@ -3,7 +3,7 @@
 struct Transition
 {
     enum class Heading
-    {        
+    {
         In,
         Out
     };

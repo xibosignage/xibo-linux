@@ -2,9 +2,9 @@
 
 #include "control/common/IWidget.hpp"
 
+#include <boost/signals2/signal.hpp>
 #include <memory>
 #include <vector>
-#include <boost/signals2/signal.hpp>
 
 using SignalKeyPressed = boost::signals2::signal<void(std::string)>;
 class IOverlayLayout;
@@ -26,5 +26,4 @@ public:
     virtual void setCursorVisible(bool cursorVisible) = 0;
 
     virtual SignalKeyPressed& keyPressed() = 0;
-
 };

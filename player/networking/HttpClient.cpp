@@ -4,18 +4,17 @@
 #include "common/uri/Uri.hpp"
 #include "common/uri/UriParseError.hpp"
 
-#include "HttpSession.hpp"
 #include "HttpRequest.hpp"
+#include "HttpSession.hpp"
 #include "ProxyHttpRequest.hpp"
 
 const int DefaultConcurrentRequests = 4;
 
-HttpClient::HttpClient() :
-    m_work{m_ioc}
+HttpClient::HttpClient() : m_work{m_ioc}
 {
-    for(int i = 0; i != DefaultConcurrentRequests; ++i)
+    for (int i = 0; i != DefaultConcurrentRequests; ++i)
     {
-        m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
+        m_workerThreads.push_back(std::make_unique<JoinableThread>([=]() {
             Log::trace("HTTP thread started");
 
             m_ioc.run();
@@ -36,7 +35,7 @@ HttpClient& HttpClient::instance()
 
 void HttpClient::shutdown()
 {
-    if(!m_ioc.stopped())
+    if (!m_ioc.stopped())
     {
         m_ioc.stop();
         cancelActiveSession();
@@ -45,7 +44,7 @@ void HttpClient::shutdown()
 
 void HttpClient::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
 {
-    if(!host.empty())
+    if (!host.empty())
     {
         m_proxyInfo = ProxyInfo{host, username, password};
     }
@@ -53,9 +52,9 @@ void HttpClient::setProxyServer(const std::string& host, const std::string& user
 
 void HttpClient::cancelActiveSession()
 {
-    for(auto&& session : m_activeSessions)
+    for (auto&& session : m_activeSessions)
     {
-        if(!session.expired())
+        if (!session.expired())
         {
             session.lock()->cancel();
         }
@@ -74,14 +73,14 @@ boost::future<HttpResponseResult> HttpClient::post(const Uri& uri, const std::st
 
 boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri& uri, const std::string& body)
 {
-    if(m_ioc.stopped()) return managerStoppedError();
+    if (m_ioc.stopped()) return managerStoppedError();
 
     auto session = std::make_shared<HttpSession>(m_ioc);
     m_activeSessions.push_back(session);
 
     Log::trace(uri);
 
-    if(m_proxyInfo)
+    if (m_proxyInfo)
     {
         ProxyHttpRequest request{method, m_proxyInfo.value(), uri, body};
         return session->send(request.hostInfo(), request.get());

@@ -3,14 +3,14 @@
 #include "common/fs/Resources.hpp"
 #include "utils/Managers.hpp"
 
-#include "networking/WebServer.hpp" // FIXME remove dependency
+#include "networking/WebServer.hpp"  // FIXME remove dependency
 
 #include "control/media/MediaResources.hpp"
 #include "control/media/webview/WebViewResources.hpp"
 
-#include <regex>
-#include <fstream>
 #include <boost/algorithm/string/replace.hpp>
+#include <fstream>
+#include <regex>
 
 const bool DefaultTransparency = true;
 const int DefaultWebviewMode = 0;
@@ -30,10 +30,8 @@ ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
     auto transparency = node.get<bool>(XlfResources::WebView::Transparency, DefaultTransparency);
     auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
-    return {
-        {XlfResources::WebView::Transparency, std::to_string(transparency)},
-        {XlfResources::WebView::ModeId, std::to_string(mode)}
-    };
+    return {{XlfResources::WebView::Transparency, std::to_string(transparency)},
+            {XlfResources::WebView::ModeId, std::to_string(mode)}};
 }
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)
@@ -44,10 +42,9 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
     std::string line;
     const int DurationGroup = 1;
 
-    while(std::getline(in, line))
+    while (std::getline(in, line))
     {
-        if(std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1)
-            break;
+        if (std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1) break;
     }
 
     return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
@@ -57,7 +54,7 @@ Uri WebViewParser::uriFrom(const ptree_node& node)
 {
     auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
-    if(mode != NativeModeid)
+    if (mode != NativeModeid)
     {
         auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
         return Uri{Managers::webserver().address() + fileName};

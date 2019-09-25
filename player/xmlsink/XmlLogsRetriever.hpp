@@ -9,5 +9,4 @@ public:
 
 private:
     std::string formatLogs(const std::string& logs);
-
 };

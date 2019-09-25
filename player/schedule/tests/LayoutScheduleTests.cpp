@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "LayoutSchedule.hpp"
 #include "Common.hpp"
+#include "LayoutSchedule.hpp"
 
 TEST(LayoutScheduleEquality, Empty)
 {

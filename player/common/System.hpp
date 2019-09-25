@@ -1,9 +1,9 @@
 #pragma once
 
 #include <dbus/dbus.h>
-#include <unistd.h>
-#include <stdint.h>
 #include <exception>
+#include <stdint.h>
+#include <unistd.h>
 
 class DBusException : public std::exception
 {
@@ -28,5 +28,4 @@ private:
 
 private:
     DBusError m_error;
-
 };

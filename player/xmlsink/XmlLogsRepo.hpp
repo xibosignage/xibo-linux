@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <mutex>
+#include <string>
 
 class XmlLogsRepo
 {
@@ -15,5 +15,4 @@ public:
 private:
     std::string m_buffer;
     std::mutex m_mutex;
-
 };

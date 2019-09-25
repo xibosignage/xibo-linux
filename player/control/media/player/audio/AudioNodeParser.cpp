@@ -1,7 +1,7 @@
 #include "AudioNodeParser.hpp"
 
-#include "control/media/player/MediaPlayerResources.hpp"
 #include "control/media/MediaResources.hpp"
+#include "control/media/player/MediaPlayerResources.hpp"
 
 #include "control/common/Validators.hpp"
 
@@ -37,8 +37,6 @@ ExtraOptions AudioNodeParser::extraOptionsImpl(const ptree_node& node)
     auto looped = uriNode.get<bool>(XlfResources::AudioNode::Loop, DefaultAudioLooped);
     auto volume = uriNode.get<int>(XlfResources::AudioNode::Volume, MaxVolume);
 
-    return {
-        {XlfResources::Player::Loop, std::to_string(looped)},
-        {XlfResources::Player::Volume, std::to_string(volume)}
-    };
+    return {{XlfResources::Player::Loop, std::to_string(looped)},
+            {XlfResources::Player::Volume, std::to_string(volume)}};
 }

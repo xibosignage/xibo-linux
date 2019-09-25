@@ -2,8 +2,8 @@
 
 #include <gtest/gtest.h>
 
-#include "FakeFileCache.hpp"
 #include "Common.hpp"
+#include "FakeFileCache.hpp"
 #include "common/dt/DateTime.hpp"
 
 class Scheduler;
@@ -48,17 +48,21 @@ protected:
         return layout;
     }
 
-    struct RegularTag { };
-    struct OverlayTag { };
+    struct RegularTag
+    {
+    };
+    struct OverlayTag
+    {
+    };
 
-    template<typename Tag, typename... Ids>
+    template <typename Tag, typename... Ids>
     LayoutSchedule makeSchedule(int defaultId, Ids... regularIds)
     {
         LayoutSchedule schedule;
 
         schedule.defaultLayout = defaultLayout(defaultId);
 
-        if constexpr(std::is_same_v<Tag, RegularTag>)
+        if constexpr (std::is_same_v<Tag, RegularTag>)
         {
             (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
         }
@@ -70,13 +74,13 @@ protected:
         return schedule;
     }
 
-    template<typename... Ids>
+    template <typename... Ids>
     LayoutSchedule makeRegularSchedule(int defaultId, Ids... regularIds)
     {
         return makeSchedule<RegularTag>(defaultId, regularIds...);
     }
 
-    template<typename... Ids>
+    template <typename... Ids>
     LayoutSchedule makeOverlaySchedule(Ids... regularIds)
     {
         return makeSchedule<OverlayTag>(DefaultId, regularIds...);
@@ -84,5 +88,4 @@ protected:
 
 protected:
     std::unique_ptr<FakeFileCache> fileCache;
-
 };

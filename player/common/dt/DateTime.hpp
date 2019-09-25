@@ -46,7 +46,6 @@ private:
 
 private:
     boost::posix_time::ptime m_ptime;
-
 };
 
 DateTime operator+(const DateTime& first, const DateTime::Hours& hours);

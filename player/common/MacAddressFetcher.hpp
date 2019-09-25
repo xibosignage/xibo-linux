@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include <string>
-#include <net/if.h>
 #include <boost/optional/optional.hpp>
+#include <net/if.h>
+#include <string>
 
 using SocketDescriptor = int;
 using InterfaceFlags = short int;
@@ -16,7 +16,6 @@ public:
 
 private:
     std::string_view m_error;
-
 };
 
 class MacAddressFetcher
@@ -33,6 +32,4 @@ private:
     static InterfaceFlags retrieveFlags(SocketDescriptor socket, ifreq& interfaceRequest);
     static bool isNotLoopback(InterfaceFlags flags);
     static bool isConnected(InterfaceFlags flags);
-
-
 };

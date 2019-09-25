@@ -1,7 +1,10 @@
 #include "TransitionExecutor.hpp"
 
-TransitionExecutor::TransitionExecutor(Transition::Heading heading, int duration, const std::shared_ptr<IWidget>& media) :
-    m_heading(heading), m_duration(duration), m_media(media),
+TransitionExecutor::TransitionExecutor(Transition::Heading heading, int duration,
+                                       const std::shared_ptr<IWidget>& media) :
+    m_heading(heading),
+    m_duration(duration),
+    m_media(media),
     m_timer(std::make_unique<Timer>())
 {
 }

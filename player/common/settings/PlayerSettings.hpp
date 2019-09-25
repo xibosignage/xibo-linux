@@ -42,6 +42,4 @@ public:
     Field<bool> preventSleep{"preventSleep", false};
     Field<std::string> displayName{"displayName"};
     Field<bool> screenshotRequested{"screenshotRequested", false};
-
 };
-

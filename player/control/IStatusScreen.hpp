@@ -8,5 +8,4 @@ class IStatusScreen : public IWidget
 {
 public:
     virtual void setText(const std::string& text) = 0;
-
 };

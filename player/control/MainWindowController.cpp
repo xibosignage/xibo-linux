@@ -3,22 +3,23 @@
 
 #include "config.hpp"
 
-#include "control/layout/LayoutsManager.hpp"
-#include "control/common/Image.hpp"
 #include "control/common/IOverlayLayout.hpp"
+#include "control/common/Image.hpp"
+#include "control/layout/LayoutsManager.hpp"
 
 namespace ph = std::placeholders;
 const std::string StatusScreenKey = "i";
 
 MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
-    m_window(window), m_layoutsManager(layoutsManager)
+    m_window(window),
+    m_layoutsManager(layoutsManager)
 {
     m_window->disableWindowDecoration();
     m_window->setCursorVisible(false);
     m_window->keyPressed().connect(std::bind(&MainWindowController::onKeyPressed, this, ph::_1));
 
-    m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout){
-        if(layout)
+    m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout) {
+        if (layout)
         {
             scaleLayout(layout);
 
@@ -31,8 +32,8 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
         }
     });
 
-    m_layoutsManager.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays){
-        for(auto&& layout : overlays)
+    m_layoutsManager.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays) {
+        for (auto&& layout : overlays)
         {
             scaleLayout(layout);
             layout->showAll();
@@ -43,7 +44,7 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
 
 void MainWindowController::onKeyPressed(const std::string& pressedKey)
 {
-    if(pressedKey == StatusScreenKey)
+    if (pressedKey == StatusScreenKey)
     {
         m_statusScrenRequested();
     }
@@ -81,7 +82,7 @@ void MainWindowController::scaleLayout(const std::shared_ptr<IOverlayLayout>& la
 
 void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensions& dimensions)
 {
-    if(shouldBeFullscreen(dimensions))
+    if (shouldBeFullscreen(dimensions))
     {
         m_window->fullscreen();
     }
@@ -95,7 +96,7 @@ void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensio
 // move to MainWindow
 void MainWindowController::setWindowSize(int width, int height)
 {
-    if(width != m_window->width() || height != m_window->height())
+    if (width != m_window->width() || height != m_window->height())
     {
         m_window->setSize(width, height);
     }
@@ -104,7 +105,7 @@ void MainWindowController::setWindowSize(int width, int height)
 // move to MainWindow
 void MainWindowController::setWindowPos(int x, int y)
 {
-    if(x != m_window->x() || y != m_window->y())
+    if (x != m_window->x() || y != m_window->y())
     {
         m_window->move(x, y);
     }

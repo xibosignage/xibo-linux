@@ -10,5 +10,5 @@ enum class LoggingLevel
     Error
 };
 
-std::istream& operator>> (std::istream& in, LoggingLevel& level);
-std::ostream& operator<< (std::ostream& out, LoggingLevel level);
+std::istream& operator>>(std::istream& in, LoggingLevel& level);
+std::ostream& operator<<(std::ostream& out, LoggingLevel level);

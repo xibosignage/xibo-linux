@@ -1,7 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
 #include "RegionOptions.hpp"
+#include "constants.hpp"
 #include "control/media/MediaOptions.hpp"
 
 #include <boost/property_tree/ptree.hpp>
@@ -12,7 +12,7 @@ class IMedia;
 
 class RegionParser
 {
-public: 
+public:
     std::unique_ptr<IRegion> regionFrom(const ptree_node& node);
     RegionOptions optionsFrom(const ptree_node& node);
 
@@ -23,6 +23,4 @@ private:
     void addMedia(IRegion& region, const ptree_node& node);
     MediaOptions::Type mediaTypeFrom(const ptree_node& node);
     std::pair<int, int> mediaPositionInRegion(IRegion& region, IMedia& media);
-
 };
-

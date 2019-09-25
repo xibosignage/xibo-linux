@@ -2,8 +2,8 @@
 
 #include "common/settings/PlayerSettings.hpp"
 
-#include <memory>
 #include <boost/signals2/signal.hpp>
+#include <memory>
 
 class IMainWindow;
 class IOverlayLayout;
@@ -23,7 +23,7 @@ public:
     StatusScreenRequested& statusScreenRequested();
 
 private:
-    std::shared_ptr<IImage> createSplashScreen();  
+    std::shared_ptr<IImage> createSplashScreen();
     void scaleLayout(const std::shared_ptr<IOverlayLayout>& layout);
 
     void setWindowSize(int width, int height);
@@ -35,5 +35,4 @@ private:
     std::shared_ptr<IMainWindow> m_window;
     LayoutsManager& m_layoutsManager;
     StatusScreenRequested m_statusScrenRequested;
-
 };

@@ -26,37 +26,27 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
     auto uri = gst_discoverer_info_get_uri(info);
     auto result = gst_discoverer_info_get_result(info);
 
-    switch(result)
+    switch (result)
     {
-        case GST_DISCOVERER_URI_INVALID:
-            Log::debug("Invalid URI {}", uri);
-            break;
-        case GST_DISCOVERER_ERROR:
-            Log::debug("Discoverer error: {}", err->message);
-            break;
-        case GST_DISCOVERER_TIMEOUT:
-            Log::debug("Timeout");
-            break;
-        case GST_DISCOVERER_BUSY:
-            Log::debug("Busy");
-            break;
+        case GST_DISCOVERER_URI_INVALID: Log::debug("Invalid URI {}", uri); break;
+        case GST_DISCOVERER_ERROR: Log::debug("Discoverer error: {}", err->message); break;
+        case GST_DISCOVERER_TIMEOUT: Log::debug("Timeout"); break;
+        case GST_DISCOVERER_BUSY: Log::debug("Busy"); break;
         case GST_DISCOVERER_MISSING_PLUGINS:
         {
             auto missingPluginsInfo = gst_discoverer_info_get_missing_elements_installer_details(info);
 
             Log::debug("Missing plugins");
-            for(size_t i = 0; missingPluginsInfo[i]; ++i)
+            for (size_t i = 0; missingPluginsInfo[i]; ++i)
             {
                 Log::debug("{}", missingPluginsInfo[i]);
             }
             break;
         }
-        case GST_DISCOVERER_OK:
-            Log::debug("Discovered {}", uri);
-            break;
+        case GST_DISCOVERER_OK: Log::debug("Discovered {}", uri); break;
     }
 
-    if(result != GST_DISCOVERER_OK)
+    if (result != GST_DISCOVERER_OK)
     {
         Log::debug("This URI cannot be played");
     }
@@ -64,7 +54,7 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
     auto streamsList = gst_discoverer_info_get_stream_list(info);
     retrieveStreamsInfo(discoveredResult, streamsList);
 
-    if(err)
+    if (err)
     {
         g_error_free(err);
     }
@@ -76,11 +66,11 @@ Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* in
 
 void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* streamsList)
 {
-    for(auto tmp = streamsList; tmp; tmp = tmp->next)
+    for (auto tmp = streamsList; tmp; tmp = tmp->next)
     {
         auto streamInfo = reinterpret_cast<GstDiscovererStreamInfo*>(tmp->data);
 
-        if(GST_IS_DISCOVERER_VIDEO_INFO(streamInfo))
+        if (GST_IS_DISCOVERER_VIDEO_INFO(streamInfo))
         {
             auto videoInfo = GST_DISCOVERER_VIDEO_INFO(streamInfo);
 
@@ -89,7 +79,7 @@ void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* st
             result.frameHeight = static_cast<int>(gst_discoverer_video_info_get_height(videoInfo));
         }
 
-        if(GST_IS_DISCOVERER_AUDIO_INFO(streamInfo))
+        if (GST_IS_DISCOVERER_AUDIO_INFO(streamInfo))
         {
             result.audioStream = true;
         }

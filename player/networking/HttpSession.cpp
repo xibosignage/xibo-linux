@@ -1,10 +1,10 @@
 #include "HttpSession.hpp"
 
-#include <boost/beast/http/read.hpp>
-#include <boost/beast/http/write.hpp>
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ssl/rfc2818_verification.hpp>
 #include <boost/beast/core/detail/base64.hpp>
+#include <boost/beast/http/read.hpp>
+#include <boost/beast/http/write.hpp>
 
 namespace ph = std::placeholders;
 
@@ -18,14 +18,15 @@ HttpSession::HttpSession(boost::asio::io_context& ioc) : m_resolver{ioc}
     m_response.body_limit(std::numeric_limits<std::uint64_t>::max());
 }
 
-boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info, const http::request<http::string_body>& request)
+boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info,
+                                                    const http::request<http::string_body>& request)
 {
     m_hostInfo = info;
     m_request = request;
 
     m_socket->set_verify_callback(ssl::rfc2818_verification(m_hostInfo.host));
 
-    if(!SSL_set_tlsext_host_name(m_socket->native_handle(), m_hostInfo.host.c_str()))
+    if (!SSL_set_tlsext_host_name(m_socket->native_handle(), m_hostInfo.host.c_str()))
     {
         boost::beast::error_code ec{static_cast<int>(::ERR_get_error()), boost::asio::error::get_ssl_category()};
         sessionFinished(ec);
@@ -36,7 +37,7 @@ boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info, const 
     return m_result.get_future();
 }
 
-template<typename Callback>
+template <typename Callback>
 void HttpSession::resolve(const std::string& host, unsigned short port, Callback callback)
 {
     m_resolver.async_resolve(host, std::to_string(port), ip::resolver_base::numeric_service, callback);
@@ -44,7 +45,7 @@ void HttpSession::resolve(const std::string& host, unsigned short port, Callback
 
 void HttpSession::onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results)
 {
-    if(!ec)
+    if (!ec)
     {
         connect(results, std::bind(&HttpSession::onConnected, shared_from_this(), ph::_1, ph::_2));
     }
@@ -54,7 +55,7 @@ void HttpSession::onResolved(const boost::system::error_code& ec, ip::tcp::resol
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 void HttpSession::connect(ip::tcp::resolver::results_type results, Callback callback)
 {
     boost::asio::async_connect(m_socket->next_layer(), results.begin(), results.end(), callback);
@@ -62,9 +63,9 @@ void HttpSession::connect(ip::tcp::resolver::results_type results, Callback call
 
 void HttpSession::onConnected(const boost::system::error_code& ec, ip::tcp::resolver::iterator)
 {
-    if(!ec)
+    if (!ec)
     {
-        if(m_hostInfo.useSsl)
+        if (m_hostInfo.useSsl)
         {
             handshake(std::bind(&HttpSession::onHandshaked, shared_from_this(), ph::_1));
         }
@@ -79,7 +80,7 @@ void HttpSession::onConnected(const boost::system::error_code& ec, ip::tcp::reso
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 void HttpSession::handshake(Callback callback)
 {
     m_socket->async_handshake(ssl::stream_base::client, callback);
@@ -87,7 +88,7 @@ void HttpSession::handshake(Callback callback)
 
 void HttpSession::onHandshaked(const boost::system::error_code& ec)
 {
-    if(!ec)
+    if (!ec)
     {
         write(std::bind(&HttpSession::onWritten, shared_from_this(), ph::_1, ph::_2));
     }
@@ -97,10 +98,10 @@ void HttpSession::onHandshaked(const boost::system::error_code& ec)
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 void HttpSession::write(Callback callback)
 {
-    if(m_hostInfo.useSsl)
+    if (m_hostInfo.useSsl)
     {
         http::async_write(*m_socket, m_request, callback);
     }
@@ -112,7 +113,7 @@ void HttpSession::write(Callback callback)
 
 void HttpSession::onWritten(const boost::system::error_code& ec, std::size_t /*bytes*/)
 {
-    if(!ec)
+    if (!ec)
     {
         read(std::bind(&HttpSession::onRead, shared_from_this(), ph::_1, ph::_2));
     }
@@ -122,10 +123,10 @@ void HttpSession::onWritten(const boost::system::error_code& ec, std::size_t /*b
     }
 }
 
-template<typename Callback>
+template <typename Callback>
 void HttpSession::read(Callback callback)
 {
-    if(m_hostInfo.useSsl)
+    if (m_hostInfo.useSsl)
     {
         http::async_read(*m_socket, m_buffer, m_response, callback);
     }
@@ -142,7 +143,7 @@ void HttpSession::onRead(const boost::system::error_code& ec, std::size_t /*byte
 
 void HttpSession::sessionFinished(const boost::system::error_code& ec)
 {
-    if(!ec)
+    if (!ec)
     {
         setHttpResult(HttpResponseResult{PlayerError{}, m_response.get().body()});
     }
@@ -160,7 +161,7 @@ void HttpSession::cancel()
 
 void HttpSession::setHttpResult(const HttpResponseResult& result)
 {
-    if(!m_resultSet)
+    if (!m_resultSet)
     {
         m_resultSet = true;
         m_result.set_value(result);

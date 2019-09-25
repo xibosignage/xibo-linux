@@ -1,13 +1,13 @@
 #include "RequiredFilesDownloader.hpp"
 
+#include "networking/HttpClient.hpp"
 #include "networking/xmds/XmdsFileDownloader.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "networking/HttpClient.hpp"
 
-#include "utils/Managers.hpp"
-#include "common/fs/Resources.hpp"
 #include "common/Utils.hpp"
 #include "common/fs/FileCache.hpp"
+#include "common/fs/Resources.hpp"
+#include "utils/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     m_xmdsRequestSender(xmdsRequestSender),
@@ -15,11 +15,10 @@ RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestS
 {
 }
 
-RequiredFilesDownloader::~RequiredFilesDownloader()
-{
-}
+RequiredFilesDownloader::~RequiredFilesDownloader() {}
 
-void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash)
+void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const std::string& content,
+                                              const std::string& hash)
 {
     Managers::fileManager().save(filename, content, hash);
 }
@@ -27,16 +26,17 @@ void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const
 void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
 {
     std::string hash = Utils::md5hash(content);
-    if(!Managers::fileManager().cached(filename, hash))
+    if (!Managers::fileManager().cached(filename, hash))
     {
         Managers::fileManager().save(filename, content, hash);
     }
 }
 
-bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const std::string& filename, const std::string& hash)
+bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const std::string& filename,
+                                                      const std::string& hash)
 {
     auto [error, fileContent] = result;
-    if(!error)
+    if (!error)
     {
         saveRegularFile(filename, fileContent, hash);
 
@@ -53,7 +53,7 @@ bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResul
 bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResult& result, const std::string& filename)
 {
     auto [error, fileContent] = result;
-    if(!error)
+    if (!error)
     {
         saveResourceFile(filename, fileContent);
 
@@ -69,8 +69,7 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
-
+    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
 
@@ -80,17 +79,18 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile&
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    if(file.downloadType == RegularFile::DownloadType::HTTP)
+    if (file.downloadType == RegularFile::DownloadType::HTTP)
     {
-        return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future){
+        return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future) {
             return onRegularFileDownloaded(future.get(), file.name, file.hash);
         });
     }
     else
     {
-        return m_xmdsFileDownloader->download(file.id, file.type, file.size).then([this, file](boost::future<XmdsResponseResult> future){
-            return onRegularFileDownloaded(future.get(), file.name, file.hash);
-        });
+        return m_xmdsFileDownloader->download(file.id, file.type, file.size)
+            .then([this, file](boost::future<XmdsResponseResult> future) {
+                return onRegularFileDownloaded(future.get(), file.name, file.hash);
+            });
     }
 }
 

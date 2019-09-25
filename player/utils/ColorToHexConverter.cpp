@@ -10,7 +10,7 @@ const std::string DefaultAlphaChannel = "FF";
 
 uint32_t ColorToHexConverter::colorToHex(const std::string& color)
 {
-    if(!isValidColor(color))
+    if (!isValidColor(color))
         throw std::invalid_argument("HEX color should be 3, 4, 6, or 8 digits with # at the beginning");
 
     auto colorWithoutNumberSign = removeNumberSign(color);
@@ -23,8 +23,7 @@ bool ColorToHexConverter::isValidColor(const std::string& color) const
 {
     std::regex hexColorRegex("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3,4}|[A-Fa-f0-9]{8})$");
 
-    if(!std::regex_match(color, hexColorRegex))
-        return false;
+    if (!std::regex_match(color, hexColorRegex)) return false;
 
     return true;
 }
@@ -39,11 +38,9 @@ std::string ColorToHexConverter::convertToLongColorWithAlpha(const std::string& 
 {
     std::string resultColor = color;
 
-    if(isShortColor(resultColor))
-        resultColor = convertShortToLongColor(resultColor);
+    if (isShortColor(resultColor)) resultColor = convertShortToLongColor(resultColor);
 
-    if(isColorWithoutAlpha(resultColor))
-        resultColor = appendDefaultAlphaChannel(resultColor);
+    if (isColorWithoutAlpha(resultColor)) resultColor = appendDefaultAlphaChannel(resultColor);
 
     return resultColor;
 }
@@ -56,7 +53,7 @@ bool ColorToHexConverter::isShortColor(const std::string& color) const
 std::string ColorToHexConverter::convertShortToLongColor(const std::string& shortColor)
 {
     std::string longColor;
-    for(auto&& digit : shortColor)
+    for (auto&& digit : shortColor)
     {
         longColor += doubleDigit(digit);
     }
@@ -77,4 +74,3 @@ std::string ColorToHexConverter::appendDefaultAlphaChannel(const std::string& lo
 {
     return longColorWithoutAlpha + DefaultAlphaChannel;
 }
-

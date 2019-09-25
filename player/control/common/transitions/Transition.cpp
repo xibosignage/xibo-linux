@@ -1,7 +1,7 @@
 #include "Transition.hpp"
 #include "common/Utils.hpp"
 
-template<>
+template <>
 std::string Utils::toString(Transition::Heading val)
 {
     switch (val)
@@ -13,7 +13,7 @@ std::string Utils::toString(Transition::Heading val)
     return "unknown";
 }
 
-template<>
+template <>
 std::string Utils::toString(Transition::Type val)
 {
     switch (val)
@@ -25,7 +25,7 @@ std::string Utils::toString(Transition::Type val)
     return "unknown";
 }
 
-template<>
+template <>
 std::string Utils::toString(Transition::Direction val)
 {
     switch (val)

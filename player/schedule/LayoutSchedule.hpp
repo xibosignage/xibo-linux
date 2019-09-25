@@ -11,5 +11,5 @@ struct LayoutSchedule
     DefaultScheduledLayout defaultLayout;
 };
 
-bool operator== (const LayoutSchedule& first, const LayoutSchedule& second);
-bool operator!= (const LayoutSchedule& first, const LayoutSchedule& second);
+bool operator==(const LayoutSchedule& first, const LayoutSchedule& second);
+bool operator!=(const LayoutSchedule& first, const LayoutSchedule& second);

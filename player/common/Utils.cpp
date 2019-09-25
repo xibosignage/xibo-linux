@@ -1,9 +1,9 @@
 #include "Utils.hpp"
 #include "fs/FilePath.hpp"
 
-#include <fstream>
-#include <boost/format.hpp>
 #include <boost/beast/core/detail/base64.hpp>
+#include <boost/format.hpp>
+#include <fstream>
 #include <openssl/md5.h>
 
 std::string Utils::md5hash(std::string_view data)
@@ -12,13 +12,12 @@ std::string Utils::md5hash(std::string_view data)
     MD5(reinterpret_cast<const unsigned char*>(data.data()), data.size(), result);
 
     std::stringstream stream;
-    for(unsigned char byte : result)
+    for (unsigned char byte : result)
     {
         stream << boost::format("%02x") % static_cast<short>(byte);
     }
     return stream.str();
 }
-
 
 std::string Utils::md5hashFromFile(const FilePath& path)
 {
@@ -37,5 +36,3 @@ std::string Utils::fromBase64(const std::string& text)
 {
     return boost::beast::detail::base64_decode(text);
 }
-
-

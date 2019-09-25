@@ -3,12 +3,12 @@
 #include <gtkmm/builder.h>
 #include <gtkmm/window.h>
 
-#include <gtkmm/label.h>
 #include <gtkmm/button.h>
 #include <gtkmm/entry.h>
+#include <gtkmm/label.h>
 
-#include "common/settings/CmsSettings.hpp"
 #include "Resources.hpp"
+#include "common/settings/CmsSettings.hpp"
 
 class MainWindowController
 {
@@ -51,5 +51,4 @@ private:
     Gtk::Button* m_launchClient;
     Gtk::Button* m_displayAdmin;
     Gtk::Button* m_exit;
-
 };

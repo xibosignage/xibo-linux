@@ -1,36 +1,35 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+#include "BaseResponseParser.hpp"
+#include "Soap.hpp"
 
 #include "common/Field.hpp"
 
 namespace SubmitLog
 {
-    struct Result
-    {
-        bool success;
-    };
+struct Result
+{
+    bool success;
+};
 
-    struct Request
-    {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<std::string> logXml{"logXml"};
-    };
+struct Request
+{
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+    Field<std::string> logXml{"logXml"};
+};
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<SubmitLog::Request> : public BaseRequestSerializer<SubmitLog::Request>
 {
 public:
     RequestSerializer(const SubmitLog::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<SubmitLog::Result> : public BaseResponseParser<SubmitLog::Result>
 {
 public:
@@ -38,6 +37,4 @@ public:
 
 protected:
     SubmitLog::Result parseBody(const ptree_node& node) override;
-
 };
-

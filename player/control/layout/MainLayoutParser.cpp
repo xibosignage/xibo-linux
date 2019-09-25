@@ -1,11 +1,11 @@
 #include "MainLayoutParser.hpp"
-#include "MainLayoutResources.hpp"
 #include "MainLayout.hpp"
+#include "MainLayoutResources.hpp"
 
-#include "control/region/RegionParser.hpp"
-#include "control/common/Validators.hpp"
 #include "control/common/Image.hpp"
 #include "control/common/OverlayLayout.hpp"
+#include "control/common/Validators.hpp"
+#include "control/region/RegionParser.hpp"
 
 #include "common/fs/FilePath.hpp"
 #include "utils/ColorToHexConverter.hpp"
@@ -71,7 +71,7 @@ std::shared_ptr<IImage> MainLayoutParser::createBackground(const LayoutOptions& 
 {
     auto background = std::make_shared<Image>(options.width, options.height);
 
-    if(options.backgroundUri.isValid())
+    if (options.backgroundUri.isValid())
         background->loadFromFile(options.backgroundUri.path(), false);
     else
         background->setColor(options.backgroundColor);
@@ -81,9 +81,9 @@ std::shared_ptr<IImage> MainLayoutParser::createBackground(const LayoutOptions& 
 
 void MainLayoutParser::addRegions(IMainLayout& layout, const ptree_node& layoutNode)
 {
-    for(auto [nodeName, node] : layoutNode)
+    for (auto [nodeName, node] : layoutNode)
     {
-        if(nodeName != XlfResources::RegionNode) continue;
+        if (nodeName != XlfResources::RegionNode) continue;
 
         RegionParser parser;
         auto options = parser.optionsFrom(node);

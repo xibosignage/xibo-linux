@@ -3,7 +3,8 @@
 
 namespace Resources = XmdsResources::SubmitLog;
 
-Soap::RequestSerializer<SubmitLog::Request>::RequestSerializer(const SubmitLog::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<SubmitLog::Request>::RequestSerializer(const SubmitLog::Request& request) :
+    BaseRequestSerializer(request)
 {
 }
 
@@ -12,7 +13,8 @@ std::string Soap::RequestSerializer<SubmitLog::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().logXml);
 }
 
-Soap::ResponseParser<SubmitLog::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<SubmitLog::Result>::ResponseParser(const std::string& soapResponse) :
+    BaseResponseParser(soapResponse)
 {
 }
 

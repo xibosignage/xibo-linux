@@ -46,13 +46,13 @@ void Region::removeMedia(size_t mediaIndex)
 
 void Region::onMediaDurationTimeout()
 {
-    if(shouldBeMediaReplaced())
+    if (shouldBeMediaReplaced())
     {
         removeMedia(m_currentMediaIndex);
         placeMedia(getNextMediaIndex());
     }
 
-    if(isExpired())
+    if (isExpired())
     {
         m_regionExpired(m_id);
     }
@@ -72,8 +72,7 @@ size_t Region::getNextMediaIndex() const
 {
     size_t nextContentIndex = m_currentMediaIndex + 1;
 
-    if(nextContentIndex >= m_media.size())
-        return FirstContentIndex;
+    if (nextContentIndex >= m_media.size()) return FirstContentIndex;
 
     return nextContentIndex;
 }

@@ -1,23 +1,21 @@
 #pragma once
 
-#include <spdlog/sinks/base_sink.h>
-#include <spdlog/details/null_mutex.h>
-#include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/details/file_helper.h>
+#include <spdlog/details/null_mutex.h>
+#include <spdlog/sinks/base_sink.h>
+#include <spdlog/sinks/basic_file_sink.h>
 
-#include <sstream>
 #include <mutex>
+#include <sstream>
 
 #include "XmlLogsRepo.hpp"
 #include "common/dt/DateTime.hpp"
 
-template<typename Mutex>
+template <typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>
 {
 public:
-    XmlLoggerSink(XmlLogsRepo& registry) : m_registry(registry)
-    {
-    }
+    XmlLoggerSink(XmlLogsRepo& registry) : m_registry(registry) {}
 
 protected:
     void sink_it_(const spdlog::details::log_msg& msg) override
@@ -60,19 +58,15 @@ private:
 
     std::string formatLogLevel(spdlog::level::level_enum level)
     {
-        switch(level)
+        switch (level)
         {
-            case spdlog::level::trace:
-                return "trace";
-            case spdlog::level::debug:
-                return "debug";
+            case spdlog::level::trace: return "trace";
+            case spdlog::level::debug: return "debug";
             case spdlog::level::info:
-            case spdlog::level::warn:
-                return "info";
+            case spdlog::level::warn: return "info";
             case spdlog::level::err:
             case spdlog::level::critical:
-            case spdlog::level::off:
-                return "error";
+            case spdlog::level::off: return "error";
         }
         return {};
     }
@@ -80,7 +74,6 @@ private:
 private:
     std::string m_buffer;
     XmlLogsRepo& m_registry;
-
 };
 
 using LoggerXmlSinkMt = XmlLoggerSink<std::mutex>;

@@ -15,5 +15,6 @@ public:
 private:
     MediaPlayerOptions createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options);
     std::unique_ptr<IMediaPlayer> createPlayer(const MediaPlayerOptions& options, int width, int height);
-    std::shared_ptr<IVideoWindow> createView(int width, int height, MediaGeometry::ScaleType scaleType, const Gst::InspectorResult& info);
+    std::shared_ptr<IVideoWindow> createView(int width, int height, MediaGeometry::ScaleType scaleType,
+                                             const Gst::InspectorResult& info);
 };

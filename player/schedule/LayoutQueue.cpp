@@ -27,20 +27,19 @@ LayoutQueue::ConstIterator LayoutQueue::end() const
     return m_queue.end();
 }
 
-const std::vector<ScheduledLayout>&LayoutQueue::queue() const
+const std::vector<ScheduledLayout>& LayoutQueue::queue() const
 {
     return m_queue;
 }
 
-const ScheduledLayout&LayoutQueue::at(size_t index) const
+const ScheduledLayout& LayoutQueue::at(size_t index) const
 {
     return m_queue.at(index);
 }
 
 int LayoutQueue::highestPriority() const
 {
-    if(empty())
-        return DefaultPriority;
+    if (empty()) return DefaultPriority;
 
     return at(FirstItemIndex).priority;
 }

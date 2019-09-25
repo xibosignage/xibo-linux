@@ -23,7 +23,8 @@ void RequiredFiles::Result::addResource(ResourceFile&& resource)
     m_requiredResources.emplace_back(std::move(resource));
 }
 
-Soap::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) :
+    BaseRequestSerializer(request)
 {
 }
 
@@ -32,7 +33,8 @@ std::string Soap::RequestSerializer<RequiredFiles::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
-Soap::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& soapResponse) :
+    BaseResponseParser(soapResponse)
 {
 }
 
@@ -43,18 +45,18 @@ RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::parseBody(con
 
     RequiredFiles::Result result;
 
-    for(auto [name, fileNode] : filesNode)
+    for (auto [name, fileNode] : filesNode)
     {
-        if(name != Resources::File) continue;
+        if (name != Resources::File) continue;
 
         auto fileAttrs = fileNode.get_child(Resources::FileAttrs);
         auto fileType = fileAttrs.get<std::string>(Resources::FileType);
 
-        if(isLayout(fileType) || isMedia(fileType))
+        if (isLayout(fileType) || isMedia(fileType))
         {
             result.addFile(parseRegularFile(fileAttrs));
         }
-        else if(isResource(fileType))
+        else if (isResource(fileType))
         {
             result.addResource(parseResourceFile(fileAttrs));
         }
@@ -101,9 +103,9 @@ bool Soap::ResponseParser<RequiredFiles::Result>::isResource(std::string_view ty
 
 RegularFile::DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloadType(std::string_view type)
 {
-    if(type == Resources::RegularFile::HttpDownload)
+    if (type == Resources::RegularFile::HttpDownload)
         return RegularFile::DownloadType::HTTP;
-    else if(type == Resources::RegularFile::XmdsDownload)
+    else if (type == Resources::RegularFile::XmdsDownload)
         return RegularFile::DownloadType::XMDS;
 
     return RegularFile::DownloadType::Invalid;
@@ -112,12 +114,11 @@ RegularFile::DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloa
 // NOTE: workaround because filePath and fileName from RequiredFiles request are a bit clumsy to parse directly
 std::pair<std::string, std::string>
 Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(RegularFile::DownloadType dType,
-                                                                  std::string_view fType,
-                                                                  const ptree_node& attrs)
+                                                                  std::string_view fType, const ptree_node& attrs)
 {
     std::string path, name;
 
-    switch(dType)
+    switch (dType)
     {
         case RegularFile::DownloadType::HTTP:
             path = attrs.get<std::string>(Resources::RegularFile::Path);
@@ -125,13 +126,12 @@ Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(RegularFile::D
             break;
         case RegularFile::DownloadType::XMDS:
             name = attrs.get<std::string>(Resources::RegularFile::Path);
-            if(isLayout(fType))
+            if (isLayout(fType))
             {
                 name += ".xlf";
             }
             break;
-        default:
-            break;
+        default: break;
     }
 
     return std::pair{path, name};

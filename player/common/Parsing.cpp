@@ -1,9 +1,9 @@
 #include "Parsing.hpp"
 #include "fs/FilePath.hpp"
 
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/json_parser.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 ptree_node Parsing::xmlFromPath(const FilePath& xlfPath)
 {

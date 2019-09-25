@@ -3,9 +3,9 @@
 #include "common/MacAddressFetcher.hpp"
 #include "common/Utils.hpp"
 
-#include <regex>
 #include <boost/process/child.hpp>
 #include <boost/process/io.hpp>
+#include <regex>
 
 const std::string UndefinedMacAddress = "00:00:00:00:00:00";
 
@@ -31,13 +31,7 @@ std::string HardwareKey::cpuid()
 
 inline void HardwareKey::nativeCpuid(unsigned int* eax, unsigned int* ebx, unsigned int* ecx, unsigned int* edx)
 {
-   asm volatile("cpuid"
-       : "=a" (*eax),
-       "=b" (*ebx),
-       "=c" (*ecx),
-       "=d" (*edx)
-       : "0" (*eax), "2" (*ecx)
-       : "memory");
+    asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "0"(*eax), "2"(*ecx) : "memory");
 }
 
 std::string HardwareKey::macAddress()
@@ -53,7 +47,7 @@ std::string HardwareKey::volumeSerial()
     bp::ipstream stream;
 
     bp::child udevadm("udevadm info /dev/sda", bp::std_out > volumeInfo);
-    bp::child grep("grep ID_SERIAL_SHORT", bp::std_in < volumeInfo, bp::std_out > stream);
+    bp::child grep("grep ID_SERIAL_SHORT", bp::std_in<volumeInfo, bp::std_out> stream);
 
     auto volumeSerial = retrieveVolumeSerial(stream);
 
@@ -72,7 +66,7 @@ std::string HardwareKey::retrieveVolumeSerial(boost::process::ipstream& stream)
     std::getline(stream, line);
 
     std::smatch result;
-    if(std::regex_search(line, result, SERIAL_REGEX))
+    if (std::regex_search(line, result, SERIAL_REGEX))
     {
         return result[SERIAL_CAPTURE_GROUP].str();
     }

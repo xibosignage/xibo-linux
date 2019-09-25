@@ -38,16 +38,12 @@ XiboLogger::XiboLogger(const std::string& name, const std::vector<spdlog::sink_p
 
 spdlog::level::level_enum XiboLogger::toSpdlogLevel(LoggingLevel level)
 {
-    switch(level)
+    switch (level)
     {
-        case LoggingLevel::Trace:
-            return spdlog::level::level_enum::trace;
-        case LoggingLevel::Debug:
-            return spdlog::level::level_enum::debug;
-        case LoggingLevel::Info:
-            return spdlog::level::level_enum::info;
-        case LoggingLevel::Error:
-            return spdlog::level::level_enum::err;
+        case LoggingLevel::Trace: return spdlog::level::level_enum::trace;
+        case LoggingLevel::Debug: return spdlog::level::level_enum::debug;
+        case LoggingLevel::Info: return spdlog::level::level_enum::info;
+        case LoggingLevel::Error: return spdlog::level::level_enum::err;
     }
 
     return spdlog::level::level_enum::off;

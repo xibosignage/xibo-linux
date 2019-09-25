@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <boost/signals2/signal.hpp>
+#include <memory>
 
 using SignalRegionExpired = boost::signals2::signal<void(int)>;
 

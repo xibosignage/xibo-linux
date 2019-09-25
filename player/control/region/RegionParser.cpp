@@ -1,8 +1,8 @@
 #include "RegionParser.hpp"
-#include "RegionResources.hpp"
-#include "Region.hpp"
-#include "RegionView.hpp"
 #include "GetMediaPosition.hpp"
+#include "Region.hpp"
+#include "RegionResources.hpp"
+#include "RegionView.hpp"
 
 #include "control/media/MediaCreatorsRepo.hpp"
 
@@ -35,7 +35,8 @@ RegionOptions RegionParser::optionsFrom(const ptree_node& node)
     return options;
 }
 
-std::unique_ptr<IRegion> RegionParser::createRegion(const RegionOptions& options, const std::shared_ptr<IRegionView>& view)
+std::unique_ptr<IRegion> RegionParser::createRegion(const RegionOptions& options,
+                                                    const std::shared_ptr<IRegionView>& view)
 {
     return std::make_unique<Region>(options.id, options.loop, view);
 }
@@ -47,13 +48,13 @@ std::shared_ptr<IRegionView> RegionParser::createView(const RegionOptions& optio
 
 void RegionParser::addMedia(IRegion& region, const ptree_node& regionNode)
 {
-    for(auto [nodeName, node] : regionNode)
+    for (auto [nodeName, node] : regionNode)
     {
-        if(nodeName != XlfResources::MediaNode) continue;
+        if (nodeName != XlfResources::MediaNode) continue;
 
         auto&& parser = MediaCreatorsRepo::get<MediaParser>(mediaTypeFrom(node));
-        if(parser)
-        {            
+        if (parser)
+        {
             int width = region.view()->width();
             int height = region.view()->height();
 
@@ -77,7 +78,7 @@ std::pair<int, int> RegionParser::mediaPositionInRegion(IRegion& region, IMedia&
 {
     auto regionView = region.view();
     auto mediaView = media.view();
-    if(regionView && mediaView)
+    if (regionView && mediaView)
     {
         GetMediaPosition positionCalc{regionView->width(), regionView->height()};
         int x = positionCalc.getMediaX(mediaView->width(), media.align());
@@ -88,4 +89,3 @@ std::pair<int, int> RegionParser::mediaPositionInRegion(IRegion& region, IMedia&
 
     return {DefaultXPos, DefaultYPos};
 }
-

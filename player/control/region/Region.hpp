@@ -36,5 +36,4 @@ private:
     std::vector<std::unique_ptr<IMedia>> m_media;
     size_t m_currentMediaIndex = 0;
     SignalRegionExpired m_regionExpired;
-
 };

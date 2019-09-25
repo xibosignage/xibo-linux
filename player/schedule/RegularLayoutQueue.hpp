@@ -5,7 +5,7 @@
 class RegularLayoutQueue : public LayoutQueue
 {
 public:
-    template<typename T, typename = std::enable_if_t<std::is_same_v<std::decay_t<T>, DefaultScheduledLayout>>>
+    template <typename T, typename = std::enable_if_t<std::is_same_v<std::decay_t<T>, DefaultScheduledLayout>>>
     void addDefault(T&& layout)
     {
         m_defaultLayout = std::forward<T>(layout);
@@ -25,5 +25,4 @@ private:
     boost::optional<DefaultScheduledLayout> m_defaultLayout;
     mutable size_t m_nextIndex = FirstItemIndex;
     mutable LayoutId m_currentId = EmptyLayoutId;
-
 };

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "control/common/Widget.hpp"
-#include "control/common/IOverlayLayout.hpp"
 #include "IMainWindow.hpp"
+#include "control/common/IOverlayLayout.hpp"
+#include "control/common/Widget.hpp"
 
-#include <gtkmm/window.h>
 #include <boost/signals2/signal.hpp>
+#include <gtkmm/window.h>
 
 using SignalKeyPressed = boost::signals2::signal<void(std::string)>;
 using SignalWindowRealized = boost::signals2::signal<void()>;
@@ -51,5 +51,4 @@ private:
     int m_originalWidth, m_originalHeight;
     int m_xPos = -1, m_yPos = -1;
     bool m_cursorVisible = true;
-
 };

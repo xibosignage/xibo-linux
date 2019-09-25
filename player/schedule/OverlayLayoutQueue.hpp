@@ -11,12 +11,11 @@ public:
     {
         OverlaysIds ids;
 
-        for(auto&& layout : queue())
+        for (auto&& layout : queue())
         {
             ids.push_back(layout.id);
         }
 
         return ids;
     }
-
 };

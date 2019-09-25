@@ -1,8 +1,8 @@
 #include "FileCache.hpp"
 
-#include "common/fs/Resources.hpp"
-#include "common/fs/FileSystem.hpp"
 #include "common/Utils.hpp"
+#include "common/fs/FileSystem.hpp"
+#include "common/fs/Resources.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -16,7 +16,7 @@ void FileCache::loadFrom(const FilePath& cacheFile)
 
 void FileCache::loadFileHashes(const FilePath& path)
 {
-    if(FileSystem::exists(path))
+    if (FileSystem::exists(path))
     {
         boost::property_tree::read_xml(path, m_fileCache);
     }
@@ -40,7 +40,7 @@ void FileCache::save(const std::string& fileName, const std::string& fileContent
 {
     auto filePath = Resources::directory() / fileName;
 
-    std::ofstream out(filePath);
+    std::ofstream out(filePath.string());
     out << fileContent;
 
     addToCache(fileName, Utils::md5hash(fileContent), md5);
@@ -50,7 +50,7 @@ void FileCache::markAsInvalid(const std::string& filename)
 {
     auto node = m_fileCache.get_child_optional(ptree::path_type(filename, '|'));
 
-    if(node)
+    if (node)
     {
         node->put(ptree::path_type("valid", '|'), false);
     }
@@ -71,4 +71,3 @@ void FileCache::saveFileHashes(const FilePath& path)
 {
     boost::property_tree::write_xml(path, m_fileCache);
 }
-

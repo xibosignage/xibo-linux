@@ -2,11 +2,11 @@
 
 #include "constants.hpp"
 
-#include "common/dt/DateTime.hpp"
-#include "common/logger/Logging.hpp"
 #include "common/Parsing.hpp"
 #include "common/Utils.hpp"
 #include "common/crypto/RsaManager.hpp"
+#include "common/dt/DateTime.hpp"
+#include "common/logger/Logging.hpp"
 
 const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
@@ -19,12 +19,11 @@ XmrManager::~XmrManager()
 
 void XmrManager::connect(const std::string& host)
 {
-    if(m_info.host == host) return;
+    if (m_info.host == host) return;
 
     m_info.host = host;
-    m_subcriber.messageReceived().connect([this](const MultiPartMessage& message){
-        processMultipartMessage(message);
-    });
+    m_subcriber.messageReceived().connect(
+        [this](const MultiPartMessage& message) { processMultipartMessage(message); });
     m_subcriber.run(host);
 
     Log::info("Connected to XMR publisher");
@@ -47,7 +46,7 @@ XmrStatus XmrManager::status()
 
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
-    if(multipart[CHANNEL_PART] == XmrChannel)
+    if (multipart[CHANNEL_PART] == XmrChannel)
     {
         try
         {
@@ -95,13 +94,13 @@ XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 
 void XmrManager::processXmrMessage(const XmrMessage& message)
 {
-    if(isMessageExpired(message)) return;
+    if (isMessageExpired(message)) return;
 
-    if(message.action == "collectNow")
+    if (message.action == "collectNow")
     {
         m_collectionIntervalAction();
     }
-    else if(message.action == "screenShot")
+    else if (message.action == "screenShot")
     {
         m_screenshotAction();
     }
@@ -110,7 +109,7 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 bool XmrManager::isMessageExpired(const XmrMessage& message)
 {
     auto resultDt = message.createdDt + DateTime::Seconds(message.ttl);
-    if(resultDt < DateTime::nowUtc())
+    if (resultDt < DateTime::nowUtc())
     {
         return true;
     }

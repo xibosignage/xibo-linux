@@ -9,6 +9,4 @@ class Resources
 public:
     static FilePath directory();
     static void setDirectory(const FilePath& directory);
-
 };
-

@@ -1,8 +1,8 @@
 #pragma once
 
+#include <istream>
 #include <string>
 #include <vector>
-#include <istream>
 
 struct RegularFile
 {
@@ -32,5 +32,5 @@ struct ResourceFile
 std::ostream& operator<<(std::ostream& out, const RegularFile& file);
 std::ostream& operator<<(std::ostream& out, const ResourceFile& res);
 
-template<typename RequriedFile>
+template <typename RequriedFile>
 using FilesToDownload = std::vector<RequriedFile>;

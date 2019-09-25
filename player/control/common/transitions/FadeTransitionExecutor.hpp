@@ -13,5 +13,4 @@ private:
     void init();
     bool isFinished(double value) const;
     double nextValue(double oldValue, double step) const;
-
 };

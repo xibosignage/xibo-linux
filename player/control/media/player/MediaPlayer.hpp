@@ -50,5 +50,4 @@ private:
     Gst::RefPtr<Gst::Inspector> m_inspector;
     Gst::InspectorResult m_mediaInfo;
     SignalPlaybackFinished m_playbackFinished;
-
 };

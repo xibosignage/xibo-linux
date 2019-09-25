@@ -1,9 +1,6 @@
 #include "Volume.hpp"
 
-Gst::Volume::Volume() :
-    Gst::Element("volume")
-{
-}
+Gst::Volume::Volume() : Gst::Element("volume") {}
 
 Gst::RefPtr<Gst::Volume> Gst::Volume::create()
 {

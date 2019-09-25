@@ -2,8 +2,8 @@
 
 #include "MainWindowController.hpp"
 #include "common/logger/Logger.hpp"
-#include "constants.hpp"
 #include "config.hpp"
+#include "constants.hpp"
 
 #include <spdlog/sinks/stdout_sinks.h>
 

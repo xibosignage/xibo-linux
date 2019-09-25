@@ -24,4 +24,3 @@ SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBo
     result.success = node.get<bool>(Resources::Success);
     return result;
 }
-

@@ -7,11 +7,11 @@
 #include "networking/xmds/Schedule.hpp"
 #include "networking/xmds/SubmitLog.hpp"
 
+#include "CmsStatus.hpp"
+#include "common/Dispatcher.hpp"
+#include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
 #include "networking/ResponseResult.hpp"
-#include "common/JoinableThread.hpp"
-#include "common/Dispatcher.hpp"
-#include "CmsStatus.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
@@ -49,7 +49,8 @@ private:
     void sessionFinished(CollectionSessionPtr session, PlayerError = {});
     void onRegularCollectionFinished(const PlayerError& error);
 
-    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);
+    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay,
+                             CollectionSessionPtr session);
     PlayerError getDisplayStatus(const RegisterDisplay::Result::Status& status);
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);

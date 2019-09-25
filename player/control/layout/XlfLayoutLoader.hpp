@@ -2,15 +2,15 @@
 
 #include "constants.hpp"
 
+#include "IMainLayout.hpp"
 #include "MainLayoutParser.hpp"
 #include "OverlayLayoutParser.hpp"
-#include "IMainLayout.hpp"
 
 #include "../common/XlfResources.hpp"
 #include "common/Parsing.hpp"
-#include "common/fs/Resources.hpp" 
+#include "common/fs/Resources.hpp"
 
-template<typename ParserType>
+template <typename ParserType>
 class XlfLayoutLoader
 {
 public:
@@ -23,7 +23,7 @@ public:
             auto rootNode = Parsing::xmlFromPath(getXlfPath(layoutId));
             return layoutFrom(rootNode);
         }
-        catch(std::exception& e)
+        catch (std::exception& e)
         {
             std::string error = "Layout (XLF file) is invalid or missing. Details: "s + e.what();
             throw std::runtime_error(error);

@@ -2,17 +2,13 @@
 
 #include <string>
 
-template<typename T>
+template <typename T>
 class Field
 {
 public:
-    explicit Field(std::string_view name) : m_fieldName(name), m_value{}
-    {
-    }
+    explicit Field(std::string_view name) : m_fieldName(name), m_value{} {}
 
-    explicit Field(std::string_view name, const T& defaultValue) : m_fieldName(name), m_value(defaultValue)
-    {
-    }
+    explicit Field(std::string_view name, const T& defaultValue) : m_fieldName(name), m_value(defaultValue) {}
 
     Field& operator=(const T& value)
     {
@@ -22,11 +18,11 @@ public:
 
     std::string_view type() const
     {
-        if constexpr(std::is_same_v<T, std::string>)
+        if constexpr (std::is_same_v<T, std::string>)
             return "string";
-        else if constexpr(std::is_integral_v<T>)
+        else if constexpr (std::is_integral_v<T>)
             return "int";
-        else if constexpr(std::is_same_v<T, double>)
+        else if constexpr (std::is_same_v<T, double>)
             return "double";
 
         return "unsupported";

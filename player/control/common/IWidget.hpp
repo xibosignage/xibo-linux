@@ -23,6 +23,4 @@ public:
     virtual double opacity() const = 0;
 
     virtual SignalShown& shown() = 0;
-
 };
-

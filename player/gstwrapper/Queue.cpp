@@ -1,9 +1,6 @@
 #include "Queue.hpp"
 
-Gst::Queue::Queue() :
-    Gst::Element("queue")
-{
-}
+Gst::Queue::Queue() : Gst::Element("queue") {}
 
 Gst::RefPtr<Gst::Queue> Gst::Queue::create()
 {

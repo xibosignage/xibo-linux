@@ -1,12 +1,12 @@
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
 #include <boost/beast/version.hpp>
-#include <boost/asio/strand.hpp>
-#include <boost/asio/ip/tcp.hpp>
 #include <boost/config.hpp>
 
-#include "common/fs/FilePath.hpp"
 #include "common/JoinableThread.hpp"
+#include "common/fs/FilePath.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -20,17 +20,15 @@ class Session : public std::enable_shared_from_this<Session>
     {
         Session& self;
 
-        explicit SendLambda(Session& self_) :
-            self(self_)
-        {
-        }
+        explicit SendLambda(Session& self_) : self(self_) {}
 
-        template<bool isRequest, class Body, class Fields>
+        template <bool isRequest, class Body, class Fields>
         void operator()(http::message<isRequest, Body, Fields>&& msg) const
         {
             auto sp = std::make_shared<http::message<isRequest, Body, Fields>>(std::move(msg));
             self.m_response = sp;
-            http::async_write(self.m_socket, *sp, std::bind(&Session::onWrite, self.shared_from_this(), sp->need_eof(), ph::_1, ph::_2));
+            http::async_write(self.m_socket, *sp,
+                              std::bind(&Session::onWrite, self.shared_from_this(), sp->need_eof(), ph::_1, ph::_2));
         }
     };
 
@@ -52,7 +50,6 @@ private:
     http::request<http::string_body> m_request;
     std::shared_ptr<void> m_response;
     SendLambda m_lambda;
-
 };
 
 class XiboWebServer : public std::enable_shared_from_this<XiboWebServer>
@@ -76,5 +73,4 @@ private:
     unsigned short m_port = 0;
     tcp::acceptor m_acceptor;
     FilePath m_rootDirectory;
-
 };

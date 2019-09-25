@@ -18,19 +18,21 @@ std::unique_ptr<IMedia> WebViewFactory::create(const MediaOptions& baseOptions, 
 {
     int width = std::stoi(options.at(XlfResources::Media::Width));
     int height = std::stoi(options.at(XlfResources::Media::Height));
-    auto transparency = static_cast<WebViewOptions::Transparency>(std::stoi(options.at(XlfResources::WebView::Transparency)));
+    auto transparency =
+        static_cast<WebViewOptions::Transparency>(std::stoi(options.at(XlfResources::WebView::Transparency)));
 
     updateViewPortWidth(baseOptions.uri, width);
 
     return std::make_unique<Media>(baseOptions, createView(baseOptions.uri, width, height, transparency));
 }
 
-std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, int height, WebViewOptions::Transparency transparency)
+std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, int height,
+                                                     WebViewOptions::Transparency transparency)
 {
     auto webview = std::make_shared<WebView>(width, height);
 
     webview->load(uri);
-    if(transparency == WebViewOptions::Transparency::Enable)
+    if (transparency == WebViewOptions::Transparency::Enable)
     {
         webview->enableTransparency();
     }
@@ -44,7 +46,7 @@ void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
     auto path = Resources::directory() / filename;
     std::string fileContent;
     {
-        std::ifstream stream(path);
+        std::ifstream stream(path.string());
         std::stringstream buffer;
         buffer << stream.rdbuf();
 
@@ -52,7 +54,7 @@ void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
         fileContent = std::regex_replace(buffer.str(), ViewPortWidth, "$1 " + std::to_string(width) + "$3");
     }
     {
-        std::ofstream stream(path, std::ios::out | std::ios::trunc);
+        std::ofstream stream(path.string(), std::ios::out | std::ios::trunc);
         stream << fileContent;
     }
 }

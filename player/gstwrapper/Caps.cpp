@@ -1,14 +1,8 @@
 #include "Caps.hpp"
 
-Gst::Caps::Caps(GstCaps* handler) :
-    m_handler(handler)
-{
-}
+Gst::Caps::Caps(GstCaps* handler) : m_handler(handler) {}
 
-Gst::Caps::Caps(std::string_view stringCaps) :
-    m_handler(gst_caps_from_string(stringCaps.data()))
-{
-}
+Gst::Caps::Caps(std::string_view stringCaps) : m_handler(gst_caps_from_string(stringCaps.data())) {}
 
 Gst::Caps::Caps(Gst::Caps&& other)
 {
@@ -41,10 +35,7 @@ GstCaps* Gst::Caps::handler()
     return m_handler;
 }
 
-Gst::Structure::Structure(GstStructure* handler) :
-    m_handler(handler)
-{
-}
+Gst::Structure::Structure(GstStructure* handler) : m_handler(handler) {}
 
 int Gst::Structure::getHeight() const
 {

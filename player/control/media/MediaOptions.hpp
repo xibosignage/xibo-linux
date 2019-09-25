@@ -2,8 +2,8 @@
 
 #include "common/uri/Uri.hpp"
 
-#include "control/common/transitions/Transition.hpp"
 #include "MediaGeometry.hpp"
+#include "control/common/transitions/Transition.hpp"
 
 #include <map>
 
@@ -11,7 +11,8 @@ using ExtraOptions = std::map<std::string, std::string>;
 
 struct MediaOptions
 {
-    struct Type{
+    struct Type
+    {
         std::string type;
         std::string render;
     } type;

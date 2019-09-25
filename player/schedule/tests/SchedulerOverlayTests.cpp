@@ -1,5 +1,5 @@
-#include "SchedulerLayoutTests.hpp"
 #include "Scheduler.hpp"
+#include "SchedulerLayoutTests.hpp"
 
 static void addToQueue(LayoutSchedule& schedule, ScheduledLayout&& type)
 {
@@ -21,7 +21,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInCache)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, notInCacheLayout(DefaultId + i, DefaultPriority));
     }
@@ -35,7 +35,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllNotInRange)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, notInRangeLayout(DefaultId + i, DefaultPriority));
     }
@@ -49,7 +49,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsSamePriorityAllValid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority));
     }
@@ -89,7 +89,7 @@ TEST_F(SchedulerLayoutTests, OverlayLayoutsDifferentPrioritiesAllValid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority + i));
     }

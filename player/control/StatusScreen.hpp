@@ -1,7 +1,7 @@
 #pragma once
 
-#include "control/common/Widget.hpp"
 #include "IStatusScreen.hpp"
+#include "control/common/Widget.hpp"
 
 #include <gtkmm/messagedialog.h>
 
@@ -14,6 +14,5 @@ public:
     Gtk::Widget& get() override;
 
 private:
-	Gtk::MessageDialog m_dialog;
-
+    Gtk::MessageDialog m_dialog;
 };

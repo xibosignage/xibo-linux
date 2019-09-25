@@ -2,15 +2,14 @@
 #include "XlfLayoutLoader.hpp"
 #include "control/common/IOverlayLayout.hpp"
 
-#include "schedule/Scheduler.hpp"
 #include "common/logger/Logging.hpp"
 #include "config.hpp"
+#include "schedule/Scheduler.hpp"
 
 #include "common/fs/FileCache.hpp"
 #include "utils/Managers.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler) :
-    m_scheduler(scheduler)
+LayoutsManager::LayoutsManager(Scheduler& scheduler) : m_scheduler(scheduler)
 {
     m_scheduler.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
     m_scheduler.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
@@ -36,10 +35,10 @@ void LayoutsManager::fetchMainLayout()
 {
     auto id = m_scheduler.nextLayout();
 
-    if(id != EmptyLayoutId)
+    if (id != EmptyLayoutId)
     {
         m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
-        if(m_mainLayout)
+        if (m_mainLayout)
         {
             m_mainLayoutFetched(m_mainLayout->view());
         }
@@ -62,10 +61,10 @@ void LayoutsManager::fetchOverlays()
 
     m_overlayLayouts.clear();
 
-    for(int id : m_scheduler.overlayLayouts())
+    for (int id : m_scheduler.overlayLayouts())
     {
         auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
-        if(overlayLayout)
+        if (overlayLayout)
         {
             overlays.emplace_back(overlayLayout->view());
             m_overlayLayouts.emplace(id, std::move(overlayLayout));
@@ -80,17 +79,17 @@ void LayoutsManager::fetchOverlays()
     m_overlaysFetched(overlays);
 }
 
-template<typename LayoutLoader>
+template <typename LayoutLoader>
 std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 {
     try
     {
         auto layout = LayoutLoader::loadBy(layoutId);
 
-        layout->expired().connect([this, layoutId](){
+        layout->expired().connect([this, layoutId]() {
             Log::trace("Layout {} expired", layoutId);
 
-            if constexpr(std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
+            if constexpr (std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
             {
                 fetchMainLayout();
             }
@@ -102,7 +101,7 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 
         return layout;
     }
-    catch(std::exception& e)
+    catch (std::exception& e)
     {
         Log::error(e.what());
         Log::info("Check resource folder to find out what happened");
@@ -110,4 +109,3 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
 
     return nullptr;
 }
-

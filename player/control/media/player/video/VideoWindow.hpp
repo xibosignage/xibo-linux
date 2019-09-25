@@ -26,5 +26,4 @@ private:
     Gtk::DrawingArea m_handler;
     std::deque<std::shared_ptr<XiboVideoFrame>> m_frames;
     MediaGeometry::ScaleType m_scaleType;
-
 };

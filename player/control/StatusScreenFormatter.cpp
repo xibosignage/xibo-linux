@@ -25,9 +25,9 @@ std::string StatusScreenFormatter::formatGeneralInfo(const GeneralInfo& info)
     out << "Storage Selected - " << info.resourcesPath << std::endl;
     out << "Display Name - " << info.displayName << std::endl;
     out << "Screen Size: - " << info.windowWidth << " x " << info.windowHeight << std::endl;
-//    info << "Memory Limit - " << "150 MB" << std::endl;
+    //    info << "Memory Limit - " << "150 MB" << std::endl;
     out << "ScreenShot Request Interval - " << info.screenShotInterval << " seconds" << std::endl;
-//    out << "Number of Logs ready to send - " << info.numberOfLogsToSend << std::endl;
+    //    out << "Number of Logs ready to send - " << info.numberOfLogsToSend << std::endl;
 
     return out.str();
 }
@@ -36,12 +36,12 @@ std::string StatusScreenFormatter::formatCmsInfo(const CmsStatus& info)
 {
     std::stringstream out;
 
-    out << "Registered - " << std::boolalpha << info.registered << std::endl; // cms
-    out << "Checked at - " << DateTime::toString(info.lastChecked) << std::endl; // cms
-//    info << "Schedule - " << "up to date" << std::endl;
+    out << "Registered - " << std::boolalpha << info.registered << std::endl;     // cms
+    out << "Checked at - " << DateTime::toString(info.lastChecked) << std::endl;  // cms
+    //    info << "Schedule - " << "up to date" << std::endl;
     out << "Required Files - " << info.requiredFiles << std::endl;
-//    out << "Queued Network Connections- " << "F: 0 / N: 0. HTTP: 0 / Idle: 0" << std::endl; // http manager
-//    info << "Number of Concurrent Failed XMDS Connections - " << "0" << std::endl;
+    //    out << "Queued Network Connections- " << "F: 0 / N: 0. HTTP: 0 / Idle: 0" << std::endl; // http manager
+    //    info << "Number of Concurrent Failed XMDS Connections - " << "0" << std::endl;
 
     return out.str();
 }
@@ -52,11 +52,11 @@ std::string StatusScreenFormatter::formatSchedulerInfo(const SchedulerStatus& in
 
     out << "Last Update - " << info.generatedTime << std::endl;
     out << "Current Layout - " << info.currentLayout << std::endl;
-//    out << "All layouts (*= not scheduled) - " << "49*(D)" << std::endl;
+    //    out << "All layouts (*= not scheduled) - " << "49*(D)" << std::endl;
     out << "Scheduled Layouts - " << layoutsToString(info.scheduledLayouts) << std::endl;
     out << "Valid Layouts - " << layoutsToString(info.validLayouts) << std::endl;
     out << "Invalid Layouts - " << layoutsToString(info.invalidLayouts) << std::endl;
-//    out << "Next Schedule Update - " << "yyyy-mm-dd hh:mm:ss" << std::endl;
+    //    out << "Next Schedule Update - " << "yyyy-mm-dd hh:mm:ss" << std::endl;
 
     return out.str();
 }
@@ -65,7 +65,7 @@ std::string StatusScreenFormatter::layoutsToString(const std::vector<int>& layou
 {
     std::stringstream out;
 
-    for(int id : layouts)
+    for (int id : layouts)
     {
         out << std::to_string(id) << " ";
     }

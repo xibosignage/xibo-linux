@@ -1,35 +1,34 @@
 #pragma once
 
-#include "Soap.hpp"
 #include "BaseRequestSerializer.hpp"
 #include "BaseResponseParser.hpp"
+#include "Soap.hpp"
 
 #include "common/Field.hpp"
 
 namespace Schedule
 {
-    struct Result
-    {
-        std::string scheduleXml;
-    };
+struct Result
+{
+    std::string scheduleXml;
+};
 
-    struct Request
-    {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-    };
+struct Request
+{
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+};
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
 {
 public:
     RequestSerializer(const Schedule::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
 {
 public:
@@ -37,5 +36,4 @@ public:
 
 protected:
     Schedule::Result parseBody(const ptree_node& scheduleNode) override;
-
 };

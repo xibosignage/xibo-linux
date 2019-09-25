@@ -1,7 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
 #include "LayoutOptions.hpp"
+#include "constants.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -27,4 +27,3 @@ private:
     std::shared_ptr<IImage> createBackground(const LayoutOptions& options);
     void addRegions(IMainLayout& layout, const ptree_node& node);
 };
-

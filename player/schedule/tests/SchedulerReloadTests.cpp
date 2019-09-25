@@ -53,7 +53,7 @@ TEST_F(SchedulerTests, DefaultLayoutReloadSameQueue)
     auto schedule = makeRegularSchedule(DefaultId);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadQueue();
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId);
@@ -69,7 +69,7 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithRegularLayouts)
     auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
@@ -86,7 +86,7 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithSameDefault)
     auto newSchedule = makeRegularSchedule(DefaultId);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId);
@@ -102,7 +102,7 @@ TEST_F(SchedulerTests, DefaultReloadQueueWithAnotherDefault)
     auto newSchedule = makeRegularSchedule(DefaultId + 1);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
@@ -117,7 +117,7 @@ TEST_F(SchedulerTests, RegularReloadSameQueue)
     auto schedule = makeRegularSchedule(DefaultId, DefaultId + 1, DefaultId + 2);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadQueue();
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 2);
@@ -134,7 +134,7 @@ TEST_F(SchedulerTests, RegularReloadQueueWithAllNewLayouts)
     auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 3, DefaultId + 4);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
@@ -151,7 +151,7 @@ TEST_F(SchedulerTests, RegularReloadQueueWithSomeNewLayouts)
     auto newSchedule = makeRegularSchedule(DefaultId, DefaultId + 3, DefaultId + 1, DefaultId + 4);
     scheduler->layoutUpdated().connect(slot);
     scheduler->reloadSchedule(std::move(schedule));
-    scheduler->nextLayout(); // trigger layout playing
+    scheduler->nextLayout();  // trigger layout playing
     scheduler->reloadSchedule(std::move(newSchedule));
 
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 4);
@@ -159,7 +159,6 @@ TEST_F(SchedulerTests, RegularReloadQueueWithSomeNewLayouts)
     EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
     ASSERT_TRUE(slot.calledOnce());
 }
-
 
 TEST_F(SchedulerTests, OverlayReloadQueueWithSameLayouts)
 {

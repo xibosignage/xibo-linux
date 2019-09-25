@@ -1,7 +1,7 @@
 #include "UriTests.hpp"
 
-#include "uri/UriParser.hpp"
 #include "uri/UriParseError.hpp"
+#include "uri/UriParser.hpp"
 
 TEST_P(UriValidHttpTests, InitializeWithValidHttpUrl)
 {
@@ -51,7 +51,7 @@ TEST(UriManualInit, SchemeAndPath)
 
 TEST(UriManualInit, SchemeHostAndPath)
 {
-    Uri uri{Uri::Scheme::HTTP, "test.com",  "/target"};
+    Uri uri{Uri::Scheme::HTTP, "test.com", "/target"};
 
     ASSERT_EQ(uri.scheme(), Uri::Scheme::HTTP);
     ASSERT_EQ(uri.path(), "/target");
@@ -64,7 +64,7 @@ TEST(UriManualInit, SchemeHostAndPath)
 
 TEST(UriManualInit, SchemeAuthorityAndPath)
 {
-    Uri uri{Uri::Scheme::HTTP, Uri::Authority{std::string{"username:password"}, "test.com", 1234},  "/target"};
+    Uri uri{Uri::Scheme::HTTP, Uri::Authority{std::string{"username:password"}, "test.com", 1234}, "/target"};
 
     ASSERT_EQ(uri.scheme(), Uri::Scheme::HTTP);
     ASSERT_EQ(uri.path(), "/target");

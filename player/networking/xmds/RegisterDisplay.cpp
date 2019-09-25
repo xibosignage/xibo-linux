@@ -4,7 +4,7 @@
 
 namespace Resources = XmdsResources::RegisterDisplay;
 
-template<>
+template <>
 std::string Utils::toString(RegisterDisplay::Result::Status::Code val)
 {
     switch (val)
@@ -18,26 +18,20 @@ std::string Utils::toString(RegisterDisplay::Result::Status::Code val)
     return "unknown";
 }
 
-Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) :
+    BaseRequestSerializer(request)
 {
 }
 
 std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
 {
-    return createRequest(Resources::Name,
-                         request().clientCode,
-                         request().clientType,
-                         request().clientVersion,
-                         request().displayName,
-                         request().macAddress,
-                         request().xmrChannel,
-                         request().xmrPubKey,
-                         request().serverKey,
-                         request().hardwareKey);
-
+    return createRequest(Resources::Name, request().clientCode, request().clientType, request().clientVersion,
+                         request().displayName, request().macAddress, request().xmrChannel, request().xmrPubKey,
+                         request().serverKey, request().hardwareKey);
 }
 
-Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) :
+    BaseResponseParser(soapResponse)
 {
 }
 
@@ -50,7 +44,7 @@ RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody
     RegisterDisplay::Result result;
     result.status.code = static_cast<RegisterDisplay::Result::Status::Code>(attrs.get<int>(Resources::Status));
     result.status.message = attrs.get<std::string>(Resources::StatusMessage);
-    if(result.status.code == RegisterDisplay::Result::Status::Code::Ready)
+    if (result.status.code == RegisterDisplay::Result::Status::Code::Ready)
     {
         result.playerSettings.loadFrom(displayNode);
     }

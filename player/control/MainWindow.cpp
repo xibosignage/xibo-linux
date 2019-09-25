@@ -1,14 +1,14 @@
 #include "MainWindow.hpp"
 
-#include "control/common/OverlayLayout.hpp"
 #include "constants.hpp"
+#include "control/common/OverlayLayout.hpp"
 
 #include <gtkmm/cssprovider.h>
 
-#if GTKMM_MAJOR_VERSION>=3 && GTKMM_MINOR_VERSION>18
-    const std::string DefaultStyle = "window { background-color: black; }";
+#if GTKMM_MAJOR_VERSION >= 3 && GTKMM_MINOR_VERSION > 18
+const std::string DefaultStyle = "window { background-color: black; }";
 #else
-    const std::string DefaultStyle = "GtkWindow#mainWindow { background-color: black; }";
+const std::string DefaultStyle = "GtkWindow#mainWindow { background-color: black; }";
 #endif
 
 MainWindow::MainWindow() :
@@ -21,7 +21,7 @@ MainWindow::MainWindow() :
     m_handler.set_name("mainWindow");
     m_handler.add(getHandler(*m_layout));
     m_handler.add_events(Gdk::KEY_PRESS_MASK);
-    m_handler.signal_key_press_event().connect([this](GdkEventKey* event){
+    m_handler.signal_key_press_event().connect([this](GdkEventKey* event) {
         m_keyPressed(event->string);
         return false;
     });
@@ -43,7 +43,7 @@ void MainWindow::scale(double scaleX, double scaleY)
 
 void MainWindow::onRealized()
 {
-    if(!m_cursorVisible)
+    if (!m_cursorVisible)
     {
         auto window = m_handler.get_window();
         auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
@@ -56,7 +56,7 @@ void MainWindow::loadDefaultStyle()
     Glib::RefPtr<Gtk::CssProvider> css_provider = Gtk::CssProvider::create();
     Glib::RefPtr<Gtk::StyleContext> style_context = Gtk::StyleContext::create();
 
-    if(css_provider->load_from_data(DefaultStyle))
+    if (css_provider->load_from_data(DefaultStyle))
     {
         Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
         style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
@@ -105,7 +105,7 @@ void MainWindow::setOverlays(const std::vector<std::shared_ptr<IOverlayLayout>>&
 {
     m_layout->removeChildren();
 
-    for(auto&& child : children)
+    for (auto&& child : children)
     {
         m_layout->addChild(child, DefaultXPos, DefaultYPos, 0);
     }
@@ -150,8 +150,8 @@ Gdk::Rectangle MainWindow::getCurrentMonitorGeometry() const
 void MainWindow::unfullscreen()
 {
     m_handler.unfullscreen();
-    m_windowState = m_handler.signal_window_state_event().connect([=](GdkEventWindowState* ev){
-        if(ev->new_window_state != GDK_WINDOW_STATE_FULLSCREEN)
+    m_windowState = m_handler.signal_window_state_event().connect([=](GdkEventWindowState* ev) {
+        if (ev->new_window_state != GDK_WINDOW_STATE_FULLSCREEN)
         {
             m_windowState.disconnect();
             setWindowSize(m_originalWidth, m_originalHeight);

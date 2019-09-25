@@ -20,5 +20,4 @@ private:
 
 private:
     XmdsRequestSender& m_xmdsSender;
-
 };

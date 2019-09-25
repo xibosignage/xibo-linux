@@ -15,5 +15,4 @@ public:
 private:
     int m_regionWidth;
     int m_regionHeight;
-
 };

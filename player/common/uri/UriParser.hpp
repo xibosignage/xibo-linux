@@ -1,8 +1,8 @@
 #pragma once
 
-#include <string>
-#include <regex>
 #include <boost/optional/optional.hpp>
+#include <regex>
+#include <string>
 
 #include "Uri.hpp"
 
@@ -19,5 +19,4 @@ private:
     static std::string getPath(const std::string& target, const std::string& query, const std::string& fragment);
 
     static std::smatch parseInternal(const std::string& rawUri);
-
 };

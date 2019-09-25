@@ -2,8 +2,8 @@
 
 #include "XmlLogsRepo.hpp"
 
-#include "common/logger/Logging.hpp"
 #include "common/Parsing.hpp"
+#include "common/logger/Logging.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
@@ -28,7 +28,7 @@ std::string XmlLogsRetriever::formatLogs(const std::string& logs)
 
         return Parsing::xmlTreeToString(formattedLogsNode);
     }
-    catch(std::exception& e)
+    catch (std::exception& e)
     {
         Log::error("XML logs error: ", e.what());
         Log::trace(logs);

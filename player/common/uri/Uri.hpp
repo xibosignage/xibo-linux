@@ -4,7 +4,7 @@
 
 class Uri
 {
-public:    
+public:
     class Authority
     {
     public:
@@ -17,7 +17,8 @@ public:
 
         friend class Uri;
 
-        Authority(boost::optional<std::string> credentials, const std::string& host, boost::optional<unsigned short> optionalPort);
+        Authority(boost::optional<std::string> credentials, const std::string& host,
+                  boost::optional<unsigned short> optionalPort);
         Authority(const std::string& host);
 
         boost::optional<std::string> credentials() const;

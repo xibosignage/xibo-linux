@@ -1,9 +1,9 @@
 #include "ScheduleSerializer.hpp"
 
-#include "networking/xmds/Resources.hpp"
-#include "common/fs/FilePath.hpp"
-#include "common/dt/DateTime.hpp"
 #include "common/Parsing.hpp"
+#include "common/dt/DateTime.hpp"
+#include "common/fs/FilePath.hpp"
+#include "networking/xmds/Resources.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -32,7 +32,7 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
     auto& scheduleNode = root.add_child(Resources::Schedule, {});
     scheduleNode.put(Resources::Generated, DateTime::toString(schedule.generatedTime));
 
-    for(auto&& layout : schedule.regularLayouts)
+    for (auto&& layout : schedule.regularLayouts)
     {
         scheduleNode.add_child(Resources::Layout, scheduledLayoutNode(layout));
     }
@@ -62,7 +62,7 @@ ptree_node ScheduleSerializer::overlaysNode(const LayoutList& overlays)
 {
     ptree_node node;
 
-    for(auto&& layout : overlays)
+    for (auto&& layout : overlays)
     {
         node.add_child(Resources::OverlayLayout, scheduledLayoutNode(layout));
     }
@@ -84,7 +84,7 @@ ptree_node ScheduleSerializer::dependantsNode(const LayoutDependants& dependants
 {
     ptree_node node;
 
-    for(auto&& dependant : dependants)
+    for (auto&& dependant : dependants)
     {
         node.add(Resources::DependantFile, dependant);
     }

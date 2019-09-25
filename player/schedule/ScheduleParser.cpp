@@ -1,10 +1,10 @@
 #include "ScheduleParser.hpp"
 
-#include "networking/xmds/Resources.hpp"
+#include "common/Parsing.hpp"
+#include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/dt/DateTime.hpp"
-#include "common/Parsing.hpp"
+#include "networking/xmds/Resources.hpp"
 
 #include <boost/property_tree/xml_parser.hpp>
 
@@ -19,7 +19,7 @@ LayoutSchedule ScheduleParser::scheduleFrom(const FilePath& path)
 {
     try
     {
-        if(!FileSystem::exists(path)) return {};
+        if (!FileSystem::exists(path)) return {};
 
         return scheduleFromImpl(Parsing::xmlFromPath(path));
     }
@@ -48,15 +48,15 @@ LayoutSchedule ScheduleParser::scheduleFromImpl(const ptree_node& scheduleXml)
 
     schedule.generatedTime = DateTime::fromString(scheduleNode.get<std::string>(Resources::Generated));
 
-    for(auto [name, node] : scheduleNode)
+    for (auto [name, node] : scheduleNode)
     {
-        if(name == Resources::Layout)
+        if (name == Resources::Layout)
             schedule.regularLayouts.emplace_back(scheduledLayoutFrom(node));
-        else if(name == Resources::DefaultLayout)
+        else if (name == Resources::DefaultLayout)
             schedule.defaultLayout = defaultLayoutFrom(node);
-        else if(name == Resources::Overlays)
+        else if (name == Resources::Overlays)
             schedule.overlayLayouts = overlayLayoutsFrom(node);
-        else if(name == Resources::GlobalDependants)
+        else if (name == Resources::GlobalDependants)
             schedule.globalDependants = dependantsFrom(node);
     }
 
@@ -73,7 +73,7 @@ ScheduledLayout ScheduleParser::scheduledLayoutFrom(const ptree_node& node)
     layout.endDT = DateTime::fromString(node.get<std::string>(Resources::EndDT));
     layout.priority = node.get<int>(Resources::Priority);
 
-    if(auto dependants = node.get_child_optional(Resources::LocalDependants))
+    if (auto dependants = node.get_child_optional(Resources::LocalDependants))
     {
         layout.dependants = dependantsFrom(dependants.value());
     }
@@ -86,7 +86,7 @@ DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const ptree_node& node)
     DefaultScheduledLayout layout;
 
     layout.id = node.get<int>(Resources::Id);
-    if(auto dependants = node.get_child_optional(Resources::LocalDependants))
+    if (auto dependants = node.get_child_optional(Resources::LocalDependants))
     {
         layout.dependants = dependantsFrom(dependants.value());
     }
@@ -98,7 +98,7 @@ LayoutList ScheduleParser::overlayLayoutsFrom(const ptree_node& overlaysNode)
 {
     LayoutList overlayLayouts;
 
-    for(auto [name, node] : overlaysNode)
+    for (auto [name, node] : overlaysNode)
     {
         overlayLayouts.emplace_back(scheduledLayoutFrom(node));
     }
@@ -110,7 +110,7 @@ LayoutDependants ScheduleParser::dependantsFrom(const ptree_node& dependantsNode
 {
     LayoutDependants dependants;
 
-    for(auto&& [name, file] : dependantsNode)
+    for (auto&& [name, file] : dependantsNode)
     {
         dependants.emplace_back(file.get_value<std::string>());
     }

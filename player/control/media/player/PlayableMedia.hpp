@@ -1,7 +1,7 @@
 #pragma once
 
-#include "MediaPlayerOptions.hpp"
 #include "IMediaPlayer.hpp"
+#include "MediaPlayerOptions.hpp"
 #include "control/media/Media.hpp"
 
 class PlayableMedia : public Media
@@ -19,5 +19,4 @@ private:
 
 private:
     std::unique_ptr<IMediaPlayer> m_player;
-
 };

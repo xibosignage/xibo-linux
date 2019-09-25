@@ -2,88 +2,86 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-#include "networking/ResponseResult.hpp"
 #include "common/Parsing.hpp"
+#include "networking/ResponseResult.hpp"
 
 namespace Soap
 {
-    template<typename Result>
-    class BaseResponseParser
+template <typename Result>
+class BaseResponseParser
+{
+public:
+    using OptionalParsedNode = boost::optional<ptree_node&>;
+    using ParsedNode = ptree_node;
+
+    BaseResponseParser(const std::string& response) : m_response(response)
     {
-    public:
-        using OptionalParsedNode = boost::optional<ptree_node&>;
-        using ParsedNode = ptree_node;
+        tryParseResponse(response);
+    }
+    virtual ~BaseResponseParser() = default;
 
-        BaseResponseParser(const std::string& response) : m_response(response)
+    ResponseResult<Result> get()
+    {
+        if (m_responseTree)
         {
-            tryParseResponse(response);
-        }
-        virtual ~BaseResponseParser() = default;
+            auto [name, bodyNode] = m_responseTree->front();
 
-        ResponseResult<Result> get()
-        {
-            if(m_responseTree)
+            if (auto node = getFaultNode())
             {
-                auto [name, bodyNode] = m_responseTree->front();
-
-                if(auto node = getFaultNode())
-                {
-                    return std::pair{makeErrorFromNode(node), Result{}};
-                }
-
-                return parseBodyImpl(bodyNode);
+                return std::pair{makeErrorFromNode(node), Result{}};
             }
 
-            return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
+            return parseBodyImpl(bodyNode);
         }
 
-    protected:
-        virtual Result parseBody(const ParsedNode& node) = 0;
+        return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
+    }
 
-    private:
-        ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
+protected:
+    virtual Result parseBody(const ParsedNode& node) = 0;
+
+private:
+    ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
+    {
+        using namespace std::string_literals;
+
+        try
         {
-            using namespace std::string_literals;
-
-            try
-            {
-                return std::pair{PlayerError{}, parseBody(node)};
-            }
-            catch(std::exception& e)
-            {
-                std::string error = "Error while parsing response. Details: "s + e.what();
-
-                return std::pair{PlayerError{PlayerError::Type::SOAP, error},  Result{}};
-            }
+            return std::pair{PlayerError{}, parseBody(node)};
         }
-
-
-        void tryParseResponse(const std::string& response)
+        catch (std::exception& e)
         {
-            try
-            {
-                m_responseTree = Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
-            }
-            catch(std::exception&)
-            {
-            }
-        }
+            std::string error = "Error while parsing response. Details: "s + e.what();
 
-        OptionalParsedNode getFaultNode()
+            return std::pair{PlayerError{PlayerError::Type::SOAP, error}, Result{}};
+        }
+    }
+
+    void tryParseResponse(const std::string& response)
+    {
+        try
         {
-            return m_responseTree->get_child_optional("SOAP-ENV:Fault");
+            m_responseTree = Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
         }
-
-        PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
+        catch (std::exception&)
         {
-            auto faultMessage = faultNode->template get<std::string>("faultstring");
-            return PlayerError{PlayerError::Type::SOAP, faultMessage};
         }
+    }
 
-    private:
-        std::string m_response;
-        boost::optional<ParsedNode> m_responseTree;
+    OptionalParsedNode getFaultNode()
+    {
+        return m_responseTree->get_child_optional("SOAP-ENV:Fault");
+    }
 
-    };
+    PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
+    {
+        auto faultMessage = faultNode->template get<std::string>("faultstring");
+        return PlayerError{PlayerError::Type::SOAP, faultMessage};
+    }
+
+private:
+    std::string m_response;
+    boost::optional<ParsedNode> m_responseTree;
+};
 
 }

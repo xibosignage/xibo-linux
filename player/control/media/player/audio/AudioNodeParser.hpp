@@ -10,5 +10,4 @@ protected:
     Uri uriFrom(const ptree_node& node) override;
     int durationFrom(const ptree_node& node) override;
     ExtraOptions extraOptionsImpl(const ptree_node& node) override;
-
 };

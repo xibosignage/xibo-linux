@@ -46,5 +46,4 @@ private:
     WidgetsWithInfo m_children;
     int m_xOffset = 0;
     int m_yOffset = 0;
-
 };

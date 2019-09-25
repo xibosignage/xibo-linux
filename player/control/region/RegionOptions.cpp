@@ -1,7 +1,7 @@
 #include "RegionOptions.hpp"
 #include "common/Utils.hpp"
 
-template<>
+template <>
 std::string Utils::toString(RegionOptions::Loop val)
 {
     switch (val)

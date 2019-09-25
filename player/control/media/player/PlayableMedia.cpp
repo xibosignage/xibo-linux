@@ -29,13 +29,13 @@ void PlayableMedia::onStopped()
 
 void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
 {
-    if(options.duration == 0)
+    if (options.duration == 0)
     {
         mediaFinished()();
         return;
     }
 
-    if(options.looped == MediaPlayerOptions::Loop::Enable)
+    if (options.looped == MediaPlayerOptions::Loop::Enable)
     {
         m_player->play();
     }

@@ -7,7 +7,7 @@
 
 #include <boost/property_tree/xml_parser.hpp>
 
-template<typename Settings>
+template <typename Settings>
 class SettingsSerializer
 {
 public:
@@ -17,10 +17,10 @@ public:
 protected:
     ~SettingsSerializer() = default;
 
-    template<typename... Args>
+    template <typename... Args>
     void loadFromImpl(const FilePath& file, Field<Args>&... fields)
     {
-        if(!FileSystem::exists(file)) return;
+        if (!FileSystem::exists(file)) return;
 
         boost::property_tree::ptree tree;
         boost::property_tree::xml_parser::read_xml(file.string(), tree);
@@ -28,7 +28,7 @@ protected:
         (fields.setValue(tree.get<Args>(std::string{fields.name()})), ...);
     }
 
-    template<typename... Args>
+    template <typename... Args>
     void saveToImpl(const FilePath& file, Field<Args>... fields)
     {
         boost::property_tree::ptree tree;

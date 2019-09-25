@@ -1,10 +1,10 @@
 #include "VideoFactory.hpp"
 
-#include "control/media/player/PlayableMedia.hpp"
+#include "VideoWindow.hpp"
+#include "control/media/MediaResources.hpp"
 #include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
-#include "control/media/MediaResources.hpp"
-#include "VideoWindow.hpp"
+#include "control/media/player/PlayableMedia.hpp"
 
 #include "constants.hpp"
 
@@ -37,11 +37,12 @@ std::unique_ptr<IMediaPlayer> VideoFactory::createPlayer(const MediaPlayerOption
     return player;
 }
 
-std::shared_ptr<IVideoWindow> VideoFactory::createView(int width, int height, MediaGeometry::ScaleType scaleType, const Gst::InspectorResult& info)
+std::shared_ptr<IVideoWindow> VideoFactory::createView(int width, int height, MediaGeometry::ScaleType scaleType,
+                                                       const Gst::InspectorResult& info)
 {
     auto view = std::make_shared<VideoWindow>(width, height);
 
-    if(scaleType == MediaGeometry::ScaleType::Scaled)
+    if (scaleType == MediaGeometry::ScaleType::Scaled)
     {
         double scaleX = static_cast<double>(view->width()) / info.frameWidth;
         double scaleY = static_cast<double>(view->height()) / info.frameHeight;

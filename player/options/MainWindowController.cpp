@@ -5,9 +5,9 @@
 
 #include <boost/process/child.hpp>
 
-#include "networking/xmds/XmdsRequestSender.hpp"
-#include "config.hpp"
 #include "HardwareKey.hpp"
+#include "config.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     m_ui(ui),
@@ -58,7 +58,8 @@ void MainWindowController::connectSignals()
     m_saveSettings->signal_clicked().connect(std::bind(&MainWindowController::onSaveSettingsClicked, this));
     m_launchClient->signal_clicked().connect(std::bind(&MainWindowController::onLaunchClientClicked, this));
     m_displayAdmin->signal_clicked().connect(std::bind(&MainWindowController::onDisplayAdminClicked, this));
-    m_browseResourcesPath->signal_clicked().connect(std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
+    m_browseResourcesPath->signal_clicked().connect(
+        std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
     m_exit->signal_clicked().connect(std::bind(&Gtk::Window::close, m_mainWindow));
 }
 
@@ -80,26 +81,27 @@ std::string MainWindowController::getDisplayId()
     return displayId.empty() ? HardwareKey::generate() : displayId;
 }
 
-std::string MainWindowController::connectToCms(const std::string& cmsAddress, const std::string& key, const std::string& displayId)
+std::string MainWindowController::connectToCms(const std::string& cmsAddress, const std::string& key,
+                                               const std::string& displayId)
 {
     try
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
-        auto connectionResult = xmdsRequester.registerDisplay(ProjectResources::codeVersion(),
-                                                              ProjectResources::version(),
-                                                              "Display").then([](auto future){
-            auto [error, result] = future.get();
+        auto connectionResult =
+            xmdsRequester.registerDisplay(ProjectResources::codeVersion(), ProjectResources::version(), "Display")
+                .then([](auto future) {
+                    auto [error, result] = future.get();
 
-            if(!error)
-                return result.status.message;
-            else
-                return error.message();
-        });
+                    if (!error)
+                        return result.status.message;
+                    else
+                        return error.message();
+                });
 
         return connectionResult.get();
     }
-    catch(std::exception& e)
+    catch (std::exception& e)
     {
         return e.what();
     }
@@ -139,17 +141,14 @@ void MainWindowController::onBrowseResourcesPathClicked()
 
     int result = dialog.run();
 
-    switch(result)
+    switch (result)
     {
-        case(Gtk::RESPONSE_OK):
-            m_resourcesPathField->set_text(dialog.get_filename());
-            break;
-        default:
-            break;
+        case (Gtk::RESPONSE_OK): m_resourcesPathField->set_text(dialog.get_filename()); break;
+        default: break;
     }
 }
 
 void MainWindowController::onDisplayAdminClicked()
 {
-//    m_mainWindow->show_uri(m_cmsAddress->get_text(), static_cast<unsigned int>(std::time(nullptr)));
+    //    m_mainWindow->show_uri(m_cmsAddress->get_text(), static_cast<unsigned int>(std::time(nullptr)));
 }

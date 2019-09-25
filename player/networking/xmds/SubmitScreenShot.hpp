@@ -1,36 +1,35 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
 #include "BaseRequestSerializer.hpp"
+#include "BaseResponseParser.hpp"
+#include "Soap.hpp"
 
 #include "common/Field.hpp"
 
 namespace SubmitScreenShot
 {
-    struct Result
-    {
-        bool success;
-    };
+struct Result
+{
+    bool success;
+};
 
-    struct Request
-    {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<std::string> screenShot{"screenShot"};
-    };
+struct Request
+{
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+    Field<std::string> screenShot{"screenShot"};
+};
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<SubmitScreenShot::Request> : public BaseRequestSerializer<SubmitScreenShot::Request>
 {
 public:
     RequestSerializer(const SubmitScreenShot::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<SubmitScreenShot::Result> : public BaseResponseParser<SubmitScreenShot::Result>
 {
 public:
@@ -38,5 +37,4 @@ public:
 
 protected:
     SubmitScreenShot::Result parseBody(const ptree_node& node) override;
-
 };

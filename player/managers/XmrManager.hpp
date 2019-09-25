@@ -1,8 +1,8 @@
 #pragma once
 
+#include "XmrStatus.hpp"
 #include "common/dt/DateTime.hpp"
 #include "networking/ZeromqSubscriber.hpp"
-#include "XmrStatus.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -39,5 +39,4 @@ private:
     CollectionIntervalAction m_collectionIntervalAction;
     ScreenshotAction m_screenshotAction;
     XmrStatus m_info;
-
 };

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <boost/signals2/signal.hpp>
+#include <memory>
 
 using SignalLayoutExpired = boost::signals2::signal<void()>;
 
@@ -19,5 +19,4 @@ public:
     virtual void restart() = 0;
 
     virtual std::shared_ptr<IOverlayLayout> view() = 0;
-
 };

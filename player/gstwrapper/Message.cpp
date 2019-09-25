@@ -1,9 +1,6 @@
 #include "Message.hpp"
 
-Gst::Message::Message(GstMessage* handler, bool takeOwnership) :
-    m_handler(handler), m_takeOwnership(takeOwnership)
-{   
-}
+Gst::Message::Message(GstMessage* handler, bool takeOwnership) : m_handler(handler), m_takeOwnership(takeOwnership) {}
 
 Gst::MessageError Gst::Message::parseError()
 {
@@ -26,7 +23,8 @@ Gst::MessageType Gst::Message::type() const
 }
 
 Gst::MessageError::MessageError(std::string_view text, std::string_view debugInfo) :
-    m_text(text), m_debugInfo(debugInfo)
+    m_text(text),
+    m_debugInfo(debugInfo)
 {
 }
 

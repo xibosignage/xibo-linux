@@ -2,8 +2,8 @@
 
 #include <gst/video/video-info.h>
 
-#include <memory>
 #include <cairomm/surface.h>
+#include <memory>
 
 class XiboVideoFrame
 {
@@ -22,5 +22,4 @@ private:
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
     GstVideoFrame m_frame;
     bool m_mapped = false;
-
 };

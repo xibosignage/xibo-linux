@@ -1,19 +1,16 @@
 #pragma once
 
-#include "IWidget.hpp"
 #include "IGtkWidget.hpp"
+#include "IWidget.hpp"
 
-template<typename Interface>
+template <typename Interface>
 class Widget : public Interface, public IGtkWidget
 
 {
 public:
     static_assert(std::is_base_of_v<IWidget, Interface>, "Should implement IWidget");
 
-    Widget(Gtk::Widget& widget) :
-        m_widget(widget)
-    {
-    }
+    Widget(Gtk::Widget& widget) : m_widget(widget) {}
 
     void show() override
     {
@@ -39,8 +36,7 @@ public:
 
     void scale(double scaleX, double scaleY) override
     {
-        setSize(static_cast<int>(width() * scaleX),
-                static_cast<int>(height() * scaleY));
+        setSize(static_cast<int>(width() * scaleX), static_cast<int>(height() * scaleY));
     }
 
     void setSize(int width, int height) override
@@ -86,5 +82,4 @@ protected:
 private:
     Gtk::Widget& m_widget;
     SignalShown m_signalShown;
-
 };

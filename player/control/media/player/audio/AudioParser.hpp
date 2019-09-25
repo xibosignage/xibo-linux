@@ -9,5 +9,4 @@ protected:
 
 private:
     std::unique_ptr<IMedia> parseAdditionalNode(const ptree_node& node);
-
 };

@@ -1,7 +1,7 @@
 #include "LoggingLevel.hpp"
 #include "Utils.hpp"
 
-template<>
+template <>
 inline std::string Utils::toString(LoggingLevel val)
 {
     switch (val)
@@ -15,7 +15,7 @@ inline std::string Utils::toString(LoggingLevel val)
     return "unknown";
 }
 
-std::istream& operator>> (std::istream& in, LoggingLevel& level)
+std::istream& operator>>(std::istream& in, LoggingLevel& level)
 {
     int temp;
     in >> temp;
@@ -23,7 +23,7 @@ std::istream& operator>> (std::istream& in, LoggingLevel& level)
     return in;
 }
 
-std::ostream& operator<< (std::ostream& out, LoggingLevel level)
+std::ostream& operator<<(std::ostream& out, LoggingLevel level)
 {
     return out << static_cast<int>(level);
 }

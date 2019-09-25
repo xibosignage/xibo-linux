@@ -1,36 +1,35 @@
 #pragma once
 
-#include "common/Field.hpp"
+#include "BaseRequestSerializer.hpp"
+#include "BaseResponseParser.hpp"
 #include "MediaInventoryField.hpp"
 #include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
+#include "common/Field.hpp"
 
 namespace MediaInventory
 {
-    struct Result
-    {
-        bool success;
-    };
+struct Result
+{
+    bool success;
+};
 
-    struct Request
-    {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<MediaInventoryItems> inventory{"mediaInventory"};
-    };
+struct Request
+{
+    Field<std::string> serverKey{"serverKey"};
+    Field<std::string> hardwareKey{"hardwareKey"};
+    Field<MediaInventoryItems> inventory{"mediaInventory"};
+};
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
 {
 public:
     RequestSerializer(const MediaInventory::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<MediaInventory::Result> : public BaseResponseParser<MediaInventory::Result>
 {
 public:
@@ -38,5 +37,4 @@ public:
 
 protected:
     MediaInventory::Result parseBody(const ptree_node& node) override;
-
 };

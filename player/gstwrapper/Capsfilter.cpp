@@ -1,10 +1,7 @@
 #include "Capsfilter.hpp"
 #include "Caps.hpp"
 
-Gst::Capsfilter::Capsfilter() :
-    Gst::Element("capsfilter")
-{
-}
+Gst::Capsfilter::Capsfilter() : Gst::Element("capsfilter") {}
 
 Gst::RefPtr<Gst::Capsfilter> Gst::Capsfilter::create()
 {

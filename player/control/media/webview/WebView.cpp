@@ -5,16 +5,15 @@
 
 namespace ph = std::placeholders;
 
-WebView::WebView(int width, int height) :
-    Widget(m_handler)
+WebView::WebView(int width, int height) : Widget(m_handler)
 {
     m_webView = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
     auto widget = Gtk::manage(Glib::wrap(reinterpret_cast<GtkWidget*>(m_webView)));
     m_handler.add(*widget);
 
-    m_sizeAllocateConnection = widget->signal_size_allocate().connect([this](Gtk::Allocation&){
-       reload();
-       m_sizeAllocateConnection.disconnect();
+    m_sizeAllocateConnection = widget->signal_size_allocate().connect([this](Gtk::Allocation&) {
+        reload();
+        m_sizeAllocateConnection.disconnect();
     });
 
     setSize(width, height);
@@ -51,10 +50,10 @@ void WebView::enableTransparency()
 
 void WebView::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen)
 {
-    if(screen)
+    if (screen)
     {
         auto visual = screen->get_rgba_visual();
-        if(visual)
+        if (visual)
         {
             gtk_widget_set_visual(reinterpret_cast<GtkWidget*>(m_handler.gobj()), visual->gobj());
         }

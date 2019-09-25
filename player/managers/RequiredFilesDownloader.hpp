@@ -1,8 +1,8 @@
 #pragma once
 
+#include "common/logger/Logging.hpp"
 #include "networking/ResponseResult.hpp"
 #include "networking/xmds/MediaInventoryItem.hpp"
-#include "common/logger/Logging.hpp"
 
 #include <boost/thread/future.hpp>
 
@@ -18,26 +18,26 @@ public:
     RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender);
     ~RequiredFilesDownloader();
 
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
     boost::future<MediaInventoryItems> download(const FilesToDownload<RequiredFileType>& files)
     {
-        return boost::async(boost::launch::async, [this, files = std::move(files)](){
+        return boost::async(boost::launch::async, [this, files = std::move(files)]() {
             auto downloadResults = downloadAll(files);
             return retrieveDownloadResults(files, std::move(downloadResults));
         });
     }
 
 private:
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
     DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
     {
         DownloadResults results;
 
-        for(auto&& file : requiredFiles)
+        for (auto&& file : requiredFiles)
         {
             Log::trace(file);
 
-            if(shouldBeDownloaded(file))
+            if (shouldBeDownloaded(file))
             {
                 results.emplace_back(downloadRequiredFile(file));
             }
@@ -46,12 +46,13 @@ private:
         return results;
     }
 
-    template<typename RequiredFileType>
-    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files, DownloadResults&& results)
+    template <typename RequiredFileType>
+    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files,
+                                                DownloadResults&& results)
     {
         MediaInventoryItems items;
 
-        for(std::size_t i = 0; i != results.size(); ++i)
+        for (std::size_t i = 0; i != results.size(); ++i)
         {
             bool downloadComplete = results[i].get();
             auto&& downloadedFile = files[i];
@@ -65,7 +66,8 @@ private:
     void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
     void saveResourceFile(const std::string& filename, const std::string& fileContent);
 
-    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName, const std::string& hash);
+    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName,
+                                 const std::string& hash);
     bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
 
     bool shouldBeDownloaded(const RegularFile& file) const;
@@ -79,6 +81,4 @@ private:
 private:
     XmdsRequestSender& m_xmdsRequestSender;
     std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
-
 };
-

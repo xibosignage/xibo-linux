@@ -26,5 +26,4 @@ public:
 private:
     Type m_type = PlayerError::Type::Success;
     std::string m_message;
-
 };

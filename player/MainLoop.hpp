@@ -22,5 +22,4 @@ private:
     Glib::RefPtr<Gtk::Application> m_parentApp;
     sigc::connection m_idleConnection;
     ShutdownAction m_shutdownAction;
-
 };

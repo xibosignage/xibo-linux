@@ -4,13 +4,12 @@
 
 namespace Gst
 {
-    class AutoAudioSink : public Gst::Element
-    {
-    public:
-        static Gst::RefPtr<Gst::AutoAudioSink> create();
+class AutoAudioSink : public Gst::Element
+{
+public:
+    static Gst::RefPtr<Gst::AutoAudioSink> create();
 
-    private:
-        AutoAudioSink();
-
-    };
+private:
+    AutoAudioSink();
+};
 }

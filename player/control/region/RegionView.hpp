@@ -21,5 +21,4 @@ private:
 private:
     Gtk::Fixed m_handler;
     std::vector<std::shared_ptr<IWidget>> m_media;
-
 };

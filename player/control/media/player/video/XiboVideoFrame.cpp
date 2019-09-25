@@ -3,7 +3,7 @@
 std::shared_ptr<XiboVideoFrame> XiboVideoFrame::create(GstVideoInfo* info, GstBuffer* buffer)
 {
     auto frame = std::shared_ptr<XiboVideoFrame>(new XiboVideoFrame{info, buffer});
-    if(frame->isValid())
+    if (frame->isValid())
     {
         return frame;
     }
@@ -12,7 +12,7 @@ std::shared_ptr<XiboVideoFrame> XiboVideoFrame::create(GstVideoInfo* info, GstBu
 
 XiboVideoFrame::~XiboVideoFrame()
 {
-    if(m_mapped)
+    if (m_mapped)
     {
         gst_video_frame_unmap(&m_frame);
     }
@@ -40,7 +40,7 @@ Cairo::RefPtr<Cairo::ImageSurface> XiboVideoFrame::createSurface(unsigned char* 
 XiboVideoFrame::XiboVideoFrame(GstVideoInfo* info, GstBuffer* buffer)
 {
     m_mapped = gst_video_frame_map(&m_frame, info, buffer, GST_MAP_READ);
-    if(m_mapped)
+    if (m_mapped)
     {
         auto data = static_cast<unsigned char*>(m_frame.data[0]);
         m_surface = createSurface(data, info);

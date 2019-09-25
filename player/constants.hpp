@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <boost/property_tree/ptree.hpp>
+#include <string>
 
 using ptree_node = boost::property_tree::ptree;
 

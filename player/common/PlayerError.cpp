@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-template<>
+template <>
 std::string Utils::toString(PlayerError::Type type)
 {
     switch (type)
@@ -17,9 +17,7 @@ std::string Utils::toString(PlayerError::Type type)
     return "unknown";
 }
 
-PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : m_type(type), m_message(message)
-{
-}
+PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : m_type(type), m_message(message) {}
 
 PlayerError::operator bool() const noexcept
 {

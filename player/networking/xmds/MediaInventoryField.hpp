@@ -3,7 +3,7 @@
 #include "MediaInventoryItem.hpp"
 #include "common/Field.hpp"
 
-template<>
+template <>
 class Field<MediaInventoryItems>
 {
 public:

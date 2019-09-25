@@ -1,17 +1,11 @@
 #include "DateTime.hpp"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/date_time/c_local_time_adjustor.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
-DateTime::DateTime(const DateTime::Date& date, const DateTime::Time& td) :
-    m_ptime{date, td}
-{
-}
+DateTime::DateTime(const DateTime::Date& date, const DateTime::Time& td) : m_ptime{date, td} {}
 
-DateTime::DateTime(const boost::posix_time::ptime& ptime) :
-    m_ptime(ptime)
-{
-}
+DateTime::DateTime(const boost::posix_time::ptime& ptime) : m_ptime(ptime) {}
 
 DateTime DateTime::now()
 {

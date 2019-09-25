@@ -1,7 +1,7 @@
 #include "MediaInventoryItem.hpp"
 
-#include <chrono>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
 
 #include "common/logger/Logging.hpp"
 
@@ -22,8 +22,7 @@ MediaInventoryItem::MediaInventoryItem(const ResourceFile& file, bool downloadCo
     m_id = file.mediaId;
 }
 
-MediaInventoryItem::MediaInventoryItem(bool downloadComplete) :
-    m_downloadComplete(downloadComplete)
+MediaInventoryItem::MediaInventoryItem(bool downloadComplete) : m_downloadComplete(downloadComplete)
 {
     auto timepoint = std::chrono::system_clock::now();
     auto duration = timepoint.time_since_epoch();
@@ -54,4 +53,3 @@ const std::string& MediaInventoryItem::lastChecked() const
 {
     return m_lastChecked;
 }
-

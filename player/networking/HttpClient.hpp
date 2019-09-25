@@ -1,15 +1,15 @@
 #pragma once
 
-#include "common/uri/Uri.hpp"
 #include "common/JoinableThread.hpp"
+#include "common/uri/Uri.hpp"
 
-#include "ResponseResult.hpp"
 #include "ProxyInfo.hpp"
+#include "ResponseResult.hpp"
 
 #include <boost/asio/io_context.hpp>
-#include <boost/thread/future.hpp>
-#include <boost/noncopyable.hpp>
 #include <boost/beast/http/verb.hpp>
+#include <boost/noncopyable.hpp>
+#include <boost/thread/future.hpp>
 
 using HttpResponseResult = ResponseResult<std::string>;
 class HttpSession;

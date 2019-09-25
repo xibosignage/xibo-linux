@@ -1,7 +1,7 @@
 #include "Media.hpp"
 
-#include "constants.hpp"
 #include "common/logger/Logging.hpp"
+#include "constants.hpp"
 
 Media::Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view) :
     m_options(options),
@@ -24,17 +24,15 @@ void Media::start()
 
 void Media::startTimer(int duration)
 {
-    if(duration > 0)
+    if (duration > 0)
     {
-        m_timer->start(std::chrono::seconds(duration), [this]{
-            m_mediaFinished();
-        });
+        m_timer->start(std::chrono::seconds(duration), [this] { m_mediaFinished(); });
     }
 }
 
 void Media::startAttachedMedia()
 {
-    if(m_attachedMedia)
+    if (m_attachedMedia)
     {
         m_attachedMedia->start();
     }
@@ -42,7 +40,7 @@ void Media::startAttachedMedia()
 
 void Media::onStarted()
 {
-    if(m_view)
+    if (m_view)
     {
         m_view->show();
     }
@@ -66,7 +64,7 @@ void Media::setOutTransition(std::unique_ptr<TransitionExecutor>&& transition)
 
 void Media::stopAttachedMedia()
 {
-    if(m_attachedMedia)
+    if (m_attachedMedia)
     {
         m_attachedMedia->stop();
     }
@@ -74,7 +72,7 @@ void Media::stopAttachedMedia()
 
 void Media::applyInTransition()
 {
-    if(m_inTransition)
+    if (m_inTransition)
     {
         m_inTransition->apply();
     }
@@ -82,7 +80,7 @@ void Media::applyInTransition()
 
 void Media::onStopped()
 {
-    if(m_view)
+    if (m_view)
     {
         m_view->hide();
     }

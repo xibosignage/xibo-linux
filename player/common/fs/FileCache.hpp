@@ -22,5 +22,4 @@ private:
 private:
     boost::property_tree::ptree m_fileCache;
     FilePath m_cacheFile;
-
 };

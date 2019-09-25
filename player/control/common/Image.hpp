@@ -25,5 +25,4 @@ private:
 
 private:
     Gtk::Image m_handler;
-
 };

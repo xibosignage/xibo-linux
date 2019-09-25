@@ -15,7 +15,8 @@ std::unique_ptr<IMedia> ImageFactory::create(const MediaOptions& baseOptions, co
     return std::make_unique<Media>(baseOptions, view);
 }
 
-std::shared_ptr<IImage> ImageFactory::createView(const Uri& uri, int width, int height, MediaGeometry::ScaleType scaleType)
+std::shared_ptr<IImage> ImageFactory::createView(const Uri& uri, int width, int height,
+                                                 MediaGeometry::ScaleType scaleType)
 {
     auto image = std::make_shared<Image>(width, height);
 

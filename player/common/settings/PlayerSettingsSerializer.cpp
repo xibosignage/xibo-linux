@@ -3,28 +3,12 @@
 
 void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& settings)
 {
-    loadFromImpl(file,
-                 settings.width,
-                 settings.height,
-                 settings.x,
-                 settings.y,
-                 settings.logLevel,
-                 settings.displayName,
-                 settings.preventSleep,
-                 settings.statsEnabled,
-                 settings.screenshotSize,
-                 settings.collectInterval,
-                 settings.downloadEndWindow,
-                 settings.xmrNetworkAddress,
-                 settings.embeddedServerPort,
-                 settings.maxLogFilesUploads,
-                 settings.screenshotInterval,
-                 settings.statusLayoutUpdate,
-                 settings.downloadStartWindow,
-                 settings.screenshotRequested,
-                 settings.shellCommandsEnabled,
-                 settings.maxConcurrentDownloads,
-                 settings.modifiedLayoutsEnabled);
+    loadFromImpl(file, settings.width, settings.height, settings.x, settings.y, settings.logLevel, settings.displayName,
+                 settings.preventSleep, settings.statsEnabled, settings.screenshotSize, settings.collectInterval,
+                 settings.downloadEndWindow, settings.xmrNetworkAddress, settings.embeddedServerPort,
+                 settings.maxLogFilesUploads, settings.screenshotInterval, settings.statusLayoutUpdate,
+                 settings.downloadStartWindow, settings.screenshotRequested, settings.shellCommandsEnabled,
+                 settings.maxConcurrentDownloads, settings.modifiedLayoutsEnabled);
 }
 
 void PlayerSettingsSerializer::loadFrom(const ptree_node& node, PlayerSettings& settings)
@@ -44,7 +28,7 @@ void PlayerSettingsSerializer::loadFrom(const ptree_node& node, PlayerSettings& 
     settings.shellCommandsEnabled = node.get<bool>(Settings::EnableShellCommands);
     settings.modifiedLayoutsEnabled = node.get<bool>(Settings::ExpireModifiedLayouts);
     settings.maxConcurrentDownloads = node.get<int>(Settings::MaxConcurrentDownloads);
-    //shellCommandAllowList
+    // shellCommandAllowList
     settings.statusLayoutUpdate = node.get<bool>(Settings::SendCurrentLayoutAsStatusUpdate);
     settings.screenshotInterval = node.get<int>(Settings::ScreenShotRequestInterval);
     settings.screenshotSize = node.get<int>(Settings::ScreenShotSize);
@@ -57,13 +41,13 @@ void PlayerSettingsSerializer::loadFrom(const ptree_node& node, PlayerSettings& 
 
 LoggingLevel PlayerSettingsSerializer::toLogLevelEnum(const std::string& level)
 {
-    if(level == "trace")
+    if (level == "trace")
         return LoggingLevel::Trace;
-    else if(level == "audit")
+    else if (level == "audit")
         return LoggingLevel::Debug;
-    else if(level == "info")
+    else if (level == "info")
         return LoggingLevel::Info;
-    else if(level == "error")
+    else if (level == "error")
         return LoggingLevel::Error;
 
     return LoggingLevel::Error;
@@ -71,26 +55,10 @@ LoggingLevel PlayerSettingsSerializer::toLogLevelEnum(const std::string& level)
 
 void PlayerSettingsSerializer::saveTo(const FilePath& file, const PlayerSettings& settings)
 {
-    saveToImpl(file,
-               settings.width,
-               settings.height,
-               settings.x,
-               settings.y,
-               settings.logLevel,
-               settings.displayName,
-               settings.preventSleep,
-               settings.statsEnabled,
-               settings.screenshotSize,
-               settings.collectInterval,
-               settings.downloadEndWindow,
-               settings.xmrNetworkAddress,
-               settings.embeddedServerPort,
-               settings.maxLogFilesUploads,
-               settings.screenshotInterval,
-               settings.statusLayoutUpdate,
-               settings.downloadStartWindow,
-               settings.screenshotRequested,
-               settings.shellCommandsEnabled,
-               settings.maxConcurrentDownloads,
-               settings.modifiedLayoutsEnabled);
+    saveToImpl(file, settings.width, settings.height, settings.x, settings.y, settings.logLevel, settings.displayName,
+               settings.preventSleep, settings.statsEnabled, settings.screenshotSize, settings.collectInterval,
+               settings.downloadEndWindow, settings.xmrNetworkAddress, settings.embeddedServerPort,
+               settings.maxLogFilesUploads, settings.screenshotInterval, settings.statusLayoutUpdate,
+               settings.downloadStartWindow, settings.screenshotRequested, settings.shellCommandsEnabled,
+               settings.maxConcurrentDownloads, settings.modifiedLayoutsEnabled);
 }

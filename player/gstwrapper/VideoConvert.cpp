@@ -1,9 +1,6 @@
 #include "VideoConvert.hpp"
 
-Gst::VideoConvert::VideoConvert() :
-    Gst::Element("videoconvert")
-{
-}
+Gst::VideoConvert::VideoConvert() : Gst::Element("videoconvert") {}
 
 Gst::RefPtr<Gst::VideoConvert> Gst::VideoConvert::create()
 {

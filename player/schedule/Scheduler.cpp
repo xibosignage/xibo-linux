@@ -1,19 +1,15 @@
 #include "Scheduler.hpp"
 
-#include "common/logger/Logging.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/Resources.hpp"
+#include "common/logger/Logging.hpp"
 
-Scheduler::Scheduler(const IFileCache& fileCache) :
-    m_fileCache{fileCache},
-    m_schedule{}
-{
-}
+Scheduler::Scheduler(const IFileCache& fileCache) : m_fileCache{fileCache}, m_schedule{} {}
 
 // TODO make an optional to differentiate between empty and non-inialized schedule
 void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-    if(m_schedule != schedule)
+    if (m_schedule != schedule)
     {
         m_schedule = std::move(schedule);
         m_scheduleUpdated(m_schedule);
@@ -39,15 +35,15 @@ RegularLayoutQueue Scheduler::regularQueueFrom(const LayoutSchedule& schedule)
 {
     RegularLayoutQueue queue;
 
-    for(auto&& layout : schedule.regularLayouts)
-    {        
-        if(layoutOnSchedule(layout) && layoutValid(layout))
+    for (auto&& layout : schedule.regularLayouts)
+    {
+        if (layoutOnSchedule(layout) && layoutValid(layout))
         {
             queue.add(layout);
         }
     }
 
-    if(layoutValid(schedule.defaultLayout))
+    if (layoutValid(schedule.defaultLayout))
     {
         queue.addDefault(schedule.defaultLayout);
     }
@@ -59,9 +55,9 @@ OverlayLayoutQueue Scheduler::overlayQueueFrom(const LayoutSchedule& schedule)
 {
     OverlayLayoutQueue queue;
 
-    for(auto&& layout : schedule.overlayLayouts)
+    for (auto&& layout : schedule.overlayLayouts)
     {
-        if(layoutOnSchedule(layout) && layoutValid(layout))
+        if (layoutOnSchedule(layout) && layoutValid(layout))
         {
             queue.add(layout);
         }
@@ -72,7 +68,7 @@ OverlayLayoutQueue Scheduler::overlayQueueFrom(const LayoutSchedule& schedule)
 
 void Scheduler::updateCurrentLayout(LayoutId id)
 {
-    if(m_regularQueue.inQueue(id))
+    if (m_regularQueue.inQueue(id))
     {
         m_regularQueue.updateCurrent(id);
     }
@@ -84,7 +80,7 @@ void Scheduler::updateCurrentLayout(LayoutId id)
 
 void Scheduler::updateCurrentOverlays(const OverlaysIds& ids)
 {
-    if(m_overlayQueue.overlays() != ids)
+    if (m_overlayQueue.overlays() != ids)
     {
         m_overlaysUpdated();
     }
@@ -94,7 +90,7 @@ bool Scheduler::layoutOnSchedule(const ScheduledLayout& layout) const
 {
     auto currentDT = DateTime::now();
 
-    if(currentDT >= layout.startDT && currentDT < layout.endDT)
+    if (currentDT >= layout.startDT && currentDT < layout.endDT)
     {
         return true;
     }
@@ -102,23 +98,23 @@ bool Scheduler::layoutOnSchedule(const ScheduledLayout& layout) const
     return false;
 }
 
-template<typename Layout>
+template <typename Layout>
 bool Scheduler::layoutValid(const Layout& layout) const
 {
     auto layoutFile = std::to_string(layout.id) + ".xlf";
-    if(!m_fileCache.valid(layoutFile)) return false;
+    if (!m_fileCache.valid(layoutFile)) return false;
 
-    for(auto&& dependant : layout.dependants)
+    for (auto&& dependant : layout.dependants)
     {
-        if(!m_fileCache.valid(dependant))
+        if (!m_fileCache.valid(dependant))
         {
             return false;
         }
     }
 
-    for(auto&& dependant : m_schedule.globalDependants)
+    for (auto&& dependant : m_schedule.globalDependants)
     {
-        if(!m_fileCache.valid(dependant))
+        if (!m_fileCache.valid(dependant))
         {
             return false;
         }
@@ -157,16 +153,16 @@ DateTime Scheduler::closestLayoutDt()
     auto now = DateTime::now();
     DateTime closestDt;
 
-    for(auto&& layout : m_schedule.regularLayouts)
+    for (auto&& layout : m_schedule.regularLayouts)
     {
-        if(now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
-        if(now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
+        if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
+        if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
     }
 
-    for(auto&& layout : m_schedule.overlayLayouts)
+    for (auto&& layout : m_schedule.overlayLayouts)
     {
-        if(now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
-        if(now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
+        if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
+        if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
     }
 
     return closestDt;
@@ -177,7 +173,7 @@ void Scheduler::restartTimer()
     auto dt = closestLayoutDt();
     auto duration = (dt - DateTime::now()).total_seconds();
 
-    if(dt.isValid() && duration > 0)
+    if (dt.isValid() && duration > 0)
     {
         Log::debug("Timer restarted with value: {}", duration);
 
@@ -207,15 +203,15 @@ SchedulerStatus Scheduler::status() const
     return status;
 }
 
-template<typename LayoutsList>
+template <typename LayoutsList>
 void Scheduler::schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const
 {
-    for(auto&& layout : layouts)
+    for (auto&& layout : layouts)
     {
-        if(layoutValid(layout))
+        if (layoutValid(layout))
         {
             status.validLayouts.emplace_back(layout.id);
-            if(layoutOnSchedule(layout))
+            if (layoutOnSchedule(layout))
             {
                 status.scheduledLayouts.emplace_back(layout.id);
             }

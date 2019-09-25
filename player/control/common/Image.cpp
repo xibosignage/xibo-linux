@@ -2,8 +2,7 @@
 
 #include "common/fs/FilePath.hpp"
 
-Image::Image(int width, int height) :
-    Widget(m_handler)
+Image::Image(int width, int height) : Widget(m_handler)
 {
     m_handler.set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, false, 8, width, height));
 }

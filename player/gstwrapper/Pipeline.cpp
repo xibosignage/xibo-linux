@@ -1,9 +1,6 @@
 #include "Pipeline.hpp"
 
-Gst::Pipeline::Pipeline() :
-    Gst::Element(gst_pipeline_new("pipeline"))
-{
-}
+Gst::Pipeline::Pipeline() : Gst::Element(gst_pipeline_new("pipeline")) {}
 
 gboolean Gst::Pipeline::onBusWatchMem(GstBus*, GstMessage* message, gpointer)
 {

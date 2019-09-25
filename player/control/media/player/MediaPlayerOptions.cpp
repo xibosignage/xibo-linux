@@ -1,7 +1,7 @@
 #include "MediaPlayerOptions.hpp"
 #include "common/Utils.hpp"
 
-template<>
+template <>
 std::string Utils::toString(MediaPlayerOptions::Mute val)
 {
     switch (val)
@@ -13,7 +13,7 @@ std::string Utils::toString(MediaPlayerOptions::Mute val)
     return "unknown";
 }
 
-template<>
+template <>
 std::string Utils::toString(MediaPlayerOptions::Loop val)
 {
     switch (val)

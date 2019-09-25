@@ -1,7 +1,7 @@
 #include "MediaGeometry.hpp"
 #include "common/Utils.hpp"
 
-template<>
+template <>
 std::string Utils::toString(MediaGeometry::ScaleType val)
 {
     switch (val)
@@ -13,7 +13,7 @@ std::string Utils::toString(MediaGeometry::ScaleType val)
     return "unknown";
 }
 
-template<>
+template <>
 std::string Utils::toString(MediaGeometry::Align val)
 {
     switch (val)
@@ -26,7 +26,7 @@ std::string Utils::toString(MediaGeometry::Align val)
     return "unknown";
 }
 
-template<>
+template <>
 std::string Utils::toString(MediaGeometry::Valign val)
 {
     switch (val)

@@ -1,14 +1,13 @@
 #include "RegionView.hpp"
 
-RegionView::RegionView(int width, int height) :
-    Widget(m_handler)
+RegionView::RegionView(int width, int height) : Widget(m_handler)
 {
     setSize(width, height);
 }
 
 void RegionView::addMedia(const std::shared_ptr<IWidget>& child, int left, int top)
 {
-    if(child)
+    if (child)
     {
         m_handler.put(getHandler(*child), left, top);
 
@@ -24,7 +23,7 @@ void RegionView::scale(double scaleX, double scaleY)
 
 void RegionView::scaleMedia(double scaleX, double scaleY)
 {
-    for(auto&& widget : m_media)
+    for (auto&& widget : m_media)
     {
         auto&& handler = getHandler(*widget);
 

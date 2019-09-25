@@ -13,7 +13,8 @@ protected:
         layout.startDT = DateTime::now() - DateTime::Hours(1);
         layout.endDT = DateTime::now() + DateTime::Hours(1);
 
-        return layout;}
+        return layout;
+    }
 
     ScheduledLayout notInRangeLayout(int id, int priority)
     {
@@ -25,5 +26,4 @@ protected:
 
         return layout;
     }
-
 };

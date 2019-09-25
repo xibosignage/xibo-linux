@@ -1,12 +1,9 @@
 #include "ZeromqSubscriber.hpp"
 
-#include "constants.hpp"
 #include "common/logger/Logging.hpp"
+#include "constants.hpp"
 
-ZeromqSubscriber::ZeromqSubscriber() :
-    m_context{1}
-{
-}
+ZeromqSubscriber::ZeromqSubscriber() : m_context{1} {}
 
 void ZeromqSubscriber::stop()
 {
@@ -22,9 +19,7 @@ MessageReceived& ZeromqSubscriber::messageReceived()
 
 void ZeromqSubscriber::run(const std::string& host)
 {
-    m_worker = std::make_unique<JoinableThread>([this, host](){
-        processMessageQueue(host);
-    });
+    m_worker = std::make_unique<JoinableThread>([this, host]() { processMessageQueue(host); });
 }
 
 void ZeromqSubscriber::processMessageQueue(const std::string& host)
@@ -34,16 +29,15 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host)
     socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
     socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
 
-    while(!m_stopped)
+    while (!m_stopped)
     {
         try
         {
             m_messageReceived.emit(recvAll(socket));
         }
-        catch(const zmq::error_t& ex)
+        catch (const zmq::error_t& ex)
         {
-            if(ex.num() != ETERM)
-                throw;
+            if (ex.num() != ETERM) throw;
         }
     }
 }
@@ -54,7 +48,7 @@ void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host
     {
         socket.connect(host);
     }
-    catch(zmq::error_t&)
+    catch (zmq::error_t&)
     {
         Log::error("[ZeroMQ] Unsuccesful connection to {}", host);
     }
@@ -64,7 +58,7 @@ std::vector<std::string> ZeromqSubscriber::recvAll(zmq::socket_t& socket)
 {
     std::vector<std::string> composedMessage;
 
-    while(1)
+    while (1)
     {
         zmq::message_t message;
 
@@ -72,8 +66,7 @@ std::vector<std::string> ZeromqSubscriber::recvAll(zmq::socket_t& socket)
         std::string data{static_cast<char*>(message.data()), message.size()};
         composedMessage.emplace_back(data);
 
-        if(!message.more())
-            break;
+        if (!message.more()) break;
     }
 
     return composedMessage;

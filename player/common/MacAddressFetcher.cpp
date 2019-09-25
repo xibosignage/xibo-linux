@@ -2,9 +2,9 @@
 
 #include "common/logger/Logging.hpp"
 
-#include <sys/socket.h>
-#include <sys/ioctl.h>
 #include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
 
 #include <boost/format.hpp>
 
@@ -12,9 +12,7 @@ const std::size_t ConfigBufferSize = 1024;
 const std::size_t MacAddressBuffer = 100;
 const int InvalidSocket = -1;
 
-MacAddressError::MacAddressError(std::string_view error) : m_error(error)
-{
-}
+MacAddressError::MacAddressError(std::string_view error) : m_error(error) {}
 
 const char* MacAddressError::what() const noexcept
 {
@@ -43,7 +41,7 @@ boost::optional<std::string> MacAddressFetcher::get()
 SocketDescriptor MacAddressFetcher::openSocket()
 {
     SocketDescriptor sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    if(sock == InvalidSocket)
+    if (sock == InvalidSocket)
     {
         throw MacAddressError{"Socket was not opened"};
     }
@@ -56,7 +54,7 @@ ifconf MacAddressFetcher::getInterfaceConfig(SocketDescriptor socket, char* buff
     interfaceConfig.ifc_len = ConfigBufferSize;
     interfaceConfig.ifc_buf = buffer;
 
-    if(!ioctl(socket, SIOCGIFCONF, &interfaceConfig))
+    if (!ioctl(socket, SIOCGIFCONF, &interfaceConfig))
     {
         return interfaceConfig;
     }
@@ -71,10 +69,10 @@ ifreq MacAddressFetcher::findInterface(SocketDescriptor socket, ifconf& interfac
     ifreq* it = interfaceConfig.ifc_req;
     const ifreq* const end = it + configSize;
 
-    for(; it != end; ++it)
+    for (; it != end; ++it)
     {
         auto flags = retrieveFlags(socket, *it);
-        if(isNotLoopback(flags))
+        if (isNotLoopback(flags))
         {
             ifreq interfaceRequest;
             std::strcpy(interfaceRequest.ifr_name, it->ifr_name);
@@ -87,7 +85,7 @@ ifreq MacAddressFetcher::findInterface(SocketDescriptor socket, ifconf& interfac
 
 std::string MacAddressFetcher::retrieveMacAddress(SocketDescriptor socket, ifreq& interfaceRequest)
 {
-    if(!ioctl(socket, SIOCGIFHWADDR, &interfaceRequest))
+    if (!ioctl(socket, SIOCGIFHWADDR, &interfaceRequest))
     {
         char macAddress[MacAddressBuffer] = {0};
         unsigned char* mac = reinterpret_cast<unsigned char*>(interfaceRequest.ifr_hwaddr.sa_data);
@@ -102,7 +100,7 @@ std::string MacAddressFetcher::retrieveMacAddress(SocketDescriptor socket, ifreq
 
 InterfaceFlags MacAddressFetcher::retrieveFlags(SocketDescriptor socket, ifreq& interfaceRequest)
 {
-    if(!ioctl(socket, SIOCGIFFLAGS, &interfaceRequest))
+    if (!ioctl(socket, SIOCGIFFLAGS, &interfaceRequest))
     {
         return interfaceRequest.ifr_flags;
     }

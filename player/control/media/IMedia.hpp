@@ -1,10 +1,10 @@
 #pragma once
 
-#include "control/common/IWidget.hpp"
 #include "MediaGeometry.hpp"
+#include "control/common/IWidget.hpp"
 
-#include <memory>
 #include <boost/signals2/signal.hpp>
+#include <memory>
 
 using SignalMediaFinished = boost::signals2::signal<void()>;
 class TransitionExecutor;
@@ -26,5 +26,4 @@ public:
     virtual MediaGeometry::Align align() const = 0;
     virtual MediaGeometry::Valign valign() const = 0;
     virtual std::shared_ptr<IWidget> view() = 0;
-
 };

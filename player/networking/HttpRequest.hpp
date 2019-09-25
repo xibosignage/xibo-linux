@@ -1,13 +1,13 @@
 #pragma once
 
 #include "HostInfo.hpp"
-#include "constants.hpp"
 #include "common/Utils.hpp"
 #include "common/uri/Uri.hpp"
+#include "constants.hpp"
 
-#include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>
+#include <boost/beast/http/verb.hpp>
 
 namespace http = boost::beast::http;
 
@@ -15,7 +15,9 @@ class HttpRequest
 {
 public:
     HttpRequest(http::verb method, const Uri& uri, const std::string& body) :
-        m_method(method), m_uri(uri), m_body(std::move(body))
+        m_method(method),
+        m_uri(uri),
+        m_body(std::move(body))
     {
     }
 
@@ -32,7 +34,7 @@ public:
         request.target(m_uri.path());
         request.version(DefaultHttpVersion);
         request.set(http::field::host, m_uri.host());
-        if(auto credentials = m_uri.credentials())
+        if (auto credentials = m_uri.credentials())
         {
             request.set(http::field::authorization, "Basic " + Utils::toBase64(credentials.value()));
         }
@@ -46,6 +48,4 @@ private:
     http::verb m_method;
     Uri m_uri;
     std::string m_body;
-
-
 };

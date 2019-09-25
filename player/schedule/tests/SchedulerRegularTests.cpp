@@ -1,5 +1,5 @@
-#include "SchedulerLayoutTests.hpp"
 #include "Scheduler.hpp"
+#include "SchedulerLayoutTests.hpp"
 
 static void addToQueue(LayoutSchedule& schedule, ScheduledLayout&& type)
 {
@@ -34,7 +34,7 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInCache)
     LayoutSchedule schedule{};
 
     schedule.defaultLayout = defaultLayout(DefaultId);
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, notInCacheLayout(DefaultId + i, DefaultPriority));
     }
@@ -50,7 +50,7 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInRange)
     LayoutSchedule schedule{};
 
     schedule.defaultLayout = defaultLayout(DefaultId);
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, notInRangeLayout(DefaultId + i, DefaultPriority));
     }
@@ -66,7 +66,7 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllValid)
     LayoutSchedule schedule{};
 
     schedule.defaultLayout = defaultLayout(DefaultId);
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority));
     }
@@ -116,7 +116,7 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesAllValid)
     LayoutSchedule schedule{};
 
     schedule.defaultLayout = defaultLayout(DefaultId);
-    for(int i = 1; i <= 3; ++i)
+    for (int i = 1; i <= 3; ++i)
     {
         addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority + i));
     }

@@ -5,9 +5,9 @@
 #include "control/common/IOverlayLayout.hpp"
 #include "control/region/IRegion.hpp"
 
-#include <vector>
-#include <set>
 #include <boost/noncopyable.hpp>
+#include <set>
+#include <vector>
 
 class MainLayout : public IMainLayout, private boost::noncopyable
 {
@@ -30,5 +30,4 @@ private:
     std::vector<std::unique_ptr<IRegion>> m_regions;
     std::set<int> m_expiredRegions;
     SignalLayoutExpired m_layoutExpired;
-
 };

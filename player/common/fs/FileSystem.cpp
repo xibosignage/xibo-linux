@@ -1,8 +1,8 @@
 #include "FileSystem.hpp"
 #include "FilePath.hpp"
 
-#include <fstream>
 #include <boost/filesystem.hpp>
+#include <fstream>
 
 namespace fs = boost::filesystem;
 
@@ -18,7 +18,7 @@ bool FileSystem::isDirectory(const FilePath& path)
 
 void FileSystem::move(const FilePath& source, const FilePath& dest)
 {
-    if(exists(source))
+    if (exists(source))
     {
         copy(source, dest);
         removeAll(source);

@@ -4,7 +4,8 @@ const int DefaultTimerDuration = 100;
 const double MaxOpacity = 1.0;
 const double MinOpacity = 0.0;
 
-FadeTransitionExecutor::FadeTransitionExecutor(Transition::Heading heading, int duration, const std::shared_ptr<IWidget>& media) :
+FadeTransitionExecutor::FadeTransitionExecutor(Transition::Heading heading, int duration,
+                                               const std::shared_ptr<IWidget>& media) :
     TransitionExecutor(heading, duration, media)
 {
 }
@@ -16,11 +17,10 @@ void FadeTransitionExecutor::apply()
     init();
 
     timer().start(std::chrono::milliseconds(DefaultTimerDuration), [this, step]() {
-
         double value = nextValue(media()->opacity(), step);
         media()->setOpacity(value);
 
-        if(isFinished(value))
+        if (isFinished(value))
         {
             finished()();
             return false;
@@ -32,7 +32,7 @@ void FadeTransitionExecutor::apply()
 
 void FadeTransitionExecutor::init()
 {
-    if(heading() == Transition::Heading::In)
+    if (heading() == Transition::Heading::In)
     {
         media()->setOpacity(MinOpacity);
     }

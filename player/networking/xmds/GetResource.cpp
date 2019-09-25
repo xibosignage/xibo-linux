@@ -3,16 +3,19 @@
 
 namespace Resources = XmdsResources::GetResource;
 
-Soap::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResource::Request& request) : BaseRequestSerializer(request)
+Soap::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResource::Request& request) :
+    BaseRequestSerializer(request)
 {
 }
 
 std::string Soap::RequestSerializer<GetResource::Request>::string()
 {
-    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().layoutId, request().regionId, request().mediaId);
+    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().layoutId,
+                         request().regionId, request().mediaId);
 }
 
-Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soapResponse) : BaseResponseParser(soapResponse)
+Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soapResponse) :
+    BaseResponseParser(soapResponse)
 {
 }
 

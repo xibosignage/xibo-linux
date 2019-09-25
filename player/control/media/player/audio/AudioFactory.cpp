@@ -1,8 +1,8 @@
 #include "AudioFactory.hpp"
 
-#include "control/media/player/PlayableMedia.hpp"
 #include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
+#include "control/media/player/PlayableMedia.hpp"
 
 #include "constants.hpp"
 

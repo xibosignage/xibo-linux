@@ -1,12 +1,12 @@
 #pragma once
 
 #include "LayoutSchedule.hpp"
-#include "SchedulerStatus.hpp"
 #include "OverlayLayoutQueue.hpp"
 #include "RegularLayoutQueue.hpp"
+#include "SchedulerStatus.hpp"
 
-#include "common/fs/IFileCache.hpp"
 #include "common/dt/Timer.hpp"
+#include "common/fs/IFileCache.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -40,9 +40,11 @@ private:
     DateTime closestLayoutDt();
 
     bool layoutOnSchedule(const ScheduledLayout& layout) const;
-    template<typename Layout> bool layoutValid(const Layout& layout) const;
+    template <typename Layout>
+    bool layoutValid(const Layout& layout) const;
 
-    template<typename LayoutsList> void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
+    template <typename LayoutsList>
+    void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
 private:
     const IFileCache& m_fileCache;
@@ -53,5 +55,4 @@ private:
     SignalLayoutsUpdated m_layoutUpdated;
     SignalLayoutsUpdated m_overlaysUpdated;
     Timer m_timer;
-
 };

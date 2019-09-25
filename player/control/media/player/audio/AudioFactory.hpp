@@ -13,5 +13,4 @@ protected:
 private:
     MediaPlayerOptions createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options);
     std::unique_ptr<IMediaPlayer> createPlayer(const MediaPlayerOptions& options);
-
 };

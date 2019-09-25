@@ -1,7 +1,6 @@
 #include "VideoWindow.hpp"
 
-VideoWindow::VideoWindow(int width, int height) :
-    Widget(m_handler)
+VideoWindow::VideoWindow(int width, int height) : Widget(m_handler)
 {
     setSize(width, height);
 
@@ -21,7 +20,7 @@ Gtk::DrawingArea& VideoWindow::get()
 
 bool VideoWindow::onWindowDrawn(const Cairo::RefPtr<Cairo::Context>& context)
 {
-    if(!m_frames.empty())
+    if (!m_frames.empty())
     {
         auto frame = m_frames.front();
         context->set_source(frame->surface(), 0, 0);

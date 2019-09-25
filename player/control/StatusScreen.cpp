@@ -1,14 +1,11 @@
 #include "StatusScreen.hpp"
 
-StatusScreen::StatusScreen(int width, int height) :
-    Widget(m_dialog), m_dialog{""}
+StatusScreen::StatusScreen(int width, int height) : Widget(m_dialog), m_dialog{""}
 {
     setSize(width, height);
 
     m_dialog.set_title("Status Screen");
-    m_dialog.signal_response().connect([this](int){
-        m_dialog.hide();
-    });
+    m_dialog.signal_response().connect([this](int) { m_dialog.hide(); });
 }
 
 void StatusScreen::setText(const std::string& text)

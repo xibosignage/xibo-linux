@@ -14,5 +14,4 @@ protected:
 private:
     std::optional<int> parseDuration(const FilePath& path);
     std::string removeEscapedSymbolsFromUri(std::string url);
-
 };

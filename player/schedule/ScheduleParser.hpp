@@ -1,7 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
 #include "LayoutSchedule.hpp"
+#include "constants.hpp"
 
 class FilePath;
 
@@ -22,5 +22,4 @@ private:
     DefaultScheduledLayout defaultLayoutFrom(const ptree_node& layoutNode);
     LayoutList overlayLayoutsFrom(const ptree_node& overlaysNode);
     LayoutDependants dependantsFrom(const ptree_node& dependantsNode);
-
 };

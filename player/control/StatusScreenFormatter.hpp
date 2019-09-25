@@ -24,5 +24,4 @@ private:
     static std::string formatSchedulerInfo(const SchedulerStatus& info);
     static std::string layoutsToString(const std::vector<int>& layouts);
     static std::string formatXmrInfo(const XmrStatus& info);
-
 };

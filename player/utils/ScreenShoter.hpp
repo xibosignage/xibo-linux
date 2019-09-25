@@ -1,9 +1,9 @@
 #pragma once
 
+#include <cairomm/surface.h>
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
-#include <cairomm/surface.h>
 
 #include "control/MainWindow.hpp"
 
@@ -25,6 +25,4 @@ private:
 
 private:
     MainWindow& m_window;
-
-
 };

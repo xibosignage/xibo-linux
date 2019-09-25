@@ -4,13 +4,12 @@
 
 namespace Gst
 {
-    class VideoScale : public Gst::Element
-    {
-    public:
-        static Gst::RefPtr<Gst::VideoScale> create();
+class VideoScale : public Gst::Element
+{
+public:
+    static Gst::RefPtr<Gst::VideoScale> create();
 
-    private:
-        VideoScale();
-
-    };
+private:
+    VideoScale();
+};
 }

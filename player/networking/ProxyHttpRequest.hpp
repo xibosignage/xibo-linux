@@ -1,14 +1,14 @@
 #pragma once
 
-#include "ProxyInfo.hpp"
 #include "HostInfo.hpp"
-#include "constants.hpp"
+#include "ProxyInfo.hpp"
 #include "common/Utils.hpp"
 #include "common/uri/Uri.hpp"
+#include "constants.hpp"
 
-#include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>
+#include <boost/beast/http/verb.hpp>
 
 namespace http = boost::beast::http;
 
@@ -40,7 +40,7 @@ public:
         request.target(m_uri.string());
         request.version(DefaultHttpVersion);
         request.set(http::field::host, m_uri.host());
-        if(auto credentials = getCredentials())
+        if (auto credentials = getCredentials())
         {
             request.set(http::field::proxy_authorization, "Basic " + Utils::toBase64(credentials.value()));
         }
@@ -52,7 +52,7 @@ public:
 
     boost::optional<std::string> getCredentials()
     {
-        if(!m_username.empty() && !m_password.empty())
+        if (!m_username.empty() && !m_password.empty())
         {
             return m_username + ":" + m_password;
         }
@@ -67,6 +67,4 @@ private:
     std::string m_password;
     Uri m_uri;
     std::string m_body;
-
-
 };

@@ -2,9 +2,9 @@
 
 #include "control/layout/IMainLayout.hpp"
 
+#include <map>
 #include <memory>
 #include <vector>
-#include <map>
 
 class Scheduler;
 
@@ -24,7 +24,7 @@ public:
     OverlaysLoaded& overlaysFetched();
 
 private:
-    template<typename LayoutLoader>
+    template <typename LayoutLoader>
     std::unique_ptr<IMainLayout> createLayout(int layoutId);
 
 private:
@@ -34,5 +34,4 @@ private:
 
     MainLayoutLoaded m_mainLayoutFetched;
     OverlaysLoaded m_overlaysFetched;
-
 };

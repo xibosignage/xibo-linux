@@ -1,17 +1,17 @@
 #pragma once
 
-#include "constants.hpp"
-#include "MediaOptions.hpp"
 #include "IMedia.hpp"
+#include "MediaOptions.hpp"
+#include "constants.hpp"
 
 #include <boost/property_tree/ptree.hpp>
 
-std::istream& operator >>(std::istream& in, MediaGeometry::ScaleType& scaleType);
-std::istream& operator >>(std::istream& in, MediaGeometry::Align& align);
-std::istream& operator >>(std::istream& in, MediaGeometry::Valign& valign);
+std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType);
+std::istream& operator>>(std::istream& in, MediaGeometry::Align& align);
+std::istream& operator>>(std::istream& in, MediaGeometry::Valign& valign);
 
-std::istream& operator >>(std::istream& in, Transition::Type& type);
-std::istream& operator >>(std::istream& in, Transition::Direction& direction);
+std::istream& operator>>(std::istream& in, Transition::Type& type);
+std::istream& operator>>(std::istream& in, Transition::Direction& direction);
 
 class IMedia;
 class TransitionExecutor;
@@ -39,10 +39,7 @@ private:
     std::unique_ptr<TransitionExecutor> inTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
     std::unique_ptr<TransitionExecutor> outTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
 
-    template<Transition::Heading heading>
-    std::unique_ptr<TransitionExecutor> createTransition(Transition::Type typeFrom,
-                                                         Transition::Direction direction,
-                                                         int durationFrom,
-                                                         const std::shared_ptr<IWidget>& view);
-
+    template <Transition::Heading heading>
+    std::unique_ptr<TransitionExecutor> createTransition(Transition::Type typeFrom, Transition::Direction direction,
+                                                         int durationFrom, const std::shared_ptr<IWidget>& view);
 };
