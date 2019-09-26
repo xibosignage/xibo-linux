@@ -18,5 +18,6 @@ public:
     static bool removeAll(const FilePath& path);
     static bool createDirectory(const FilePath& path);
     static FilePath currentPath();
+    static std::string readFromFile(const FilePath& path);
     static void writeToFile(const FilePath& path, const std::string& content);
 };

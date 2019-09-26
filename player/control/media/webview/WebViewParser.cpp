@@ -1,5 +1,6 @@
 #include "WebViewParser.hpp"
 
+#include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
 #include "utils/Managers.hpp"
 
@@ -9,7 +10,6 @@
 #include "control/media/webview/WebViewResources.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
-#include <fstream>
 #include <regex>
 
 const bool DefaultTransparency = true;
@@ -36,16 +36,12 @@ ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
-    std::ifstream in(path);
+    auto fileContent = FileSystem::readFromFile(path);
 
     std::smatch matchedGroups;
-    std::string line;
     const int DurationGroup = 1;
 
-    while (std::getline(in, line))
-    {
-        if (std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1) break;
-    }
+    std::regex_search(fileContent, matchedGroups, DurationRegex);
 
     return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
 }

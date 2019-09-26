@@ -5,7 +5,6 @@
 
 #include <boost/beast/core/detail/base64.hpp>
 #include <cairomm/xlib_surface.h>
-#include <fstream>
 #include <gdk/gdkx.h>
 #include <gdkmm.h>
 #include <glibmm/main.h>

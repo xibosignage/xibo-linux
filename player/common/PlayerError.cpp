@@ -1,7 +1,7 @@
 #include "PlayerError.hpp"
 #include "Utils.hpp"
 
-#include <iostream>
+#include <istream>
 
 template <>
 std::string Utils::toString(PlayerError::Type type)

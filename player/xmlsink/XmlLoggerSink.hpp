@@ -1,12 +1,10 @@
 #pragma once
 
+#include <mutex>
 #include <spdlog/details/file_helper.h>
 #include <spdlog/details/null_mutex.h>
 #include <spdlog/sinks/base_sink.h>
 #include <spdlog/sinks/basic_file_sink.h>
-
-#include <mutex>
-#include <sstream>
 
 #include "XmlLogsRepo.hpp"
 #include "common/dt/DateTime.hpp"

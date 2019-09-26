@@ -1,9 +1,9 @@
 #include "Utils.hpp"
 #include "fs/FilePath.hpp"
+#include "fs/FileSystem.hpp"
 
 #include <boost/beast/core/detail/base64.hpp>
 #include <boost/format.hpp>
-#include <fstream>
 #include <openssl/md5.h>
 
 std::string Utils::md5hash(std::string_view data)
@@ -21,8 +21,7 @@ std::string Utils::md5hash(std::string_view data)
 
 std::string Utils::md5hashFromFile(const FilePath& path)
 {
-    std::ifstream in{path};
-    std::string fileContent{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
+    auto fileContent = FileSystem::readFromFile(path);
 
     return md5hash(fileContent.data());
 }

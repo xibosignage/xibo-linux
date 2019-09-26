@@ -40,8 +40,7 @@ void FileCache::save(const std::string& fileName, const std::string& fileContent
 {
     auto filePath = Resources::directory() / fileName;
 
-    std::ofstream out(filePath.string());
-    out << fileContent;
+    FileSystem::writeToFile(filePath, fileContent);
 
     addToCache(fileName, Utils::md5hash(fileContent), md5);
 }

@@ -3,7 +3,7 @@
 #include "Utils.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
-#include <iostream>
+#include <istream>
 
 const std::map<Uri::Scheme, unsigned short> DefaultPorts{{Uri::Scheme::HTTPS, 443}, {Uri::Scheme::HTTP, 80}};
 
