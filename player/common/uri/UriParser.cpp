@@ -12,7 +12,7 @@ const std::regex
 const std::map<std::string, Uri::Scheme> DefaultSchemes{{"https://", Uri::Scheme::HTTPS},
                                                         {"http://", Uri::Scheme::HTTP},
                                                         {"rtsp://", Uri::Scheme::RTSP},
-                                                        {"file://", Uri::Scheme::FILE}};
+                                                        {"file://", Uri::Scheme::File}};
 
 const std::size_t UrlPartsCount = 5;
 

@@ -19,6 +19,6 @@ private:
     void scaleMedia(double scaleX, double scaleY);
 
 private:
-    Gtk::Fixed m_handler;
-    std::vector<std::shared_ptr<IWidget>> m_media;
+    Gtk::Fixed handler_;
+    std::vector<std::shared_ptr<IWidget>> media_;
 };

@@ -19,6 +19,6 @@ private:
     std::string toXmlString(MediaInventoryItems&& items);
 
 private:
-    std::string m_fieldName;
-    std::string m_xmlItems;
+    std::string fieldName_;
+    std::string xmlItems_;
 };

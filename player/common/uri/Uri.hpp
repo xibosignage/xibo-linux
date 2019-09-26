@@ -29,10 +29,10 @@ public:
     private:
         Authority() = default;
 
-        boost::optional<std::string> m_userinfo;
-        std::string m_host;
-        HostType m_type = HostType::Invalid;
-        boost::optional<unsigned short> m_port;
+        boost::optional<std::string> userinfo_;
+        std::string host_;
+        HostType type_ = HostType::Invalid;
+        boost::optional<unsigned short> port_;
     };
 
     enum class Scheme
@@ -40,7 +40,7 @@ public:
         HTTP,
         HTTPS,
         RTSP,
-        FILE,
+        File,
         Invalid
     };
 
@@ -65,9 +65,9 @@ private:
     std::string removeEscapedSymbols(std::string url);
 
 private:
-    Scheme m_scheme = Scheme::Invalid;
-    Authority m_authority;
-    std::string m_path;
+    Scheme scheme_ = Scheme::Invalid;
+    Authority authority_;
+    std::string path_;
 };
 
 std::ostream& operator<<(std::ostream& out, const Uri& uri);

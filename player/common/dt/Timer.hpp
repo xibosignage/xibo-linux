@@ -17,7 +17,7 @@ public:
         stop();
 
         auto milli = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
-        m_timerConnection = Glib::signal_timeout().connect([=]() { return onTimeout(handler); }, milli.count());
+        timerConnection_ = Glib::signal_timeout().connect([=]() { return onTimeout(handler); }, milli.count());
     }
 
     void stop();
@@ -39,5 +39,5 @@ private:
     }
 
 private:
-    sigc::connection m_timerConnection;
+    sigc::connection timerConnection_;
 };

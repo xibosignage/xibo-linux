@@ -20,6 +20,6 @@ private:
     void saveFileHashes(const FilePath& path);
 
 private:
-    boost::property_tree::ptree m_fileCache;
-    FilePath m_cacheFile;
+    boost::property_tree::ptree fileCache_;
+    FilePath cacheFile_;
 };

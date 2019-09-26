@@ -24,5 +24,5 @@ private:
     void takeXDisplayScreenshot(SurfaceCreated callback);
 
 private:
-    MainWindow& m_window;
+    MainWindow& window_;
 };

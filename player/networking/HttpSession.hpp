@@ -53,12 +53,12 @@ private:
     void onRead(const boost::system::error_code& ec, std::size_t bytesTransferred);
 
 private:
-    ip::tcp::resolver m_resolver;
-    std::unique_ptr<ssl::stream<ip::tcp::socket>> m_socket;
-    HostInfo m_hostInfo;
-    http::request<http::string_body> m_request;
-    http::response_parser<http::string_body> m_response;
-    boost::beast::flat_buffer m_buffer;
-    boost::promise<HttpResponseResult> m_result;
-    std::atomic<bool> m_resultSet = false;
+    ip::tcp::resolver resolver_;
+    std::unique_ptr<ssl::stream<ip::tcp::socket>> socket_;
+    HostInfo hostInfo_;
+    http::request<http::string_body> request_;
+    http::response_parser<http::string_body> response_;
+    boost::beast::flat_buffer buffer_;
+    boost::promise<HttpResponseResult> result_;
+    std::atomic<bool> resultSet_ = false;
 };

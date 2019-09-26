@@ -5,7 +5,7 @@
 
 const std::size_t DefaultChunkSize = 524288;
 
-XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) : m_xmdsSender(xmdsSender) {}
+XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) : xmdsSender_(xmdsSender) {}
 
 boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId, const std::string& fileType,
                                                                std::size_t fileSize)
@@ -17,7 +17,7 @@ boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId, const
     {
         std::size_t chunkSize = fileOffset + DefaultChunkSize >= fileSize ? fileSize - fileOffset : DefaultChunkSize;
 
-        results.emplace_back(m_xmdsSender.getFile(fileId, fileType, fileOffset, chunkSize));
+        results.emplace_back(xmdsSender_.getFile(fileId, fileType, fileOffset, chunkSize));
 
         fileOffset += chunkSize;
     }

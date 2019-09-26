@@ -3,7 +3,7 @@
 FlyTransitionExecutor::FlyTransitionExecutor(Transition::Heading heading, Transition::Direction direction, int duration,
                                              const std::shared_ptr<IWidget>& media) :
     TransitionExecutor(heading, duration, media),
-    m_direction(direction)
+    direction_(direction)
 {
 }
 

@@ -12,7 +12,7 @@ public:
     const char* what() const noexcept override;
 
 private:
-    DBusError m_error;
+    DBusError error_;
 };
 
 class System
@@ -27,5 +27,5 @@ private:
     uint32_t sendAndWaitForResponse(DBusConnection* connection, DBusMessage* message);
 
 private:
-    DBusError m_error;
+    DBusError error_;
 };

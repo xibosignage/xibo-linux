@@ -18,7 +18,7 @@ std::string StatusScreenFormatter::formatGeneralInfo(const GeneralInfo& info)
 {
     std::stringstream out;
 
-    out << "Date - " << DateTime::toString(info.currentDT) << std::endl;
+    out << "Date - " << DateTime::toString(info.currentDateTime) << std::endl;
     out << "Version - " << info.projectVersion << std::endl;
     out << "Code Version - " << info.codeVersion << std::endl;
     out << "Content Management System - " << info.cmsAddress << std::endl;

@@ -12,12 +12,12 @@ Gst::RefPtr<Gst::Inspector> Gst::Inspector::create(unsigned timeoutSeconds)
 
 Gst::Inspector::Inspector(unsigned int timeoutSeconds)
 {
-    m_discoverer = gst_discoverer_new(timeoutSeconds * GST_SECOND, nullptr);
+    handler_ = gst_discoverer_new(timeoutSeconds * GST_SECOND, nullptr);
 }
 
 Gst::Inspector::~Inspector()
 {
-    gst_object_unref(m_discoverer);
+    gst_object_unref(handler_);
 }
 
 Gst::InspectorResult Gst::Inspector::processDiscoveredInfo(GstDiscovererInfo* info, GError* err)
@@ -89,7 +89,7 @@ void Gst::Inspector::retrieveStreamsInfo(Gst::InspectorResult& result, GList* st
 Gst::InspectorResult Gst::Inspector::discover(std::string_view uri)
 {
     GError* err;
-    auto info = gst_discoverer_discover_uri(m_discoverer, uri.data(), &err);
+    auto info = gst_discoverer_discover_uri(handler_, uri.data(), &err);
 
     return processDiscoveredInfo(info, err);
 }

@@ -36,9 +36,9 @@ private:
     void cancelActiveSession();
 
 private:
-    boost::asio::io_context m_ioc;
-    boost::asio::io_context::work m_work;
-    std::vector<std::unique_ptr<JoinableThread>> m_workerThreads;
-    std::vector<std::weak_ptr<HttpSession>> m_activeSessions;
-    boost::optional<ProxyInfo> m_proxyInfo;
+    boost::asio::io_context ioc_;
+    boost::asio::io_context::work work_;
+    std::vector<std::unique_ptr<JoinableThread>> workerThreads_;
+    std::vector<std::weak_ptr<HttpSession>> activeSessions_;
+    boost::optional<ProxyInfo> proxyInfo_;
 };

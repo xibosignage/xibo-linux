@@ -30,10 +30,10 @@ private:
     bool isExpired() const;
 
 private:
-    int m_id;
-    RegionOptions::Loop m_loop;
-    std::shared_ptr<IRegionView> m_view;
-    std::vector<std::unique_ptr<IMedia>> m_media;
-    size_t m_currentMediaIndex = 0;
-    SignalRegionExpired m_regionExpired;
+    int id_;
+    RegionOptions::Loop loop_;
+    std::shared_ptr<IRegionView> view_;
+    std::vector<std::unique_ptr<IMedia>> media_;
+    size_t currentMediaIndex_ = 0;
+    SignalRegionExpired regionExpired_;
 };

@@ -3,19 +3,19 @@
 const int FirstContentIndex = 0;
 
 Region::Region(int id, RegionOptions::Loop loop, const std::shared_ptr<IRegionView>& view) :
-    m_id(id),
-    m_loop(loop),
-    m_view(view)
+    id_(id),
+    loop_(loop),
+    view_(view)
 {
-    m_view->shown().connect(std::bind(&Region::start, this));
+    view_->shown().connect(std::bind(&Region::start, this));
 }
 
 void Region::addMedia(std::unique_ptr<IMedia>&& media, int x, int y)
 {
     media->mediaFinished().connect(std::bind(&Region::onMediaDurationTimeout, this));
 
-    m_view->addMedia(media->view(), x, y);
-    m_media.emplace_back(std::move(media));
+    view_->addMedia(media->view(), x, y);
+    media_.emplace_back(std::move(media));
 }
 
 void Region::start()
@@ -25,54 +25,54 @@ void Region::start()
 
 SignalRegionExpired& Region::expired()
 {
-    return m_regionExpired;
+    return regionExpired_;
 }
 
 std::shared_ptr<IRegionView> Region::view()
 {
-    return m_view;
+    return view_;
 }
 
 void Region::placeMedia(size_t mediaIndex)
 {
-    m_currentMediaIndex = mediaIndex;
-    m_media[mediaIndex]->start();
+    currentMediaIndex_ = mediaIndex;
+    media_[mediaIndex]->start();
 }
 
 void Region::removeMedia(size_t mediaIndex)
 {
-    m_media[mediaIndex]->stop();
+    media_[mediaIndex]->stop();
 }
 
 void Region::onMediaDurationTimeout()
 {
     if (shouldBeMediaReplaced())
     {
-        removeMedia(m_currentMediaIndex);
+        removeMedia(currentMediaIndex_);
         placeMedia(getNextMediaIndex());
     }
 
     if (isExpired())
     {
-        m_regionExpired(m_id);
+        regionExpired_(id_);
     }
 }
 
 bool Region::isExpired() const
 {
-    return m_currentMediaIndex == FirstContentIndex;
+    return currentMediaIndex_ == FirstContentIndex;
 }
 
 bool Region::shouldBeMediaReplaced() const
 {
-    return m_media.size() > 1 || m_loop == RegionOptions::Loop::Enable;
+    return media_.size() > 1 || loop_ == RegionOptions::Loop::Enable;
 }
 
 size_t Region::getNextMediaIndex() const
 {
-    size_t nextContentIndex = m_currentMediaIndex + 1;
+    size_t nextContentIndex = currentMediaIndex_ + 1;
 
-    if (nextContentIndex >= m_media.size()) return FirstContentIndex;
+    if (nextContentIndex >= media_.size()) return FirstContentIndex;
 
     return nextContentIndex;
 }

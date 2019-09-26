@@ -3,20 +3,20 @@
 
 Gst::Element::Element(std::string_view name)
 {
-    m_element = gst_element_factory_make(name.data(), nullptr);
+    handler_ = gst_element_factory_make(name.data(), nullptr);
 }
 
-Gst::Element::Element(GstElement* element) : m_element(element) {}
+Gst::Element::Element(GstElement* element) : handler_(element) {}
 
 Gst::Element::~Element()
 {
-    if (m_element)
+    if (handler_)
     {
-        GstObject* parent = gst_element_get_parent(m_element);
+        GstObject* parent = gst_element_get_parent(handler_);
         if (!parent)
         {
             setState(Gst::State::NULL_STATE);
-            g_object_unref(m_element);
+            g_object_unref(handler_);
         }
         else
         {
@@ -27,14 +27,14 @@ Gst::Element::~Element()
 
 GstElement* Gst::Element::element() const
 {
-    return m_element;
+    return handler_;
 }
 
 Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& other)
 {
-    if (m_element)
+    if (handler_)
     {
-        gst_element_link(m_element, other->handler());
+        gst_element_link(handler_, other->handler());
         return other;
     }
     return nullptr;
@@ -42,9 +42,9 @@ Gst::RefPtr<Gst::Element> Gst::Element::link(const Gst::RefPtr<Gst::Element>& ot
 
 Gst::RefPtr<Gst::Element> Gst::Element::linkFltered(const Gst::RefPtr<Gst::Element>& other, GstCaps* filter)
 {
-    if (m_element)
+    if (handler_)
     {
-        gst_element_link_filtered(m_element, other->handler(), filter);
+        gst_element_link_filtered(handler_, other->handler(), filter);
         return other;
     }
     return nullptr;
@@ -52,24 +52,24 @@ Gst::RefPtr<Gst::Element> Gst::Element::linkFltered(const Gst::RefPtr<Gst::Eleme
 
 void Gst::Element::setState(Gst::State state)
 {
-    if (m_element)
+    if (handler_)
     {
-        gst_element_set_state(m_element, static_cast<GstState>(state));
+        gst_element_set_state(handler_, static_cast<GstState>(state));
     }
 }
 
 Gst::State Gst::Element::state() const
 {
     GstState state;
-    gst_element_get_state(m_element, &state, nullptr, GST_MSECOND);
+    gst_element_get_state(handler_, &state, nullptr, GST_MSECOND);
     return static_cast<Gst::State>(state);
 }
 
 Gst::RefPtr<Gst::Pad> Gst::Element::staticPad(std::string_view name)
 {
-    if (m_element)
+    if (handler_)
     {
-        auto pad = gst_element_get_static_pad(m_element, name.data());
+        auto pad = gst_element_get_static_pad(handler_, name.data());
 
         if (!pad) return nullptr;
         return std::make_shared<Gst::Pad>(pad);
@@ -85,9 +85,9 @@ Gst::RefPtr<Gst::Element> Gst::Element::create(std::string_view name)
 bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, Gst::SeekType startType, gint64 start,
                         Gst::SeekType stopType, gint64 stop)
 {
-    if (m_element)
+    if (handler_)
     {
-        return gst_element_seek(m_element, rate, static_cast<GstFormat>(format), static_cast<GstSeekFlags>(flags),
+        return gst_element_seek(handler_, rate, static_cast<GstFormat>(format), static_cast<GstSeekFlags>(flags),
                                 static_cast<GstSeekType>(startType), start, static_cast<GstSeekType>(stopType), stop);
     }
     return false;
@@ -95,10 +95,10 @@ bool Gst::Element::seek(gdouble rate, Gst::Format format, Gst::SeekFlags flags, 
 
 GstElement* Gst::Element::handler() const
 {
-    return m_element;
+    return handler_;
 }
 
 void Gst::Element::resetHandler()
 {
-    m_element = nullptr;
+    handler_ = nullptr;
 }

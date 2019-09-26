@@ -25,9 +25,9 @@ protected:
     Timer& timer();
 
 private:
-    Transition::Heading m_heading;
-    int m_duration;
-    std::shared_ptr<IWidget> m_media;
-    std::unique_ptr<Timer> m_timer;
-    SignalFinished m_finished;
+    Transition::Heading heading_;
+    int duration_;
+    std::shared_ptr<IWidget> media_;
+    std::unique_ptr<Timer> timer_;
+    SignalFinished finished_;
 };

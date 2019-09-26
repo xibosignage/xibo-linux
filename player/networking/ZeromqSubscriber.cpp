@@ -3,37 +3,37 @@
 #include "common/logger/Logging.hpp"
 #include "constants.hpp"
 
-ZeromqSubscriber::ZeromqSubscriber() : m_context{1} {}
+ZeromqSubscriber::ZeromqSubscriber() : context_{1} {}
 
 void ZeromqSubscriber::stop()
 {
-    m_stopped = true;
-    m_context.close();
-    m_worker.reset();
+    stopped_ = true;
+    context_.close();
+    worker_.reset();
 }
 
 MessageReceived& ZeromqSubscriber::messageReceived()
 {
-    return m_messageReceived;
+    return messageReceived_;
 }
 
 void ZeromqSubscriber::run(const std::string& host)
 {
-    m_worker = std::make_unique<JoinableThread>([this, host]() { processMessageQueue(host); });
+    worker_ = std::make_unique<JoinableThread>([this, host]() { processMessageQueue(host); });
 }
 
 void ZeromqSubscriber::processMessageQueue(const std::string& host)
 {
-    zmq::socket_t socket{m_context, ZMQ_SUB};
+    zmq::socket_t socket{context_, ZMQ_SUB};
     tryConnect(socket, host);
     socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
     socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
 
-    while (!m_stopped)
+    while (!stopped_)
     {
         try
         {
-            m_messageReceived.emit(recvAll(socket));
+            messageReceived_.emit(recvAll(socket));
         }
         catch (const zmq::error_t& ex)
         {

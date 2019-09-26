@@ -15,6 +15,6 @@ namespace Gst
         UriSrc(std::string_view name, Uri::Scheme scheme);
 
     private:
-        Uri::Scheme m_fileType;
+        Uri::Scheme fileType_;
     };
 }

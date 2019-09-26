@@ -31,7 +31,7 @@ public:
     boost::future<ResponseResult<SubmitScreenShot::Result>> submitScreenShot(const std::string& screenShot);
 
 private:
-    Uri m_uri;
-    std::string m_serverKey;
-    std::string m_hardwareKey;
+    Uri uri_;
+    std::string serverKey_;
+    std::string hardwareKey_;
 };

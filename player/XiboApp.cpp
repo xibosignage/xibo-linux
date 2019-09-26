@@ -38,7 +38,12 @@
 #include <gst/gst.h>
 #include <spdlog/sinks/stdout_sinks.h>
 
-std::unique_ptr<XiboApp> XiboApp::m_app;
+static std::unique_ptr<XiboApp> g_app;
+
+XiboApp& xiboApp()
+{
+    return *g_app;
+}
 
 XiboApp& XiboApp::create(const std::string& name)
 {
@@ -50,8 +55,8 @@ XiboApp& XiboApp::create(const std::string& name)
     registerVideoSink();
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
-    m_app = std::unique_ptr<XiboApp>(new XiboApp(name));
-    return *m_app;
+    g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
+    return *g_app;
 }
 
 std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
@@ -75,12 +80,12 @@ void XiboApp::registerVideoSink()
 }
 
 XiboApp::XiboApp(const std::string& name) :
-    m_mainLoop(std::make_unique<MainLoop>(name)),
-    m_fileCache(std::make_unique<FileCache>()),
-    m_scheduler(std::make_unique<Scheduler>(*m_fileCache)),
-    m_xmrManager(std::make_unique<XmrManager>()),
-    m_webserver(std::make_shared<XiboWebServer>()),
-    m_layoutsManager(std::make_unique<LayoutsManager>(*m_scheduler))
+    mainLoop_(std::make_unique<MainLoop>(name)),
+    fileCache_(std::make_unique<FileCache>()),
+    scheduler_(std::make_unique<Scheduler>(*fileCache_)),
+    xmrManager_(std::make_unique<XmrManager>()),
+    webserver_(std::make_shared<XiboWebServer>()),
+    layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_))
 {
     if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -88,45 +93,45 @@ XiboApp::XiboApp(const std::string& name) :
     System sys;
     sys.preventSleep();
 
-    m_cmsSettings.loadFrom(ProjectResources::cmsSettingsPath());
-    m_playerSettings.loadFrom(ProjectResources::playerSettingsPath());
-    Resources::setDirectory(FilePath{m_cmsSettings.resourcesPath});
+    cmsSettings_.loadFrom(ProjectResources::cmsSettingsPath());
+    playerSettings_.loadFrom(ProjectResources::playerSettingsPath());
+    Resources::setDirectory(FilePath{cmsSettings_.resourcesPath});
 
-    m_fileCache->loadFrom(ProjectResources::cachePath());
+    fileCache_->loadFrom(ProjectResources::cachePath());
 
-    m_webserver->setRootDirectory(Resources::directory());
-    m_webserver->run(m_playerSettings.embeddedServerPort);
+    webserver_->setRootDirectory(Resources::directory());
+    webserver_->run(playerSettings_.embeddedServerPort);
 
-    Log::debug(m_webserver->address());
-    HttpClient::instance().setProxyServer(m_cmsSettings.domain, m_cmsSettings.username, m_cmsSettings.password);
+    Log::debug(webserver_->address());
+    HttpClient::instance().setProxyServer(cmsSettings_.domain, cmsSettings_.username, cmsSettings_.password);
     RsaManager::instance().load();
     setupXmrManager();
 
     MediaCreatorsRepo::init();
 
-    m_mainLoop->setShutdownAction([this]() {
-        m_layoutsManager.reset();
+    mainLoop_->setShutdownAction([this]() {
+        layoutsManager_.reset();
         HttpClient::instance().shutdown();
-        if (m_collectionInterval)
+        if (collectionInterval_)
         {
-            m_collectionInterval->stop();
+            collectionInterval_->stop();
         }
     });
 }
 
 void XiboApp::setupXmrManager()
 {
-    m_xmrManager->collectionInterval().connect([this]() {
+    xmrManager_->collectionInterval().connect([this]() {
         Log::info("[CollectionInterval] Start unscheduled collection");
 
-        m_collectionInterval->collect([this](const PlayerError& error) { onCollectionFinished(error); });
+        collectionInterval_->collect([this](const PlayerError& error) { onCollectionFinished(error); });
     });
 
-    m_xmrManager->screenshot().connect([this]() {
+    xmrManager_->screenshot().connect([this]() {
         Log::info("Taking unscheduled screenshot");
 
         Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
-            m_xmdsManager->submitScreenShot(screenshot).then([](auto future) {
+            xmdsManager_->submitScreenShot(screenshot).then([](auto future) {
                 auto [error, result] = future.get();
                 if (error)
                 {
@@ -145,73 +150,68 @@ XiboApp::~XiboApp()
     }
 }
 
-XiboApp& XiboApp::app()
-{
-    return *m_app;
-}
-
 FileCache& XiboApp::fileManager()
 {
-    return *m_fileCache;
+    return *fileCache_;
 }
 
 ScreenShoter& XiboApp::screenShoter()
 {
-    return *m_screenShoter;
+    return *screenShoter_;
 }
 
 XiboWebServer& XiboApp::webserver()
 {
-    return *m_webserver;
+    return *webserver_;
 }
 
 int XiboApp::run()
 {
-    m_mainWindow = std::make_shared<MainWindow>();
-    m_windowController = std::make_unique<MainWindowController>(m_mainWindow, *m_layoutsManager);
+    mainWindow_ = std::make_shared<MainWindow>();
+    windowController_ = std::make_unique<MainWindowController>(mainWindow_, *layoutsManager_);
 
     auto statusScreen = std::make_shared<StatusScreen>(640, 480);
-    m_windowController->statusScreenRequested().connect([this, statusScreen]() {
-        StatusInfo info{collectGeneralInfo(), m_collectionInterval->status(), m_scheduler->status(),
-                        m_xmrManager->status()};
+    windowController_->statusScreenRequested().connect([this, statusScreen]() {
+        StatusInfo info{collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(),
+                        xmrManager_->status()};
 
         statusScreen->setText(StatusScreenFormatter::formatInfo(info));
         statusScreen->show();
     });
 
-    m_screenShoter = std::make_unique<ScreenShoter>(*m_mainWindow);
-    m_xmdsManager =
-        std::make_unique<XmdsRequestSender>(m_cmsSettings.cmsAddress, m_cmsSettings.key, m_cmsSettings.displayId);
-    m_collectionInterval = createCollectionInterval(*m_xmdsManager);
+    screenShoter_ = std::make_unique<ScreenShoter>(*mainWindow_);
+    xmdsManager_ =
+        std::make_unique<XmdsRequestSender>(cmsSettings_.cmsAddress, cmsSettings_.key, cmsSettings_.displayId);
+    collectionInterval_ = createCollectionInterval(*xmdsManager_);
 
-    applyPlayerSettings(m_playerSettings);
+    applyPlayerSettings(playerSettings_);
 
     ScheduleParser parser;
-    m_scheduler->reloadSchedule(parser.scheduleFrom(ProjectResources::schedulePath()));
-    m_scheduler->scheduleUpdated().connect([](const LayoutSchedule& schedule) {
+    scheduler_->reloadSchedule(parser.scheduleFrom(ProjectResources::schedulePath()));
+    scheduler_->scheduleUpdated().connect([](const LayoutSchedule& schedule) {
         ScheduleSerializer serializer;
         serializer.scheduleTo(schedule, ProjectResources::schedulePath());
     });
 
-    m_collectionInterval->startRegularCollection();
-    m_mainWindow->showAll();
+    collectionInterval_->startRegularCollection();
+    mainWindow_->showAll();
 
-    return m_mainLoop->run(*m_mainWindow);
+    return mainLoop_->run(*mainWindow_);
 }
 
 GeneralInfo XiboApp::collectGeneralInfo()
 {
     GeneralInfo info;
 
-    info.currentDT = DateTime::now();
-    info.cmsAddress = m_cmsSettings.cmsAddress;
-    info.resourcesPath = m_cmsSettings.resourcesPath;
+    info.currentDateTime = DateTime::now();
+    info.cmsAddress = cmsSettings_.cmsAddress;
+    info.resourcesPath = cmsSettings_.resourcesPath;
     info.codeVersion = ProjectResources::codeVersion();
     info.projectVersion = ProjectResources::version();
-    info.screenShotInterval = m_playerSettings.collectInterval;
-    info.displayName = m_playerSettings.displayName;
-    info.windowWidth = m_mainWindow->width();
-    info.windowHeight = m_mainWindow->height();
+    info.screenShotInterval = playerSettings_.collectInterval;
+    info.displayName = playerSettings_.displayName;
+    info.windowWidth = mainWindow_->width();
+    info.windowHeight = mainWindow_->height();
 
     return info;
 }
@@ -224,9 +224,9 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
     interval->scheduleAvailable().connect([this](const Schedule::Result& result) {
         ScheduleParser parser;
-        m_scheduler->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
+        scheduler_->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
     });
-    interval->filesDownloaded().connect([this]() { m_scheduler->reloadQueue(); });
+    interval->filesDownloaded().connect([this]() { scheduler_->reloadQueue(); });
 
     return interval;
 }
@@ -243,17 +243,17 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 {
     applyPlayerSettings(settings);
 
-    m_playerSettings = std::move(settings);
-    m_playerSettings.saveTo(ProjectResources::playerSettingsPath());
+    playerSettings_ = std::move(settings);
+    playerSettings_.saveTo(ProjectResources::playerSettingsPath());
 }
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
     Log::logger()->setLevel(settings.logLevel);
-    m_collectionInterval->updateInterval(settings.collectInterval);
-    m_xmrManager->connect(settings.xmrNetworkAddress);
+    collectionInterval_->updateInterval(settings.collectInterval);
+    xmrManager_->connect(settings.xmrNetworkAddress);
     PlayerSettings::Dimensions dimensions{settings.width, settings.height, settings.x, settings.y};
-    m_windowController->updateWindowDimensions(dimensions);
+    windowController_->updateWindowDimensions(dimensions);
 
     Log::debug("Player settings updated");
 }

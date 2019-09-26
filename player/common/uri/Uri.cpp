@@ -15,7 +15,7 @@ std::string Utils::toString(Uri::Scheme val)
         case Uri::Scheme::HTTP: return "HTTP";
         case Uri::Scheme::HTTPS: return "HTTPS";
         case Uri::Scheme::RTSP: return "RTSP";
-        case Uri::Scheme::FILE: return "FILE";
+        case Uri::Scheme::File: return "FILE";
         case Uri::Scheme::Invalid: return "Invalid";
     }
 
@@ -37,33 +37,33 @@ std::string Utils::toString(Uri::Authority::HostType val)
 
 Uri::Authority::Authority(boost::optional<std::string> userinfo, const std::string& host,
                           boost::optional<unsigned short> port) :
-    m_userinfo(userinfo),
-    m_host{host},
-    m_port{port}
+    userinfo_(userinfo),
+    host_{host},
+    port_{port}
 {
-    m_type = UriParser::getHostType(host);
+    type_ = UriParser::getHostType(host);
 }
 
 Uri::Authority::Authority(const std::string& host) : Authority{{}, host, {}} {}
 
 boost::optional<std::string> Uri::Authority::credentials() const
 {
-    return m_userinfo;
+    return userinfo_;
 }
 
 const std::string& Uri::Authority::host() const
 {
-    return m_host;
+    return host_;
 }
 
 Uri::Authority::HostType Uri::Authority::hostType() const
 {
-    return m_type;
+    return type_;
 }
 
 boost::optional<unsigned short> Uri::Authority::optionalPort() const
 {
-    return m_port;
+    return port_;
 }
 
 Uri::Uri(const std::string& rawUri) : Uri(UriParser::parse(removeEscapedSymbols(rawUri))) {}
@@ -94,9 +94,9 @@ std::string Uri::removeEscapedSymbols(std::string url)
 }
 
 Uri::Uri(Uri::Scheme scheme, const Authority& authority, const std::string& path) :
-    m_scheme{scheme},
-    m_authority{authority},
-    m_path{path}
+    scheme_{scheme},
+    authority_{authority},
+    path_{path}
 {
 }
 
@@ -106,67 +106,67 @@ Uri::Uri(Uri::Scheme scheme, const std::string& path) : Uri{scheme, Authority{},
 
 bool Uri::isValid() const
 {
-    return m_scheme != Scheme::Invalid;
+    return scheme_ != Scheme::Invalid;
 }
 
 std::string Uri::string() const
 {
     std::string uri;
 
-    uri += schemeToString(m_scheme);
-    if (m_authority.credentials())
+    uri += schemeToString(scheme_);
+    if (authority_.credentials())
     {
-        uri += m_authority.credentials().value() + "@";
+        uri += authority_.credentials().value() + "@";
     }
-    uri += m_authority.host();
-    if (m_authority.optionalPort())
+    uri += authority_.host();
+    if (authority_.optionalPort())
     {
-        uri += ":" + portToString(m_authority.optionalPort());
+        uri += ":" + portToString(authority_.optionalPort());
     }
-    uri += m_path;
+    uri += path_;
 
     return uri;
 }
 
 Uri::Scheme Uri::scheme() const
 {
-    return m_scheme;
+    return scheme_;
 }
 
 const std::string& Uri::host() const
 {
-    return m_authority.host();
+    return authority_.host();
 }
 
 unsigned short Uri::port() const
 {
-    assert(m_scheme == Scheme::HTTP || m_scheme == Scheme::HTTPS);
+    assert(scheme_ == Scheme::HTTP || scheme_ == Scheme::HTTPS);
 
-    auto optPort = m_authority.optionalPort();
+    auto optPort = authority_.optionalPort();
 
-    return optPort ? optPort.value() : DefaultPorts.at(m_scheme);
+    return optPort ? optPort.value() : DefaultPorts.at(scheme_);
 }
 
 Uri::Authority::HostType Uri::hostType() const
 {
-    return m_authority.hostType();
+    return authority_.hostType();
 }
 
 const std::string& Uri::path() const
 {
-    return m_path;
+    return path_;
 }
 
 boost::optional<std::string> Uri::credentials() const
 {
-    return m_authority.credentials();
+    return authority_.credentials();
 }
 
 std::string Uri::schemeToString(Uri::Scheme scheme) const
 {
     switch (scheme)
     {
-        case Uri::Scheme::FILE: return "file://";
+        case Uri::Scheme::File: return "file://";
         case Uri::Scheme::HTTP: return "http://";
         case Uri::Scheme::HTTPS: return "https://";
         case Uri::Scheme::RTSP: return "rtsp://";

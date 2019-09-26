@@ -23,7 +23,7 @@ private:
     bool onWindowDrawn(const Cairo::RefPtr<Cairo::Context>& context);
 
 private:
-    Gtk::DrawingArea m_handler;
-    std::deque<std::shared_ptr<XiboVideoFrame>> m_frames;
-    MediaGeometry::ScaleType m_scaleType;
+    Gtk::DrawingArea handler_;
+    std::deque<std::shared_ptr<XiboVideoFrame>> frames_;
+    MediaGeometry::ScaleType scaleType_;
 };

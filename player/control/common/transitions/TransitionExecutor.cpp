@@ -2,34 +2,34 @@
 
 TransitionExecutor::TransitionExecutor(Transition::Heading heading, int duration,
                                        const std::shared_ptr<IWidget>& media) :
-    m_heading(heading),
-    m_duration(duration),
-    m_media(media),
-    m_timer(std::make_unique<Timer>())
+    heading_(heading),
+    duration_(duration),
+    media_(media),
+    timer_(std::make_unique<Timer>())
 {
 }
 
 SignalFinished& TransitionExecutor::finished()
 {
-    return m_finished;
+    return finished_;
 }
 
 Transition::Heading TransitionExecutor::heading() const
 {
-    return m_heading;
+    return heading_;
 }
 
 int TransitionExecutor::duration() const
 {
-    return m_duration;
+    return duration_;
 }
 
 std::shared_ptr<IWidget> TransitionExecutor::media() const
 {
-    return m_media;
+    return media_;
 }
 
 Timer& TransitionExecutor::timer()
 {
-    return *m_timer;
+    return *timer_;
 }

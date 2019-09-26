@@ -15,37 +15,37 @@ class HttpRequest
 {
 public:
     HttpRequest(http::verb method, const Uri& uri, const std::string& body) :
-        m_method(method),
-        m_uri(uri),
-        m_body(std::move(body))
+        method_(method),
+        uri_(uri),
+        body_(std::move(body))
     {
     }
 
     HostInfo hostInfo()
     {
-        return HostInfo{m_uri.host(), m_uri.port(), m_uri.scheme() == Uri::Scheme::HTTPS};
+        return HostInfo{uri_.host(), uri_.port(), uri_.scheme() == Uri::Scheme::HTTPS};
     }
 
     http::request<http::string_body> get()
     {
         http::request<http::string_body> request;
 
-        request.method(m_method);
-        request.target(m_uri.path());
+        request.method(method_);
+        request.target(uri_.path());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, m_uri.host());
-        if (auto credentials = m_uri.credentials())
+        request.set(http::field::host, uri_.host());
+        if (auto credentials = uri_.credentials())
         {
             request.set(http::field::authorization, "Basic " + Utils::toBase64(credentials.value()));
         }
-        request.body() = std::move(m_body);
+        request.body() = std::move(body_);
         request.prepare_payload();
 
         return request;
     }
 
 private:
-    http::verb m_method;
-    Uri m_uri;
-    std::string m_body;
+    http::verb method_;
+    Uri uri_;
+    std::string body_;
 };

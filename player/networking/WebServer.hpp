@@ -67,10 +67,10 @@ private:
     void onAccept(beast::error_code ec, tcp::socket socket);
 
 private:
-    net::io_context m_ioc;
-    net::io_context::work m_work;
-    std::vector<std::unique_ptr<JoinableThread>> m_workerThreads;
-    unsigned short m_port = 0;
-    tcp::acceptor m_acceptor;
-    FilePath m_rootDirectory;
+    net::io_context ioc_;
+    net::io_context::work work_;
+    std::vector<std::unique_ptr<JoinableThread>> workerThreads_;
+    unsigned short port_ = 0;
+    tcp::acceptor acceptor_;
+    FilePath rootDirectory_;
 };

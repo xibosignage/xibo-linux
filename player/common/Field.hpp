@@ -6,9 +6,9 @@ template <typename T>
 class Field
 {
 public:
-    explicit Field(std::string_view name) : m_fieldName(name), m_value{} {}
+    explicit Field(std::string_view name) : fieldName_(name), value_{} {}
 
-    explicit Field(std::string_view name, const T& defaultValue) : m_fieldName(name), m_value(defaultValue) {}
+    explicit Field(std::string_view name, const T& defaultValue) : fieldName_(name), value_(defaultValue) {}
 
     Field& operator=(const T& value)
     {
@@ -30,25 +30,25 @@ public:
 
     std::string_view name() const
     {
-        return m_fieldName;
+        return fieldName_;
     }
 
     void setValue(const T& value)
     {
-        m_value = value;
+        value_ = value;
     }
 
     T value() const
     {
-        return m_value;
+        return value_;
     }
 
     operator T() const
     {
-        return m_value;
+        return value_;
     }
 
 private:
-    std::string m_fieldName;
-    T m_value;
+    std::string fieldName_;
+    T value_;
 };

@@ -30,25 +30,25 @@ private:
     void onDisplayAdminClicked();
 
 private:
-    Glib::RefPtr<Gtk::Builder> m_ui;
-    Gtk::Window* m_mainWindow;
-    CmsSettings m_settings;
+    Glib::RefPtr<Gtk::Builder> ui_;
+    Gtk::Window* mainWindow_;
+    CmsSettings settings_;
 
-    Gtk::Entry* m_cmsAddressField;
-    Gtk::Entry* m_keyField;
-    Gtk::Entry* m_resourcesPathField;
-    Gtk::Button* m_browseResourcesPath;
+    Gtk::Entry* cmsAddressField_;
+    Gtk::Entry* keyField_;
+    Gtk::Entry* resourcesPathField_;
+    Gtk::Button* browseResourcesPath_;
 
-    Gtk::Entry* m_usernameField;
-    Gtk::Entry* m_passwordField;
-    Gtk::Entry* m_splashScreenPath;
-    Gtk::Button* m_browseSplashScreenPath;
-    Gtk::Entry* m_domainField;
-    Gtk::Entry* m_displayIdField;
+    Gtk::Entry* usernameField_;
+    Gtk::Entry* passwordField_;
+    Gtk::Entry* splashScreenPath_;
+    Gtk::Button* browseSplashScreenPath_;
+    Gtk::Entry* domainField_;
+    Gtk::Entry* displayIdField_;
 
-    Gtk::Label* m_connectionStatus;
-    Gtk::Button* m_saveSettings;
-    Gtk::Button* m_launchClient;
-    Gtk::Button* m_displayAdmin;
-    Gtk::Button* m_exit;
+    Gtk::Label* connectionStatus_;
+    Gtk::Button* saveSettings_;
+    Gtk::Button* launchClient_;
+    Gtk::Button* displayAdmin_;
+    Gtk::Button* exit_;
 };

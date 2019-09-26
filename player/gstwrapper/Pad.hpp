@@ -36,7 +36,7 @@ namespace Gst
         MediaType mediaType() const;
 
     private:
-        GstPad* m_handler;
-        bool m_takeOwnership;
+        GstPad* handler_ = nullptr;
+        bool takeOwnership_;
     };
 }
