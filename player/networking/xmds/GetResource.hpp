@@ -8,19 +8,19 @@
 
 namespace GetResource
 {
-struct Result
-{
-    std::string resource;
-};
+    struct Result
+    {
+        std::string resource;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<int> layoutId{"layoutId"};
-    Field<std::string> regionId{"regionId"};
-    Field<std::string> mediaId{"mediaId"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<int> layoutId{"layoutId"};
+        Field<std::string> regionId{"regionId"};
+        Field<std::string> mediaId{"mediaId"};
+    };
 }
 
 template <>

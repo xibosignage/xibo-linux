@@ -8,17 +8,17 @@
 
 namespace SubmitScreenShot
 {
-struct Result
-{
-    bool success;
-};
+    struct Result
+    {
+        bool success;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<std::string> screenShot{"screenShot"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> screenShot{"screenShot"};
+    };
 }
 
 template <>

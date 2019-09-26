@@ -4,14 +4,14 @@
 
 namespace Gst
 {
-class Volume : public Gst::Element
-{
-public:
-    static Gst::RefPtr<Gst::Volume> create();
-    void setVolume(double volume);
-    double getVolume() const;
+    class Volume : public Gst::Element
+    {
+    public:
+        static Gst::RefPtr<Gst::Volume> create();
+        void setVolume(double volume);
+        double getVolume() const;
 
-private:
-    Volume();
-};
+    private:
+        Volume();
+    };
 }

@@ -8,17 +8,17 @@
 
 namespace SubmitLog
 {
-struct Result
-{
-    bool success;
-};
+    struct Result
+    {
+        bool success;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<std::string> logXml{"logXml"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> logXml{"logXml"};
+    };
 }
 
 template <>

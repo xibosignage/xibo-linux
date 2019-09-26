@@ -13,21 +13,21 @@ struct RsaKeyPair
 
 namespace CryptoUtils
 {
-RsaKeyPair generateRsaKeys(unsigned int keyLength);
-RsaKeyPair loadRsaKeys(const FilePath& publicKeyPath, const FilePath& privateKeyPath);
-void saveRsaKeys(const RsaKeyPair& keys, const FilePath& publicKeyPath, const FilePath& privateKeyPath);
-std::string decryptPrivateKeyPkcs(const std::string& message, const CryptoPP::RSA::PrivateKey& key);
-std::string decryptRc4(const std::string& message, const std::string& key);
+    RsaKeyPair generateRsaKeys(unsigned int keyLength);
+    RsaKeyPair loadRsaKeys(const FilePath& publicKeyPath, const FilePath& privateKeyPath);
+    void saveRsaKeys(const RsaKeyPair& keys, const FilePath& publicKeyPath, const FilePath& privateKeyPath);
+    std::string decryptPrivateKeyPkcs(const std::string& message, const CryptoPP::RSA::PrivateKey& key);
+    std::string decryptRc4(const std::string& message, const std::string& key);
 
-template <typename Key>
-std::string keyToString(const Key& key)
-{
-    std::string resultString;
-    CryptoPP::StringSink stringSink{resultString};
+    template <typename Key>
+    std::string keyToString(const Key& key)
+    {
+        std::string resultString;
+        CryptoPP::StringSink stringSink{resultString};
 
-    CryptoPP::PEM_Save(stringSink, key);
+        CryptoPP::PEM_Save(stringSink, key);
 
-    return resultString;
-}
+        return resultString;
+    }
 
 }

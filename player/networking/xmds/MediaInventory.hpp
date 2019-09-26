@@ -8,17 +8,17 @@
 
 namespace MediaInventory
 {
-struct Result
-{
-    bool success;
-};
+    struct Result
+    {
+        bool success;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<MediaInventoryItems> inventory{"mediaInventory"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<MediaInventoryItems> inventory{"mediaInventory"};
+    };
 }
 
 template <>

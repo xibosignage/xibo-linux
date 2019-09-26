@@ -8,16 +8,16 @@
 
 namespace Schedule
 {
-struct Result
-{
-    std::string scheduleXml;
-};
+    struct Result
+    {
+        std::string scheduleXml;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+    };
 }
 
 template <>

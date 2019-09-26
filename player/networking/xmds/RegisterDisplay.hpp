@@ -9,38 +9,38 @@
 
 namespace RegisterDisplay
 {
-struct Result
-{
-    struct Status
+    struct Result
     {
-        enum class Code
+        struct Status
         {
-            Ready,
-            Added,
-            Waiting,
-            Invalid = -1
+            enum class Code
+            {
+                Ready,
+                Added,
+                Waiting,
+                Invalid = -1
+            };
+
+            Code code = Code::Invalid;
+            std::string message;
         };
 
-        Code code = Code::Invalid;
-        std::string message;
+        Status status;
+        PlayerSettings playerSettings;
     };
 
-    Status status;
-    PlayerSettings playerSettings;
-};
-
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<std::string> displayName{"displayName"};
-    Field<std::string> clientType{"clientType"};
-    Field<std::string> clientVersion{"clientVersion"};
-    Field<std::string> clientCode{"clientCode"};
-    Field<std::string> macAddress{"macAddress"};
-    Field<std::string> xmrChannel{"xmrChannel"};
-    Field<std::string> xmrPubKey{"xmrPubKey"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> displayName{"displayName"};
+        Field<std::string> clientType{"clientType"};
+        Field<std::string> clientVersion{"clientVersion"};
+        Field<std::string> clientCode{"clientCode"};
+        Field<std::string> macAddress{"macAddress"};
+        Field<std::string> xmrChannel{"xmrChannel"};
+        Field<std::string> xmrPubKey{"xmrPubKey"};
+    };
 }
 
 template <>

@@ -7,81 +7,82 @@
 
 namespace Soap
 {
-template <typename Result>
-class BaseResponseParser
-{
-public:
-    using OptionalParsedNode = boost::optional<ptree_node&>;
-    using ParsedNode = ptree_node;
-
-    BaseResponseParser(const std::string& response) : m_response(response)
+    template <typename Result>
+    class BaseResponseParser
     {
-        tryParseResponse(response);
-    }
-    virtual ~BaseResponseParser() = default;
+    public:
+        using OptionalParsedNode = boost::optional<ptree_node&>;
+        using ParsedNode = ptree_node;
 
-    ResponseResult<Result> get()
-    {
-        if (m_responseTree)
+        BaseResponseParser(const std::string& response) : m_response(response)
         {
-            auto [name, bodyNode] = m_responseTree->front();
+            tryParseResponse(response);
+        }
+        virtual ~BaseResponseParser() = default;
 
-            if (auto node = getFaultNode())
+        ResponseResult<Result> get()
+        {
+            if (m_responseTree)
             {
-                return std::pair{makeErrorFromNode(node), Result{}};
+                auto [name, bodyNode] = m_responseTree->front();
+
+                if (auto node = getFaultNode())
+                {
+                    return std::pair{makeErrorFromNode(node), Result{}};
+                }
+
+                return parseBodyImpl(bodyNode);
             }
 
-            return parseBodyImpl(bodyNode);
+            return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
         }
 
-        return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
-    }
+    protected:
+        virtual Result parseBody(const ParsedNode& node) = 0;
 
-protected:
-    virtual Result parseBody(const ParsedNode& node) = 0;
-
-private:
-    ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
-    {
-        using namespace std::string_literals;
-
-        try
+    private:
+        ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
         {
-            return std::pair{PlayerError{}, parseBody(node)};
+            using namespace std::string_literals;
+
+            try
+            {
+                return std::pair{PlayerError{}, parseBody(node)};
+            }
+            catch (std::exception& e)
+            {
+                std::string error = "Error while parsing response. Details: "s + e.what();
+
+                return std::pair{PlayerError{PlayerError::Type::SOAP, error}, Result{}};
+            }
         }
-        catch (std::exception& e)
+
+        void tryParseResponse(const std::string& response)
         {
-            std::string error = "Error while parsing response. Details: "s + e.what();
-
-            return std::pair{PlayerError{PlayerError::Type::SOAP, error}, Result{}};
+            try
+            {
+                m_responseTree =
+                    Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
+            }
+            catch (std::exception&)
+            {
+            }
         }
-    }
 
-    void tryParseResponse(const std::string& response)
-    {
-        try
+        OptionalParsedNode getFaultNode()
         {
-            m_responseTree = Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
+            return m_responseTree->get_child_optional("SOAP-ENV:Fault");
         }
-        catch (std::exception&)
+
+        PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
         {
+            auto faultMessage = faultNode->template get<std::string>("faultstring");
+            return PlayerError{PlayerError::Type::SOAP, faultMessage};
         }
-    }
 
-    OptionalParsedNode getFaultNode()
-    {
-        return m_responseTree->get_child_optional("SOAP-ENV:Fault");
-    }
-
-    PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
-    {
-        auto faultMessage = faultNode->template get<std::string>("faultstring");
-        return PlayerError{PlayerError::Type::SOAP, faultMessage};
-    }
-
-private:
-    std::string m_response;
-    boost::optional<ParsedNode> m_responseTree;
-};
+    private:
+        std::string m_response;
+        boost::optional<ParsedNode> m_responseTree;
+    };
 
 }

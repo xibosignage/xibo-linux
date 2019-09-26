@@ -44,7 +44,7 @@ IndentWidth: '4'
 IndentWrappedFunctionNames: 'false'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 Language: Cpp
-NamespaceIndentation: None
+NamespaceIndentation: All
 PenaltyBreakAssignment: '0'
 PointerAlignment: Left
 ReflowComments: 'true'

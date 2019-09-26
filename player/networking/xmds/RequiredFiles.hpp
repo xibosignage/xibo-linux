@@ -9,24 +9,24 @@
 
 namespace RequiredFiles
 {
-struct Result
-{
-    const FilesToDownload<RegularFile>& requiredFiles() const;
-    const FilesToDownload<ResourceFile>& requiredResources() const;
+    struct Result
+    {
+        const FilesToDownload<RegularFile>& requiredFiles() const;
+        const FilesToDownload<ResourceFile>& requiredResources() const;
 
-    void addFile(RegularFile&& file);
-    void addResource(ResourceFile&& resource);
+        void addFile(RegularFile&& file);
+        void addResource(ResourceFile&& resource);
 
-private:
-    FilesToDownload<RegularFile> m_requiredFiles;
-    FilesToDownload<ResourceFile> m_requiredResources;
-};
+    private:
+        FilesToDownload<RegularFile> m_requiredFiles;
+        FilesToDownload<ResourceFile> m_requiredResources;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+    };
 }
 
 template <>

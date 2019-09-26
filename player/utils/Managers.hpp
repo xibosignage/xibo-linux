@@ -10,8 +10,8 @@ class XiboWebServer;
 
 namespace Managers
 {
-FileCache& fileManager();
-ScreenShoter& screenShoter();
-XiboWebServer& webserver();
-std::string xmlLogs();
+    FileCache& fileManager();
+    ScreenShoter& screenShoter();
+    XiboWebServer& webserver();
+    std::string xmlLogs();
 }

@@ -8,20 +8,20 @@
 
 namespace GetFile
 {
-struct Result
-{
-    std::string base64chunk;
-};
+    struct Result
+    {
+        std::string base64chunk;
+    };
 
-struct Request
-{
-    Field<std::string> serverKey{"serverKey"};
-    Field<std::string> hardwareKey{"hardwareKey"};
-    Field<std::string> fileId{"fileId"};
-    Field<std::string> fileType{"fileType"};
-    Field<std::size_t> chunkOffset{"chunkOffset"};
-    Field<std::size_t> chunkSize{"chuckSize"};
-};
+    struct Request
+    {
+        Field<std::string> serverKey{"serverKey"};
+        Field<std::string> hardwareKey{"hardwareKey"};
+        Field<std::string> fileId{"fileId"};
+        Field<std::string> fileType{"fileType"};
+        Field<std::size_t> chunkOffset{"chunkOffset"};
+        Field<std::size_t> chunkSize{"chuckSize"};
+    };
 }
 
 template <>
