@@ -18,33 +18,33 @@ class ProxyHttpRequest
 {
 public:
     ProxyHttpRequest(http::verb method, const ProxyInfo& info, const Uri& uri, const std::string& body) :
-        m_method(method),
-        m_proxyUri(info.host + DefaultHttpTarget),
-        m_username(info.username),
-        m_password(info.password),
-        m_uri(uri),
-        m_body(std::move(body))
+        method_(method),
+        proxyUri_(info.host + DefaultHttpTarget),
+        username_(info.username),
+        password_(info.password),
+        uri_(uri),
+        body_(std::move(body))
     {
     }
 
     HostInfo hostInfo()
     {
-        return HostInfo{m_proxyUri.host(), m_proxyUri.port(), m_proxyUri.scheme() == Uri::Scheme::HTTPS};
+        return HostInfo{proxyUri_.host(), proxyUri_.port(), proxyUri_.scheme() == Uri::Scheme::HTTPS};
     }
 
     http::request<http::string_body> get()
     {
         http::request<http::string_body> request;
 
-        request.method(m_method);
-        request.target(m_uri.string());
+        request.method(method_);
+        request.target(uri_.string());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, m_uri.host());
+        request.set(http::field::host, uri_.host());
         if (auto credentials = getCredentials())
         {
             request.set(http::field::proxy_authorization, "Basic " + Utils::toBase64(credentials.value()));
         }
-        request.body() = std::move(m_body);
+        request.body() = std::move(body_);
         request.prepare_payload();
 
         return request;
@@ -52,19 +52,19 @@ public:
 
     boost::optional<std::string> getCredentials()
     {
-        if (!m_username.empty() && !m_password.empty())
+        if (!username_.empty() && !password_.empty())
         {
-            return m_username + ":" + m_password;
+            return username_ + ":" + password_;
         }
 
         return {};
     }
 
 private:
-    http::verb m_method;
-    Uri m_proxyUri;
-    std::string m_username;
-    std::string m_password;
-    Uri m_uri;
-    std::string m_body;
+    http::verb method_;
+    Uri proxyUri_;
+    std::string username_;
+    std::string password_;
+    Uri uri_;
+    std::string body_;
 };

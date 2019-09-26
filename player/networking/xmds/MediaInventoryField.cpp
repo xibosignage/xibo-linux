@@ -3,7 +3,7 @@
 #include "common/Parsing.hpp"
 #include <boost/property_tree/ptree.hpp>
 
-Field<MediaInventoryItems>::Field(std::string_view name) : m_fieldName(name) {}
+Field<MediaInventoryItems>::Field(std::string_view name) : fieldName_(name) {}
 
 Field<MediaInventoryItems>& Field<MediaInventoryItems>::operator=(MediaInventoryItems&& items)
 {
@@ -18,17 +18,17 @@ std::string_view Field<MediaInventoryItems>::type() const
 
 std::string_view Field<MediaInventoryItems>::name() const
 {
-    return m_fieldName;
+    return fieldName_;
 }
 
 void Field<MediaInventoryItems>::setValue(MediaInventoryItems&& items)
 {
-    m_xmlItems = toXmlString(std::move(items));
+    xmlItems_ = toXmlString(std::move(items));
 }
 
 std::string_view Field<MediaInventoryItems>::value() const
 {
-    return m_xmlItems;
+    return xmlItems_;
 }
 
 std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)

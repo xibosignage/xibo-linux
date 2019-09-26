@@ -26,8 +26,8 @@ private:
     bool areAllRegionsExpired() const;
 
 private:
-    std::shared_ptr<IOverlayLayout> m_view;
-    std::vector<std::unique_ptr<IRegion>> m_regions;
-    std::set<int> m_expiredRegions;
-    SignalLayoutExpired m_layoutExpired;
+    std::shared_ptr<IOverlayLayout> view_;
+    std::vector<std::unique_ptr<IRegion>> regions_;
+    std::set<int> expiredRegions_;
+    SignalLayoutExpired layoutExpired_;
 };

@@ -4,15 +4,15 @@
 #include "common/fs/Resources.hpp"
 #include "common/logger/Logging.hpp"
 
-Scheduler::Scheduler(const IFileCache& fileCache) : m_fileCache{fileCache}, m_schedule{} {}
+Scheduler::Scheduler(const IFileCache& fileCache) : fileCache_{fileCache}, schedule_{} {}
 
 // TODO make an optional to differentiate between empty and non-inialized schedule
 void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-    if (m_schedule != schedule)
+    if (schedule_ != schedule)
     {
-        m_schedule = std::move(schedule);
-        m_scheduleUpdated(m_schedule);
+        schedule_ = std::move(schedule);
+        scheduleUpdated_(schedule_);
 
         reloadQueue();
     }
@@ -23,8 +23,8 @@ void Scheduler::reloadQueue()
     auto current = currentLayoutId();
     auto overlays = overlayLayouts();
 
-    m_regularQueue = regularQueueFrom(m_schedule);
-    m_overlayQueue = overlayQueueFrom(m_schedule);
+    regularQueue_ = regularQueueFrom(schedule_);
+    overlayQueue_ = overlayQueueFrom(schedule_);
     restartTimer();
 
     updateCurrentLayout(current);
@@ -68,21 +68,21 @@ OverlayLayoutQueue Scheduler::overlayQueueFrom(const LayoutSchedule& schedule)
 
 void Scheduler::updateCurrentLayout(LayoutId id)
 {
-    if (m_regularQueue.inQueue(id))
+    if (regularQueue_.inQueue(id))
     {
-        m_regularQueue.updateCurrent(id);
+        regularQueue_.updateCurrent(id);
     }
     else
     {
-        m_layoutUpdated();
+        layoutUpdated_();
     }
 }
 
 void Scheduler::updateCurrentOverlays(const OverlaysIds& ids)
 {
-    if (m_overlayQueue.overlays() != ids)
+    if (overlayQueue_.overlays() != ids)
     {
-        m_overlaysUpdated();
+        overlaysUpdated_();
     }
 }
 
@@ -102,19 +102,19 @@ template <typename Layout>
 bool Scheduler::layoutValid(const Layout& layout) const
 {
     auto layoutFile = std::to_string(layout.id) + ".xlf";
-    if (!m_fileCache.valid(layoutFile)) return false;
+    if (!fileCache_.valid(layoutFile)) return false;
 
     for (auto&& dependant : layout.dependants)
     {
-        if (!m_fileCache.valid(dependant))
+        if (!fileCache_.valid(dependant))
         {
             return false;
         }
     }
 
-    for (auto&& dependant : m_schedule.globalDependants)
+    for (auto&& dependant : schedule_.globalDependants)
     {
-        if (!m_fileCache.valid(dependant))
+        if (!fileCache_.valid(dependant))
         {
             return false;
         }
@@ -125,27 +125,27 @@ bool Scheduler::layoutValid(const Layout& layout) const
 
 LayoutId Scheduler::nextLayout() const
 {
-    return m_regularQueue.next();
+    return regularQueue_.next();
 }
 
 LayoutId Scheduler::currentLayoutId() const
 {
-    return m_regularQueue.current();
+    return regularQueue_.current();
 }
 
 OverlaysIds Scheduler::overlayLayouts() const
 {
-    return m_overlayQueue.overlays();
+    return overlayQueue_.overlays();
 }
 
 SignalScheduleUpdated& Scheduler::scheduleUpdated()
 {
-    return m_scheduleUpdated;
+    return scheduleUpdated_;
 }
 
 SignalLayoutsUpdated& Scheduler::overlaysUpdated()
 {
-    return m_overlaysUpdated;
+    return overlaysUpdated_;
 }
 
 DateTime Scheduler::closestLayoutDt()
@@ -153,13 +153,13 @@ DateTime Scheduler::closestLayoutDt()
     auto now = DateTime::now();
     DateTime closestDt;
 
-    for (auto&& layout : m_schedule.regularLayouts)
+    for (auto&& layout : schedule_.regularLayouts)
     {
         if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
         if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
     }
 
-    for (auto&& layout : m_schedule.overlayLayouts)
+    for (auto&& layout : schedule_.overlayLayouts)
     {
         if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
         if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
@@ -177,7 +177,7 @@ void Scheduler::restartTimer()
     {
         Log::debug("Timer restarted with value: {}", duration);
 
-        m_timer.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
+        timer_.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
     }
     else
     {
@@ -187,17 +187,17 @@ void Scheduler::restartTimer()
 
 SignalLayoutsUpdated& Scheduler::layoutUpdated()
 {
-    return m_layoutUpdated;
+    return layoutUpdated_;
 }
 
 SchedulerStatus Scheduler::status() const
 {
     SchedulerStatus status;
 
-    schedulerStatus(status, m_schedule.regularLayouts);
-    schedulerStatus(status, m_schedule.overlayLayouts);
+    schedulerStatus(status, schedule_.regularLayouts);
+    schedulerStatus(status, schedule_.overlayLayouts);
 
-    status.generatedTime = DateTime::toString(m_schedule.generatedTime);
+    status.generatedTime = DateTime::toString(schedule_.generatedTime);
     status.currentLayout = currentLayoutId();
 
     return status;

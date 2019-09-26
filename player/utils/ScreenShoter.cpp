@@ -10,7 +10,7 @@
 #include <gdkmm.h>
 #include <glibmm/main.h>
 
-ScreenShoter::ScreenShoter(MainWindow& window) : m_window(window) {}
+ScreenShoter::ScreenShoter(MainWindow& window) : window_(window) {}
 
 void ScreenShoter::takeBase64(ScreenShotTaken callback)
 {
@@ -41,7 +41,7 @@ std::vector<unsigned char> ScreenShoter::copySurfaceToBuffer(const Cairo::RefPtr
 void ScreenShoter::takeXDisplayScreenshot(SurfaceCreated callback)
 {
     Glib::MainContext::get_default()->invoke([=]() {
-        auto window = m_window.get().get_window();
+        auto window = window_.get().get_window();
         if (window)
         {
             Display* display = XOpenDisplay(nullptr);

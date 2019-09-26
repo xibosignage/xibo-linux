@@ -35,8 +35,8 @@ private:
     bool isMessageExpired(const XmrMessage& message);
 
 private:
-    ZeromqSubscriber m_subcriber;
-    CollectionIntervalAction m_collectionIntervalAction;
-    ScreenshotAction m_screenshotAction;
-    XmrStatus m_info;
+    ZeromqSubscriber subcriber_;
+    CollectionIntervalAction collectionIntervalAction_;
+    ScreenshotAction screenshotAction_;
+    XmrStatus info_;
 };

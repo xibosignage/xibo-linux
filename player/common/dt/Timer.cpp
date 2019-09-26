@@ -9,11 +9,11 @@ void Timer::stop()
 {
     if (active())
     {
-        m_timerConnection.disconnect();
+        timerConnection_.disconnect();
     }
 }
 
 bool Timer::active() const
 {
-    return m_timerConnection.connected();
+    return timerConnection_.connected();
 }

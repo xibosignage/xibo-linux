@@ -13,17 +13,17 @@ class SchedulerTests : public testing::Test
 public:
     std::unique_ptr<Scheduler> construct()
     {
-        return std::make_unique<Scheduler>(*fileCache);
+        return std::make_unique<Scheduler>(*fileCache_);
     }
 
     void SetUp() override
     {
-        fileCache = std::make_unique<testing::NiceMock<FakeFileCache>>();
+        fileCache_ = std::make_unique<testing::NiceMock<FakeFileCache>>();
     }
 
     void TearDown() override
     {
-        fileCache.reset();
+        fileCache_.reset();
     }
 
 protected:
@@ -31,7 +31,7 @@ protected:
     {
         DefaultScheduledLayout layout;
 
-        ON_CALL(*this->fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
+        ON_CALL(*this->fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
         layout.id = id;
 
         return layout;
@@ -41,7 +41,7 @@ protected:
     {
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
-        ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
+        ON_CALL(*fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
         layout.startDT = DateTime::now() - DateTime::Hours(1);
         layout.endDT = DateTime::now() + DateTime::Hours(1);
 
@@ -87,5 +87,5 @@ protected:
     }
 
 protected:
-    std::unique_ptr<FakeFileCache> fileCache;
+    std::unique_ptr<FakeFileCache> fileCache_;
 };

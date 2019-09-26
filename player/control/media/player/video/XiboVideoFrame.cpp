@@ -12,20 +12,20 @@ std::shared_ptr<XiboVideoFrame> XiboVideoFrame::create(GstVideoInfo* info, GstBu
 
 XiboVideoFrame::~XiboVideoFrame()
 {
-    if (m_mapped)
+    if (mapped_)
     {
-        gst_video_frame_unmap(&m_frame);
+        gst_video_frame_unmap(&frame_);
     }
 }
 
 bool XiboVideoFrame::isValid() const
 {
-    return m_mapped && m_surface;
+    return mapped_ && surface_;
 }
 
 Cairo::RefPtr<Cairo::ImageSurface> XiboVideoFrame::surface()
 {
-    return m_surface;
+    return surface_;
 }
 
 Cairo::RefPtr<Cairo::ImageSurface> XiboVideoFrame::createSurface(unsigned char* data, GstVideoInfo* info)
@@ -39,10 +39,10 @@ Cairo::RefPtr<Cairo::ImageSurface> XiboVideoFrame::createSurface(unsigned char* 
 
 XiboVideoFrame::XiboVideoFrame(GstVideoInfo* info, GstBuffer* buffer)
 {
-    m_mapped = gst_video_frame_map(&m_frame, info, buffer, GST_MAP_READ);
-    if (m_mapped)
+    mapped_ = gst_video_frame_map(&frame_, info, buffer, GST_MAP_READ);
+    if (mapped_)
     {
-        auto data = static_cast<unsigned char*>(m_frame.data[0]);
-        m_surface = createSurface(data, info);
+        auto data = static_cast<unsigned char*>(frame_.data[0]);
+        surface_ = createSurface(data, info);
     }
 }

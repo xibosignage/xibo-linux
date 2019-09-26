@@ -5,26 +5,26 @@
 
 PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player) :
     Media(options, player->outputWindow()),
-    m_player(std::move(player))
+    player_(std::move(player))
 {
     mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
 
-    m_player->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
+    player_->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
 }
 
 void PlayableMedia::onMediaFinished()
 {
-    m_player->stopPlayback();
+    player_->stopPlayback();
 }
 
 void PlayableMedia::onStarted()
 {
-    m_player->play();
+    player_->play();
 }
 
 void PlayableMedia::onStopped()
 {
-    m_player->stopAndRemove();
+    player_->stopAndRemove();
 }
 
 void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
@@ -37,6 +37,6 @@ void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
 
     if (options.looped == MediaPlayerOptions::Loop::Enable)
     {
-        m_player->play();
+        player_->play();
     }
 }

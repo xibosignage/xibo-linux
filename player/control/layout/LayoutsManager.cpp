@@ -9,10 +9,10 @@
 #include "common/fs/FileCache.hpp"
 #include "utils/Managers.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler) : m_scheduler(scheduler)
+LayoutsManager::LayoutsManager(Scheduler& scheduler) : scheduler_(scheduler)
 {
-    m_scheduler.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
-    m_scheduler.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
+    scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
+    scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
 }
 
 void LayoutsManager::fetchAllLayouts()
@@ -23,35 +23,35 @@ void LayoutsManager::fetchAllLayouts()
 
 MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
 {
-    return m_mainLayoutFetched;
+    return mainLayoutFetched_;
 }
 
 OverlaysLoaded& LayoutsManager::overlaysFetched()
 {
-    return m_overlaysFetched;
+    return overlaysFetched_;
 }
 
 void LayoutsManager::fetchMainLayout()
 {
-    auto id = m_scheduler.nextLayout();
+    auto id = scheduler_.nextLayout();
 
     if (id != EmptyLayoutId)
     {
-        m_mainLayout = createLayout<XlfMainLayoutLoader>(id);
-        if (m_mainLayout)
+        mainLayout_ = createLayout<XlfMainLayoutLoader>(id);
+        if (mainLayout_)
         {
-            m_mainLayoutFetched(m_mainLayout->view());
+            mainLayoutFetched_(mainLayout_->view());
         }
         else
         {
             Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
-            m_scheduler.reloadQueue();
-            m_mainLayoutFetched(nullptr);
+            scheduler_.reloadQueue();
+            mainLayoutFetched_(nullptr);
         }
     }
     else
     {
-        m_mainLayoutFetched(nullptr);
+        mainLayoutFetched_(nullptr);
     }
 }
 
@@ -59,24 +59,24 @@ void LayoutsManager::fetchOverlays()
 {
     std::vector<std::shared_ptr<IOverlayLayout>> overlays;
 
-    m_overlayLayouts.clear();
+    overlayLayouts_.clear();
 
-    for (int id : m_scheduler.overlayLayouts())
+    for (int id : scheduler_.overlayLayouts())
     {
         auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
         if (overlayLayout)
         {
             overlays.emplace_back(overlayLayout->view());
-            m_overlayLayouts.emplace(id, std::move(overlayLayout));
+            overlayLayouts_.emplace(id, std::move(overlayLayout));
         }
         else
         {
             Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
-            m_scheduler.reloadQueue();
+            scheduler_.reloadQueue();
         }
     }
 
-    m_overlaysFetched(overlays);
+    overlaysFetched_(overlays);
 }
 
 template <typename LayoutLoader>
@@ -95,7 +95,7 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
             }
             else
             {
-                m_overlayLayouts[layoutId]->restart();
+                overlayLayouts_[layoutId]->restart();
             }
         });
 

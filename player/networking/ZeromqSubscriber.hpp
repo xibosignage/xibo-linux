@@ -25,8 +25,8 @@ private:
     MultiPartMessage recvAll(zmq::socket_t& socket);
 
 private:
-    std::unique_ptr<JoinableThread> m_worker;
-    MessageReceived m_messageReceived;
-    std::atomic<bool> m_stopped = false;
-    zmq::context_t m_context;
+    std::unique_ptr<JoinableThread> worker_;
+    MessageReceived messageReceived_;
+    std::atomic<bool> stopped_ = false;
+    zmq::context_t context_;
 };

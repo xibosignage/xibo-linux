@@ -19,7 +19,7 @@ public:
     void setIdleAction(const IdleAction& action);
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parentApp;
-    sigc::connection m_idleConnection;
-    ShutdownAction m_shutdownAction;
+    Glib::RefPtr<Gtk::Application> parentApp_;
+    sigc::connection idleConnection_;
+    ShutdownAction shutdownAction_;
 };

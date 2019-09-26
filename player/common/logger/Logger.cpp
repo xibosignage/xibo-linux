@@ -2,38 +2,38 @@
 
 #include <spdlog/spdlog.h>
 
-std::shared_ptr<XiboLogger> XiboLogger::globalLogger;
+static std::shared_ptr<XiboLogger> g_xiboLogger;
 
 std::shared_ptr<XiboLogger> XiboLogger::create(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks)
 {
-    globalLogger = std::shared_ptr<XiboLogger>(new XiboLogger{name, sinks});
-    return globalLogger;
+    g_xiboLogger = std::shared_ptr<XiboLogger>(new XiboLogger{name, sinks});
+    return g_xiboLogger;
 }
 
 std::shared_ptr<XiboLogger> XiboLogger::get()
 {
-    return globalLogger;
+    return g_xiboLogger;
 }
 
 void XiboLogger::setLevel(LoggingLevel level)
 {
-    m_combinedLogger->set_level(toSpdlogLevel(level));
+    combinedLogger_->set_level(toSpdlogLevel(level));
 }
 
 void XiboLogger::setPattern(const std::string& pattern)
 {
-    m_combinedLogger->set_pattern(pattern);
+    combinedLogger_->set_pattern(pattern);
 }
 
 void XiboLogger::flush()
 {
-    m_combinedLogger->flush();
+    combinedLogger_->flush();
 }
 
 XiboLogger::XiboLogger(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks)
 {
-    m_combinedLogger = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
-    spdlog::register_logger(m_combinedLogger);
+    combinedLogger_ = std::make_shared<spdlog::logger>(name, sinks.begin(), sinks.end());
+    spdlog::register_logger(combinedLogger_);
 }
 
 spdlog::level::level_enum XiboLogger::toSpdlogLevel(LoggingLevel level)

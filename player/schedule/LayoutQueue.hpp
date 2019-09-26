@@ -22,7 +22,7 @@ public:
             {
                 clear();
             }
-            m_queue.emplace_back(std::forward<T>(layout));
+            queue_.emplace_back(std::forward<T>(layout));
         }
     }
 
@@ -43,5 +43,5 @@ private:
     int highestPriority() const;
 
 private:
-    std::vector<ScheduledLayout> m_queue;
+    std::vector<ScheduledLayout> queue_;
 };

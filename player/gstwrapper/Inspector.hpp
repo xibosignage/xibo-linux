@@ -31,6 +31,6 @@ namespace Gst
         void retrieveStreamsInfo(Gst::InspectorResult& result, GList* streams_list);
 
     private:
-        GstDiscoverer* m_discoverer = nullptr;
+        GstDiscoverer* handler_ = nullptr;
     };
 }

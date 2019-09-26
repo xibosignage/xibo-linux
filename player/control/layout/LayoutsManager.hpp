@@ -28,10 +28,10 @@ private:
     std::unique_ptr<IMainLayout> createLayout(int layoutId);
 
 private:
-    std::unique_ptr<IMainLayout> m_mainLayout;
-    std::map<int, std::unique_ptr<IMainLayout>> m_overlayLayouts;
-    Scheduler& m_scheduler;
+    std::unique_ptr<IMainLayout> mainLayout_;
+    std::map<int, std::unique_ptr<IMainLayout>> overlayLayouts_;
+    Scheduler& scheduler_;
 
-    MainLayoutLoaded m_mainLayoutFetched;
-    OverlaysLoaded m_overlaysFetched;
+    MainLayoutLoaded mainLayoutFetched_;
+    OverlaysLoaded overlaysFetched_;
 };

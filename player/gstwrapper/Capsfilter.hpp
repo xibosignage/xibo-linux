@@ -14,6 +14,6 @@ namespace Gst
         Capsfilter();
 
     private:
-        Gst::RefPtr<Gst::Caps> m_caps;
+        Gst::RefPtr<Gst::Caps> caps_;
     };
 }

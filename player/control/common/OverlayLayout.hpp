@@ -41,9 +41,9 @@ private:
     void updateOffsets();
 
 private:
-    Gtk::Overlay m_handler;
-    std::shared_ptr<IWidget> m_mainChild;
-    WidgetsWithInfo m_children;
-    int m_xOffset = 0;
-    int m_yOffset = 0;
+    Gtk::Overlay handler_;
+    std::shared_ptr<IWidget> mainChild_;
+    WidgetsWithInfo children_;
+    int xOffset_ = 0;
+    int yOffset_ = 0;
 };

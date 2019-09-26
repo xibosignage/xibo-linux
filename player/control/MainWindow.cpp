@@ -12,17 +12,17 @@ const std::string DefaultStyle = "GtkWindow#mainWindow { background-color: black
 #endif
 
 MainWindow::MainWindow() :
-    Widget(m_handler),
-    m_layout(std::make_unique<OverlayLayout>(MinDisplayWidth, MinDisplayHeight))
+    Widget(handler_),
+    layout_(std::make_unique<OverlayLayout>(MinDisplayWidth, MinDisplayHeight))
 {
-    m_handler.signal_realize().connect(std::bind(&MainWindow::onRealized, this));
+    handler_.signal_realize().connect(std::bind(&MainWindow::onRealized, this));
     loadDefaultStyle();
 
-    m_handler.set_name("mainWindow");
-    m_handler.add(getHandler(*m_layout));
-    m_handler.add_events(Gdk::KEY_PRESS_MASK);
-    m_handler.signal_key_press_event().connect([this](GdkEventKey* event) {
-        m_keyPressed(event->string);
+    handler_.set_name("mainWindow");
+    handler_.add(getHandler(*layout_));
+    handler_.add_events(Gdk::KEY_PRESS_MASK);
+    handler_.signal_key_press_event().connect([this](GdkEventKey* event) {
+        keyPressed_(event->string);
         return false;
     });
 }
@@ -31,21 +31,21 @@ void MainWindow::showAll()
 {
     Widget::showAll();
 
-    m_layout->showAll();
+    layout_->showAll();
 }
 
 void MainWindow::scale(double scaleX, double scaleY)
 {
     Widget::scale(scaleX, scaleX);
 
-    m_layout->scale(scaleX, scaleY);
+    layout_->scale(scaleX, scaleY);
 }
 
 void MainWindow::onRealized()
 {
-    if (!m_cursorVisible)
+    if (!cursorVisible_)
     {
-        auto window = m_handler.get_window();
+        auto window = handler_.get_window();
         auto cursor = Gdk::Cursor::create(Gdk::BLANK_CURSOR);
         window->set_cursor(cursor);
     }
@@ -58,74 +58,74 @@ void MainWindow::loadDefaultStyle()
 
     if (css_provider->load_from_data(DefaultStyle))
     {
-        Glib::RefPtr<Gdk::Screen> screen = m_handler.get_screen();
+        Glib::RefPtr<Gdk::Screen> screen = handler_.get_screen();
         style_context->add_provider_for_screen(screen, css_provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     }
 }
 
 void MainWindow::setSize(int width, int height)
 {
-    m_originalWidth = width;
-    m_originalHeight = height;
+    originalWidth_ = width;
+    originalHeight_ = height;
 
-    m_layout->setSize(width, height);
+    layout_->setSize(width, height);
     setWindowSize(width, height);
 }
 
 int MainWindow::width() const
 {
     int width, _;
-    m_handler.get_default_size(width, _);
+    handler_.get_default_size(width, _);
     return width;
 }
 
 int MainWindow::height() const
 {
     int _, height;
-    m_handler.get_default_size(_, height);
+    handler_.get_default_size(_, height);
     return height;
 }
 
 int MainWindow::x() const
 {
-    return m_xPos;
+    return xPos_;
 }
 
 int MainWindow::y() const
 {
-    return m_yPos;
+    return yPos_;
 }
 
 void MainWindow::setMainLayout(const std::shared_ptr<IWidget>& child)
 {
-    m_layout->setMainChild(child);
+    layout_->setMainChild(child);
 }
 
 void MainWindow::setOverlays(const std::vector<std::shared_ptr<IOverlayLayout>>& children)
 {
-    m_layout->removeChildren();
+    layout_->removeChildren();
 
     for (auto&& child : children)
     {
-        m_layout->addChild(child, DefaultXPos, DefaultYPos, 0);
+        layout_->addChild(child, DefaultXPos, DefaultYPos, 0);
     }
 }
 
 void MainWindow::move(int x, int y)
 {
-    m_xPos = x;
-    m_yPos = y;
-    m_handler.move(x, y);
+    xPos_ = x;
+    yPos_ = y;
+    handler_.move(x, y);
 }
 
 void MainWindow::disableWindowResize()
 {
-    m_handler.set_resizable(false);
+    handler_.set_resizable(false);
 }
 
 void MainWindow::disableWindowDecoration()
 {
-    m_handler.set_decorated(false);
+    handler_.set_decorated(false);
 }
 
 void MainWindow::fullscreen()
@@ -133,13 +133,13 @@ void MainWindow::fullscreen()
     auto area = getCurrentMonitorGeometry();
 
     setWindowSize(area.get_width(), area.get_height());
-    m_handler.fullscreen();
+    handler_.fullscreen();
 }
 
 Gdk::Rectangle MainWindow::getCurrentMonitorGeometry() const
 {
     Gdk::Rectangle area;
-    auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(m_handler.get_screen());
+    auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(handler_.get_screen());
     auto monitor = screen->get_monitor_at_window(screen->get_active_window());
 
     screen->get_monitor_geometry(monitor, area);
@@ -149,12 +149,12 @@ Gdk::Rectangle MainWindow::getCurrentMonitorGeometry() const
 
 void MainWindow::unfullscreen()
 {
-    m_handler.unfullscreen();
-    m_windowState = m_handler.signal_window_state_event().connect([=](GdkEventWindowState* ev) {
+    handler_.unfullscreen();
+    windowState_ = handler_.signal_window_state_event().connect([=](GdkEventWindowState* ev) {
         if (ev->new_window_state != GDK_WINDOW_STATE_FULLSCREEN)
         {
-            m_windowState.disconnect();
-            setWindowSize(m_originalWidth, m_originalHeight);
+            windowState_.disconnect();
+            setWindowSize(originalWidth_, originalHeight_);
         }
         return true;
     });
@@ -162,27 +162,27 @@ void MainWindow::unfullscreen()
 
 void MainWindow::setCursorVisible(bool cursorVisible)
 {
-    m_cursorVisible = cursorVisible;
+    cursorVisible_ = cursorVisible;
 }
 
 SignalKeyPressed& MainWindow::keyPressed()
 {
-    return m_keyPressed;
+    return keyPressed_;
 }
 
 void MainWindow::setKeepAbove(bool keep_above)
 {
-    m_handler.set_keep_above(keep_above);
+    handler_.set_keep_above(keep_above);
 }
 
 Gtk::Window& MainWindow::get()
 {
-    return m_handler;
+    return handler_;
 }
 
 void MainWindow::setWindowSize(int width, int height)
 {
-    m_handler.set_default_size(width, height);
-    m_handler.resize(width, height);
-    m_resizeSignal();
+    handler_.set_default_size(width, height);
+    handler_.resize(width, height);
+    resizeSignal_();
 }

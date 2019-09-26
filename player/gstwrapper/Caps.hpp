@@ -15,7 +15,7 @@ namespace Gst
         std::string getName() const;
 
     private:
-        GstStructure* m_handler = nullptr;
+        GstStructure* handler_ = nullptr;
     };
 
     class Caps
@@ -32,6 +32,6 @@ namespace Gst
         GstCaps* handler();
 
     private:
-        GstCaps* m_handler = nullptr;
+        GstCaps* handler_ = nullptr;
     };
 }

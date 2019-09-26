@@ -39,11 +39,11 @@ private:
     void applyOutTransition();
 
 private:
-    MediaOptions m_options;
-    std::shared_ptr<IWidget> m_view;
-    std::unique_ptr<IMedia> m_attachedMedia;
-    std::unique_ptr<Timer> m_timer;
-    std::unique_ptr<TransitionExecutor> m_inTransition;
-    std::unique_ptr<TransitionExecutor> m_outTransition;
-    SignalMediaFinished m_mediaFinished;
+    MediaOptions options_;
+    std::shared_ptr<IWidget> view_;
+    std::unique_ptr<IMedia> attachedMedia_;
+    std::unique_ptr<Timer> timer_;
+    std::unique_ptr<TransitionExecutor> inTransition_;
+    std::unique_ptr<TransitionExecutor> outTransition_;
+    SignalMediaFinished mediaFinished_;
 };

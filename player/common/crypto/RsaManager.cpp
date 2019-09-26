@@ -19,21 +19,21 @@ void RsaManager::load()
 
     if (!FileSystem::exists(publicKeyPath) || !FileSystem::exists(privateKeyPath))
     {
-        m_keys = CryptoUtils::generateRsaKeys(RsaKeyLength);
-        CryptoUtils::saveRsaKeys(m_keys, publicKeyPath, privateKeyPath);
+        keys_ = CryptoUtils::generateRsaKeys(RsaKeyLength);
+        CryptoUtils::saveRsaKeys(keys_, publicKeyPath, privateKeyPath);
     }
     else
     {
-        m_keys = CryptoUtils::loadRsaKeys(publicKeyPath, privateKeyPath);
+        keys_ = CryptoUtils::loadRsaKeys(publicKeyPath, privateKeyPath);
     }
 }
 
 CryptoPP::RSA::PublicKey RsaManager::publicKey() const
 {
-    return m_keys.publicKey;
+    return keys_.publicKey;
 }
 
 CryptoPP::RSA::PrivateKey RsaManager::privateKey() const
 {
-    return m_keys.privateKey;
+    return keys_.privateKey;
 }

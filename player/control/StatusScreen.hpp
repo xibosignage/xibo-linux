@@ -14,5 +14,5 @@ public:
     Gtk::Widget& get() override;
 
 private:
-    Gtk::MessageDialog m_dialog;
+    Gtk::MessageDialog dialog_;
 };

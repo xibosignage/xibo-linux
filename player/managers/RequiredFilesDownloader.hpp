@@ -79,6 +79,6 @@ private:
     DownloadResult downloadXmdsFile(const RegularFile& file);
 
 private:
-    XmdsRequestSender& m_xmdsRequestSender;
-    std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
+    XmdsRequestSender& xmdsRequestSender_;
+    std::unique_ptr<XmdsFileDownloader> xmdsFileDownloader_;
 };

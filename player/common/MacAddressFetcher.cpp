@@ -12,11 +12,11 @@ const std::size_t ConfigBufferSize = 1024;
 const std::size_t MacAddressBuffer = 100;
 const int InvalidSocket = -1;
 
-MacAddressError::MacAddressError(std::string_view error) : m_error(error) {}
+MacAddressError::MacAddressError(std::string_view error) : error_(error) {}
 
 const char* MacAddressError::what() const noexcept
 {
-    return m_error.data();
+    return error_.data();
 }
 
 boost::optional<std::string> MacAddressFetcher::get()

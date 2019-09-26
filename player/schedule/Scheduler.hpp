@@ -47,12 +47,12 @@ private:
     void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
 private:
-    const IFileCache& m_fileCache;
-    LayoutSchedule m_schedule;
-    RegularLayoutQueue m_regularQueue;
-    OverlayLayoutQueue m_overlayQueue;
-    SignalScheduleUpdated m_scheduleUpdated;
-    SignalLayoutsUpdated m_layoutUpdated;
-    SignalLayoutsUpdated m_overlaysUpdated;
-    Timer m_timer;
+    const IFileCache& fileCache_;
+    LayoutSchedule schedule_;
+    RegularLayoutQueue regularQueue_;
+    OverlayLayoutQueue overlayQueue_;
+    SignalScheduleUpdated scheduleUpdated_;
+    SignalLayoutsUpdated layoutUpdated_;
+    SignalLayoutsUpdated overlaysUpdated_;
+    Timer timer_;
 };

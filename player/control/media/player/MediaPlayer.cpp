@@ -39,22 +39,22 @@ MediaPlayer::~MediaPlayer()
 
 void MediaPlayer::createGstElements()
 {
-    m_pipeline = Gst::Pipeline::create();
-    m_decodebin = Gst::Decodebin::create();
+    pipeline_ = Gst::Pipeline::create();
+    decodebin_ = Gst::Decodebin::create();
 
-    m_videoConverter = Gst::VideoConvert::create();
-    m_queue = Gst::Queue::create();
-    m_videoScale = Gst::VideoScale::create();
-    m_videoSink = Gst::Element::create("xibovideosink");
-    m_capsfilter = Gst::Capsfilter::create();
-    m_inspector = Gst::Inspector::create(InspectorTimeout);
+    videoConverter_ = Gst::VideoConvert::create();
+    queue_ = Gst::Queue::create();
+    videoScale_ = Gst::VideoScale::create();
+    videoSink_ = Gst::Element::create("xibovideosink");
+    capsfilter_ = Gst::Capsfilter::create();
+    inspector_ = Gst::Inspector::create(InspectorTimeout);
 
-    m_audioConverter = Gst::AudioConvert::create();
-    m_volume = Gst::Volume::create();
-    m_audioSink = Gst::AutoAudioSink::create();
+    audioConverter_ = Gst::AudioConvert::create();
+    volume_ = Gst::Volume::create();
+    audioSink_ = Gst::AutoAudioSink::create();
 
-    if (!m_pipeline || !m_decodebin || !m_videoConverter || !m_videoScale || !m_videoSink || !m_queue ||
-        !m_capsfilter || !m_audioConverter || !m_volume || !m_audioSink)
+    if (!pipeline_ || !decodebin_ || !videoConverter_ || !videoScale_ || !videoSink_ || !queue_ || !capsfilter_ ||
+        !audioConverter_ || !volume_ || !audioSink_)
     {
         throw std::runtime_error("[MediaPlayer] Error during creation");
     }
@@ -62,93 +62,93 @@ void MediaPlayer::createGstElements()
 
 void MediaPlayer::init()
 {
-    m_pipeline->addBusWatch(std::bind(&MediaPlayer::busMessageWatch, this, ph::_1));
+    pipeline_->addBusWatch(std::bind(&MediaPlayer::busMessageWatch, this, ph::_1));
 
-    m_decodebin->signalPadAdded().connect(std::bind(&MediaPlayer::onPadAdded, this, ph::_1));
-    m_decodebin->signalNoMorePads().connect(std::bind(&MediaPlayer::noMorePads, this));
+    decodebin_->signalPadAdded().connect(std::bind(&MediaPlayer::onPadAdded, this, ph::_1));
+    decodebin_->signalNoMorePads().connect(std::bind(&MediaPlayer::noMorePads, this));
 }
 
 void MediaPlayer::setOutputWindow(const std::shared_ptr<IVideoWindow>& window)
 {
-    m_outputWindow = window;
+    outputWindow_ = window;
 
-    m_outputWindow->shown().connect([this]() {
+    outputWindow_->shown().connect([this]() {
         boost::format videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"};
-        m_capsfilter->setCaps(Gst::Caps::create((videoFmt % m_outputWindow->width() % m_outputWindow->height()).str()));
+        capsfilter_->setCaps(Gst::Caps::create((videoFmt % outputWindow_->width() % outputWindow_->height()).str()));
     });
 
-    auto sink = GST_XIBOVIDEOSINK(m_videoSink->handler());
-    gst_xibovideosink_set_handler(sink, m_outputWindow);
+    auto sink = GST_XIBOVIDEOSINK(videoSink_->handler());
+    gst_xibovideosink_set_handler(sink, outputWindow_);
 }
 
 std::shared_ptr<IVideoWindow> MediaPlayer::outputWindow() const
 {
-    return m_outputWindow;
+    return outputWindow_;
 }
 
 void MediaPlayer::load(const Uri& uri)
 {
-    m_source = Gst::UriSrc::create(uri.scheme());
-    m_source->setLocation(uri);
+    source_ = Gst::UriSrc::create(uri.scheme());
+    source_->setLocation(uri);
 
     inspectFile(uri);
 }
 
 void MediaPlayer::inspectFile(const Uri& uri)
 {
-    m_mediaInfo = m_inspector->discover(uri.string());
+    mediaInfo_ = inspector_->discover(uri.string());
 
-    m_pipeline->add(m_source)->add(m_decodebin);
-    m_source->link(m_decodebin);
+    pipeline_->add(source_)->add(decodebin_);
+    source_->link(decodebin_);
 
-    if (m_mediaInfo.videoStream)
+    if (mediaInfo_.videoStream)
     {
-        m_pipeline->add(m_videoConverter)->add(m_queue)->add(m_videoScale)->add(m_videoSink)->add(m_capsfilter);
-        m_videoConverter->link(m_queue)->link(m_videoScale)->link(m_capsfilter)->link(m_videoSink);
+        pipeline_->add(videoConverter_)->add(queue_)->add(videoScale_)->add(videoSink_)->add(capsfilter_);
+        videoConverter_->link(queue_)->link(videoScale_)->link(capsfilter_)->link(videoSink_);
     }
-    if (m_mediaInfo.audioStream)
+    if (mediaInfo_.audioStream)
     {
-        m_pipeline->add(m_audioConverter)->add(m_volume)->add(m_audioSink);
-        m_audioConverter->link(m_volume)->link(m_audioSink);
+        pipeline_->add(audioConverter_)->add(volume_)->add(audioSink_);
+        audioConverter_->link(volume_)->link(audioSink_);
     }
 }
 
 void MediaPlayer::play()
 {
-    if (m_outputWindow)
+    if (outputWindow_)
     {
-        m_outputWindow->show();
+        outputWindow_->show();
     }
-    m_pipeline->setState(Gst::State::PLAYING);
+    pipeline_->setState(Gst::State::PLAYING);
 }
 
 void MediaPlayer::stopAndRemove()
 {
-    if (m_outputWindow)
+    if (outputWindow_)
     {
-        m_outputWindow->hide();
+        outputWindow_->hide();
     }
-    m_pipeline->setState(Gst::State::NULL_STATE);
+    pipeline_->setState(Gst::State::NULL_STATE);
 }
 
 void MediaPlayer::stopPlayback()
 {
-    m_pipeline->setState(Gst::State::NULL_STATE);
+    pipeline_->setState(Gst::State::NULL_STATE);
 }
 
 void MediaPlayer::setVolume(int volume)
 {
-    m_volume->setVolume(volume / static_cast<double>(MaxVolume));
+    volume_->setVolume(volume / static_cast<double>(MaxVolume));
 }
 
 SignalPlaybackFinished& MediaPlayer::playbackFinished()
 {
-    return m_playbackFinished;
+    return playbackFinished_;
 }
 
 Gst::InspectorResult MediaPlayer::mediaInfo() const
 {
-    return m_mediaInfo;
+    return mediaInfo_;
 }
 
 bool MediaPlayer::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
@@ -165,8 +165,8 @@ bool MediaPlayer::busMessageWatch(const Gst::RefPtr<Gst::Message>& message)
         case Gst::MessageType::EOS:
         {
             Log::debug("[MediaPlayer] End of stream");
-            m_pipeline->setState(Gst::State::NULL_STATE);
-            m_playbackFinished();
+            pipeline_->setState(Gst::State::NULL_STATE);
+            playbackFinished_();
             break;
         }
         default: break;
@@ -186,14 +186,14 @@ void MediaPlayer::onPadAdded(const Gst::RefPtr<Gst::Pad>& pad)
     {
         Log::trace("[MediaPlayer] Video pad added");
 
-        auto sinkpad = m_videoConverter->staticPad("sink");
+        auto sinkpad = videoConverter_->staticPad("sink");
         pad->link(sinkpad);
     }
     else if (mediaType == Gst::MediaType::Audio)
     {
         Log::trace("[MediaPlayer] Audio pad added");
 
-        auto sinkpad = m_audioConverter->staticPad("sink");
+        auto sinkpad = audioConverter_->staticPad("sink");
         pad->link(sinkpad);
     }
 }

@@ -17,26 +17,26 @@ std::string Utils::toString(PlayerError::Type type)
     return "unknown";
 }
 
-PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : m_type(type), m_message(message) {}
+PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : type_(type), message_(message) {}
 
 PlayerError::operator bool() const noexcept
 {
-    return m_type != PlayerError::Type::Success;
+    return type_ != PlayerError::Type::Success;
 }
 
 PlayerError::Type PlayerError::type() const noexcept
 {
-    return m_type;
+    return type_;
 }
 
 std::string PlayerError::name() const
 {
-    return Utils::toString(m_type);
+    return Utils::toString(type_);
 }
 
 std::string PlayerError::message() const
 {
-    return m_message;
+    return message_;
 }
 
 std::ostream& operator<<(std::ostream& out, const PlayerError& error)

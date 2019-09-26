@@ -24,6 +24,6 @@ public:
     friend std::ostream& operator<<(std::ostream& out, const PlayerError& error);
 
 private:
-    Type m_type = PlayerError::Type::Success;
-    std::string m_message;
+    Type type_ = PlayerError::Type::Success;
+    std::string message_;
 };

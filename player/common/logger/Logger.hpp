@@ -18,21 +18,19 @@ public:
     template <typename... Args>
     void log(LoggingLevel level, const char* fmt, const Args&... args)
     {
-        m_combinedLogger->log(toSpdlogLevel(level), fmt, args...);
+        combinedLogger_->log(toSpdlogLevel(level), fmt, args...);
     }
 
     template <typename T>
     void log(LoggingLevel level, const T& arg)
     {
-        m_combinedLogger->log(toSpdlogLevel(level), arg);
+        combinedLogger_->log(toSpdlogLevel(level), arg);
     }
 
 private:
     XiboLogger(const std::string& name, const std::vector<spdlog::sink_ptr>& sinks);
     spdlog::level::level_enum toSpdlogLevel(LoggingLevel level);
 
-    static std::shared_ptr<XiboLogger> globalLogger;
-
 private:
-    std::shared_ptr<spdlog::logger> m_combinedLogger;
+    std::shared_ptr<spdlog::logger> combinedLogger_;
 };

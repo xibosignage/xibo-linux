@@ -18,5 +18,5 @@ private:
     void onPlaybackFinished(const MediaPlayerOptions& options);
 
 private:
-    std::unique_ptr<IMediaPlayer> m_player;
+    std::unique_ptr<IMediaPlayer> player_;
 };

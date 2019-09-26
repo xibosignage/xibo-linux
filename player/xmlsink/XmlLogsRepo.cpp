@@ -8,17 +8,17 @@ XmlLogsRepo& XmlLogsRepo::get()
 
 std::string XmlLogsRepo::buffer() const
 {
-    return m_buffer;
+    return buffer_;
 }
 
 void XmlLogsRepo::append(const std::string& data)
 {
-    std::unique_lock lock{m_mutex};
-    m_buffer.append(data);
+    std::unique_lock lock{mutex_};
+    buffer_.append(data);
 }
 
 void XmlLogsRepo::clear()
 {
-    std::unique_lock lock{m_mutex};
-    m_buffer.clear();
+    std::unique_lock lock{mutex_};
+    buffer_.clear();
 }
