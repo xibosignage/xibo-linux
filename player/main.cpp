@@ -1,8 +1,19 @@
 #include "XiboApp.hpp"
 
-int main(int argc, char** argv)
-{
-    auto&& app = XiboApp::create("org.gtkmm.xibo");
+#include "common/logger/Logging.hpp"
 
-    return app.run(argc, argv);
+int main(int /*argc*/, char** /*argv*/)
+{
+    try
+    {
+        auto&& app = XiboApp::create("org.gtkmm.xibo");
+
+        return app.run();
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
+
+    return 0;
 }

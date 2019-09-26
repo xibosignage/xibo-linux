@@ -1,11 +1,11 @@
 #pragma once
 
+#include <cairomm/surface.h>
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
-#include <cairomm/surface.h>
 
-#include "view/MainWindow.hpp"
+#include "control/MainWindow.hpp"
 
 class FilePath;
 using ScreenShotTaken = std::function<void(const std::string&)>;
@@ -25,6 +25,4 @@ private:
 
 private:
     MainWindow& m_window;
-
-
 };

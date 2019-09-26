@@ -1,5 +1,6 @@
 function(copy_libs libraries_list)
-    foreach(lib_path ${libraries_list})
-        install(CODE "execute_process(COMMAND cp ${lib_path} ${CMAKE_CURRENT_BINARY_DIR}/libs/)")
+    foreach(lib ${libraries_list})
+        find_soname_lib(${lib} lib_soname)
+        install(CODE "execute_process(COMMAND cp ${lib_soname} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})")
     endforeach()
 endfunction()

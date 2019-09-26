@@ -1,14 +1,13 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "HttpManager.hpp"
-#include "FileCacheManager.hpp"
+#include "networking/HttpClient.hpp"
+#include "networking/xmds/XmdsFileDownloader.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
-#include "xmds/XmdsFileDownloader.hpp"
-#include "xmds/XmdsRequestSender.hpp"
-
-#include "utils/Resources.hpp"
-
-#include <fstream>
+#include "common/Utils.hpp"
+#include "common/fs/FileCache.hpp"
+#include "common/fs/Resources.hpp"
+#include "utils/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     m_xmdsRequestSender(xmdsRequestSender),
@@ -16,70 +15,91 @@ RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestS
 {
 }
 
-RequiredFilesDownloader::~RequiredFilesDownloader()
+RequiredFilesDownloader::~RequiredFilesDownloader() {}
+
+void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const std::string& content,
+                                              const std::string& hash)
 {
+    Managers::fileManager().save(filename, content, hash);
+}
+
+void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
+{
+    std::string hash = Utils::md5hash(content);
+    if (!Managers::fileManager().cached(filename, hash))
+    {
+        Managers::fileManager().save(filename, content, hash);
+    }
+}
+
+bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const std::string& filename,
+                                                      const std::string& hash)
+{
+    auto [error, fileContent] = result;
+    if (!error)
+    {
+        saveRegularFile(filename, fileContent, hash);
+
+        Log::debug("[{}] Downloaded", filename);
+        return true;
+    }
+    else
+    {
+        Log::error("[{}] Download error: {}", filename, error);
+        return false;
+    }
+}
+
+bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResult& result, const std::string& filename)
+{
+    auto [error, fileContent] = result;
+    if (!error)
+    {
+        saveResourceFile(filename, fileContent);
+
+        Log::debug("[{}] Downloaded", filename);
+        return true;
+    }
+    else
+    {
+        Log::error("[{}] Download error: {}", filename, error);
+        return false;
+    }
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
-
+    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
 
-        return processDownloadedContent(ResponseContentResult{error, result.resource}, fileName);
+        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
     });
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    if(file.downloadType == DownloadType::HTTP)
+    if (file.downloadType == RegularFile::DownloadType::HTTP)
     {
-        return downloadHttpFile(file.name, file.url);
+        return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future) {
+            return onRegularFileDownloaded(future.get(), file.name, file.hash);
+        });
     }
     else
     {
-        return downloadXmdsFile(file.id, file.name, file.type, file.size);
+        return m_xmdsFileDownloader->download(file.id, file.type, file.size)
+            .then([this, file](boost::future<XmdsResponseResult> future) {
+                return onRegularFileDownloaded(future.get(), file.name, file.hash);
+            });
     }
 }
 
-DownloadResult RequiredFilesDownloader::downloadHttpFile(const std::string& fileName, const std::string& fileUrl)
+bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return Utils::httpManager().get(fileUrl).then([this, fileName](boost::future<HttpResponseResult> future){
-        return processDownloadedContent(future.get(), fileName);
-    });
+    return !Managers::fileManager().valid(file.name) || !Managers::fileManager().cached(file.name, file.hash);
 }
 
-DownloadResult RequiredFilesDownloader::downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize)
+bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
 {
-    return m_xmdsFileDownloader->download(fileId, fileType, fileSize).then([this, fileName](boost::future<XmdsResponseResult> future){
-        return processDownloadedContent(future.get(), fileName);
-    });
-}
-
-bool RequiredFilesDownloader::processDownloadedContent(const ResponseContentResult& result, const std::string& fileName)
-{
-    auto [error, fileContent] = result;
-    if(!error)
-    {
-        Utils::fileManager().saveFile(fileName, fileContent);
-
-        Log::debug("[{}] Downloaded", fileName);
-        return true;
-    }
-    else
-    {
-        Log::error("[{}] Download error: {}", fileName, error);
-        return false;
-    }
-}
-
-bool RequiredFilesDownloader::isFileInCache(const RegularFile& file) const
-{
-    return Utils::fileManager().isFileInCache(file.md5);
-}
-
-bool RequiredFilesDownloader::isFileInCache(const ResourceFile&) const
-{
-    return false;
+    return true;
 }

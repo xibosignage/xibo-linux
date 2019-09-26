@@ -2,10 +2,128 @@
 
 #include <string>
 
-const std::string PROJECT_VERSION_PRIME = "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@";
-const int PROJECT_VERSION_BUILD = @PROJECT_VERSION_TWEAK@;
+#include "common/fs/FilePath.hpp"
+#include "common/fs/FileSystem.hpp"
 
-std::string getVersion()
+namespace ProjectResources
 {
-    return PROJECT_VERSION_PRIME + "-alpha build: " + std::to_string(PROJECT_VERSION_BUILD);
+    inline std::string version()
+    {
+    #ifdef SNAP_ENABLED
+        return getenv("SNAP_VERSION");
+    #else
+        return std::string{"dev-version"};
+    #endif
+    }
+
+    inline std::string codeVersion()
+    {
+    #ifdef SNAP_ENABLED
+        return getenv("SNAP_REVISION");
+    #else
+        return std::string{"dev-revision"};
+    #endif
+    }
+
+    const std::string BuildDir = "bin";
+    inline FilePath buildDirectory()
+    {
+    #ifdef SNAP_ENABLED
+        return FilePath{getenv("SNAP")} / BuildDir;
+    #else
+        return FileSystem::currentPath();
+    #endif
+    }
+
+    inline FilePath configDirectory()
+    {
+    #ifdef SNAP_ENABLED
+        return FilePath{getenv("SNAP_USER_COMMON")};
+    #else
+        return FileSystem::currentPath();
+    #endif
+    }
+
+#ifdef SNAP_ENABLED
+    inline FilePath oldConfigDirectory()
+    {
+        return FilePath{getenv("SNAP_USER_DATA")};
+    }
+#endif
+
+    const std::string PublicKeyFile = "id_rsa.pub";
+    inline FilePath publicKeyPath()
+    {
+        return configDirectory() / PublicKeyFile;
+    }
+
+    const std::string PrivateKeyFile = "id_rsa";
+    inline FilePath privateKeyPath()
+    {
+        return configDirectory() / PrivateKeyFile;
+    }
+
+    const std::string ResourcesDir = "resources";
+    inline FilePath defaultResourcesDir()
+    {
+        return configDirectory() / ResourcesDir;
+    }
+
+    const std::string SplashImage = "splash.jpg";
+    inline FilePath splashScreen()
+    {
+        return buildDirectory() / SplashImage;
+    }
+
+    const std::string UiGlade = "ui.glade";
+    inline FilePath uiFile()
+    {
+        return buildDirectory() / UiGlade;
+    }
+
+    const std::string CmsSettingsFile = "cmsSettings.xml";
+    inline FilePath cmsSettingsPath()
+    {
+        return configDirectory() / CmsSettingsFile;
+    }
+
+    const std::string PlayerSettingsFile = "playerSettings.xml";
+    inline FilePath playerSettingsPath()
+    {
+        return configDirectory() / PlayerSettingsFile;
+    }
+
+    const std::string ScheduleFile = "schedule.xml";
+    inline FilePath schedulePath()
+    {
+        return configDirectory() / ScheduleFile;
+    }
+
+    const std::string CacheFile = "cacheFile.xml";
+    inline FilePath cachePath()
+    {
+        return configDirectory() / CacheFile;
+    }
+
+    const std::string PlayerBin = "player";
+    inline std::string playerBinary()
+    {
+        auto path = buildDirectory() / PlayerBin;
+    #ifdef SNAP_ENABLED
+        return "desktop-launch " + path.string();
+    #else
+        return path.string();
+    #endif
+    }
+
+    inline std::string optionsBinary()
+    {
+        auto path = buildDirectory() / "options";
+    #ifdef SNAP_ENABLED
+        return "desktop-launch " + path.string();
+    #else
+        return path.string();
+    #endif
+    }
+
 }

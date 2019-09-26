@@ -1,8 +1,8 @@
 #pragma once
 
-#include "utils/ResponseResult.hpp"
-#include "utils/logger/Logging.hpp"
-#include "xmds/MediaInventoryItem.hpp"
+#include "common/logger/Logging.hpp"
+#include "networking/ResponseResult.hpp"
+#include "networking/xmds/MediaInventoryItem.hpp"
 
 #include <boost/thread/future.hpp>
 
@@ -18,26 +18,26 @@ public:
     RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender);
     ~RequiredFilesDownloader();
 
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
     boost::future<MediaInventoryItems> download(const FilesToDownload<RequiredFileType>& files)
     {
-        return boost::async(boost::launch::async, [this, files = std::move(files)](){
+        return boost::async(boost::launch::async, [this, files = std::move(files)]() {
             auto downloadResults = downloadAll(files);
             return retrieveDownloadResults(files, std::move(downloadResults));
         });
     }
 
 private:
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
     DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
     {
         DownloadResults results;
 
-        for(auto&& file : requiredFiles)
+        for (auto&& file : requiredFiles)
         {
             Log::trace(file);
 
-            if(!isFileInCache(file))
+            if (shouldBeDownloaded(file))
             {
                 results.emplace_back(downloadRequiredFile(file));
             }
@@ -46,12 +46,13 @@ private:
         return results;
     }
 
-    template<typename RequiredFileType>
-    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files, DownloadResults&& results)
+    template <typename RequiredFileType>
+    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files,
+                                                DownloadResults&& results)
     {
         MediaInventoryItems items;
 
-        for(std::size_t i = 0; i != results.size(); ++i)
+        for (std::size_t i = 0; i != results.size(); ++i)
         {
             bool downloadComplete = results[i].get();
             auto&& downloadedFile = files[i];
@@ -62,17 +63,22 @@ private:
         return items;
     }
 
-    bool isFileInCache(const RegularFile& file) const;
-    bool isFileInCache(const ResourceFile& resource) const;
+    void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
+    void saveResourceFile(const std::string& filename, const std::string& fileContent);
+
+    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName,
+                                 const std::string& hash);
+    bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
+
+    bool shouldBeDownloaded(const RegularFile& file) const;
+    bool shouldBeDownloaded(const ResourceFile& resource) const;
 
     DownloadResult downloadRequiredFile(const ResourceFile& res);
     DownloadResult downloadRequiredFile(const RegularFile& file);
-    DownloadResult downloadHttpFile(const std::string& fileName, const std::string& fileUrl);
-    DownloadResult downloadXmdsFile(int fileId, const std::string& fileName, const std::string& fileType, std::size_t fileSize);
-    bool processDownloadedContent(const ResponseContentResult& result, const std::string& fileName);
+    DownloadResult downloadHttpFile(const RegularFile& file);
+    DownloadResult downloadXmdsFile(const RegularFile& file);
 
 private:
     XmdsRequestSender& m_xmdsRequestSender;
     std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
-
 };

@@ -16,5 +16,4 @@ private:
     std::string doubleDigit(char digit);
     bool isColorWithoutAlpha(const std::string& hexColor) const;
     std::string appendDefaultAlphaChannel(const std::string& hexColor);
-
 };
