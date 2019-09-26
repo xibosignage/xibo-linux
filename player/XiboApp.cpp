@@ -133,6 +133,7 @@ void XiboApp::setupXmrManager()
         Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
             xmdsManager_->submitScreenShot(screenshot).then([](auto future) {
                 auto [error, result] = future.get();
+                boost::ignore_unused(result);
                 if (error)
                 {
                     Log::error("[SubmitScreenShot] {}", error);

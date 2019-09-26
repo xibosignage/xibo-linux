@@ -6,6 +6,7 @@
 #include "common/fs/FileSystem.hpp"
 #include "networking/xmds/Resources.hpp"
 
+#include <boost/core/ignore_unused.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
 namespace Resources = XmdsResources::Schedule;
@@ -100,6 +101,7 @@ LayoutList ScheduleParser::overlayLayoutsFrom(const ptree_node& overlaysNode)
 
     for (auto [name, node] : overlaysNode)
     {
+        boost::ignore_unused(name);
         overlayLayouts.emplace_back(scheduledLayoutFrom(node));
     }
 
@@ -112,6 +114,7 @@ LayoutDependants ScheduleParser::dependantsFrom(const ptree_node& dependantsNode
 
     for (auto&& [name, file] : dependantsNode)
     {
+        boost::ignore_unused(name);
         dependants.emplace_back(file.get_value<std::string>());
     }
 

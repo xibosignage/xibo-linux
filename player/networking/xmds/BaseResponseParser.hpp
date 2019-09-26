@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/core/ignore_unused.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 #include "common/Parsing.hpp"
@@ -25,6 +26,7 @@ namespace Soap
             if (responseTree_)
             {
                 auto [name, bodyNode] = responseTree_->front();
+                boost::ignore_unused(name);
 
                 if (auto node = getFaultNode())
                 {

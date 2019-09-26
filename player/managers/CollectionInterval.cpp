@@ -216,7 +216,8 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         }
         else
         {
-            Log::debug("[MediaInventory] Updated");
+            std::string message = result.success ? "Updated" : "Not updated";
+            Log::debug("[MediaInventory] {}", message);
         }
     });
 }
@@ -252,7 +253,8 @@ void CollectionInterval::submitScreenShot()
             }
             else
             {
-                Log::debug("[SubmitScreenShot] Submitted");
+                std::string message = result.success ? "Submitted" : "Not submitted";
+                Log::debug("[SubmitScreenShot] {}", message);
             }
         });
     });

@@ -1,6 +1,9 @@
 #include "CryptoUtils.hpp"
 #include "fs/FilePath.hpp"
 
+// We use weak ARC4 due to CMS restrictions
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
 #include <cryptopp/arc4.h>
 #include <cryptopp/files.h>
 #include <cryptopp/osrng.h>
@@ -55,7 +58,7 @@ std::string CryptoUtils::decryptRc4(const std::string& message, const std::strin
     auto messageRaw = reinterpret_cast<unsigned char*>(const_cast<char*>(message.c_str()));
     auto keyRaw = reinterpret_cast<unsigned char*>(const_cast<char*>(key.c_str()));
 
-    CryptoPP::ARC4 rc4{keyRaw, key.size()};
+    CryptoPP::Weak::ARC4 rc4{keyRaw, key.size()};
     rc4.ProcessString(messageRaw, message.size());
 
     return message;
