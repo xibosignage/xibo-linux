@@ -16,5 +16,5 @@ private:
     RsaManager() = default;
 
 private:
-    RsaKeyPair m_keys;
+    RsaKeyPair keys_;
 };

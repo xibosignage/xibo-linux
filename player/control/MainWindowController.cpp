@@ -11,19 +11,19 @@ namespace ph = std::placeholders;
 const std::string StatusScreenKey = "i";
 
 MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& window, LayoutsManager& layoutsManager) :
-    m_window(window),
-    m_layoutsManager(layoutsManager)
+    window_(window),
+    layoutsManager_(layoutsManager)
 {
-    m_window->disableWindowDecoration();
-    m_window->setCursorVisible(false);
-    m_window->keyPressed().connect(std::bind(&MainWindowController::onKeyPressed, this, ph::_1));
+    window_->disableWindowDecoration();
+    window_->setCursorVisible(false);
+    window_->keyPressed().connect(std::bind(&MainWindowController::onKeyPressed, this, ph::_1));
 
-    m_layoutsManager.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout) {
+    layoutsManager_.mainLayoutFetched().connect([this](const std::shared_ptr<IOverlayLayout>& layout) {
         if (layout)
         {
             scaleLayout(layout);
 
-            m_window->setMainLayout(layout);
+            window_->setMainLayout(layout);
             layout->showAll();
         }
         else
@@ -32,13 +32,13 @@ MainWindowController::MainWindowController(const std::shared_ptr<IMainWindow>& w
         }
     });
 
-    m_layoutsManager.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays) {
+    layoutsManager_.overlaysFetched().connect([this](const std::vector<std::shared_ptr<IOverlayLayout>>& overlays) {
         for (auto&& layout : overlays)
         {
             scaleLayout(layout);
             layout->showAll();
         }
-        m_window->setOverlays(overlays);
+        window_->setOverlays(overlays);
     });
 }
 
@@ -46,25 +46,25 @@ void MainWindowController::onKeyPressed(const std::string& pressedKey)
 {
     if (pressedKey == StatusScreenKey)
     {
-        m_statusScrenRequested();
+        statusScrenRequested_();
     }
 }
 
 void MainWindowController::showSplashScreen()
 {
     auto splashScreen = createSplashScreen();
-    m_window->setMainLayout(splashScreen);
+    window_->setMainLayout(splashScreen);
     splashScreen->show();
 }
 
 StatusScreenRequested& MainWindowController::statusScreenRequested()
 {
-    return m_statusScrenRequested;
+    return statusScrenRequested_;
 }
 
 std::shared_ptr<IImage> MainWindowController::createSplashScreen()
 {
-    auto spashImage = std::make_shared<Image>(m_window->width(), m_window->height());
+    auto spashImage = std::make_shared<Image>(window_->width(), window_->height());
 
     spashImage->loadFromFile(ProjectResources::splashScreen(), false);
 
@@ -73,8 +73,8 @@ std::shared_ptr<IImage> MainWindowController::createSplashScreen()
 
 void MainWindowController::scaleLayout(const std::shared_ptr<IOverlayLayout>& layout)
 {
-    double scaleX = static_cast<double>(m_window->width()) / layout->width();
-    double scaleY = static_cast<double>(m_window->height()) / layout->height();
+    double scaleX = static_cast<double>(window_->width()) / layout->width();
+    double scaleY = static_cast<double>(window_->height()) / layout->height();
     double scaleFactor = std::min(scaleX, scaleY);
 
     layout->scale(scaleFactor, scaleFactor);
@@ -84,7 +84,7 @@ void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensio
 {
     if (shouldBeFullscreen(dimensions))
     {
-        m_window->fullscreen();
+        window_->fullscreen();
     }
     else
     {
@@ -96,18 +96,18 @@ void MainWindowController::updateWindowDimensions(const PlayerSettings::Dimensio
 // move to MainWindow
 void MainWindowController::setWindowSize(int width, int height)
 {
-    if (width != m_window->width() || height != m_window->height())
+    if (width != window_->width() || height != window_->height())
     {
-        m_window->setSize(width, height);
+        window_->setSize(width, height);
     }
 }
 
 // move to MainWindow
 void MainWindowController::setWindowPos(int x, int y)
 {
-    if (x != m_window->x() || y != m_window->y())
+    if (x != window_->x() || y != window_->y())
     {
-        m_window->move(x, y);
+        window_->move(x, y);
     }
 }
 

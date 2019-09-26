@@ -1,29 +1,29 @@
 #include "Pad.hpp"
 #include "Caps.hpp"
 
-Gst::Pad::Pad(GstPad* handler, bool takeOwnership) : m_handler(handler), m_takeOwnership(takeOwnership) {}
+Gst::Pad::Pad(GstPad* handler, bool takeOwnership) : handler_(handler), takeOwnership_(takeOwnership) {}
 
 Gst::Pad::~Pad()
 {
-    if (m_takeOwnership)
+    if (takeOwnership_)
     {
-        gst_object_unref(m_handler);
+        gst_object_unref(handler_);
     }
 }
 
 Gst::PadLinkReturn Gst::Pad::link(const Gst::RefPtr<Gst::Pad>& other)
 {
-    return static_cast<PadLinkReturn>(gst_pad_link(m_handler, other->m_handler));
+    return static_cast<PadLinkReturn>(gst_pad_link(handler_, other->handler_));
 }
 
 bool Gst::Pad::isLinked() const
 {
-    return gst_pad_is_linked(m_handler);
+    return gst_pad_is_linked(handler_);
 }
 
 Gst::RefPtr<Gst::Caps> Gst::Pad::getCurrentCaps() const
 {
-    auto caps = gst_pad_get_current_caps(m_handler);
+    auto caps = gst_pad_get_current_caps(handler_);
 
     if (!caps) return nullptr;
     return std::make_shared<Gst::Caps>(caps);

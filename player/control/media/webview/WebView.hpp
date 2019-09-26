@@ -28,7 +28,7 @@ private:
     void screenChanged(const Glib::RefPtr<Gdk::Screen>& screen);
 
 private:
-    Gtk::ScrolledWindow m_handler;
-    WebKitWebView* m_webView = nullptr;
-    sigc::connection m_sizeAllocateConnection;
+    Gtk::ScrolledWindow handler_;
+    WebKitWebView* webView_ = nullptr;
+    sigc::connection sizeAllocateConnection_;
 };

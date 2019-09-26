@@ -14,7 +14,7 @@ namespace Soap
         using OptionalParsedNode = boost::optional<ptree_node&>;
         using ParsedNode = ptree_node;
 
-        BaseResponseParser(const std::string& response) : m_response(response)
+        BaseResponseParser(const std::string& response) : response_(response)
         {
             tryParseResponse(response);
         }
@@ -22,9 +22,9 @@ namespace Soap
 
         ResponseResult<Result> get()
         {
-            if (m_responseTree)
+            if (responseTree_)
             {
-                auto [name, bodyNode] = m_responseTree->front();
+                auto [name, bodyNode] = responseTree_->front();
 
                 if (auto node = getFaultNode())
                 {
@@ -34,7 +34,7 @@ namespace Soap
                 return parseBodyImpl(bodyNode);
             }
 
-            return std::pair{PlayerError{PlayerError::Type::SOAP, m_response}, Result{}};
+            return std::pair{PlayerError{PlayerError::Type::SOAP, response_}, Result{}};
         }
 
     protected:
@@ -61,7 +61,7 @@ namespace Soap
         {
             try
             {
-                m_responseTree =
+                responseTree_ =
                     Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
             }
             catch (std::exception&)
@@ -71,7 +71,7 @@ namespace Soap
 
         OptionalParsedNode getFaultNode()
         {
-            return m_responseTree->get_child_optional("SOAP-ENV:Fault");
+            return responseTree_->get_child_optional("SOAP-ENV:Fault");
         }
 
         PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
@@ -81,8 +81,8 @@ namespace Soap
         }
 
     private:
-        std::string m_response;
-        boost::optional<ParsedNode> m_responseTree;
+        std::string response_;
+        boost::optional<ParsedNode> responseTree_;
     };
 
 }

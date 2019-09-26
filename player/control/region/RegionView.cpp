@@ -1,6 +1,6 @@
 #include "RegionView.hpp"
 
-RegionView::RegionView(int width, int height) : Widget(m_handler)
+RegionView::RegionView(int width, int height) : Widget(handler_)
 {
     setSize(width, height);
 }
@@ -9,9 +9,9 @@ void RegionView::addMedia(const std::shared_ptr<IWidget>& child, int left, int t
 {
     if (child)
     {
-        m_handler.put(getHandler(*child), left, top);
+        handler_.put(getHandler(*child), left, top);
 
-        m_media.emplace_back(child);
+        media_.emplace_back(child);
     }
 }
 
@@ -23,19 +23,19 @@ void RegionView::scale(double scaleX, double scaleY)
 
 void RegionView::scaleMedia(double scaleX, double scaleY)
 {
-    for (auto&& widget : m_media)
+    for (auto&& widget : media_)
     {
         auto&& handler = getHandler(*widget);
 
-        int x = m_handler.child_property_x(handler);
-        int y = m_handler.child_property_y(handler);
+        int x = handler_.child_property_x(handler);
+        int y = handler_.child_property_y(handler);
 
         widget->scale(scaleX, scaleY);
-        m_handler.move(handler, static_cast<int>(x * scaleX), static_cast<int>(y * scaleY));
+        handler_.move(handler, static_cast<int>(x * scaleX), static_cast<int>(y * scaleY));
     }
 }
 
 Gtk::Fixed& RegionView::get()
 {
-    return m_handler;
+    return handler_;
 }

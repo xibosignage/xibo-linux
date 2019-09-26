@@ -13,6 +13,6 @@ public:
     void clear();
 
 private:
-    std::string m_buffer;
-    std::mutex m_mutex;
+    std::string buffer_;
+    std::mutex mutex_;
 };

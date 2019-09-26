@@ -4,7 +4,7 @@
 
 struct GeneralInfo
 {
-    DateTime currentDT;
+    DateTime currentDateTime;
     std::string projectVersion;
     std::string codeVersion;
     std::string cmsAddress;

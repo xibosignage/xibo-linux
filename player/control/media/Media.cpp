@@ -4,21 +4,21 @@
 #include "constants.hpp"
 
 Media::Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view) :
-    m_options(options),
-    m_view(view),
-    m_timer(std::make_unique<Timer>())
+    options_(options),
+    view_(view),
+    timer_(std::make_unique<Timer>())
 {
 }
 
 void Media::attach(std::unique_ptr<IMedia>&& attachedMedia)
 {
-    m_attachedMedia = std::move(attachedMedia);
+    attachedMedia_ = std::move(attachedMedia);
 }
 
 void Media::start()
 {
     startAttachedMedia();
-    startTimer(m_options.duration);
+    startTimer(options_.duration);
     onStarted();
 }
 
@@ -26,23 +26,23 @@ void Media::startTimer(int duration)
 {
     if (duration > 0)
     {
-        m_timer->start(std::chrono::seconds(duration), [this] { m_mediaFinished(); });
+        timer_->start(std::chrono::seconds(duration), [this] { mediaFinished_(); });
     }
 }
 
 void Media::startAttachedMedia()
 {
-    if (m_attachedMedia)
+    if (attachedMedia_)
     {
-        m_attachedMedia->start();
+        attachedMedia_->start();
     }
 }
 
 void Media::onStarted()
 {
-    if (m_view)
+    if (view_)
     {
-        m_view->show();
+        view_->show();
     }
 }
 
@@ -54,54 +54,54 @@ void Media::stop()
 
 void Media::setInTransition(std::unique_ptr<TransitionExecutor>&& transition)
 {
-    m_inTransition = std::move(transition);
+    inTransition_ = std::move(transition);
 }
 
 void Media::setOutTransition(std::unique_ptr<TransitionExecutor>&& transition)
 {
-    m_outTransition = std::move(transition);
+    outTransition_ = std::move(transition);
 }
 
 void Media::stopAttachedMedia()
 {
-    if (m_attachedMedia)
+    if (attachedMedia_)
     {
-        m_attachedMedia->stop();
+        attachedMedia_->stop();
     }
 }
 
 void Media::applyInTransition()
 {
-    if (m_inTransition)
+    if (inTransition_)
     {
-        m_inTransition->apply();
+        inTransition_->apply();
     }
 }
 
 void Media::onStopped()
 {
-    if (m_view)
+    if (view_)
     {
-        m_view->hide();
+        view_->hide();
     }
 }
 
 SignalMediaFinished& Media::mediaFinished()
 {
-    return m_mediaFinished;
+    return mediaFinished_;
 }
 
 MediaGeometry::Align Media::align() const
 {
-    return m_options.geometry.align;
+    return options_.geometry.align;
 }
 
 MediaGeometry::Valign Media::valign() const
 {
-    return m_options.geometry.valign;
+    return options_.geometry.valign;
 }
 
 std::shared_ptr<IWidget> Media::view()
 {
-    return m_view;
+    return view_;
 }

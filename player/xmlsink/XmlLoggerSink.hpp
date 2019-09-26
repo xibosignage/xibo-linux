@@ -15,7 +15,7 @@ template <typename Mutex>
 class XmlLoggerSink : public spdlog::sinks::base_sink<Mutex>
 {
 public:
-    XmlLoggerSink(XmlLogsRepo& registry) : m_registry(registry) {}
+    XmlLoggerSink(XmlLogsRepo& registry) : registry_(registry) {}
 
 protected:
     void sink_it_(const spdlog::details::log_msg& msg) override
@@ -25,14 +25,14 @@ protected:
 
     void flush_() override
     {
-        m_registry.append(m_buffer);
-        m_buffer.clear();
+        registry_.append(buffer_);
+        buffer_.clear();
     }
 
 private:
     void writeMessageToFile(const std::string& message)
     {
-        m_buffer.append(message);
+        buffer_.append(message);
     }
 
     std::string formatMessage(const spdlog::details::log_msg& msg)
@@ -72,8 +72,8 @@ private:
     }
 
 private:
-    std::string m_buffer;
-    XmlLogsRepo& m_registry;
+    std::string buffer_;
+    XmlLogsRepo& registry_;
 };
 
 using LoggerXmlSinkMt = XmlLoggerSink<std::mutex>;

@@ -75,6 +75,6 @@ namespace Gst
         GstElement* element() const;
 
     private:
-        GstElement* m_element = nullptr;
+        GstElement* handler_ = nullptr;
     };
 }

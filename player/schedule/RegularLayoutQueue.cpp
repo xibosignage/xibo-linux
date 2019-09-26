@@ -3,7 +3,7 @@
 bool RegularLayoutQueue::inQueue(LayoutId id) const
 {
     if (!empty()) return layoutIndexBy(id).has_value();
-    if (m_defaultLayout) return m_defaultLayout->id == id;
+    if (defaultLayout_) return defaultLayout_->id == id;
 
     return false;
 }
@@ -13,8 +13,8 @@ void RegularLayoutQueue::updateCurrent(LayoutId id)
     auto index = layoutIndexBy(id);
     if (index)
     {
-        m_nextIndex = increaseIndex(index.value());
-        m_currentId = id;
+        nextIndex_ = increaseIndex(index.value());
+        currentId_ = id;
     }
 }
 
@@ -22,26 +22,26 @@ LayoutId RegularLayoutQueue::next() const
 {
     if (!empty())
     {
-        m_currentId = nextRegularLayout().id;
+        currentId_ = nextRegularLayout().id;
     }
     else
     {
-        m_currentId = m_defaultLayout ? m_defaultLayout->id : EmptyLayoutId;
+        currentId_ = defaultLayout_ ? defaultLayout_->id : EmptyLayoutId;
     }
 
-    return m_currentId;
+    return currentId_;
 }
 
 LayoutId RegularLayoutQueue::current() const
 {
-    return m_currentId;
+    return currentId_;
 }
 
 const ScheduledLayout& RegularLayoutQueue::nextRegularLayout() const
 {
-    size_t currentIndex = m_nextIndex;
+    size_t currentIndex = nextIndex_;
 
-    m_nextIndex = increaseIndex(currentIndex);
+    nextIndex_ = increaseIndex(currentIndex);
 
     return at(currentIndex);
 }

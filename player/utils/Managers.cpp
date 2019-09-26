@@ -3,15 +3,15 @@
 
 FileCache& Managers::fileManager()
 {
-    return XiboApp::app().fileManager();
+    return xiboApp().fileManager();
 }
 
 ScreenShoter& Managers::screenShoter()
 {
-    return XiboApp::app().screenShoter();
+    return xiboApp().screenShoter();
 }
 
 XiboWebServer& Managers::webserver()
 {
-    return XiboApp::app().webserver();
+    return xiboApp().webserver();
 }

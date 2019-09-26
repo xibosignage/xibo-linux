@@ -59,16 +59,16 @@ private:
     void submitScreenShot();
 
 private:
-    XmdsRequestSender& m_xmdsSender;
-    std::unique_ptr<JoinableThread> m_workerThread;
-    std::unique_ptr<Timer> m_intervalTimer;
-    int m_collectInterval;
-    bool m_started = false;
-    bool m_registered = false;
-    DateTime m_lastChecked;
-    size_t m_requiredFiles = 0;
-    SignalSettingsUpdated m_settingsUpdated;
-    SignalScheduleAvailable m_scheduleAvailable;
-    SignalCollectionFinished m_collectionFinished;
-    SignalFilesDownloaded m_filesDownloaded;
+    XmdsRequestSender& xmdsSender_;
+    std::unique_ptr<JoinableThread> workerThread_;
+    std::unique_ptr<Timer> intervalTimer_;
+    int collectInterval_;
+    bool started_ = false;
+    bool registered_ = false;
+    DateTime lastChecked_;
+    size_t requiredFiles_ = 0;
+    SignalSettingsUpdated settingsUpdated_;
+    SignalScheduleAvailable scheduleAvailable_;
+    SignalCollectionFinished collectionFinished_;
+    SignalFilesDownloaded filesDownloaded_;
 };

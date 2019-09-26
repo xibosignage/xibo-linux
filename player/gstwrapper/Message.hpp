@@ -59,8 +59,8 @@ namespace Gst
         std::string_view getDebugInfo() const;
 
     private:
-        std::string m_text;
-        std::string m_debugInfo;
+        std::string text_;
+        std::string debugInfo_;
     };
 
     class Message
@@ -72,7 +72,7 @@ namespace Gst
         Gst::MessageType type() const;
 
     private:
-        GstMessage* m_handler = nullptr;
-        bool m_takeOwnership;
+        GstMessage* handler_ = nullptr;
+        bool takeOwnership_;
     };
 }

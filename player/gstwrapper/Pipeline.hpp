@@ -24,7 +24,7 @@ namespace Gst
         static gboolean onBusWatch(GstBus*, GstMessage* message, gpointer);
 
     private:
-        std::function<bool(const Gst::RefPtr<Gst::Message>&)> m_watchHandler;
-        guint m_watchId;
+        std::function<bool(const Gst::RefPtr<Gst::Message>&)> watchHandler_;
+        guint watchId_;
     };
 }

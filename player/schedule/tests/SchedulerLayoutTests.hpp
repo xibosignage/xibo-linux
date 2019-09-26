@@ -9,7 +9,7 @@ protected:
     {
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
-        ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(false));
+        ON_CALL(*fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(false));
         layout.startDT = DateTime::now() - DateTime::Hours(1);
         layout.endDT = DateTime::now() + DateTime::Hours(1);
 
@@ -20,7 +20,7 @@ protected:
     {
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
-        ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
+        ON_CALL(*fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
         layout.startDT = DateTime::now() + DateTime::Hours(1);
         layout.endDT = DateTime::now() + DateTime::Hours(2);
 

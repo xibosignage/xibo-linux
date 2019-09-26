@@ -19,7 +19,7 @@ private:
     XiboVideoFrame(GstVideoInfo* info, GstBuffer* buffer);
 
 private:
-    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    GstVideoFrame m_frame;
-    bool m_mapped = false;
+    Cairo::RefPtr<Cairo::ImageSurface> surface_;
+    GstVideoFrame frame_;
+    bool mapped_ = false;
 };

@@ -5,26 +5,26 @@
 
 namespace ph = std::placeholders;
 
-MainLayout::MainLayout(const std::shared_ptr<IOverlayLayout>& view) : m_view(view) {}
+MainLayout::MainLayout(const std::shared_ptr<IOverlayLayout>& view) : view_(view) {}
 
 void MainLayout::addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z)
 {
     region->expired().connect(std::bind(&MainLayout::onRegionExpired, this, ph::_1));
 
-    m_view->addChild(region->view(), x, y, z);
-    m_regions.emplace_back(std::move(region));
+    view_->addChild(region->view(), x, y, z);
+    regions_.emplace_back(std::move(region));
 }
 
 SignalLayoutExpired& MainLayout::expired()
 {
-    return m_layoutExpired;
+    return layoutExpired_;
 }
 
 void MainLayout::restart()
 {
-    m_expiredRegions.clear();
+    expiredRegions_.clear();
 
-    for (auto&& region : m_regions)
+    for (auto&& region : regions_)
     {
         region->start();
     }
@@ -32,21 +32,21 @@ void MainLayout::restart()
 
 std::shared_ptr<IOverlayLayout> MainLayout::view()
 {
-    return m_view;
+    return view_;
 }
 
 void MainLayout::onRegionExpired(int regionId)
 {
     Log::trace("Region {} expired", regionId);
-    m_expiredRegions.insert(regionId);
+    expiredRegions_.insert(regionId);
 
     if (areAllRegionsExpired())
     {
-        m_layoutExpired();
+        layoutExpired_();
     }
 }
 
 bool MainLayout::areAllRegionsExpired() const
 {
-    return m_expiredRegions.size() == m_regions.size();
+    return expiredRegions_.size() == regions_.size();
 }

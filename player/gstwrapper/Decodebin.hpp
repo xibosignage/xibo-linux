@@ -24,7 +24,7 @@ namespace Gst
         void noMorePadsMem(GstElement* el, gpointer data);
 
     private:
-        SignalPadAdded m_signalPadAdded;
-        SignalsNoMorePads m_signalNoMorePads;
+        SignalPadAdded signalPadAdded_;
+        SignalsNoMorePads signalNoMorePads_;
     };
 }

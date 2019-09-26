@@ -14,7 +14,7 @@ public:
 
     void emit(Args... args)
     {
-        m_args = std::make_tuple<Args...>(std::forward<Args>(args)...);
+        args_ = std::make_tuple<Args...>(std::forward<Args>(args)...);
         Glib::Dispatcher::emit();
     }
 
@@ -22,19 +22,19 @@ public:
     {
         Glib::Dispatcher::connect([=]() { invokeSignal(std::make_index_sequence<sizeof...(Args)>{}); });
 
-        return m_signal.connect(slot);
+        return signal_.connect(slot);
     }
 
 private:
     template <typename T, T... N>
     void invokeSignal(std::integer_sequence<T, N...>)
     {
-        m_signal(std::get<N>(m_args)...);
+        signal_(std::get<N>(args_)...);
     }
 
 private:
-    sigc::signal<void, Args...> m_signal;
-    std::tuple<Args...> m_args;
+    sigc::signal<void, Args...> signal_;
+    std::tuple<Args...> args_;
 };
 
 #endif  // DISPATCHER_HPP

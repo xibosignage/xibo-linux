@@ -145,26 +145,26 @@ void Session::close()
     m_socket.shutdown(tcp::socket::shutdown_send, ec);
 }
 
-XiboWebServer::XiboWebServer() : m_work(m_ioc), m_acceptor(m_ioc)
+XiboWebServer::XiboWebServer() : work_(ioc_), acceptor_(ioc_)
 {
     for (int i = 0; i != DefaultThreadsCount; ++i)
     {
-        m_workerThreads.push_back(std::make_unique<JoinableThread>([=]() {
+        workerThreads_.push_back(std::make_unique<JoinableThread>([=]() {
             Log::trace("[WebServer] Thread started");
 
-            m_ioc.run();
+            ioc_.run();
         }));
     }
 }
 
 XiboWebServer::~XiboWebServer()
 {
-    m_ioc.stop();
+    ioc_.stop();
 }
 
 std::string XiboWebServer::address() const
 {
-    return "http://" + DefaultLocalAddress + ":" + std::to_string(m_port) + "/";
+    return "http://" + DefaultLocalAddress + ":" + std::to_string(port_) + "/";
 }
 
 void XiboWebServer::run(unsigned short port)
@@ -172,11 +172,11 @@ void XiboWebServer::run(unsigned short port)
     try
     {
         tcp::endpoint endpoint(net::ip::address::from_string(DefaultLocalAddress), port);
-        m_acceptor.open(endpoint.protocol());
-        m_acceptor.set_option(net::socket_base::reuse_address(true));
-        m_acceptor.bind(endpoint);
-        m_acceptor.listen(net::socket_base::max_listen_connections);
-        m_port = port;
+        acceptor_.open(endpoint.protocol());
+        acceptor_.set_option(net::socket_base::reuse_address(true));
+        acceptor_.bind(endpoint);
+        acceptor_.listen(net::socket_base::max_listen_connections);
+        port_ = port;
 
         doAccept();
     }
@@ -188,19 +188,19 @@ void XiboWebServer::run(unsigned short port)
 
 void XiboWebServer::setRootDirectory(const FilePath& rootDirectory)
 {
-    m_rootDirectory = rootDirectory;
+    rootDirectory_ = rootDirectory;
 }
 
 void XiboWebServer::doAccept()
 {
-    m_acceptor.async_accept(m_ioc, std::bind(&XiboWebServer::onAccept, shared_from_this(), ph::_1, ph::_2));
+    acceptor_.async_accept(ioc_, std::bind(&XiboWebServer::onAccept, shared_from_this(), ph::_1, ph::_2));
 }
 
 void XiboWebServer::onAccept(beast::error_code ec, tcp::socket socket)
 {
     if (!ec)
     {
-        std::make_shared<Session>(std::move(socket), m_rootDirectory)->run();
+        std::make_shared<Session>(std::move(socket), rootDirectory_)->run();
     }
     else
     {

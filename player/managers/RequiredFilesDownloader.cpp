@@ -10,8 +10,8 @@
 #include "utils/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
-    m_xmdsRequestSender(xmdsRequestSender),
-    m_xmdsFileDownloader(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
+    xmdsRequestSender_(xmdsRequestSender),
+    xmdsFileDownloader_(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
 {
 }
 
@@ -69,7 +69,7 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
+    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
 
@@ -87,7 +87,7 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
     }
     else
     {
-        return m_xmdsFileDownloader->download(file.id, file.type, file.size)
+        return xmdsFileDownloader_->download(file.id, file.type, file.size)
             .then([this, file](boost::future<XmdsResponseResult> future) {
                 return onRegularFileDownloaded(future.get(), file.name, file.hash);
             });

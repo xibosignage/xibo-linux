@@ -14,34 +14,34 @@ const size_t MESSAGE_PART = 2;
 
 XmrManager::~XmrManager()
 {
-    m_subcriber.stop();
+    subcriber_.stop();
 }
 
 void XmrManager::connect(const std::string& host)
 {
-    if (m_info.host == host) return;
+    if (info_.host == host) return;
 
-    m_info.host = host;
-    m_subcriber.messageReceived().connect(
+    info_.host = host;
+    subcriber_.messageReceived().connect(
         [this](const MultiPartMessage& message) { processMultipartMessage(message); });
-    m_subcriber.run(host);
+    subcriber_.run(host);
 
     Log::info("Connected to XMR publisher");
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
 {
-    return m_collectionIntervalAction;
+    return collectionIntervalAction_;
 }
 
 ScreenshotAction& XmrManager::screenshot()
 {
-    return m_screenshotAction;
+    return screenshotAction_;
 }
 
 XmrStatus XmrManager::status()
 {
-    return m_info;
+    return info_;
 }
 
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
@@ -55,7 +55,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 
             processXmrMessage(xmrMessage);
 
-            m_info.lastMessageDt = DateTime::now();
+            info_.lastMessageDt = DateTime::now();
         }
         catch (std::exception& e)
         {
@@ -64,7 +64,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        m_info.lastHeartbeatDt = DateTime::now();
+        info_.lastHeartbeatDt = DateTime::now();
     }
 }
 
@@ -98,11 +98,11 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 
     if (message.action == "collectNow")
     {
-        m_collectionIntervalAction();
+        collectionIntervalAction_();
     }
     else if (message.action == "screenShot")
     {
-        m_screenshotAction();
+        screenshotAction_();
     }
 }
 

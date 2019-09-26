@@ -11,5 +11,5 @@ public:
     void apply() override;
 
 private:
-    Transition::Direction m_direction;
+    Transition::Direction direction_;
 };

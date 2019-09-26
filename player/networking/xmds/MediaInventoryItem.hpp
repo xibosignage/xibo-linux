@@ -17,11 +17,11 @@ public:
 private:
     MediaInventoryItem(bool downloadComplete);
 
-    std::string m_type;
-    int m_id;
-    bool m_downloadComplete;
-    std::string m_md5;
-    std::string m_lastChecked;
+    std::string type_;
+    int id_;
+    bool downloadComplete_;
+    std::string md5_;
+    std::string lastChecked_;
 };
 
 using MediaInventoryItems = std::vector<MediaInventoryItem>;

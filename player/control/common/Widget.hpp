@@ -10,28 +10,28 @@ class Widget : public Interface, public IGtkWidget
 public:
     static_assert(std::is_base_of_v<IWidget, Interface>, "Should implement IWidget");
 
-    Widget(Gtk::Widget& widget) : m_widget(widget) {}
+    Widget(Gtk::Widget& widget) : widget_(widget) {}
 
     void show() override
     {
-        m_widget.show();
-        m_signalShown();
+        widget_.show();
+        signalShown_();
     }
 
     void showAll() override
     {
-        m_widget.show();
-        m_signalShown();
+        widget_.show();
+        signalShown_();
     }
 
     void hide() override
     {
-        m_widget.hide();
+        widget_.hide();
     }
 
     bool isShown() const override
     {
-        return m_widget.is_visible();
+        return widget_.is_visible();
     }
 
     void scale(double scaleX, double scaleY) override
@@ -41,36 +41,36 @@ public:
 
     void setSize(int width, int height) override
     {
-        m_widget.set_size_request(width, height);
+        widget_.set_size_request(width, height);
     }
 
     int width() const override
     {
         int width, _;
-        m_widget.get_size_request(width, _);
+        widget_.get_size_request(width, _);
         return width;
     }
 
     int height() const override
     {
         int _, height;
-        m_widget.get_size_request(_, height);
+        widget_.get_size_request(_, height);
         return height;
     }
 
     void setOpacity(double value) override
     {
-        m_widget.set_opacity(value);
+        widget_.set_opacity(value);
     }
 
     double opacity() const override
     {
-        return m_widget.get_opacity();
+        return widget_.get_opacity();
     }
 
     SignalShown& shown() override
     {
-        return m_signalShown;
+        return signalShown_;
     }
 
 protected:
@@ -80,6 +80,6 @@ protected:
     }
 
 private:
-    Gtk::Widget& m_widget;
-    SignalShown m_signalShown;
+    Gtk::Widget& widget_;
+    SignalShown signalShown_;
 };

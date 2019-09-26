@@ -12,8 +12,8 @@
 #include "player/video/VideoParser.hpp"
 #include "webview/WebViewParser.hpp"
 
-Repository<MediaParser> MediaCreatorsRepo::parsers;
-Repository<MediaFactory> MediaCreatorsRepo::factories;
+Repository<MediaParser> MediaCreatorsRepo::parsers_;
+Repository<MediaFactory> MediaCreatorsRepo::factories_;
 
 void MediaCreatorsRepo::init()
 {

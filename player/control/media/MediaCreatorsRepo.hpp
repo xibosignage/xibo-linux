@@ -19,11 +19,11 @@ public:
     {
         if constexpr (std::is_base_of<Creator, MediaParser>::value)
         {
-            return get(parsers, mediaType);
+            return get(parsers_, mediaType);
         }
         else
         {
-            return get(factories, mediaType);
+            return get(factories_, mediaType);
         }
     }
 
@@ -31,8 +31,8 @@ public:
     static void add(const MediaOptions::Type& mediaType, std::unique_ptr<Parser>&& parser,
                     std::unique_ptr<Factory>&& factory)
     {
-        parsers.add(mediaType.type + mediaType.render, std::move(parser));
-        factories.add(mediaType.type + mediaType.render, std::move(factory));
+        parsers_.add(mediaType.type + mediaType.render, std::move(parser));
+        factories_.add(mediaType.type + mediaType.render, std::move(factory));
     }
 
 private:
@@ -48,6 +48,6 @@ private:
     }
 
 private:
-    static Repository<MediaParser> parsers;
-    static Repository<MediaFactory> factories;
+    static Repository<MediaParser> parsers_;
+    static Repository<MediaFactory> factories_;
 };

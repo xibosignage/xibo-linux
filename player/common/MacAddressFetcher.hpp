@@ -15,7 +15,7 @@ public:
     const char* what() const noexcept override;
 
 private:
-    std::string_view m_error;
+    std::string_view error_;
 };
 
 class MacAddressFetcher

@@ -34,20 +34,20 @@ private:
     void createGstElements();
 
 private:
-    std::shared_ptr<IVideoWindow> m_outputWindow;
+    std::shared_ptr<IVideoWindow> outputWindow_;
 
-    Gst::RefPtr<Gst::Pipeline> m_pipeline;
-    Gst::RefPtr<Gst::UriSrc> m_source;
-    Gst::RefPtr<Gst::Decodebin> m_decodebin;
-    Gst::RefPtr<Gst::Volume> m_volume;
-    Gst::RefPtr<Gst::VideoConvert> m_videoConverter;
-    Gst::RefPtr<Gst::VideoScale> m_videoScale;
-    Gst::RefPtr<Gst::Element> m_videoSink;
-    Gst::RefPtr<Gst::AudioConvert> m_audioConverter;
-    Gst::RefPtr<Gst::AutoAudioSink> m_audioSink;
-    Gst::RefPtr<Gst::Queue> m_queue;
-    Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
-    Gst::RefPtr<Gst::Inspector> m_inspector;
-    Gst::InspectorResult m_mediaInfo;
-    SignalPlaybackFinished m_playbackFinished;
+    Gst::RefPtr<Gst::Pipeline> pipeline_;
+    Gst::RefPtr<Gst::UriSrc> source_;
+    Gst::RefPtr<Gst::Decodebin> decodebin_;
+    Gst::RefPtr<Gst::Volume> volume_;
+    Gst::RefPtr<Gst::VideoConvert> videoConverter_;
+    Gst::RefPtr<Gst::VideoScale> videoScale_;
+    Gst::RefPtr<Gst::Element> videoSink_;
+    Gst::RefPtr<Gst::AudioConvert> audioConverter_;
+    Gst::RefPtr<Gst::AutoAudioSink> audioSink_;
+    Gst::RefPtr<Gst::Queue> queue_;
+    Gst::RefPtr<Gst::Capsfilter> capsfilter_;
+    Gst::RefPtr<Gst::Inspector> inspector_;
+    Gst::InspectorResult mediaInfo_;
+    SignalPlaybackFinished playbackFinished_;
 };

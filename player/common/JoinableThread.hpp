@@ -8,17 +8,17 @@ public:
     template <typename Callable>
     JoinableThread(Callable startingPoint)
     {
-        m_thread = std::make_unique<std::thread>(startingPoint);
+        thread_ = std::make_unique<std::thread>(startingPoint);
     }
 
     ~JoinableThread()
     {
-        if (m_thread && m_thread->joinable())
+        if (thread_ && thread_->joinable())
         {
-            m_thread->join();
+            thread_->join();
         }
     }
 
 private:
-    std::unique_ptr<std::thread> m_thread;
+    std::unique_ptr<std::thread> thread_;
 };

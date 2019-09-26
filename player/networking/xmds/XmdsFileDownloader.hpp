@@ -19,5 +19,5 @@ private:
     XmdsResponseResult combineAllChunks(DownloadXmdsFilesResult& results);
 
 private:
-    XmdsRequestSender& m_xmdsSender;
+    XmdsRequestSender& xmdsSender_;
 };

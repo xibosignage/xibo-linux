@@ -4,7 +4,7 @@ Gst::Pipeline::Pipeline() : Gst::Element(gst_pipeline_new("pipeline")) {}
 
 gboolean Gst::Pipeline::onBusWatchMem(GstBus*, GstMessage* message, gpointer)
 {
-    return m_watchHandler(std::make_shared<Gst::Message>(message, false));
+    return watchHandler_(std::make_shared<Gst::Message>(message, false));
 }
 
 gboolean Gst::Pipeline::onBusWatch(GstBus* bus, GstMessage* message, gpointer data)
@@ -14,7 +14,7 @@ gboolean Gst::Pipeline::onBusWatch(GstBus* bus, GstMessage* message, gpointer da
 
 Gst::Pipeline::~Pipeline()
 {
-    g_source_remove(m_watchId);
+    g_source_remove(watchId_);
 }
 
 Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::create()
@@ -37,10 +37,10 @@ Gst::RefPtr<Gst::Pipeline> Gst::Pipeline::remove(Gst::RefPtr<Gst::Element> other
 
 void Gst::Pipeline::addBusWatch(std::function<bool(const Gst::RefPtr<Gst::Message>&)> handler)
 {
-    m_watchHandler = handler;
+    watchHandler_ = handler;
 
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(element()));
 
-    m_watchId = gst_bus_add_watch(bus, onBusWatch, this);
+    watchId_ = gst_bus_add_watch(bus, onBusWatch, this);
     g_object_unref(bus);
 }

@@ -32,7 +32,7 @@ private:
     void onKeyPressed(const std::string& pressedKey);
 
 private:
-    std::shared_ptr<IMainWindow> m_window;
-    LayoutsManager& m_layoutsManager;
-    StatusScreenRequested m_statusScrenRequested;
+    std::shared_ptr<IMainWindow> window_;
+    LayoutsManager& layoutsManager_;
+    StatusScreenRequested statusScrenRequested_;
 };

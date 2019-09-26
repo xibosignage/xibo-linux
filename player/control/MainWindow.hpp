@@ -43,12 +43,12 @@ private:
     Gdk::Rectangle getCurrentMonitorGeometry() const;
 
 private:
-    Gtk::Window m_handler;
-    std::shared_ptr<IOverlayLayout> m_layout;
-    SignalWindowRealized m_resizeSignal;
-    SignalKeyPressed m_keyPressed;
-    sigc::connection m_windowState;
-    int m_originalWidth, m_originalHeight;
-    int m_xPos = -1, m_yPos = -1;
-    bool m_cursorVisible = true;
+    Gtk::Window handler_;
+    std::shared_ptr<IOverlayLayout> layout_;
+    SignalWindowRealized resizeSignal_;
+    SignalKeyPressed keyPressed_;
+    sigc::connection windowState_;
+    int originalWidth_, originalHeight_;
+    int xPos_ = -1, yPos_ = -1;
+    bool cursorVisible_ = true;
 };
