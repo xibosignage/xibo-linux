@@ -2,7 +2,7 @@
 
 #include <boost/property_tree/ptree.hpp>
 
-using ptree_node = boost::property_tree::ptree;
+using PtreeNode = boost::property_tree::ptree;
 class FilePath;
 
 namespace Utils

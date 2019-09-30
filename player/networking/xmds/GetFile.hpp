@@ -39,5 +39,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetFile::Result parseBody(const ptree_node& node) override;
+    GetFile::Result parseBody(const PtreeNode& node) override;
 };

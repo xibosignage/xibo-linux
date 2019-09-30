@@ -1,6 +1,7 @@
 #include <boost/process/child.hpp>
 #include <iostream>
 
+#include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "config.hpp"
 
@@ -44,12 +45,12 @@ int main()
 
     if (FileSystem::exists(ProjectResources::cmsSettingsPath()))
     {
-        boost::process::child playerBin{ProjectResources::playerBinary()};
+        boost::process::child playerBin{ProjectResources::playerBinary().string()};
         playerBin.wait();
     }
     else
     {
-        boost::process::child optionsBin{ProjectResources::optionsBinary()};
+        boost::process::child optionsBin{ProjectResources::optionsBinary().string()};
         optionsBin.wait();
     }
     return 0;

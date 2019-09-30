@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/JoinableThread.hpp"
-#include "common/uri/Uri.hpp"
+#include "common/types/Uri.hpp"
 
 #include "ProxyInfo.hpp"
 #include "ResponseResult.hpp"

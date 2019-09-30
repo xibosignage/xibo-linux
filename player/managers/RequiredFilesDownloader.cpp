@@ -17,12 +17,15 @@ RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestS
 
 RequiredFilesDownloader::~RequiredFilesDownloader() {}
 
-void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const std::string& content,
+// TODO: strong type
+void RequiredFilesDownloader::saveRegularFile(const std::string& filename,
+                                              const std::string& content,
                                               const std::string& hash)
 {
     Managers::fileManager().save(filename, content, hash);
 }
 
+// TODO: strong type
 void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
 {
     std::string hash = Utils::md5hash(content);
@@ -32,7 +35,8 @@ void RequiredFilesDownloader::saveResourceFile(const std::string& filename, cons
     }
 }
 
-bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const std::string& filename,
+bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result,
+                                                      const std::string& filename,
                                                       const std::string& hash)
 {
     auto [error, fileContent] = result;
@@ -81,7 +85,8 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 {
     if (file.downloadType == RegularFile::DownloadType::HTTP)
     {
-        return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future) {
+        auto uri = Uri::fromString(file.url);
+        return HttpClient::instance().get(uri).then([this, file](boost::future<HttpResponseResult> future) {
             return onRegularFileDownloaded(future.get(), file.name, file.hash);
         });
     }

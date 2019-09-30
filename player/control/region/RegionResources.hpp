@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Parsing.hpp"
-#include "control/common/XlfResources.hpp"
+#include "control/XlfResources.hpp"
 
 namespace XlfResources::Region
 {
@@ -11,5 +11,5 @@ namespace XlfResources::Region
     const std::string Left = Parsing::xmlAttr("left");
     const std::string Top = Parsing::xmlAttr("top");
     const std::string Zindex = Parsing::xmlAttr("zindex");
-    const std::string Loop = XlfResources::option("loop");
+    const std::string Loop = Parsing::xmlOption("loop");
 }

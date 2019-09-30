@@ -14,8 +14,7 @@ file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
 file(GLOB_RECURSE CONTROL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp)
 file(GLOB OTHER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/utils/*.*pp
                          ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/xmlsink/*.*pp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/gstwrapper/*.*pp)
+                         ${CMAKE_CURRENT_SOURCE_DIR}/xmlsink/*.*pp)
 
 add_subdirectory(schedule)
 add_subdirectory(options)

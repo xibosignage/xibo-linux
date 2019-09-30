@@ -28,7 +28,7 @@ void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePa
 
 void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path)
 {
-    ptree_node root;
+    PtreeNode root;
     auto& scheduleNode = root.add_child(Resources::Schedule, {});
     scheduleNode.put(Resources::Generated, DateTime::toString(schedule.generatedTime));
 
@@ -44,9 +44,9 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
     boost::property_tree::write_xml(path, root);
 }
 
-ptree_node ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)
+PtreeNode ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)
 {
-    ptree_node node;
+    PtreeNode node;
 
     node.put(Resources::Id, layout.id);
     node.put(Resources::StartDT, DateTime::toString(layout.startDT));
@@ -58,9 +58,9 @@ ptree_node ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout
     return node;
 }
 
-ptree_node ScheduleSerializer::overlaysNode(const LayoutList& overlays)
+PtreeNode ScheduleSerializer::overlaysNode(const LayoutList& overlays)
 {
-    ptree_node node;
+    PtreeNode node;
 
     for (auto&& layout : overlays)
     {
@@ -70,9 +70,9 @@ ptree_node ScheduleSerializer::overlaysNode(const LayoutList& overlays)
     return node;
 }
 
-ptree_node ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& layout)
+PtreeNode ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& layout)
 {
-    ptree_node node;
+    PtreeNode node;
 
     node.put(Resources::Id, layout.id);
     node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));
@@ -80,9 +80,9 @@ ptree_node ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& l
     return node;
 }
 
-ptree_node ScheduleSerializer::dependantsNode(const LayoutDependants& dependants)
+PtreeNode ScheduleSerializer::dependantsNode(const LayoutDependants& dependants)
 {
-    ptree_node node;
+    PtreeNode node;
 
     for (auto&& dependant : dependants)
     {

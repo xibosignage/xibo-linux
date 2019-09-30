@@ -7,41 +7,43 @@
 
 namespace ProjectResources
 {
+    // TODO: strong type
     inline std::string version()
     {
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return getenv("SNAP_VERSION");
-    #else
+#else
         return std::string{"dev-version"};
-    #endif
+#endif
     }
 
+    // TODO: strong type
     inline std::string codeVersion()
     {
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return getenv("SNAP_REVISION");
-    #else
+#else
         return std::string{"dev-revision"};
-    #endif
+#endif
     }
 
     const std::string BuildDir = "bin";
     inline FilePath buildDirectory()
     {
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return FilePath{getenv("SNAP")} / BuildDir;
-    #else
+#else
         return FileSystem::currentPath();
-    #endif
+#endif
     }
 
     inline FilePath configDirectory()
     {
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return FilePath{getenv("SNAP_USER_COMMON")};
-    #else
+#else
         return FileSystem::currentPath();
-    #endif
+#endif
     }
 
 #ifdef SNAP_ENABLED
@@ -69,16 +71,16 @@ namespace ProjectResources
         return configDirectory() / ResourcesDir;
     }
 
-    const std::string SplashImage = "splash.jpg";
-    inline FilePath splashScreen()
+    const std::string SplashImageFile = "splash.jpg";
+    inline FilePath splashScreenPath()
     {
-        return buildDirectory() / SplashImage;
+        return buildDirectory() / SplashImageFile;
     }
 
-    const std::string UiGlade = "ui.glade";
+    const std::string UiGladeFile = "ui.glade";
     inline FilePath uiFile()
     {
-        return buildDirectory() / UiGlade;
+        return buildDirectory() / UiGladeFile;
     }
 
     const std::string CmsSettingsFile = "cmsSettings.xml";
@@ -106,24 +108,24 @@ namespace ProjectResources
     }
 
     const std::string PlayerBin = "player";
-    inline std::string playerBinary()
+    inline FilePath playerBinary()
     {
         auto path = buildDirectory() / PlayerBin;
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return "desktop-launch " + path.string();
-    #else
-        return path.string();
-    #endif
+#else
+        return path;
+#endif
     }
 
-    inline std::string optionsBinary()
+    inline FilePath optionsBinary()
     {
         auto path = buildDirectory() / "options";
-    #ifdef SNAP_ENABLED
+#ifdef SNAP_ENABLED
         return "desktop-launch " + path.string();
-    #else
-        return path.string();
-    #endif
+#else
+        return path;
+#endif
     }
 
 }

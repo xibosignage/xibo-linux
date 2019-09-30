@@ -17,13 +17,13 @@ XmrManager::~XmrManager()
     subcriber_.stop();
 }
 
+// TODO: strong type
 void XmrManager::connect(const std::string& host)
 {
     if (info_.host == host) return;
 
     info_.host = host;
-    subcriber_.messageReceived().connect(
-        [this](const MultiPartMessage& message) { processMultipartMessage(message); });
+    subcriber_.messageReceived().connect([this](const MultiPartMessage& message) { processMultipartMessage(message); });
     subcriber_.run(host);
 
     Log::info("Connected to XMR publisher");
@@ -68,6 +68,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
 }
 
+// TODO: strong type
 std::string XmrManager::decryptMessage(const std::string& encryptedBase64Key, const std::string& encryptedBase64Message)
 {
     auto privateKey = RsaManager::instance().privateKey();

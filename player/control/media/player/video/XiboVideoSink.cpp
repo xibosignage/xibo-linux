@@ -1,5 +1,7 @@
 #include "XiboVideoSink.hpp"
-#include "XiboVideoFrame.hpp"
+
+#include "control/media/player/video/GstRenderFrame.hpp"
+#include "control/widgets/render/OutputWindow.hpp"
 
 #include <glibmm/main.h>
 
@@ -27,15 +29,18 @@ static void gst_xibovideosink_class_init(XiboVideoSinkClass* klass)
 
     gst_element_class_add_pad_template(GST_ELEMENT_CLASS(klass), gst_static_pad_template_get(&sink_template));
 
-    gst_element_class_set_static_metadata(GST_ELEMENT_CLASS(klass), "Xibo Video Sink plugin", "Some classification",
-                                          "Plugin to provide video playing on drawing area", "Stivius");
+    gst_element_class_set_static_metadata(GST_ELEMENT_CLASS(klass),
+                                          "Xibo Video Sink plugin",
+                                          "Some classification",
+                                          "Plugin to provide video playing on drawing area",
+                                          "Stivius");
 
     base_sink_class->set_caps = GST_DEBUG_FUNCPTR(gst_xibovideosink_set_caps);
     video_sink_class->show_frame = GST_DEBUG_FUNCPTR(gst_xibovideosink_show_frame);
     g_object_class->finalize = gst_xibovideosink_finalize;
 }
 
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<IVideoWindow>& handler)
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<Xibo::OutputWindow>& handler)
 {
     sink->handler = handler;
 }
@@ -66,12 +71,12 @@ static gboolean gst_xibovideosink_set_caps(GstBaseSink* base_sink, GstCaps* caps
 static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* base_sink, GstBuffer* buffer)
 {
     XiboVideoSink* sink = GST_XIBOVIDEOSINK(base_sink);
-    if (auto frame = XiboVideoFrame::create(&sink->info, buffer))
+    if (auto frame = GstRenderFrame::create(&sink->info, buffer))
     {
         Glib::MainContext::get_default()->invoke([handler = sink->handler, frame]() {
             if (auto window = handler.lock())
             {
-                window->drawFrame(frame);
+                window.get()->drawFrame(frame);
             }
             return false;
         });

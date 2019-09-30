@@ -1,18 +1,21 @@
 #include "AudioParser.hpp"
 
-#include "control/media/MediaResources.hpp"
+#include "control/media/Media.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
-
-#include "control/common/Validators.hpp"
+#include "control/media/player/audio/AudioFactory.hpp"
 
 const bool DefaultAudioLooped = false;
-const int DefaultDuration = 0;
 
-ExtraOptions AudioParser::extraOptionsImpl(const ptree_node& node)
+std::unique_ptr<Xibo::Media> AudioParser::createMedia(const MediaOptions& baseOptions,
+                                                      const PtreeNode& node,
+                                                      int /*width*/,
+                                                      int /*height*/)
 {
     auto looped = node.get<bool>(XlfResources::Player::Loop, DefaultAudioLooped);
     auto volume = node.get<int>(XlfResources::Player::Volume, MaxVolume);
+    MediaPlayerOptions options{
+        baseOptions, MediaPlayerOptions::Mute::Disable, static_cast<MediaPlayerOptions::Loop>(looped), volume};
 
-    return {{XlfResources::Player::Loop, std::to_string(looped)},
-            {XlfResources::Player::Volume, std::to_string(volume)}};
+    AudioFactory factory;
+    return factory.create(options);
 }

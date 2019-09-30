@@ -36,5 +36,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitScreenShot::Result parseBody(const ptree_node& node) override;
+    SubmitScreenShot::Result parseBody(const PtreeNode& node) override;
 };

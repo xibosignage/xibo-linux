@@ -7,12 +7,9 @@
 #include "utils/ScreenShoter.hpp"
 #include "xmlsink/XmlLoggerSink.hpp"
 
-#include "control/MainWindow.hpp"
-#include "control/MainWindowController.hpp"
-#include "control/StatusScreen.hpp"
-#include "control/StatusScreenFormatter.hpp"
+#include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
-#include "control/media/MediaCreatorsRepo.hpp"
+#include "control/media/MediaParsersRepo.hpp"
 #include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "managers/CollectionInterval.hpp"
@@ -71,8 +68,15 @@ std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
 
 void XiboApp::registerVideoSink()
 {
-    if (!gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR, "Xibo Video Sink",
-                                    "Video Sink Plugin for gstreamer", pluginInit, "0.5", "GPL", "source", "package",
+    if (!gst_plugin_register_static(GST_VERSION_MAJOR,
+                                    GST_VERSION_MINOR,
+                                    "Xibo Video Sink",
+                                    "Video Sink Plugin for gstreamer",
+                                    pluginInit,
+                                    "0.5",
+                                    "GPL",
+                                    "source",
+                                    "package",
                                     "http://github.com/Stivius"))
     {
         throw std::runtime_error("XiboVideoSink was not registered");
@@ -85,7 +89,7 @@ XiboApp::XiboApp(const std::string& name) :
     scheduler_(std::make_unique<Scheduler>(*fileCache_)),
     xmrManager_(std::make_unique<XmrManager>()),
     webserver_(std::make_shared<XiboWebServer>()),
-    layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_))
+    layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *fileCache_))
 {
     if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
         throw std::runtime_error("Update CMS settings using player options app");
@@ -107,7 +111,7 @@ XiboApp::XiboApp(const std::string& name) :
     RsaManager::instance().load();
     setupXmrManager();
 
-    MediaCreatorsRepo::init();
+    MediaParsersRepo::init();
 
     mainLoop_->setShutdownAction([this]() {
         layoutsManager_.reset();
@@ -168,16 +172,14 @@ XiboWebServer& XiboApp::webserver()
 
 int XiboApp::run()
 {
-    mainWindow_ = std::make_shared<MainWindow>();
-    windowController_ = std::make_unique<MainWindowController>(mainWindow_, *layoutsManager_);
+    mainWindow_ = std::make_unique<ApplicationWindowGtk>();
+    setupLayoutManager();
 
-    auto statusScreen = std::make_shared<StatusScreen>(640, 480);
-    windowController_->statusScreenRequested().connect([this, statusScreen]() {
-        StatusInfo info{collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(),
-                        xmrManager_->status()};
+    mainWindow_->statusScreenRequested().connect([this]() {
+        StatusInfo info{
+            collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
 
-        statusScreen->setText(StatusScreenFormatter::formatInfo(info));
-        statusScreen->show();
+        mainWindow_->updateStatusScreen(info);
     });
 
     screenShoter_ = std::make_unique<ScreenShoter>(*mainWindow_);
@@ -198,6 +200,29 @@ int XiboApp::run()
     mainWindow_->showAll();
 
     return mainLoop_->run(*mainWindow_);
+}
+
+void XiboApp::setupLayoutManager()
+{
+    layoutsManager_->mainLayoutFetched().connect([this](const MainLayoutWidget& layout) {
+        if (layout)
+        {
+            mainWindow_->setMainLayout(layout);
+            layout->showAll();
+        }
+        else
+        {
+            mainWindow_->showSplashScreen();
+        }
+    });
+
+    layoutsManager_->overlaysFetched().connect([this](const OverlaysWidgets& overlays) {
+        mainWindow_->setOverlays(overlays);
+        for (auto&& layout : overlays)
+        {
+            layout->showAll();
+        }
+    });
 }
 
 GeneralInfo XiboApp::collectGeneralInfo()
@@ -253,8 +278,8 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
     Log::logger()->setLevel(settings.logLevel);
     collectionInterval_->updateInterval(settings.collectInterval);
     xmrManager_->connect(settings.xmrNetworkAddress);
-    PlayerSettings::Dimensions dimensions{settings.width, settings.height, settings.x, settings.y};
-    windowController_->updateWindowDimensions(dimensions);
+    mainWindow_->setSize(settings.width, settings.height);
+    mainWindow_->move(settings.x, settings.y);
 
     Log::debug("Player settings updated");
 }

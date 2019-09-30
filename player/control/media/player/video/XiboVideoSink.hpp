@@ -2,7 +2,7 @@
 
 #include <gst/video/video-info.h>
 
-#include "control/media/player/video/IVideoWindow.hpp"
+#include "control/widgets/render/OutputWindow.hpp"
 
 G_BEGIN_DECLS
 
@@ -19,7 +19,7 @@ struct XiboVideoSink
     GstPad* sinkpad;
     GstVideoInfo info;
 
-    std::weak_ptr<IVideoWindow> handler;
+    std::weak_ptr<Xibo::OutputWindow> handler;
 };
 
 struct XiboVideoSinkClass
@@ -29,6 +29,6 @@ struct XiboVideoSinkClass
 
 gboolean pluginInit(GstPlugin* plugin);
 GType gst_xibovideosink_get_type(void);
-void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<IVideoWindow>& handler);
+void gst_xibovideosink_set_handler(XiboVideoSink* sink, const std::weak_ptr<Xibo::OutputWindow>& handler);
 
 G_END_DECLS

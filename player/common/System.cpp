@@ -47,8 +47,8 @@ DBusConnection* System::connectToDbus()
 
 DBusMessage* System::createInhibitCall(const char* pid, const char* reason)
 {
-    auto message = dbus_message_new_method_call("org.freedesktop.ScreenSaver", "/ScreenSaver",
-                                                "org.freedesktop.ScreenSaver", "Inhibit");
+    auto message = dbus_message_new_method_call(
+        "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
     if (!message) throw DBusException{error_};
 
     bool result =

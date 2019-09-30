@@ -5,6 +5,9 @@
 class VideoParser : public MediaParser
 {
 protected:
-    ExtraOptions extraOptionsImpl(const ptree_node& node) override;
-    MediaGeometry geometryFrom(const ptree_node& node) override;
+    MediaGeometry geometryFrom(const PtreeNode& node) override;
+    std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& baseOptions,
+                                             const PtreeNode& node,
+                                             int width,
+                                             int height) override;
 };

@@ -6,10 +6,11 @@ class FilePath;
 
 namespace Parsing
 {
-    ptree_node xmlFromPath(const FilePath& xlfPath);
-    ptree_node xmlFromString(const std::string& xml);
-    ptree_node jsonFromString(const std::string& json);
-    std::string xmlTreeToString(const ptree_node& node);
-    std::string xmlTreeToEscapedString(const ptree_node& node);
+    PtreeNode xmlFromPath(const FilePath& xlfPath);
+    PtreeNode xmlFromString(const std::string& xml);
+    PtreeNode jsonFromString(const std::string& json);
+    std::string xmlTreeToString(const PtreeNode& node);
+    std::string xmlTreeToEscapedString(const PtreeNode& node);
     std::string xmlAttr(const std::string& property);
+    std::string xmlOption(const std::string& property);
 }

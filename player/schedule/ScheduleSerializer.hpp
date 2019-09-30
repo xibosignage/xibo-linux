@@ -18,8 +18,8 @@ public:
 private:
     void scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path);
 
-    ptree_node scheduledLayoutNode(const ScheduledLayout& layout);
-    ptree_node overlaysNode(const LayoutList& overlays);
-    ptree_node defaultLayoutNode(const DefaultScheduledLayout& layout);
-    ptree_node dependantsNode(const LayoutDependants& dependants);
+    PtreeNode scheduledLayoutNode(const ScheduledLayout& layout);
+    PtreeNode overlaysNode(const LayoutList& overlays);
+    PtreeNode defaultLayoutNode(const DefaultScheduledLayout& layout);
+    PtreeNode dependantsNode(const LayoutDependants& dependants);
 };

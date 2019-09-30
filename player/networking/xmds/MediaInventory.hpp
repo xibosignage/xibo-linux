@@ -36,5 +36,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    MediaInventory::Result parseBody(const ptree_node& node) override;
+    MediaInventory::Result parseBody(const PtreeNode& node) override;
 };

@@ -17,9 +17,9 @@ public:
     LayoutSchedule scheduleFrom(const std::string& xmlSchedule);
 
 private:
-    LayoutSchedule scheduleFromImpl(const ptree_node& scheduleXml);
-    ScheduledLayout scheduledLayoutFrom(const ptree_node& layoutNode);
-    DefaultScheduledLayout defaultLayoutFrom(const ptree_node& layoutNode);
-    LayoutList overlayLayoutsFrom(const ptree_node& overlaysNode);
-    LayoutDependants dependantsFrom(const ptree_node& dependantsNode);
+    LayoutSchedule scheduleFromImpl(const PtreeNode& scheduleXml);
+    ScheduledLayout scheduledLayoutFrom(const PtreeNode& layoutNode);
+    DefaultScheduledLayout defaultLayoutFrom(const PtreeNode& layoutNode);
+    LayoutList overlayLayoutsFrom(const PtreeNode& overlaysNode);
+    LayoutDependants dependantsFrom(const PtreeNode& dependantsNode);
 };

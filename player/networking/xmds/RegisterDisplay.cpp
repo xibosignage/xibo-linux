@@ -25,9 +25,16 @@ Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const Regis
 
 std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
 {
-    return createRequest(Resources::Name, request().clientCode, request().clientType, request().clientVersion,
-                         request().displayName, request().macAddress, request().xmrChannel, request().xmrPubKey,
-                         request().serverKey, request().hardwareKey);
+    return createRequest(Resources::Name,
+                         request().clientCode,
+                         request().clientType,
+                         request().clientVersion,
+                         request().displayName,
+                         request().macAddress,
+                         request().xmrChannel,
+                         request().xmrPubKey,
+                         request().serverKey,
+                         request().hardwareKey);
 }
 
 Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) :
@@ -35,7 +42,7 @@ Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string&
 {
 }
 
-RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const ptree_node& node)
+RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const PtreeNode& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto displayNode = Parsing::xmlFromString(activationMessage).get_child(Resources::Display);

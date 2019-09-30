@@ -18,7 +18,7 @@ Soap::ResponseParser<MediaInventory::Result>::ResponseParser(const std::string& 
 {
 }
 
-MediaInventory::Result Soap::ResponseParser<MediaInventory::Result>::parseBody(const ptree_node& node)
+MediaInventory::Result Soap::ResponseParser<MediaInventory::Result>::parseBody(const PtreeNode& node)
 {
     MediaInventory::Result result;
     result.success = node.get<bool>(Resources::Success);

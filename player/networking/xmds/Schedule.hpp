@@ -35,5 +35,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Result parseBody(const ptree_node& scheduleNode) override;
+    Schedule::Result parseBody(const PtreeNode& scheduleNode) override;
 };

@@ -1,30 +1,31 @@
 #include "PlayableMedia.hpp"
 
-#include "control/media/Media.hpp"
-#include "video/IVideoWindow.hpp"
-
-PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player) :
-    Media(options, player->outputWindow()),
+PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<Xibo::MediaPlayer>&& player) :
+    MediaImpl(options),
     player_(std::move(player))
 {
-    mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
+    assert(player_);
 
+    MediaImpl::setWidget(player_->outputWindow());
+    MediaImpl::mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
     player_->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
-}
-
-void PlayableMedia::onMediaFinished()
-{
-    player_->stopPlayback();
 }
 
 void PlayableMedia::onStarted()
 {
+    player_->showOutputWindow();
     player_->play();
 }
 
 void PlayableMedia::onStopped()
 {
-    player_->stopAndRemove();
+    player_->hideOutputWindow();
+    player_->stop();
+}
+
+void PlayableMedia::onMediaFinished()
+{
+    player_->stop();
 }
 
 void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)

@@ -7,7 +7,7 @@ void PlayerSettings::loadFrom(const FilePath& file)
     serializer.loadFrom(file, *this);
 }
 
-void PlayerSettings::loadFrom(const ptree_node& node)
+void PlayerSettings::loadFrom(const PtreeNode& node)
 {
     PlayerSettingsSerializer serializer;
     serializer.loadFrom(node, *this);

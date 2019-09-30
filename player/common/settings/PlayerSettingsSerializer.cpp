@@ -3,15 +3,31 @@
 
 void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& settings)
 {
-    loadFromImpl(file, settings.width, settings.height, settings.x, settings.y, settings.logLevel, settings.displayName,
-                 settings.preventSleep, settings.statsEnabled, settings.screenshotSize, settings.collectInterval,
-                 settings.downloadEndWindow, settings.xmrNetworkAddress, settings.embeddedServerPort,
-                 settings.maxLogFilesUploads, settings.screenshotInterval, settings.statusLayoutUpdate,
-                 settings.downloadStartWindow, settings.screenshotRequested, settings.shellCommandsEnabled,
-                 settings.maxConcurrentDownloads, settings.modifiedLayoutsEnabled);
+    loadFromImpl(file,
+                 settings.width,
+                 settings.height,
+                 settings.x,
+                 settings.y,
+                 settings.logLevel,
+                 settings.displayName,
+                 settings.preventSleep,
+                 settings.statsEnabled,
+                 settings.screenshotSize,
+                 settings.collectInterval,
+                 settings.downloadEndWindow,
+                 settings.xmrNetworkAddress,
+                 settings.embeddedServerPort,
+                 settings.maxLogFilesUploads,
+                 settings.screenshotInterval,
+                 settings.statusLayoutUpdate,
+                 settings.downloadStartWindow,
+                 settings.screenshotRequested,
+                 settings.shellCommandsEnabled,
+                 settings.maxConcurrentDownloads,
+                 settings.modifiedLayoutsEnabled);
 }
 
-void PlayerSettingsSerializer::loadFrom(const ptree_node& node, PlayerSettings& settings)
+void PlayerSettingsSerializer::loadFrom(const PtreeNode& node, PlayerSettings& settings)
 {
     namespace Settings = XmdsResources::RegisterDisplay::Settings;
 
@@ -55,10 +71,26 @@ LoggingLevel PlayerSettingsSerializer::toLogLevelEnum(const std::string& level)
 
 void PlayerSettingsSerializer::saveTo(const FilePath& file, const PlayerSettings& settings)
 {
-    saveToImpl(file, settings.width, settings.height, settings.x, settings.y, settings.logLevel, settings.displayName,
-               settings.preventSleep, settings.statsEnabled, settings.screenshotSize, settings.collectInterval,
-               settings.downloadEndWindow, settings.xmrNetworkAddress, settings.embeddedServerPort,
-               settings.maxLogFilesUploads, settings.screenshotInterval, settings.statusLayoutUpdate,
-               settings.downloadStartWindow, settings.screenshotRequested, settings.shellCommandsEnabled,
-               settings.maxConcurrentDownloads, settings.modifiedLayoutsEnabled);
+    saveToImpl(file,
+               settings.width,
+               settings.height,
+               settings.x,
+               settings.y,
+               settings.logLevel,
+               settings.displayName,
+               settings.preventSleep,
+               settings.statsEnabled,
+               settings.screenshotSize,
+               settings.collectInterval,
+               settings.downloadEndWindow,
+               settings.xmrNetworkAddress,
+               settings.embeddedServerPort,
+               settings.maxLogFilesUploads,
+               settings.screenshotInterval,
+               settings.statusLayoutUpdate,
+               settings.downloadStartWindow,
+               settings.screenshotRequested,
+               settings.shellCommandsEnabled,
+               settings.maxConcurrentDownloads,
+               settings.modifiedLayoutsEnabled);
 }

@@ -1,8 +1,9 @@
 #include "WebViewFactory.hpp"
-#include "WebView.hpp"
-#include "WebViewResources.hpp"
 
-#include "control/media/Media.hpp"
+#include "control/media/webview/WebView.hpp"
+#include "control/media/webview/WebViewWidgetFactory.hpp"
+
+#include "control/media/MediaImpl.hpp"
 #include "control/media/MediaResources.hpp"
 
 #include "common/fs/FilePath.hpp"
@@ -14,25 +15,27 @@
 
 const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 
-std::unique_ptr<IMedia> WebViewFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<Xibo::Media> WebViewFactory::create(const MediaOptions& options,
+                                                    int width,
+                                                    int height,
+                                                    bool transparency)
 {
-    int width = std::stoi(options.at(XlfResources::Media::Width));
-    int height = std::stoi(options.at(XlfResources::Media::Height));
-    auto transparency =
-        static_cast<WebViewOptions::Transparency>(std::stoi(options.at(XlfResources::WebView::Transparency)));
+    updateViewPortWidth(options.uri, width);
 
-    updateViewPortWidth(baseOptions.uri, width);
-
-    return std::make_unique<Media>(baseOptions, createView(baseOptions.uri, width, height, transparency));
+    auto media = std::make_unique<MediaImpl>(options);
+    media->setWidget(createView(options.uri, width, height, static_cast<Xibo::WebView::Transparency>(transparency)));
+    return media;
 }
 
-std::shared_ptr<IWebView> WebViewFactory::createView(const Uri& uri, int width, int height,
-                                                     WebViewOptions::Transparency transparency)
+std::shared_ptr<Xibo::WebView> WebViewFactory::createView(const Uri& uri,
+                                                          int width,
+                                                          int height,
+                                                          Xibo::WebView::Transparency transparency)
 {
-    auto webview = std::make_shared<WebView>(width, height);
+    auto webview = WebViewWidgetFactory::create(width, height);
 
     webview->load(uri);
-    if (transparency == WebViewOptions::Transparency::Enable)
+    if (transparency == Xibo::WebView::Transparency::Enable)
     {
         webview->enableTransparency();
     }

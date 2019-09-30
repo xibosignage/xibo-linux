@@ -1,26 +1,30 @@
 #pragma once
 
-#include "RegionOptions.hpp"
 #include "constants.hpp"
 #include "control/media/MediaOptions.hpp"
+#include "control/region/Region.hpp"
+#include "control/region/RegionOptions.hpp"
 
-#include <boost/property_tree/ptree.hpp>
-
-class IRegion;
-class IRegionView;
-class IMedia;
+struct RegionPosition
+{
+    int left;
+    int top;
+    int zorder;
+};
 
 class RegionParser
 {
 public:
-    std::unique_ptr<IRegion> regionFrom(const ptree_node& node);
-    RegionOptions optionsFrom(const ptree_node& node);
+    struct Error : std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
+
+    std::unique_ptr<Xibo::Region> regionFrom(const PtreeNode& node);
+    RegionPosition positionFrom(const PtreeNode& node);
 
 private:
-    std::unique_ptr<IRegion> createRegion(const RegionOptions& options, const std::shared_ptr<IRegionView>& view);
-    std::shared_ptr<IRegionView> createView(const RegionOptions& options);
-
-    void addMedia(IRegion& region, const ptree_node& node);
-    MediaOptions::Type mediaTypeFrom(const ptree_node& node);
-    std::pair<int, int> mediaPositionInRegion(IRegion& region, IMedia& media);
+    RegionOptions optionsFrom(const PtreeNode& node);
+    void addMedia(Xibo::Region& region, const PtreeNode& node);
+    MediaOptions::Type mediaTypeFrom(const PtreeNode& node);
 };

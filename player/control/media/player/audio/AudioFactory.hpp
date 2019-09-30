@@ -1,16 +1,16 @@
 #pragma once
 
-#include "control/media/MediaFactory.hpp"
+#include "control/media/Media.hpp"
+#include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerOptions.hpp"
 
-class IMediaPlayer;
+#include <memory>
 
-class AudioFactory : public MediaFactory
+class AudioFactory
 {
-protected:
-    std::unique_ptr<IMedia> create(const MediaOptions& baseOptions, const ExtraOptions& options) override;
+public:
+    std::unique_ptr<Xibo::Media> create(const MediaPlayerOptions& options);
 
 private:
-    MediaPlayerOptions createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options);
-    std::unique_ptr<IMediaPlayer> createPlayer(const MediaPlayerOptions& options);
+    std::unique_ptr<Xibo::MediaPlayer> createPlayer(const MediaPlayerOptions& options);
 };

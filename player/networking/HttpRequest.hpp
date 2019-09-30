@@ -2,7 +2,7 @@
 
 #include "HostInfo.hpp"
 #include "common/Utils.hpp"
-#include "common/uri/Uri.hpp"
+#include "common/types/Uri.hpp"
 #include "constants.hpp"
 
 #include <boost/beast/http/message.hpp>

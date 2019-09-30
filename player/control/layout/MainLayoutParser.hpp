@@ -1,29 +1,30 @@
 #pragma once
 
-#include "LayoutOptions.hpp"
 #include "constants.hpp"
+#include "control/layout/MainLayout.hpp"
+#include "control/layout/MainLayoutOptions.hpp"
+#include "control/widgets/Image.hpp"
 
-#include <boost/property_tree/ptree.hpp>
-
-class IMainLayout;
-class IOverlayLayout;
-class IImage;
+class FilePath;
 
 class MainLayoutParser
 {
 public:
     virtual ~MainLayoutParser() = default;
-    std::unique_ptr<IMainLayout> layoutFrom(const ptree_node& node);
+
+    struct Error : std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
+
+    std::unique_ptr<Xibo::MainLayout> parseBy(int layoutId);
 
 protected:
-    virtual std::shared_ptr<IOverlayLayout> createView(const LayoutOptions& options);
+    std::unique_ptr<Xibo::MainLayout> layoutFrom(const PtreeNode& node);
+    MainLayoutOptions optionsFrom(const PtreeNode& node);
+    Uri backgroundUriFrom(const PtreeNode& node);
+    Color backgroundColorFrom(const PtreeNode& node);
 
-private:
-    LayoutOptions optionsFrom(const ptree_node& node);
-    Uri uriFrom(const ptree_node& node);
-    uint32_t colorFrom(const ptree_node& node);
-
-    std::unique_ptr<IMainLayout> createLayout(const std::shared_ptr<IOverlayLayout>& view);
-    std::shared_ptr<IImage> createBackground(const LayoutOptions& options);
-    void addRegions(IMainLayout& layout, const ptree_node& node);
+    virtual std::shared_ptr<Xibo::Image> createBackground(const MainLayoutOptions& options);
+    void addRegions(Xibo::MainLayout& layout, const PtreeNode& node);
 };

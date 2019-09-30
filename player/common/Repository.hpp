@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 
+// TODO: strong type
 template <typename StoredType, typename Key = std::string>
 class Repository
 {

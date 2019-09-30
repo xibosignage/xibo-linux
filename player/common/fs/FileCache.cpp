@@ -22,6 +22,7 @@ void FileCache::loadFileHashes(const FilePath& path)
     }
 }
 
+// TODO: strong type
 bool FileCache::valid(const std::string& filename) const
 {
     auto node = fileCache_.get_child_optional(ptree::path_type(filename, '|'));
@@ -29,6 +30,7 @@ bool FileCache::valid(const std::string& filename) const
     return node.has_value() && node->get<bool>(ptree::path_type("valid", '|'));
 }
 
+// TODO: strong type
 bool FileCache::cached(const std::string& filename, const std::string& hash) const
 {
     auto node = fileCache_.get_child_optional(ptree::path_type(filename, '|'));
@@ -36,6 +38,7 @@ bool FileCache::cached(const std::string& filename, const std::string& hash) con
     return node.has_value() && node->get<std::string>(ptree::path_type("md5", '|')) == hash;
 }
 
+// TODO: strong type
 void FileCache::save(const std::string& fileName, const std::string& fileContent, const std::string& md5)
 {
     auto filePath = Resources::directory() / fileName;
@@ -46,6 +49,7 @@ void FileCache::save(const std::string& fileName, const std::string& fileContent
     addToCache(fileName, Utils::md5hash(fileContent), md5);
 }
 
+// TODO: strong type
 void FileCache::markAsInvalid(const std::string& filename)
 {
     auto node = fileCache_.get_child_optional(ptree::path_type(filename, '|'));
@@ -56,6 +60,7 @@ void FileCache::markAsInvalid(const std::string& filename)
     }
 }
 
+// TODO: strong type
 void FileCache::addToCache(const std::string& filename, const std::string& hash, const std::string& target)
 {
     ptree node;

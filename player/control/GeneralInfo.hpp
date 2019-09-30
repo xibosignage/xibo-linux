@@ -5,6 +5,7 @@
 struct GeneralInfo
 {
     DateTime currentDateTime;
+    // TODO: strong type
     std::string projectVersion;
     std::string codeVersion;
     std::string cmsAddress;

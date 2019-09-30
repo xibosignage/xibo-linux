@@ -18,7 +18,7 @@ public:
     };
 
     void loadFrom(const FilePath& file);
-    void loadFrom(const ptree_node& node);
+    void loadFrom(const PtreeNode& node);
     void saveTo(const FilePath& file);
 
     Field<int> collectInterval{"collectInterval", 900};

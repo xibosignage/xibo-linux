@@ -19,7 +19,7 @@ std::string XmlLogsRetriever::retrieveLogs()
 
 std::string XmlLogsRetriever::formatLogs(const std::string& logs)
 {
-    ptree_node formattedLogsNode;
+    PtreeNode formattedLogsNode;
 
     try
     {

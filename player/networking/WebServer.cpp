@@ -77,8 +77,8 @@ void handleRequest(const FilePath& rootDir, http::request<Body, http::basic_fiel
 
     const auto size = body.size();
 
-    http::response<http::file_body> response{std::piecewise_construct, std::make_tuple(std::move(body)),
-                                             std::make_tuple(http::status::ok, req.version())};
+    http::response<http::file_body> response{
+        std::piecewise_construct, std::make_tuple(std::move(body)), std::make_tuple(http::status::ok, req.version())};
     response.set(http::field::server, XiboLocalWebServer);
     response.set(http::field::content_type, mimeType(path));
     response.content_length(size);

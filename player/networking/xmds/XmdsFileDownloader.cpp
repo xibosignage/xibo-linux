@@ -7,7 +7,8 @@ const std::size_t DefaultChunkSize = 524288;
 
 XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) : xmdsSender_(xmdsSender) {}
 
-boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId, const std::string& fileType,
+boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId,
+                                                               const std::string& fileType,
                                                                std::size_t fileSize)
 {
     std::size_t fileOffset = 0;

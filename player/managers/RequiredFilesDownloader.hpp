@@ -66,7 +66,8 @@ private:
     void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
     void saveResourceFile(const std::string& filename, const std::string& fileContent);
 
-    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName,
+    bool onRegularFileDownloaded(const ResponseContentResult& result,
+                                 const std::string& fileName,
                                  const std::string& hash);
     bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
 
