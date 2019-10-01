@@ -76,7 +76,7 @@ static GstFlowReturn gst_xibovideosink_show_frame(GstVideoSink* base_sink, GstBu
         Glib::MainContext::get_default()->invoke([handler = sink->handler, frame]() {
             if (auto window = handler.lock())
             {
-                window.get()->drawFrame(frame);
+                window->drawFrame(frame);
             }
             return false;
         });

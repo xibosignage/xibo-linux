@@ -21,6 +21,4 @@ namespace Xibo
         virtual void setColor(const Color& color) = 0;
         virtual void loadFrom(const Uri& uri, PreserveRatio preserveRatio) = 0;
     };
-
-    using ImagePtr = std::shared_ptr<Image>;
 }

@@ -8,7 +8,7 @@
 PtreeNode Parsing::xmlFromPath(const FilePath& xlfPath)
 {
     PtreeNode tree;
-    boost::property_tree::read_xml(xlfPath, tree);
+    boost::property_tree::read_xml(xlfPath.string(), tree);
     return tree;
 }
 

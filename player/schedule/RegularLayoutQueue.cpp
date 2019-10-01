@@ -55,7 +55,7 @@ size_t RegularLayoutQueue::increaseIndex(std::size_t index) const
     return nextIndex;
 }
 
-boost::optional<size_t> RegularLayoutQueue::layoutIndexBy(int id) const
+boost::optional<size_t> RegularLayoutQueue::layoutIndexBy(LayoutId id) const
 {
     for (size_t index = 0; index != size(); ++index)
     {

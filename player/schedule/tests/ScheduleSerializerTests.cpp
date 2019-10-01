@@ -11,7 +11,7 @@ TEST(ScheduleSerializer, SaveToInvalidFile)
 {
     ScheduleSerializer serializer;
 
-    ASSERT_THROW(serializer.scheduleTo(ScheduleTests::schedule(), "invalid/path"), ScheduleSerializeException);
+    ASSERT_THROW(serializer.scheduleTo(ScheduleTests::schedule(), "invalid/path"), ScheduleSerializer::Error);
 }
 
 TEST(ScheduleSerializer, SaveToFile)

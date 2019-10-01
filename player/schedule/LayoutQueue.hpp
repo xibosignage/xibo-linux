@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ScheduleItem.hpp"
+#include "schedule/ScheduleItem.hpp"
 
 #include <algorithm>
 #include <boost/optional/optional.hpp>

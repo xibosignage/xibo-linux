@@ -4,7 +4,6 @@
 #include <map>
 #include <memory>
 
-// TODO: strong type
 template <typename StoredType, typename Key = std::string>
 class Repository
 {
@@ -24,12 +23,12 @@ public:
         m_objects.emplace(key, std::move(object));
     }
 
-    // private:
+private:
     bool isInRepo(const Key& key) const
     {
         return m_objects.count(key) > 0;
     }
 
-    // private:
+private:
     std::map<Key, std::unique_ptr<StoredType>> m_objects;
 };

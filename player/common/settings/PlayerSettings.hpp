@@ -9,16 +9,8 @@ class FilePath;
 class PlayerSettings
 {
 public:
-    struct Dimensions
-    {
-        int width;
-        int height;
-        int x;
-        int y;
-    };
-
-    void loadFrom(const FilePath& file);
-    void loadFrom(const PtreeNode& node);
+    void fromFile(const FilePath& file);
+    void fromNode(const PtreeNode& node);
     void saveTo(const FilePath& file);
 
     Field<int> collectInterval{"collectInterval", 900};

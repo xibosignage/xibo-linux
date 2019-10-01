@@ -107,7 +107,7 @@ Uri::Uri(Uri::Scheme scheme, const Authority& authority, const std::string& path
 
 Uri::Uri(Uri::Scheme scheme, const std::string& host, const std::string& path) : Uri{scheme, Authority{host}, path} {}
 
-Uri::Uri(const FilePath& path) : Uri{Uri::Scheme::File, Authority{}, path} {}
+Uri::Uri(const FilePath& path) : Uri{Uri::Scheme::File, Authority{}, path.string()} {}
 
 bool Uri::isValid() const
 {

@@ -1,18 +1,14 @@
 #pragma once
 
 #include "control/StatusScreenFormatter.hpp"
+#include "control/widgets/Image.hpp"
 #include "control/widgets/OverlayLayout.hpp"
 #include "control/widgets/StatusScreen.hpp"
 #include "control/widgets/Window.hpp"
 
 using MainLayoutWidget = std::shared_ptr<Xibo::Widget>;
 using OverlaysWidgets = std::vector<std::shared_ptr<Xibo::Widget>>;
-using StatusScreenRequested = boost::signals2::signal<void()>;
-
-namespace Xibo
-{
-    class Image;
-}
+using StatusScreenShown = boost::signals2::signal<void()>;
 
 template <typename Window>
 class ApplicationWindow : public Window
@@ -24,7 +20,7 @@ public:
     void setOverlays(const OverlaysWidgets& children);
     void showSplashScreen();
 
-    StatusScreenRequested& statusScreenRequested();
+    StatusScreenShown& statusScreenShown();
     void updateStatusScreen(const StatusInfo& info);
 
     void setSize(int width, int height);
@@ -38,5 +34,5 @@ private:
 protected:
     std::shared_ptr<Xibo::OverlayLayout> layout_;
     std::shared_ptr<Xibo::StatusScreen> statusScreen_;
-    StatusScreenRequested statusScreenRequested_;
+    StatusScreenShown statusScreenRequested_;
 };

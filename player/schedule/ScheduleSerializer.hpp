@@ -1,18 +1,18 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
 #include "constants.hpp"
+#include "schedule/LayoutSchedule.hpp"
 
 class FilePath;
-
-struct ScheduleSerializeException : public std::exception
-{
-    const char* what() const noexcept override;
-};
 
 class ScheduleSerializer
 {
 public:
+    struct Error : std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
+
     void scheduleTo(const LayoutSchedule& schedule, const FilePath& path);
 
 private:

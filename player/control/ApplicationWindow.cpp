@@ -69,7 +69,7 @@ void ApplicationWindow<Window>::showSplashScreen()
 }
 
 template <typename Window>
-StatusScreenRequested& ApplicationWindow<Window>::statusScreenRequested()
+StatusScreenShown& ApplicationWindow<Window>::statusScreenShown()
 {
     return statusScreenRequested_;
 }

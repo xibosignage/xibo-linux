@@ -1,9 +1,9 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
-#include "OverlayLayoutQueue.hpp"
-#include "RegularLayoutQueue.hpp"
-#include "SchedulerStatus.hpp"
+#include "schedule/LayoutSchedule.hpp"
+#include "schedule/OverlayLayoutQueue.hpp"
+#include "schedule/RegularLayoutQueue.hpp"
+#include "schedule/SchedulerStatus.hpp"
 
 #include "common/dt/Timer.hpp"
 #include "common/fs/IFileCache.hpp"
@@ -44,7 +44,7 @@ private:
     bool layoutValid(const Layout& layout) const;
 
     template <typename LayoutsList>
-    void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
+    void fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
 private:
     const IFileCache& fileCache_;

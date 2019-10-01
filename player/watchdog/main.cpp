@@ -45,12 +45,12 @@ int main()
 
     if (FileSystem::exists(ProjectResources::cmsSettingsPath()))
     {
-        boost::process::child playerBin{ProjectResources::playerBinary().string()};
+        boost::process::child playerBin{ProjectResources::playerBinary()};
         playerBin.wait();
     }
     else
     {
-        boost::process::child optionsBin{ProjectResources::optionsBinary().string()};
+        boost::process::child optionsBin{ProjectResources::optionsBinary()};
         optionsBin.wait();
     }
     return 0;

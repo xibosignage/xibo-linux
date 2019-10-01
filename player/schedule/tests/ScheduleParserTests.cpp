@@ -25,7 +25,7 @@ TEST(ScheduleParser, LoadFromFileInvalid)
 {
     ScheduleParser parser;
 
-    ASSERT_THROW(parser.scheduleFrom(FilePath{ScheduleReadPathInvalid}), ScheduleParseException);
+    ASSERT_THROW(parser.scheduleFrom(FilePath{ScheduleReadPathInvalid}), ScheduleParser::Error);
 }
 
 TEST(ScheduleParser, LoadFromString)
@@ -39,5 +39,5 @@ TEST(ScheduleParser, LoadFromStringInvalid)
 {
     ScheduleParser parser;
 
-    ASSERT_THROW(parser.scheduleFrom(std::string{"invalid"}), ScheduleParseException);
+    ASSERT_THROW(parser.scheduleFrom(std::string{"invalid"}), ScheduleParser::Error);
 }

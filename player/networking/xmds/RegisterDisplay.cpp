@@ -53,7 +53,7 @@ RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody
     result.status.message = attrs.get<std::string>(Resources::StatusMessage);
     if (result.status.code == RegisterDisplay::Result::Status::Code::Ready)
     {
-        result.playerSettings.loadFrom(displayNode);
+        result.playerSettings.fromNode(displayNode);
     }
 
     return result;

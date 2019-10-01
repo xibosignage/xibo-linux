@@ -3,16 +3,12 @@
 #include "common/Parsing.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
-#include "networking/xmds/Resources.hpp"
+#include "networking/xmds/Resources.hpp"  // TODO: remove dependency
 
 #include <boost/property_tree/xml_parser.hpp>
 
+// TODO: remove dependency
 namespace Resources = XmdsResources::Schedule;
-
-const char* ScheduleSerializeException::what() const noexcept
-{
-    return "Schedule serialize failed";
-}
 
 void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePath& path)
 {
@@ -22,7 +18,7 @@ void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePa
     }
     catch (std::exception&)
     {
-        throw ScheduleSerializeException{};
+        throw ScheduleSerializer::Error{"Schedule serialization failed"};
     }
 }
 
@@ -41,7 +37,7 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
     scheduleNode.add_child(Resources::GlobalDependants, dependantsNode(schedule.globalDependants));
     scheduleNode.add_child(Resources::DefaultLayout, defaultLayoutNode(schedule.defaultLayout));
 
-    boost::property_tree::write_xml(path, root);
+    boost::property_tree::write_xml(path.string(), root);
 }
 
 PtreeNode ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)

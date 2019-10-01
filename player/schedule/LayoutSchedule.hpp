@@ -1,9 +1,15 @@
 #pragma once
 
-#include "ScheduleItem.hpp"
+#include "schedule/ScheduleItem.hpp"
+
+class FilePath;
 
 struct LayoutSchedule
 {
+    static LayoutSchedule fromFile(const FilePath& path);
+    static LayoutSchedule fromString(const std::string& string);
+    void toFile(const FilePath& path) const;
+
     DateTime generatedTime;
     LayoutDependants globalDependants;
     LayoutList regularLayouts;

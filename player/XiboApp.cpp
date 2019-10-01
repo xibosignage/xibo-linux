@@ -3,10 +3,6 @@
 #include "MainLoop.hpp"
 #include "config.hpp"
 
-#include "common/fs/Resources.hpp"
-#include "utils/ScreenShoter.hpp"
-#include "xmlsink/XmlLoggerSink.hpp"
-
 #include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
 #include "control/media/MediaParsersRepo.hpp"
@@ -14,9 +10,6 @@
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/XmrManager.hpp"
-
-#include "schedule/ScheduleParser.hpp"
-#include "schedule/ScheduleSerializer.hpp"
 #include "schedule/Scheduler.hpp"
 
 #include "networking/HttpClient.hpp"
@@ -27,8 +20,11 @@
 #include "common/System.hpp"
 #include "common/crypto/RsaManager.hpp"
 #include "common/fs/FileCache.hpp"
+#include "common/fs/Resources.hpp"
 #include "common/settings/CmsSettings.hpp"
 #include "common/settings/PlayerSettings.hpp"
+#include "utils/ScreenShoter.hpp"
+#include "xmlsink/XmlLoggerSink.hpp"
 
 #include <boost/date_time/time_clock.hpp>
 #include <glibmm/main.h>
@@ -98,7 +94,7 @@ XiboApp::XiboApp(const std::string& name) :
     sys.preventSleep();
 
     cmsSettings_.loadFrom(ProjectResources::cmsSettingsPath());
-    playerSettings_.loadFrom(ProjectResources::playerSettingsPath());
+    playerSettings_.fromFile(ProjectResources::playerSettingsPath());
     Resources::setDirectory(FilePath{cmsSettings_.resourcesPath});
 
     fileCache_->loadFrom(ProjectResources::cachePath());
@@ -175,7 +171,7 @@ int XiboApp::run()
     mainWindow_ = std::make_unique<ApplicationWindowGtk>();
     setupLayoutManager();
 
-    mainWindow_->statusScreenRequested().connect([this]() {
+    mainWindow_->statusScreenShown().connect([this]() {
         StatusInfo info{
             collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
 
@@ -189,12 +185,9 @@ int XiboApp::run()
 
     applyPlayerSettings(playerSettings_);
 
-    ScheduleParser parser;
-    scheduler_->reloadSchedule(parser.scheduleFrom(ProjectResources::schedulePath()));
-    scheduler_->scheduleUpdated().connect([](const LayoutSchedule& schedule) {
-        ScheduleSerializer serializer;
-        serializer.scheduleTo(schedule, ProjectResources::schedulePath());
-    });
+    scheduler_->reloadSchedule(LayoutSchedule::fromFile(ProjectResources::schedulePath()));
+    scheduler_->scheduleUpdated().connect(
+        [](const LayoutSchedule& schedule) { schedule.toFile(ProjectResources::schedulePath()); });
 
     collectionInterval_->startRegularCollection();
     mainWindow_->showAll();
@@ -249,8 +242,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
     interval->scheduleAvailable().connect([this](const Schedule::Result& result) {
-        ScheduleParser parser;
-        scheduler_->reloadSchedule(parser.scheduleFrom(result.scheduleXml));
+        scheduler_->reloadSchedule(LayoutSchedule::fromString(result.scheduleXml));
     });
     interval->filesDownloaded().connect([this]() { scheduler_->reloadQueue(); });
 

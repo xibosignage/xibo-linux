@@ -125,7 +125,7 @@ void MainWindowController::updateSettings()
 
 void MainWindowController::onLaunchClientClicked()
 {
-    boost::process::child player{ProjectResources::playerBinary().string()};
+    boost::process::child player{ProjectResources::playerBinary()};
 
     mainWindow_->close();
 

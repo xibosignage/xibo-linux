@@ -1,8 +1,7 @@
 #pragma once
 
-#include <boost/property_tree/ptree.hpp>
+#include "constants.hpp"
 
-using PtreeNode = boost::property_tree::ptree;
 class FilePath;
 
 namespace Utils

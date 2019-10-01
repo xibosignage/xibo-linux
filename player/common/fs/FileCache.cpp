@@ -18,7 +18,7 @@ void FileCache::loadFileHashes(const FilePath& path)
 {
     if (FileSystem::exists(path))
     {
-        boost::property_tree::read_xml(path, fileCache_);
+        boost::property_tree::read_xml(path.string(), fileCache_);
     }
 }
 
@@ -74,5 +74,5 @@ void FileCache::addToCache(const std::string& filename, const std::string& hash,
 
 void FileCache::saveFileHashes(const FilePath& path)
 {
-    boost::property_tree::write_xml(path, fileCache_);
+    boost::property_tree::write_xml(path.string(), fileCache_);
 }

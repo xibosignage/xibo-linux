@@ -11,11 +11,6 @@
 
 namespace Resources = XmdsResources::Schedule;
 
-const char* ScheduleParseException::what() const noexcept
-{
-    return "Schedule is invalid";
-}
-
 LayoutSchedule ScheduleParser::scheduleFrom(const FilePath& path)
 {
     try
@@ -26,7 +21,7 @@ LayoutSchedule ScheduleParser::scheduleFrom(const FilePath& path)
     }
     catch (std::exception&)
     {
-        throw ScheduleParseException{};
+        throw ScheduleParser::Error{"Schedule is invalid"};
     }
 }
 
@@ -38,7 +33,7 @@ LayoutSchedule ScheduleParser::scheduleFrom(const std::string& xmlSchedule)
     }
     catch (std::exception&)
     {
-        throw ScheduleParseException{};
+        throw ScheduleParser::Error{"Schedule is invalid"};
     }
 }
 

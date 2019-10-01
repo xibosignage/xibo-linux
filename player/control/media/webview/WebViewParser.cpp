@@ -30,7 +30,7 @@ int WebViewParser::durationFrom(const PtreeNode& node)
 
 std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
-    std::ifstream in(path);
+    std::ifstream in(path.string());
 
     std::smatch matchedGroups;
     std::string line;
