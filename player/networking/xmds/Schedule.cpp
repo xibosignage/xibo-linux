@@ -18,7 +18,7 @@ Soap::ResponseParser<Schedule::Result>::ResponseParser(const std::string& soapRe
 {
 }
 
-Schedule::Result Soap::ResponseParser<Schedule::Result>::parseBody(const ptree_node& scheduleNode)
+Schedule::Result Soap::ResponseParser<Schedule::Result>::parseBody(const PtreeNode& scheduleNode)
 {
     Schedule::Result result;
     result.scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);

@@ -47,8 +47,8 @@ std::string CryptoUtils::decryptPrivateKeyPkcs(const std::string& message, const
     std::string dectypedMessage;
     CryptoPP::AutoSeededRandomPool rng;
     CryptoPP::RSAES_PKCS1v15_Decryptor decryptor{key};
-    CryptoPP::StringSource{message, true,
-                           new CryptoPP::PK_DecryptorFilter{rng, decryptor, new CryptoPP::StringSink{dectypedMessage}}};
+    CryptoPP::StringSource{
+        message, true, new CryptoPP::PK_DecryptorFilter{rng, decryptor, new CryptoPP::StringSink{dectypedMessage}}};
 
     return dectypedMessage;
 }

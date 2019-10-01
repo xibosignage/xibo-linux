@@ -18,7 +18,7 @@ Soap::ResponseParser<SubmitScreenShot::Result>::ResponseParser(const std::string
 {
 }
 
-SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBody(const ptree_node& node)
+SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBody(const PtreeNode& node)
 {
     SubmitScreenShot::Result result;
     result.success = node.get<bool>(Resources::Success);

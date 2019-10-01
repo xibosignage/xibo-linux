@@ -44,13 +44,14 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result parseBody(const ptree_node& node) override;
+    RequiredFiles::Result parseBody(const PtreeNode& node) override;
 
 private:
-    RegularFile parseRegularFile(const ptree_node& attrs);
-    ResourceFile parseResourceFile(const ptree_node& attrs);
-    std::pair<std::string, std::string> parseFileNameAndPath(RegularFile::DownloadType dType, std::string_view fType,
-                                                             const ptree_node& attrs);
+    RegularFile parseRegularFile(const PtreeNode& attrs);
+    ResourceFile parseResourceFile(const PtreeNode& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(RegularFile::DownloadType dType,
+                                                             std::string_view fType,
+                                                             const PtreeNode& attrs);
 
     bool isLayout(std::string_view type) const;
     bool isMedia(std::string_view type) const;

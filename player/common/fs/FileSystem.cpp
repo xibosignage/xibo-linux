@@ -62,7 +62,7 @@ FilePath FileSystem::currentPath()
 
 void FileSystem::writeToFile(const FilePath& path, const std::string& content)
 {
-    std::ofstream out(path);
+    std::ofstream out(path.string());
 
     out << content;
 }

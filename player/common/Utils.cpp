@@ -21,7 +21,7 @@ std::string Utils::md5hash(std::string_view data)
 
 std::string Utils::md5hashFromFile(const FilePath& path)
 {
-    std::ifstream in{path};
+    std::ifstream in{path.string()};
     std::string fileContent{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
 
     return md5hash(fileContent.data());

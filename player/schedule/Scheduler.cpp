@@ -179,10 +179,6 @@ void Scheduler::restartTimer()
 
         timer_.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
     }
-    else
-    {
-        Log::debug("No timer detected");
-    }
 }
 
 SignalLayoutsUpdated& Scheduler::layoutUpdated()
@@ -194,8 +190,8 @@ SchedulerStatus Scheduler::status() const
 {
     SchedulerStatus status;
 
-    schedulerStatus(status, schedule_.regularLayouts);
-    schedulerStatus(status, schedule_.overlayLayouts);
+    fillSchedulerStatus(status, schedule_.regularLayouts);
+    fillSchedulerStatus(status, schedule_.overlayLayouts);
 
     status.generatedTime = DateTime::toString(schedule_.generatedTime);
     status.currentLayout = currentLayoutId();
@@ -204,7 +200,7 @@ SchedulerStatus Scheduler::status() const
 }
 
 template <typename LayoutsList>
-void Scheduler::schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const
+void Scheduler::fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const
 {
     for (auto&& layout : layouts)
     {

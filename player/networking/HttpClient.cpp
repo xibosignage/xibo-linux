@@ -1,8 +1,7 @@
 #include "HttpClient.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/uri/Uri.hpp"
-#include "common/uri/UriParseError.hpp"
+#include "common/types/Uri.hpp"
 
 #include "HttpRequest.hpp"
 #include "HttpSession.hpp"
@@ -42,6 +41,7 @@ void HttpClient::shutdown()
     }
 }
 
+// TODO: strong type
 void HttpClient::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
 {
     if (!host.empty())

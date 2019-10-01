@@ -1,12 +1,12 @@
 #include "MainLoop.hpp"
 
-#include "control/MainWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
 
 #include <glibmm/main.h>
 
 MainLoop::MainLoop(const std::string& name) : parentApp_(Gtk::Application::create(name)) {}
 
-int MainLoop::run(MainWindow& adaptor)
+int MainLoop::run(WindowGtk& adaptor)
 {
     auto&& windowHandler = adaptor.get();
 

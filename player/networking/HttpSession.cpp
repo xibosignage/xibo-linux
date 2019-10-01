@@ -37,6 +37,7 @@ boost::future<HttpResponseResult> HttpSession::send(const HostInfo& info,
     return result_.get_future();
 }
 
+// TODO: strong type
 template <typename Callback>
 void HttpSession::resolve(const std::string& host, unsigned short port, Callback callback)
 {

@@ -81,7 +81,8 @@ std::string MainWindowController::getDisplayId()
     return displayId.empty() ? HardwareKey::generate() : displayId;
 }
 
-std::string MainWindowController::connectToCms(const std::string& cmsAddress, const std::string& key,
+std::string MainWindowController::connectToCms(const std::string& cmsAddress,
+                                               const std::string& key,
                                                const std::string& displayId)
 {
     try

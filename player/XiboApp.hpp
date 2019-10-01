@@ -7,6 +7,9 @@
 #include "common/settings/PlayerSettings.hpp"
 #include "control/GeneralInfo.hpp"
 
+#include "control/ApplicationWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
+
 class MainLoop;
 class XmdsRequestSender;
 class HttpClient;
@@ -16,8 +19,7 @@ class CollectionInterval;
 class PlayerError;
 class ScreenShoter;
 class XmrManager;
-class MainWindowController;
-class MainWindow;
+using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
 class XiboWebServer;
 class LayoutsManager;
 class XiboApp;
@@ -45,6 +47,7 @@ private:
 
     XiboApp(const std::string& name);
     void setupXmrManager();
+    void setupLayoutManager();
     std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
     void onCollectionFinished(const PlayerError& error);
@@ -61,8 +64,7 @@ private:
     std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<ScreenShoter> screenShoter_;
     std::unique_ptr<XmrManager> xmrManager_;
-    std::shared_ptr<MainWindow> mainWindow_;
-    std::unique_ptr<MainWindowController> windowController_;
+    std::shared_ptr<ApplicationWindowGtk> mainWindow_;
     std::shared_ptr<XiboWebServer> webserver_;
     std::unique_ptr<LayoutsManager> layoutsManager_;
     CmsSettings cmsSettings_;

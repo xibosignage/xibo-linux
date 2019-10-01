@@ -27,7 +27,8 @@ class Session : public std::enable_shared_from_this<Session>
         {
             auto sp = std::make_shared<http::message<isRequest, Body, Fields>>(std::move(msg));
             self.m_response = sp;
-            http::async_write(self.m_socket, *sp,
+            http::async_write(self.m_socket,
+                              *sp,
                               std::bind(&Session::onWrite, self.shared_from_this(), sp->need_eof(), ph::_1, ph::_2));
         }
     };

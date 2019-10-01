@@ -18,7 +18,7 @@ Soap::ResponseParser<SubmitLog::Result>::ResponseParser(const std::string& soapR
 {
 }
 
-SubmitLog::Result Soap::ResponseParser<SubmitLog::Result>::parseBody(const ptree_node& node)
+SubmitLog::Result Soap::ResponseParser<SubmitLog::Result>::parseBody(const PtreeNode& node)
 {
     SubmitLog::Result result;
     result.success = node.get<bool>(Resources::Success);

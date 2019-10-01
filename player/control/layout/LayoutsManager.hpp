@@ -1,20 +1,21 @@
 #pragma once
 
-#include "control/layout/IMainLayout.hpp"
+#include "control/layout/MainLayout.hpp"
 
 #include <map>
 #include <memory>
 #include <vector>
 
 class Scheduler;
+class IFileCache;
 
-using MainLayoutLoaded = boost::signals2::signal<void(const std::shared_ptr<IOverlayLayout>&)>;
-using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::shared_ptr<IOverlayLayout>>&)>;
+using MainLayoutLoaded = boost::signals2::signal<void(const std::shared_ptr<Xibo::Widget>&)>;
+using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::shared_ptr<Xibo::Widget>>&)>;
 
 class LayoutsManager
 {
 public:
-    LayoutsManager(Scheduler& scheduler);
+    LayoutsManager(Scheduler& scheduler, IFileCache& fileCache);
 
     void fetchAllLayouts();
     void fetchMainLayout();
@@ -24,13 +25,14 @@ public:
     OverlaysLoaded& overlaysFetched();
 
 private:
-    template <typename LayoutLoader>
-    std::unique_ptr<IMainLayout> createLayout(int layoutId);
+    template <typename LayoutParser>
+    std::unique_ptr<Xibo::MainLayout> createLayout(int layoutId);
 
 private:
-    std::unique_ptr<IMainLayout> mainLayout_;
-    std::map<int, std::unique_ptr<IMainLayout>> overlayLayouts_;
+    std::unique_ptr<Xibo::MainLayout> mainLayout_;
+    std::map<int, std::unique_ptr<Xibo::MainLayout>> overlayLayouts_;
     Scheduler& scheduler_;
+    IFileCache& fileCache_;
 
     MainLayoutLoaded mainLayoutFetched_;
     OverlaysLoaded overlaysFetched_;

@@ -1,11 +1,11 @@
 #include "UriTests.hpp"
 
-#include "uri/UriParseError.hpp"
-#include "uri/UriParser.hpp"
+#include "common/fs/FilePath.hpp"
+#include "common/types/UriParser.hpp"
 
 TEST_P(UriValidHttpTests, InitializeWithValidHttpUrl)
 {
-    Uri uri{GetParam().source};
+    auto uri = Uri::fromString(GetParam().source);
 
     ASSERT_EQ(uri.scheme(), GetParam().scheme);
     ASSERT_EQ(uri.host(), GetParam().host);
@@ -19,7 +19,7 @@ INSTANTIATE_TEST_CASE_P(Suite, UriValidHttpTests, ::testing::ValuesIn(validHttpU
 
 TEST_P(UriValidFileTests, InitializeWithValidPath)
 {
-    Uri uri{GetParam().source};
+    auto uri = Uri::fromString(GetParam().source);
 
     ASSERT_EQ(uri.scheme(), GetParam().scheme);
     ASSERT_EQ(uri.host(), GetParam().host);
@@ -32,14 +32,14 @@ INSTANTIATE_TEST_CASE_P(Suite, UriValidFileTests, ::testing::ValuesIn(validFileU
 
 TEST_P(UriInvalidTests, InitializeWithInvalidString)
 {
-    ASSERT_THROW(Uri{GetParam()}, UriParseError);
+    ASSERT_THROW(Uri::fromString(GetParam()), UriParser::Error);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, UriInvalidTests, ::testing::ValuesIn(invalidUrls));
 
 TEST(UriManualInit, SchemeAndPath)
 {
-    Uri uri{Uri::Scheme::File, "/my/path"};
+    Uri uri{"/my/path"};
 
     ASSERT_EQ(uri.scheme(), Uri::Scheme::File);
     ASSERT_EQ(uri.path(), "/my/path");

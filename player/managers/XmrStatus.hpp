@@ -4,6 +4,7 @@
 
 struct XmrStatus
 {
+    // TODO: strong type
     std::string host;
     DateTime lastMessageDt;
     DateTime lastHeartbeatDt;

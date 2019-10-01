@@ -3,7 +3,7 @@
 #include "HostInfo.hpp"
 #include "ProxyInfo.hpp"
 #include "common/Utils.hpp"
-#include "common/uri/Uri.hpp"
+#include "common/types/Uri.hpp"
 #include "constants.hpp"
 
 #include <boost/beast/http/message.hpp>
@@ -19,7 +19,7 @@ class ProxyHttpRequest
 public:
     ProxyHttpRequest(http::verb method, const ProxyInfo& info, const Uri& uri, const std::string& body) :
         method_(method),
-        proxyUri_(info.host + DefaultHttpTarget),
+        proxyUri_(Uri::fromString(info.host + DefaultHttpTarget)),
         username_(info.username),
         password_(info.password),
         uri_(uri),

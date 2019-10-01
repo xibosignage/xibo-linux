@@ -1,25 +1,25 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
 #include "constants.hpp"
+#include "schedule/LayoutSchedule.hpp"
 
 class FilePath;
-
-struct ScheduleParseException : public std::exception
-{
-    const char* what() const noexcept override;
-};
 
 class ScheduleParser
 {
 public:
+    struct Error : std::runtime_error
+    {
+        using std::runtime_error::runtime_error;
+    };
+
     LayoutSchedule scheduleFrom(const FilePath& path);
     LayoutSchedule scheduleFrom(const std::string& xmlSchedule);
 
 private:
-    LayoutSchedule scheduleFromImpl(const ptree_node& scheduleXml);
-    ScheduledLayout scheduledLayoutFrom(const ptree_node& layoutNode);
-    DefaultScheduledLayout defaultLayoutFrom(const ptree_node& layoutNode);
-    LayoutList overlayLayoutsFrom(const ptree_node& overlaysNode);
-    LayoutDependants dependantsFrom(const ptree_node& dependantsNode);
+    LayoutSchedule scheduleFromImpl(const PtreeNode& scheduleXml);
+    ScheduledLayout scheduledLayoutFrom(const PtreeNode& layoutNode);
+    DefaultScheduledLayout defaultLayoutFrom(const PtreeNode& layoutNode);
+    LayoutList overlayLayoutsFrom(const PtreeNode& overlaysNode);
+    LayoutDependants dependantsFrom(const PtreeNode& dependantsNode);
 };

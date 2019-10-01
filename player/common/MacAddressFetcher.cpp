@@ -19,6 +19,7 @@ const char* MacAddressError::what() const noexcept
     return error_.data();
 }
 
+// TODO: strong type
 boost::optional<std::string> MacAddressFetcher::get()
 {
     try

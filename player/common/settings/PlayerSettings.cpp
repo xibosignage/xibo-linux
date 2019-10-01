@@ -1,13 +1,13 @@
 #include "PlayerSettings.hpp"
 #include "PlayerSettingsSerializer.hpp"
 
-void PlayerSettings::loadFrom(const FilePath& file)
+void PlayerSettings::fromFile(const FilePath& file)
 {
     PlayerSettingsSerializer serializer;
     serializer.loadFrom(file, *this);
 }
 
-void PlayerSettings::loadFrom(const ptree_node& node)
+void PlayerSettings::fromNode(const PtreeNode& node)
 {
     PlayerSettingsSerializer serializer;
     serializer.loadFrom(node, *this);

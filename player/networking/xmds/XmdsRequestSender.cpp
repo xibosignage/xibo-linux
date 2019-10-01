@@ -9,17 +9,19 @@ const std::string DefaultClientType = "linux";
 const std::string UndefinedMacAddress = "00:00:00:00:00:00";
 const std::string XmdsTarget = "/xmds.php?v=5";
 
-XmdsRequestSender::XmdsRequestSender(const std::string& host, const std::string& serverKey,
+XmdsRequestSender::XmdsRequestSender(const std::string& host,
+                                     const std::string& serverKey,
                                      const std::string& hardwareKey) :
-    uri_(host + XmdsTarget),
+    uri_(Uri::fromString(host + XmdsTarget)),
     serverKey_(serverKey),
     hardwareKey_(hardwareKey)
 {
 }
 
-boost::future<ResponseResult<RegisterDisplay::Result>>
-XmdsRequestSender::registerDisplay(const std::string& clientCode, const std::string& clientVersion,
-                                   const std::string& displayName)
+boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(
+    const std::string& clientCode,
+    const std::string& clientVersion,
+    const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = serverKey_;
@@ -53,7 +55,8 @@ boost::future<ResponseResult<Schedule::Result>> XmdsRequestSender::schedule()
     return SoapRequestHelper::sendRequest<Schedule::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<GetResource::Result>> XmdsRequestSender::getResource(int layoutId, int regionId,
+boost::future<ResponseResult<GetResource::Result>> XmdsRequestSender::getResource(int layoutId,
+                                                                                  int regionId,
                                                                                   int mediaId)
 {
     GetResource::Request request;
@@ -66,8 +69,10 @@ boost::future<ResponseResult<GetResource::Result>> XmdsRequestSender::getResourc
     return SoapRequestHelper::sendRequest<GetResource::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<GetFile::Result>>
-XmdsRequestSender::getFile(int fileId, const std::string& fileType, std::size_t chunkOffset, std::size_t chunkSize)
+boost::future<ResponseResult<GetFile::Result>> XmdsRequestSender::getFile(int fileId,
+                                                                          const std::string& fileType,
+                                                                          std::size_t chunkOffset,
+                                                                          std::size_t chunkSize)
 {
     GetFile::Request request;
     request.serverKey = serverKey_;
@@ -100,8 +105,8 @@ boost::future<ResponseResult<SubmitLog::Result>> XmdsRequestSender::submitLogs(c
     return SoapRequestHelper::sendRequest<SubmitLog::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<SubmitScreenShot::Result>>
-XmdsRequestSender::submitScreenShot(const std::string& screenShot)
+boost::future<ResponseResult<SubmitScreenShot::Result>> XmdsRequestSender::submitScreenShot(
+    const std::string& screenShot)
 {
     SubmitScreenShot::Request request;
     request.serverKey = serverKey_;
