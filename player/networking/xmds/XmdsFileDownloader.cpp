@@ -1,7 +1,7 @@
 #include "XmdsFileDownloader.hpp"
-#include "XmdsRequestSender.hpp"
 
-#include "common/Utils.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
 const std::size_t DefaultChunkSize = 524288;
 
@@ -34,7 +34,7 @@ XmdsResponseResult XmdsFileDownloader::combineAllChunks(DownloadXmdsFilesResult&
         auto [error, result] = future.get();
         if (!error)
         {
-            fileContent += Utils::fromBase64(result.base64chunk);
+            fileContent += CryptoUtils::fromBase64(result.base64chunk);
         }
         else
         {

@@ -5,7 +5,7 @@
 
 #include <boost/process/child.hpp>
 
-#include "HardwareKey.hpp"
+#include "common/system/System.hpp"
 #include "config.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 
@@ -77,8 +77,9 @@ void MainWindowController::onSaveSettingsClicked()
 std::string MainWindowController::getDisplayId()
 {
     std::string displayId = displayIdField_->get_text();
+    std::string key = static_cast<std::string>(System::hardwareKey());
 
-    return displayId.empty() ? HardwareKey::generate() : displayId;
+    return displayId.empty() ? key : displayId;
 }
 
 std::string MainWindowController::connectToCms(const std::string& cmsAddress,

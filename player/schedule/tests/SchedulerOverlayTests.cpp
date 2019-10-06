@@ -1,5 +1,5 @@
-#include "Scheduler.hpp"
-#include "SchedulerLayoutTests.hpp"
+#include "schedule/Scheduler.hpp"
+#include "schedule/tests/SchedulerLayoutTests.hpp"
 
 static void addToQueue(LayoutSchedule& schedule, ScheduledLayout&& type)
 {

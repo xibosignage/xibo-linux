@@ -1,7 +1,6 @@
 #include "MediaInventoryField.hpp"
 
 #include "common/Parsing.hpp"
-#include <boost/property_tree/ptree.hpp>
 
 Field<MediaInventoryItems>::Field(std::string_view name) : fieldName_(name) {}
 
@@ -33,7 +32,7 @@ std::string_view Field<MediaInventoryItems>::value() const
 
 std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)
 {
-    boost::property_tree::ptree root;
+    XmlNode root;
     auto&& filesNode = root.put_child("files", {});
 
     for (auto&& item : items)

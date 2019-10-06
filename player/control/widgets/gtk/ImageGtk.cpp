@@ -60,10 +60,10 @@ Glib::RefPtr<Gdk::Pixbuf> ImageGtk::pixbuf()
 
 void ImageGtk::checkSize(int width, int height)
 {
-    if (width < 0 || height < 0) throw ImageGtk::Error{"size should be positive"};
+    if (width < 0 || height < 0) throw ImageGtk::Error{"ImageGtk", "Size should be positive"};
 }
 
 void ImageGtk::checkUri(const Uri& uri)
 {
-    if (!FileSystem::exists(uri.path())) throw ImageGtk::Error{"image " + uri.path() + " was not found"};
+    if (!FileSystem::exists(uri.path())) throw ImageGtk::Error{"ImageGtk", "Image " + uri.path() + " was not found"};
 }

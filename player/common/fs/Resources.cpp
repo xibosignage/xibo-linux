@@ -1,5 +1,6 @@
 #include "Resources.hpp"
 
+#include "common/PlayerRuntimeError.hpp"
 #include "common/fs/FileSystem.hpp"
 
 FilePath Resources::directory_;
@@ -18,7 +19,7 @@ void Resources::setDirectory(const FilePath& directory)
         bool result = FileSystem::createDirectory(directory_);
         if (!result)
         {
-            throw std::runtime_error("Unable to create resources directory");
+            throw PlayerRuntimeError{"Resources", "Unable to create resources directory"};
         }
     }
 }

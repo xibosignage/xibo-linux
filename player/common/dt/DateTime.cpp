@@ -3,9 +3,9 @@
 #include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-DateTime::DateTime(const DateTime::Date& date, const DateTime::Time& td) : m_ptime{date, td} {}
+DateTime::DateTime(const DateTime::Date& date, const DateTime::Time& td) : ptime_{date, td} {}
 
-DateTime::DateTime(const boost::posix_time::ptime& ptime) : m_ptime(ptime) {}
+DateTime::DateTime(const boost::posix_time::ptime& ptime) : ptime_(ptime) {}
 
 DateTime DateTime::now()
 {
@@ -23,7 +23,7 @@ DateTime DateTime::localFromTimestamp(const time_t& timestamp)
     using boost::posix_time::from_time_t;
     using boost::posix_time::ptime;
     auto utc = utcFromTimestamp(timestamp);
-    return DateTime{c_local_adjustor<ptime>::utc_to_local(utc.m_ptime)};
+    return DateTime{c_local_adjustor<ptime>::utc_to_local(utc.ptime_)};
 }
 
 DateTime DateTime::utcFromTimestamp(const time_t& timestamp)
@@ -31,7 +31,7 @@ DateTime DateTime::utcFromTimestamp(const time_t& timestamp)
     return DateTime{boost::posix_time::from_time_t(timestamp)};
 }
 
-std::string DateTime::toString(const DateTime& dt, const char* format)
+std::string DateTime::string(const char* format) const
 {
     std::stringstream stream;
 
@@ -39,14 +39,14 @@ std::string DateTime::toString(const DateTime& dt, const char* format)
     facet->format(format);
 
     stream.imbue(std::locale(std::locale::classic(), facet));
-    stream << dt.m_ptime;
+    stream << ptime_;
 
     return stream.str();
 }
 
-std::string DateTime::toString(const DateTime& dt)
+std::string DateTime::string() const
 {
-    return boost::posix_time::to_simple_string(dt.m_ptime);
+    return boost::posix_time::to_simple_string(ptime_);
 }
 
 DateTime DateTime::fromString(const std::string& str)
@@ -66,72 +66,72 @@ DateTime DateTime::fromIsoExtendedString(const std::string& str)
     return DateTime{dt};
 }
 
-bool DateTime::isValid() const
+bool DateTime::valid() const
 {
-    return !m_ptime.is_not_a_date_time();
+    return !ptime_.is_not_a_date_time();
 }
 
 bool operator==(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime == second.m_ptime;
+    return first.ptime_ == second.ptime_;
 }
 
 bool operator!=(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime != second.m_ptime;
+    return first.ptime_ != second.ptime_;
 }
 
 bool operator>=(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime >= second.m_ptime;
+    return first.ptime_ >= second.ptime_;
 }
 
 bool operator<=(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime <= second.m_ptime;
+    return first.ptime_ <= second.ptime_;
 }
 
 bool operator>(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime > second.m_ptime;
+    return first.ptime_ > second.ptime_;
 }
 
 bool operator<(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime < second.m_ptime;
+    return first.ptime_ < second.ptime_;
 }
 
 DateTime operator+(const DateTime& first, const DateTime::Hours& hours)
 {
-    return DateTime{first.m_ptime + hours};
+    return DateTime{first.ptime_ + hours};
 }
 
 DateTime operator+(const DateTime& first, const DateTime::Minutes& mins)
 {
-    return DateTime{first.m_ptime + mins};
+    return DateTime{first.ptime_ + mins};
 }
 
 DateTime operator+(const DateTime& first, const DateTime::Seconds& secs)
 {
-    return DateTime{first.m_ptime + secs};
+    return DateTime{first.ptime_ + secs};
 }
 
 DateTime::Time operator-(const DateTime& first, const DateTime& second)
 {
-    return first.m_ptime - second.m_ptime;
+    return first.ptime_ - second.ptime_;
 }
 
 DateTime operator-(const DateTime& first, const DateTime::Hours& hours)
 {
-    return DateTime{first.m_ptime - hours};
+    return DateTime{first.ptime_ - hours};
 }
 
 DateTime operator-(const DateTime& first, const DateTime::Minutes& mins)
 {
-    return DateTime{first.m_ptime - mins};
+    return DateTime{first.ptime_ - mins};
 }
 
 DateTime operator-(const DateTime& first, const DateTime::Seconds& secs)
 {
-    return DateTime{first.m_ptime - secs};
+    return DateTime{first.ptime_ - secs};
 }

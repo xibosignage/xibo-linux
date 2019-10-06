@@ -53,7 +53,7 @@ private:
     {
         auto dt = DateTime::localFromTimestamp(std::chrono::system_clock::to_time_t(tp));
 
-        return DateTime::toString(dt, "%Y-%m-%d %H:%M:%S");
+        return dt.string("%Y-%m-%d %H:%M:%S");
     }
 
     std::string formatLogLevel(spdlog::level::level_enum level)

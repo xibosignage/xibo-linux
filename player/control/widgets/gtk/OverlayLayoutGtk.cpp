@@ -60,7 +60,7 @@ void OverlayLayoutGtk::reorderChild(const std::shared_ptr<Xibo::Widget>& child, 
 
 void OverlayLayoutGtk::checkZorder(int z)
 {
-    if (z < 0) throw OverlayLayoutGtk::Error{"zorder should be non-negative"};
+    if (z < 0) throw OverlayLayoutGtk::Error{"OverlayLayoutGtk", "Zorder should be non-negative"};
 }
 
 void OverlayLayoutGtk::setMainChild(const std::shared_ptr<Xibo::Widget>& mainChild)
@@ -81,7 +81,6 @@ void OverlayLayoutGtk::removePreviousMainChild()
     }
 }
 
-// TODO: it should rely on Gtk::Widget::showAll instead of call it manually
 void OverlayLayoutGtk::showAll()
 {
     WidgetGtk::showAll();

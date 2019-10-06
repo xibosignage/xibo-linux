@@ -1,7 +1,7 @@
 #pragma once
 
-#include "XmrStatus.hpp"
 #include "common/dt/DateTime.hpp"
+#include "managers/XmrStatus.hpp"
 #include "networking/ZeromqSubscriber.hpp"
 
 #include <boost/signals2/signal.hpp>

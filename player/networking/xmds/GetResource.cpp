@@ -1,5 +1,6 @@
 #include "GetResource.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::GetResource;
 
@@ -23,7 +24,7 @@ Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soa
 {
 }
 
-GetResource::Result Soap::ResponseParser<GetResource::Result>::parseBody(const PtreeNode& node)
+GetResource::Result Soap::ResponseParser<GetResource::Result>::parseBody(const XmlNode& node)
 {
     GetResource::Result result;
     result.resource = node.get<std::string>(Resources::Resource);

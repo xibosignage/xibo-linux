@@ -6,7 +6,7 @@ class AudioParser : public MediaParser
 {
 protected:
     std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& baseOptions,
-                                             const PtreeNode& node,
+                                             const XmlNode& node,
                                              int width,
                                              int height) override;
 };

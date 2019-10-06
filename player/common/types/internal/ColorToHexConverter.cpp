@@ -10,7 +10,8 @@ const std::string DefaultAlphaChannel = "FF";
 
 uint32_t ColorToHexConverter::colorToHex(const std::string& color)
 {
-    if (!validColor(color)) throw Error("HEX color should be 3, 4, 6, or 8 digits with # at the beginning");
+    if (!validColor(color))
+        throw Error("ColorConverter", "HEX color should be 3, 4, 6, or 8 digits with # at the beginning");
 
     auto longColorWithAlpha = convertToLongColorWithAlpha(removeNumberSign(color));
     return static_cast<uint32_t>(std::stoul(longColorWithAlpha, nullptr, ColorBase));

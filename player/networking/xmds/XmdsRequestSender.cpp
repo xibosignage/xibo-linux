@@ -1,12 +1,13 @@
 #include "XmdsRequestSender.hpp"
-#include "Resources.hpp"
-#include "SoapRequestSender.hpp"
 
-#include "common/MacAddressFetcher.hpp"
+#include "networking/xmds/Resources.hpp"
+#include "networking/xmds/SoapRequestSender.hpp"
+
 #include "common/crypto/RsaManager.hpp"
+#include "common/system/System.hpp"
+#include "constants.hpp"
 
 const std::string DefaultClientType = "linux";
-const std::string UndefinedMacAddress = "00:00:00:00:00:00";
 const std::string XmdsTarget = "/xmds.php?v=5";
 
 XmdsRequestSender::XmdsRequestSender(const std::string& host,
@@ -29,7 +30,7 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     request.clientType = DefaultClientType;
     request.clientCode = clientCode;
     request.clientVersion = clientVersion;
-    request.macAddress = MacAddressFetcher::get().value_or(UndefinedMacAddress);
+    request.macAddress = static_cast<std::string>(System::macAddress());
     request.xmrChannel = XmrChannel;
     request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName;

@@ -8,7 +8,7 @@
 #include "control/transitions/FlyTransitionExecutor.hpp"
 
 #include "common/fs/FileSystem.hpp"
-#include "common/types/ResourceFile.hpp"
+#include "common/fs/Resource.hpp"
 
 std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType)
 {
@@ -91,7 +91,7 @@ std::istream& operator>>(std::istream& in, Transition::Direction& direction)
     return in;
 }
 
-std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const PtreeNode& node, int parentWidth, int parentHeight)
+std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node, int parentWidth, int parentHeight)
 {
     using namespace std::string_literals;
 
@@ -109,24 +109,22 @@ std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const PtreeNode& node, int p
     }
     catch (std::exception& e)
     {
-        throw MediaParser::Error{"Media is invalid. Reason: "s + e.what()};
+        throw MediaParser::Error{"MediaParser", "Media is invalid. Reason: "s + e.what()};
     }
 }
 
-MediaOptions MediaParser::baseOptionsFrom(const PtreeNode& node)
+MediaOptions MediaParser::baseOptionsFrom(const XmlNode& node)
 {
-    MediaOptions options;
+    auto type = typeFrom(node);
+    auto id = idFrom(node);
+    auto uri = uriFrom(node);
+    auto duration = durationFrom(node);
+    auto geometry = geometryFrom(node);
 
-    options.type = typeFrom(node);
-    options.id = idFrom(node);
-    options.uri = uriFrom(node);
-    options.duration = durationFrom(node);
-    options.geometry = geometryFrom(node);
-
-    return options;
+    return MediaOptions{type, id, uri, duration, geometry};
 }
 
-MediaOptions::Type MediaParser::typeFrom(const PtreeNode& node)
+MediaOptions::Type MediaParser::typeFrom(const XmlNode& node)
 {
     auto type = node.get<std::string>(XlfResources::Media::Type);
     auto render = node.get<std::string>(XlfResources::Media::Render);
@@ -134,36 +132,36 @@ MediaOptions::Type MediaParser::typeFrom(const PtreeNode& node)
     return {type, render};
 }
 
-int MediaParser::idFrom(const PtreeNode& node)
+int MediaParser::idFrom(const XmlNode& node)
 {
     return node.get<int>(XlfResources::Media::Id);
 }
 
-Uri MediaParser::uriFrom(const PtreeNode& node)
+Uri MediaParser::uriFrom(const XmlNode& node)
 {
     auto uri = node.get_optional<std::string>(XlfResources::Media::Uri);
     if (uri)
     {
-        ResourceFile fullPath{uri.value()};
+        Resource fullPath{uri.value()};
 
         if (!FileSystem::isRegularFile(fullPath)) return Uri::fromString(uri.value());
 
-        return Uri{fullPath};
+        return Uri::fromFile(fullPath);
     }
-    return {};
+    throw Error{"MediaParser", "Uri is empty"};
 }
 
-int MediaParser::durationFrom(const PtreeNode& node)
+int MediaParser::durationFrom(const XmlNode& node)
 {
     return node.get<int>(XlfResources::Media::Duration);
 }
 
-MediaGeometry MediaParser::geometryFrom(const PtreeNode& /*node*/)
+MediaGeometry MediaParser::geometryFrom(const XmlNode& /*node*/)
 {
     return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
 }
 
-void MediaParser::attach(Xibo::Media& media, const PtreeNode& node)
+void MediaParser::attach(Xibo::Media& media, const XmlNode& node)
 {
     for (auto [nodeName, attachedNode] : node)
     {
@@ -192,7 +190,7 @@ std::unique_ptr<TransitionExecutor> MediaParser::createTransition(Transition::Ty
     return nullptr;
 }
 
-std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const PtreeNode& node,
+std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const XmlNode& node,
                                                                   const std::shared_ptr<Xibo::Widget>& view)
 {
     if (auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::InType))
@@ -206,7 +204,7 @@ std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const PtreeNod
     return nullptr;
 }
 
-std::unique_ptr<TransitionExecutor> MediaParser::outTransitionFrom(const PtreeNode& node,
+std::unique_ptr<TransitionExecutor> MediaParser::outTransitionFrom(const XmlNode& node,
                                                                    const std::shared_ptr<Xibo::Widget>& view)
 {
     if (auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::OutType))

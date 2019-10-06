@@ -1,5 +1,6 @@
 #include "AudioParser.hpp"
 
+#include "constants.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
 #include "control/media/player/audio/AudioFactory.hpp"
@@ -7,7 +8,7 @@
 const bool DefaultAudioLooped = false;
 
 std::unique_ptr<Xibo::Media> AudioParser::createMedia(const MediaOptions& baseOptions,
-                                                      const PtreeNode& node,
+                                                      const XmlNode& node,
                                                       int /*width*/,
                                                       int /*height*/)
 {

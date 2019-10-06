@@ -19,13 +19,12 @@ public:
     static DateTime nowUtc();
     static DateTime localFromTimestamp(const std::time_t& timestamp);
     static DateTime utcFromTimestamp(const std::time_t& timestamp);
-
-    static std::string toString(const DateTime& dt, const char* format);
-    static std::string toString(const DateTime& dt);
     static DateTime fromString(const std::string& str);
     static DateTime fromIsoExtendedString(const std::string& str);
 
-    bool isValid() const;
+    std::string string(const char* format) const;
+    std::string string() const;
+    bool valid() const;
 
 private:
     explicit DateTime(const boost::posix_time::ptime& ptime);
@@ -45,7 +44,7 @@ private:
     friend bool operator<(const DateTime& first, const DateTime& second);
 
 private:
-    boost::posix_time::ptime m_ptime;
+    boost::posix_time::ptime ptime_;
 };
 
 DateTime operator+(const DateTime& first, const DateTime::Hours& hours);

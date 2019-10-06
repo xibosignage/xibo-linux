@@ -1,10 +1,10 @@
 #pragma once
 
-#include <gtest/gtest.h>
-
-#include "Common.hpp"
-#include "FakeFileCache.hpp"
 #include "common/dt/DateTime.hpp"
+#include "schedule/tests/Common.hpp"
+#include "schedule/tests/FakeFileCache.hpp"
+
+#include <gtest/gtest.h>
 
 class Scheduler;
 

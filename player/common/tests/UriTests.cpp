@@ -1,76 +1,73 @@
 #include "UriTests.hpp"
 
 #include "common/fs/FilePath.hpp"
-#include "common/types/UriParser.hpp"
+#include "common/types/internal/UriParser.hpp"
 
-TEST_P(UriValidHttpTests, InitializeWithValidHttpUrl)
+TEST_P(UriValidHttpTests, FromString_ValidNetworkScheme)
 {
     auto uri = Uri::fromString(GetParam().source);
 
-    ASSERT_EQ(uri.scheme(), GetParam().scheme);
-    ASSERT_EQ(uri.host(), GetParam().host);
-    ASSERT_EQ(uri.hostType(), GetParam().hostType);
-    ASSERT_EQ(uri.port(), GetParam().port.value());
+    ASSERT_EQ(static_cast<std::string>(uri.scheme()), GetParam().scheme);
+    ASSERT_TRUE(uri.optionalAuthority());
+    ASSERT_EQ(uri.authority().host(), GetParam().host);
+    ASSERT_EQ(uri.authority().optionalPort(), GetParam().port);
     ASSERT_EQ(uri.path(), GetParam().path);
     ASSERT_EQ(uri.string(), GetParam().str);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, UriValidHttpTests, ::testing::ValuesIn(validHttpUris));
+INSTANTIATE_TEST_CASE_P(Suite, UriValidHttpTests, ::testing::ValuesIn(validUris));
 
-TEST_P(UriValidFileTests, InitializeWithValidPath)
+TEST_P(UriValidWithoutAuthorityTests, FromString)
 {
     auto uri = Uri::fromString(GetParam().source);
 
-    ASSERT_EQ(uri.scheme(), GetParam().scheme);
-    ASSERT_EQ(uri.host(), GetParam().host);
-    ASSERT_EQ(uri.hostType(), GetParam().hostType);
+    ASSERT_EQ(static_cast<std::string>(uri.scheme()), GetParam().scheme);
+    ASSERT_FALSE(uri.optionalAuthority());
     ASSERT_EQ(uri.path(), GetParam().path);
     ASSERT_EQ(uri.string(), GetParam().str);
 }
 
-INSTANTIATE_TEST_CASE_P(Suite, UriValidFileTests, ::testing::ValuesIn(validFileUris));
+INSTANTIATE_TEST_CASE_P(Suite, UriValidWithoutAuthorityTests, ::testing::ValuesIn(validUrisWithoutAuhority));
 
-TEST_P(UriInvalidTests, InitializeWithInvalidString)
+TEST_P(UriInvalidTests, FromString_Invalid)
 {
     ASSERT_THROW(Uri::fromString(GetParam()), UriParser::Error);
 }
 
 INSTANTIATE_TEST_CASE_P(Suite, UriInvalidTests, ::testing::ValuesIn(invalidUrls));
 
-TEST(UriManualInit, SchemeAndPath)
+TEST(UriManualInit, FromFile)
 {
-    Uri uri{"/my/path"};
+    auto uri = Uri::fromFile("/my/path");
 
-    ASSERT_EQ(uri.scheme(), Uri::Scheme::File);
+    ASSERT_EQ(static_cast<std::string>(uri.scheme()), "file");
     ASSERT_EQ(uri.path(), "/my/path");
-    ASSERT_EQ(uri.host(), std::string{});
-    ASSERT_EQ(uri.hostType(), Uri::Authority::HostType::Invalid);
+    ASSERT_FALSE(uri.optionalAuthority().has_value());
     ASSERT_EQ(uri.string(), "file:///my/path");
-    ASSERT_FALSE(uri.credentials().has_value());
 }
 
 TEST(UriManualInit, SchemeHostAndPath)
 {
-    Uri uri{Uri::Scheme::HTTP, "test.com", "/target"};
+    Uri uri{Uri::Scheme{"http"}, Uri::Host::fromString("test.com"), "/target"};
 
-    ASSERT_EQ(uri.scheme(), Uri::Scheme::HTTP);
+    ASSERT_EQ(static_cast<std::string>(uri.scheme()), "http");
     ASSERT_EQ(uri.path(), "/target");
-    ASSERT_EQ(uri.host(), "test.com");
-    ASSERT_EQ(uri.port(), 80);
-    ASSERT_EQ(uri.hostType(), Uri::Authority::HostType::DNS);
+    ASSERT_EQ(uri.optionalAuthority()->host(), (HostTest{"test.com", Uri::Host::Type::DNS}));
+    ASSERT_EQ(static_cast<unsigned short>(uri.authority().port()), 80);
     ASSERT_EQ(uri.string(), "http://test.com/target");
-    ASSERT_FALSE(uri.credentials().has_value());
+    ASSERT_FALSE(uri.authority().optionalUserInfo().has_value());
 }
 
 TEST(UriManualInit, SchemeAuthorityAndPath)
 {
-    Uri uri{Uri::Scheme::HTTP, Uri::Authority{std::string{"username:password"}, "test.com", 1234}, "/target"};
+    Uri uri{Uri::Scheme{"http"},
+            Uri::Authority{Uri::UserInfo{"username", "password"}, Uri::Host::fromString("test.com"), Uri::Port{1234}},
+            "/target"};
 
-    ASSERT_EQ(uri.scheme(), Uri::Scheme::HTTP);
+    ASSERT_EQ(static_cast<std::string>(uri.scheme()), "http");
     ASSERT_EQ(uri.path(), "/target");
-    ASSERT_EQ(uri.host(), "test.com");
-    ASSERT_EQ(uri.port(), 1234);
-    ASSERT_EQ(uri.hostType(), Uri::Authority::HostType::DNS);
+    ASSERT_EQ(uri.authority().host(), (HostTest{"test.com", Uri::Host::Type::DNS}));
+    ASSERT_EQ(static_cast<unsigned short>(uri.authority().port()), 1234);
     ASSERT_EQ(uri.string(), "http://username:password@test.com:1234/target");
-    ASSERT_EQ(uri.credentials(), std::string{"username:password"});
+    ASSERT_EQ(static_cast<std::string>(uri.authority().userInfo()), std::string{"username:password"});
 }

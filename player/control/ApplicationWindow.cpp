@@ -77,7 +77,7 @@ StatusScreenShown& ApplicationWindow<Window>::statusScreenShown()
 template <typename Window>
 void ApplicationWindow<Window>::updateStatusScreen(const StatusInfo& info)
 {
-    statusScreen_->setText(StatusScreenFormatter::formatInfo(info));
+    statusScreen_->setText(info.toString());
 }
 
 template <typename Window>
@@ -87,7 +87,7 @@ std::shared_ptr<Xibo::Image> ApplicationWindow<Window>::createSplashScreen()
 
     assert(spashImage);
 
-    spashImage->loadFrom(ProjectResources::splashScreenPath(), Xibo::Image::PreserveRatio::False);
+    spashImage->loadFrom(Uri::fromFile(ProjectResources::splashScreenPath()), Xibo::Image::PreserveRatio::False);
 
     return spashImage;
 }

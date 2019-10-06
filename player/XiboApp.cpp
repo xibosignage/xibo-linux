@@ -2,6 +2,7 @@
 
 #include "MainLoop.hpp"
 #include "config.hpp"
+#include "constants.hpp"
 
 #include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
@@ -17,19 +18,19 @@
 #include "networking/xmds/SoapRequestSender.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 
-#include "common/System.hpp"
+#include "common/PlayerRuntimeError.hpp"
 #include "common/crypto/RsaManager.hpp"
-#include "common/fs/FileCache.hpp"
+#include "common/fs/FileCacheImpl.hpp"
 #include "common/fs/Resources.hpp"
+#include "common/logger/Logging.hpp"
 #include "common/settings/CmsSettings.hpp"
 #include "common/settings/PlayerSettings.hpp"
+#include "common/system/System.hpp"
 #include "utils/ScreenShoter.hpp"
-#include "xmlsink/XmlLoggerSink.hpp"
 
 #include <boost/date_time/time_clock.hpp>
 #include <glibmm/main.h>
 #include <gst/gst.h>
-#include <spdlog/sinks/stdout_sinks.h>
 
 static std::unique_ptr<XiboApp> g_app;
 
@@ -40,9 +41,7 @@ XiboApp& xiboApp()
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = XiboLogger::create(SpdLogger, createLoggerSinks());
-    logger->setLevel(LoggingLevel::Debug);
-    logger->setPattern("[%H:%M:%S.%e] [%t] [%l]: %v");
+    auto logger = Log::create();
 
     gst_init(nullptr, nullptr);
     registerVideoSink();
@@ -50,16 +49,6 @@ XiboApp& XiboApp::create(const std::string& name)
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *g_app;
-}
-
-std::vector<spdlog::sink_ptr> XiboApp::createLoggerSinks()
-{
-    std::vector<spdlog::sink_ptr> sinks;
-
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_mt>());
-    sinks.push_back(std::make_shared<LoggerXmlSinkMt>(XmlLogsRepo::get()));
-
-    return sinks;
 }
 
 void XiboApp::registerVideoSink()
@@ -75,23 +64,22 @@ void XiboApp::registerVideoSink()
                                     "package",
                                     "http://github.com/Stivius"))
     {
-        throw std::runtime_error("XiboVideoSink was not registered");
+        throw PlayerRuntimeError{"XiboApp", "XiboVideoSink was not registered"};
     }
 }
 
 XiboApp::XiboApp(const std::string& name) :
     mainLoop_(std::make_unique<MainLoop>(name)),
-    fileCache_(std::make_unique<FileCache>()),
+    fileCache_(std::make_unique<FileCacheImpl>()),
     scheduler_(std::make_unique<Scheduler>(*fileCache_)),
     xmrManager_(std::make_unique<XmrManager>()),
     webserver_(std::make_shared<XiboWebServer>()),
     layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *fileCache_))
 {
     if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
-        throw std::runtime_error("Update CMS settings using player options app");
+        throw PlayerRuntimeError{"XiboApp", "Update CMS settings using player options app"};
 
-    System sys;
-    sys.preventSleep();
+    System::preventSleep();
 
     cmsSettings_.loadFrom(ProjectResources::cmsSettingsPath());
     playerSettings_.fromFile(ProjectResources::playerSettingsPath());
@@ -102,7 +90,7 @@ XiboApp::XiboApp(const std::string& name) :
     webserver_->setRootDirectory(Resources::directory());
     webserver_->run(playerSettings_.embeddedServerPort);
 
-    Log::debug(webserver_->address());
+    Log::debug("[XiboApp] {}", webserver_->address());
     HttpClient::instance().setProxyServer(cmsSettings_.domain, cmsSettings_.username, cmsSettings_.password);
     RsaManager::instance().load();
     setupXmrManager();
@@ -122,13 +110,13 @@ XiboApp::XiboApp(const std::string& name) :
 void XiboApp::setupXmrManager()
 {
     xmrManager_->collectionInterval().connect([this]() {
-        Log::info("[CollectionInterval] Start unscheduled collection");
+        Log::info("[XMR] Start unscheduled collection");
 
         collectionInterval_->collect([this](const PlayerError& error) { onCollectionFinished(error); });
     });
 
     xmrManager_->screenshot().connect([this]() {
-        Log::info("Taking unscheduled screenshot");
+        Log::info("[XMR] Taking unscheduled screenshot");
 
         Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
             xmdsManager_->submitScreenShot(screenshot).then([](auto future) {
@@ -136,7 +124,7 @@ void XiboApp::setupXmrManager()
                 boost::ignore_unused(result);
                 if (error)
                 {
-                    Log::error("[SubmitScreenShot] {}", error);
+                    Log::error("[XMDS::SubmitScreenShot] {}", error);
                 }
             });
         });
@@ -267,11 +255,11 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
-    Log::logger()->setLevel(settings.logLevel);
+    Log::setLevel(settings.logLevel);
     collectionInterval_->updateInterval(settings.collectInterval);
     xmrManager_->connect(settings.xmrNetworkAddress);
     mainWindow_->setSize(settings.width, settings.height);
     mainWindow_->move(settings.x, settings.y);
 
-    Log::debug("Player settings updated");
+    Log::debug("[XiboApp] Player settings updated");
 }

@@ -22,13 +22,13 @@ const std::regex DurationRegex("DURATION=([0-9]+)");
 const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 const std::string DefaultWebviewExtension = ".html";
 
-int WebViewParser::durationFrom(const PtreeNode& node)
+int WebViewParser::durationFrom(const XmlNode& node)
 {
     auto baseDuration = MediaParser::durationFrom(node);
     return parseDuration(uriFrom(node).path()).value_or(baseDuration);
 }
 
-std::optional<int> WebViewParser::parseDuration(const FilePath& path)
+boost::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
     std::ifstream in(path.string());
 
@@ -41,10 +41,10 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
         if (std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1) break;
     }
 
-    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
+    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : boost::optional<int>{};
 }
 
-Uri WebViewParser::uriFrom(const PtreeNode& node)
+Uri WebViewParser::uriFrom(const XmlNode& node)
 {
     auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
@@ -86,7 +86,7 @@ std::string WebViewParser::removeEscapedSymbolsFromUri(std::string url)
 }
 
 std::unique_ptr<Xibo::Media> WebViewParser::createMedia(const MediaOptions& options,
-                                                        const PtreeNode& node,
+                                                        const XmlNode& node,
                                                         int width,
                                                         int height)
 {

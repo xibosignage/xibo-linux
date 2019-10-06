@@ -1,23 +1,24 @@
 #pragma once
 
+#include "common/PlayerRuntimeError.hpp"
+
 #include <dbus/dbus.h>
-#include <exception>
 #include <stdint.h>
 #include <unistd.h>
 
-class DBusException : public std::exception
+class Dbus
 {
 public:
-    DBusException(DBusError error);
-    const char* what() const noexcept override;
+    struct Error : PlayerRuntimeError
+    {
+        Error(DBusError error);
 
-private:
-    DBusError error_;
-};
+        const char* what() const noexcept override;
 
-class System
-{
-public:
+    private:
+        DBusError error_;
+    };
+
     void preventSleep();
 
 private:

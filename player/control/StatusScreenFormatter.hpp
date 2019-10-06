@@ -1,27 +1,23 @@
 #pragma once
 
-#include "GeneralInfo.hpp"
-#include "managers/CmsStatus.hpp"
-#include "managers/XmrStatus.hpp"
-#include "schedule/SchedulerStatus.hpp"
+#include <string>
+#include <vector>
 
-struct StatusInfo
-{
-    GeneralInfo general;
-    CmsStatus cms;
-    SchedulerStatus scheduler;
-    XmrStatus xmr;
-};
+class StatusInfo;
+class GeneralInfo;
+class SchedulerStatus;
+class XmrStatus;
+class CmsStatus;
 
 class StatusScreenFormatter
 {
 public:
-    static std::string formatInfo(const StatusInfo& info);
+    std::string formatInfo(const StatusInfo& info);
 
 private:
-    static std::string formatGeneralInfo(const GeneralInfo& info);
-    static std::string formatCmsInfo(const CmsStatus& info);
-    static std::string formatSchedulerInfo(const SchedulerStatus& info);
-    static std::string layoutsToString(const std::vector<int>& layouts);
-    static std::string formatXmrInfo(const XmrStatus& info);
+    std::string formatGeneralInfo(const GeneralInfo& info);
+    std::string formatCmsInfo(const CmsStatus& info);
+    std::string formatSchedulerInfo(const SchedulerStatus& info);
+    std::string layoutsToString(const std::vector<int>& layouts);
+    std::string formatXmrInfo(const XmrStatus& info);
 };

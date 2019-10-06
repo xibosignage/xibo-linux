@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../Field.hpp"
-#include "../logger/LoggingLevel.hpp"
-#include "constants.hpp"
+#include "common/Field.hpp"
+#include "common/Parsing.hpp"
 
 class FilePath;
 
@@ -10,7 +9,7 @@ class PlayerSettings
 {
 public:
     void fromFile(const FilePath& file);
-    void fromNode(const PtreeNode& node);
+    void fromNode(const XmlNode& node);
     void saveTo(const FilePath& file);
 
     Field<int> collectInterval{"collectInterval", 900};
@@ -22,7 +21,7 @@ public:
     Field<int> height{"sizeY", 0};
     Field<int> x{"offsetX", 0};
     Field<int> y{"offsetY", 0};
-    Field<LoggingLevel> logLevel{"logLevel", LoggingLevel::Debug};
+    Field<std::string> logLevel{"logLevel", "debug"};
     Field<bool> shellCommandsEnabled{"shellCommandsEnabled", false};
     Field<bool> modifiedLayoutsEnabled{"modifiedLayoutsEnabled", false};
     Field<int> maxConcurrentDownloads{"maxConcurrentDownloads", 2};

@@ -10,7 +10,7 @@ const bool DefaultRegionLoop = false;
 
 using namespace std::string_literals;
 
-std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const PtreeNode& node)
+std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const XmlNode& node)
 {
     try
     {
@@ -22,11 +22,11 @@ std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const PtreeNode& node)
     }
     catch (std::exception& e)
     {
-        throw RegionParser::Error{"Region is invalid. Reason: "s + e.what()};
+        throw RegionParser::Error{"RegionParser", "Region is invalid. Reason: "s + e.what()};
     }
 }
 
-RegionPosition RegionParser::positionFrom(const PtreeNode& node)
+RegionPosition RegionParser::positionFrom(const XmlNode& node)
 {
     try
     {
@@ -40,11 +40,11 @@ RegionPosition RegionParser::positionFrom(const PtreeNode& node)
     }
     catch (std::exception& e)
     {
-        throw RegionParser::Error{"Region position is invalid. Reason: "s + e.what()};
+        throw RegionParser::Error{"RegionParser", "Position is invalid. Reason: "s + e.what()};
     }
 }
 
-RegionOptions RegionParser::optionsFrom(const PtreeNode& node)
+RegionOptions RegionParser::optionsFrom(const XmlNode& node)
 {
     RegionOptions options;
 
@@ -56,7 +56,7 @@ RegionOptions RegionParser::optionsFrom(const PtreeNode& node)
     return options;
 }
 
-void RegionParser::addMedia(Xibo::Region& region, const PtreeNode& regionNode)
+void RegionParser::addMedia(Xibo::Region& region, const XmlNode& regionNode)
 {
     for (auto [nodeName, node] : regionNode)
     {
@@ -74,7 +74,7 @@ void RegionParser::addMedia(Xibo::Region& region, const PtreeNode& regionNode)
     }
 }
 
-MediaOptions::Type RegionParser::mediaTypeFrom(const PtreeNode& node)
+MediaOptions::Type RegionParser::mediaTypeFrom(const XmlNode& node)
 {
     auto type = node.get<std::string>(XlfResources::Media::Type);
     auto render = node.get<std::string>(XlfResources::Media::Render);

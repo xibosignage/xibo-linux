@@ -3,8 +3,8 @@
 #include "common/JoinableThread.hpp"
 #include "common/types/Uri.hpp"
 
-#include "ProxyInfo.hpp"
-#include "ResponseResult.hpp"
+#include "networking/ProxyInfo.hpp"
+#include "networking/ResponseResult.hpp"
 
 #include <boost/asio/io_context.hpp>
 #include <boost/beast/http/verb.hpp>

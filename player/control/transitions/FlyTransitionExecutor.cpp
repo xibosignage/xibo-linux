@@ -1,5 +1,6 @@
 #include "FlyTransitionExecutor.hpp"
 
+#include "common/Utils.hpp"
 #include "common/logger/Logging.hpp"
 
 FlyTransitionExecutor::FlyTransitionExecutor(Transition::Heading heading,
@@ -13,7 +14,5 @@ FlyTransitionExecutor::FlyTransitionExecutor(Transition::Heading heading,
 
 void FlyTransitionExecutor::apply()
 {
-    std::string h = heading() == Transition::Heading::In ? "in" : "out";
-
-    Log::debug("Executing fly {} transition with {} duration", h, duration());
+    Log::debug("[FlyTransition] Executing {} transition with {} duration", Utils::toString(heading()), duration());
 }

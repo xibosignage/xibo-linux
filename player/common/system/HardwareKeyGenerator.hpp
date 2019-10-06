@@ -1,12 +1,14 @@
 #pragma once
 
+#include "common/system/HardwareKey.hpp"
+
 #include <boost/process/io.hpp>
 #include <string>
 
-class HardwareKey
+class HardwareKeyGenerator
 {
 public:
-    static std::string generate();
+    static HardwareKey generate();
 
 private:
     static std::string cpuid();

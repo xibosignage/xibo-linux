@@ -7,6 +7,6 @@ struct MainLayoutOptions
 {
     int width;
     int height;
-    Uri backgroundUri;
+    boost::optional<Uri> backgroundUri;
     Color backgroundColor;
 };

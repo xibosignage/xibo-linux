@@ -1,6 +1,6 @@
 #pragma once
 
-#include "control/StatusScreenFormatter.hpp"
+#include "control/StatusInfo.hpp"
 #include "control/widgets/Image.hpp"
 #include "control/widgets/OverlayLayout.hpp"
 #include "control/widgets/StatusScreen.hpp"

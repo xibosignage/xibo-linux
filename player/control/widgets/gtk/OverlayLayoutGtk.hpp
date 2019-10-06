@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/PlayerRuntimeError.hpp"
 #include "control/widgets/OverlayLayout.hpp"
 #include "control/widgets/gtk/WidgetGtk.hpp"
 
@@ -26,9 +27,9 @@ public:
 
     using WidgetsWithInfo = std::vector<ChildInfo>;
 
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     OverlayLayoutGtk(int width, int height);

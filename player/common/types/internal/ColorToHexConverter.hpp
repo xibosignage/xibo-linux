@@ -1,14 +1,15 @@
 #pragma once
 
-#include <stdexcept>
+#include "common/PlayerRuntimeError.hpp"
+
 #include <string>
 
 class ColorToHexConverter
 {
 public:
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     uint32_t colorToHex(const std::string& color);

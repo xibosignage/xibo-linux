@@ -3,9 +3,9 @@
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
 
-#include "HttpRequest.hpp"
-#include "HttpSession.hpp"
-#include "ProxyHttpRequest.hpp"
+#include "networking/HttpRequest.hpp"
+#include "networking/HttpSession.hpp"
+#include "networking/ProxyHttpRequest.hpp"
 
 const int DefaultConcurrentRequests = 4;
 
@@ -13,11 +13,7 @@ HttpClient::HttpClient() : work_{ioc_}
 {
     for (int i = 0; i != DefaultConcurrentRequests; ++i)
     {
-        workerThreads_.push_back(std::make_unique<JoinableThread>([=]() {
-            Log::trace("HTTP thread started");
-
-            ioc_.run();
-        }));
+        workerThreads_.push_back(std::make_unique<JoinableThread>([=]() { ioc_.run(); }));
     }
 }
 
@@ -78,23 +74,21 @@ boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri&
     auto session = std::make_shared<HttpSession>(ioc_);
     activeSessions_.push_back(session);
 
-    Log::trace(uri);
-
     if (proxyInfo_)
     {
         ProxyHttpRequest request{method, proxyInfo_.value(), uri, body};
-        return session->send(request.hostInfo(), request.get());
+        return session->send(uri, request.get());
     }
     else
     {
         HttpRequest request{method, uri, body};
-        return session->send(request.hostInfo(), request.get());
+        return session->send(uri, request.get());
     }
 }
 
 boost::future<HttpResponseResult> HttpClient::managerStoppedError()
 {
     boost::promise<HttpResponseResult> result;
-    result.set_value(HttpResponseResult{PlayerError{PlayerError::Type::HTTP, "Manager Stopped"}, {}});
+    result.set_value(HttpResponseResult{PlayerError{"HTTP", "Manager Stopped"}, {}});
     return result.get_future();
 }

@@ -10,7 +10,7 @@
 #include <gdkmm.h>
 #include <glibmm/main.h>
 
-ScreenShoter::ScreenShoter(WindowGtk& window) : window_(window) {}
+ScreenShoter::ScreenShoter(Xibo::Window& window) : window_(dynamic_cast<WindowGtk&>(window)) {}
 
 void ScreenShoter::takeBase64(ScreenShotTaken callback)
 {

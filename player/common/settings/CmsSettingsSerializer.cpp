@@ -1,5 +1,7 @@
 #include "CmsSettingsSerializer.hpp"
 
+#include "common/logger/Logging.hpp"
+
 void CmsSettingsSerializer::loadFrom(const FilePath& file, CmsSettings& settings)
 {
     loadFromImpl(file,

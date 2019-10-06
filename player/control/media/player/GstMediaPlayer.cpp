@@ -39,7 +39,7 @@ void GstMediaPlayer::createBaseElements(MediaPlayerOptions::Location location)
     volume_ = Gst::Volume::create();
     source_ = Gst::UriSrc::create(static_cast<Gst::UriSrc::Type>(location));
 
-    if (!pipeline_ || !decodebin_ || !volume_ || !source_) throw Error{"[GstMediaPlayer] Error during creation"};
+    if (!pipeline_ || !decodebin_ || !volume_ || !source_) throw Error{"GstMediaPlayer", "Error during creation"};
 }
 
 void GstMediaPlayer::load(const Uri& uri)
@@ -55,7 +55,7 @@ void GstMediaPlayer::setVolume(int volume)
 
 void GstMediaPlayer::checkVolume(int volume)
 {
-    if (volume < MinVolume || volume > MaxVolume) throw Error{"Volume should be in [0-100] range"};
+    if (volume < MinVolume || volume > MaxVolume) throw Error{"GstMediaPlayer", "Volume should be in [0-100] range"};
 }
 
 void GstMediaPlayer::play()
