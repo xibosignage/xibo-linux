@@ -1,6 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
+#include "common/Parsing.hpp"
+#include "common/PlayerRuntimeError.hpp"
 #include "schedule/LayoutSchedule.hpp"
 
 class FilePath;
@@ -8,18 +9,18 @@ class FilePath;
 class ScheduleParser
 {
 public:
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     LayoutSchedule scheduleFrom(const FilePath& path);
     LayoutSchedule scheduleFrom(const std::string& xmlSchedule);
 
 private:
-    LayoutSchedule scheduleFromImpl(const PtreeNode& scheduleXml);
-    ScheduledLayout scheduledLayoutFrom(const PtreeNode& layoutNode);
-    DefaultScheduledLayout defaultLayoutFrom(const PtreeNode& layoutNode);
-    LayoutList overlayLayoutsFrom(const PtreeNode& overlaysNode);
-    LayoutDependants dependantsFrom(const PtreeNode& dependantsNode);
+    LayoutSchedule scheduleFromImpl(const XmlNode& scheduleXml);
+    ScheduledLayout scheduledLayoutFrom(const XmlNode& layoutNode);
+    DefaultScheduledLayout defaultLayoutFrom(const XmlNode& layoutNode);
+    LayoutList overlayLayoutsFrom(const XmlNode& overlaysNode);
+    LayoutDependants dependantsFrom(const XmlNode& dependantsNode);
 };

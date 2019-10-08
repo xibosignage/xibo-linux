@@ -8,7 +8,7 @@ const MediaGeometry::ScaleType DefaultScaleType = MediaGeometry::ScaleType::Scal
 const MediaGeometry::Align DefaultAlign = MediaGeometry::Align::Center;
 const MediaGeometry::Valign DefaultValign = MediaGeometry::Valign::Middle;
 
-MediaGeometry ImageParser::geometryFrom(const PtreeNode& node)
+MediaGeometry ImageParser::geometryFrom(const XmlNode& node)
 {
     auto scaleType = node.get<MediaGeometry::ScaleType>(XlfResources::Media::Geometry::ScaleType, DefaultScaleType);
     auto align = node.get<MediaGeometry::Align>(XlfResources::Media::Geometry::Align, DefaultAlign);
@@ -18,7 +18,7 @@ MediaGeometry ImageParser::geometryFrom(const PtreeNode& node)
 }
 
 std::unique_ptr<Xibo::Media> ImageParser::createMedia(const MediaOptions& options,
-                                                      const PtreeNode& /*node*/,
+                                                      const XmlNode& /*node*/,
                                                       int width,
                                                       int height)
 {

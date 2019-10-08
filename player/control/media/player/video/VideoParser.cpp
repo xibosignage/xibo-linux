@@ -1,5 +1,6 @@
 #include "VideoParser.hpp"
 
+#include "constants.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/MediaResources.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
@@ -9,7 +10,7 @@ const bool DefaultVideoMuted = false;
 const bool DefaultVideoLooped = false;
 const MediaGeometry::ScaleType DefaultVideoScaleType = MediaGeometry::ScaleType::Scaled;
 
-MediaGeometry VideoParser::geometryFrom(const PtreeNode& node)
+MediaGeometry VideoParser::geometryFrom(const XmlNode& node)
 {
     auto scaleType =
         node.get<MediaGeometry::ScaleType>(XlfResources::Media::Geometry::ScaleType, DefaultVideoScaleType);
@@ -18,7 +19,7 @@ MediaGeometry VideoParser::geometryFrom(const PtreeNode& node)
 }
 
 std::unique_ptr<Xibo::Media> VideoParser::createMedia(const MediaOptions& baseOptions,
-                                                      const PtreeNode& node,
+                                                      const XmlNode& node,
                                                       int width,
                                                       int height)
 {

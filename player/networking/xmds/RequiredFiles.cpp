@@ -1,5 +1,6 @@
 #include "RequiredFiles.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::RequiredFiles;
 
@@ -38,10 +39,10 @@ Soap::ResponseParser<RequiredFiles::Result>::ResponseParser(const std::string& s
 {
 }
 
-RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::parseBody(const PtreeNode& node)
+RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::parseBody(const XmlNode& node)
 {
     auto requiredFilesXml = node.get<std::string>(Resources::RequiredFilesXml);
-    auto filesNode = Parsing::xmlFromString(requiredFilesXml).get_child(Resources::Files);
+    auto filesNode = Parsing::xmlFrom(requiredFilesXml).get_child(Resources::Files);
 
     RequiredFiles::Result result;
 
@@ -65,7 +66,7 @@ RequiredFiles::Result Soap::ResponseParser<RequiredFiles::Result>::parseBody(con
     return result;
 }
 
-RegularFile Soap::ResponseParser<RequiredFiles::Result>::parseRegularFile(const PtreeNode& attrs)
+RegularFile Soap::ResponseParser<RequiredFiles::Result>::parseRegularFile(const XmlNode& attrs)
 {
     auto fileType = attrs.get<std::string>(Resources::FileType);
     auto id = attrs.get<int>(Resources::RegularFile::Id);
@@ -77,7 +78,7 @@ RegularFile Soap::ResponseParser<RequiredFiles::Result>::parseRegularFile(const 
     return RegularFile{id, size, md5, path, name, fileType, downloadType};
 }
 
-ResourceFile Soap::ResponseParser<RequiredFiles::Result>::parseResourceFile(const PtreeNode& attrs)
+ResourceFile Soap::ResponseParser<RequiredFiles::Result>::parseResourceFile(const XmlNode& attrs)
 {
     auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
     auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
@@ -115,7 +116,7 @@ RegularFile::DownloadType Soap::ResponseParser<RequiredFiles::Result>::toDownloa
 std::pair<std::string, std::string> Soap::ResponseParser<RequiredFiles::Result>::parseFileNameAndPath(
     RegularFile::DownloadType dType,
     std::string_view fType,
-    const PtreeNode& attrs)
+    const XmlNode& attrs)
 {
     std::string path, name;
 

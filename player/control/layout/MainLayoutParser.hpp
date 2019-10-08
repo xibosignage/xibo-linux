@@ -1,6 +1,6 @@
 #pragma once
 
-#include "constants.hpp"
+#include "common/Parsing.hpp"
 #include "control/layout/MainLayout.hpp"
 #include "control/layout/MainLayoutOptions.hpp"
 #include "control/widgets/Image.hpp"
@@ -12,19 +12,19 @@ class MainLayoutParser
 public:
     virtual ~MainLayoutParser() = default;
 
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     std::unique_ptr<Xibo::MainLayout> parseBy(int layoutId);
 
 protected:
-    std::unique_ptr<Xibo::MainLayout> layoutFrom(const PtreeNode& node);
-    MainLayoutOptions optionsFrom(const PtreeNode& node);
-    Uri backgroundUriFrom(const PtreeNode& node);
-    Color backgroundColorFrom(const PtreeNode& node);
+    std::unique_ptr<Xibo::MainLayout> layoutFrom(const XmlNode& node);
+    MainLayoutOptions optionsFrom(const XmlNode& node);
+    boost::optional<Uri> backgroundUriFrom(const XmlNode& node);
+    Color backgroundColorFrom(const XmlNode& node);
 
     virtual std::shared_ptr<Xibo::Image> createBackground(const MainLayoutOptions& options);
-    void addRegions(Xibo::MainLayout& layout, const PtreeNode& node);
+    void addRegions(Xibo::MainLayout& layout, const XmlNode& node);
 };

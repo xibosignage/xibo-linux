@@ -19,6 +19,9 @@ namespace CryptoUtils
     std::string decryptPrivateKeyPkcs(const std::string& message, const CryptoPP::RSA::PrivateKey& key);
     std::string decryptRc4(const std::string& message, const std::string& key);
 
+    std::string toBase64(const std::string& text);
+    std::string fromBase64(const std::string& text);
+
     template <typename Key>
     std::string keyToString(const Key& key)
     {

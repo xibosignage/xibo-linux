@@ -15,7 +15,7 @@ using SurfaceCreated = std::function<void(const Cairo::RefPtr<Cairo::Surface>&)>
 class ScreenShoter
 {
 public:
-    ScreenShoter(WindowGtk& window);
+    ScreenShoter(Xibo::Window& window);
     void takeBase64(ScreenShotTaken callback);
 
 private:

@@ -1,17 +1,17 @@
 #pragma once
 
-#include "RequiredFilesDownloader.hpp"
+#include "managers/CmsStatus.hpp"
+#include "managers/RequiredFilesDownloader.hpp"
 
+#include "networking/ResponseResult.hpp"
 #include "networking/xmds/RegisterDisplay.hpp"
 #include "networking/xmds/RequiredFiles.hpp"
 #include "networking/xmds/Schedule.hpp"
 #include "networking/xmds/SubmitLog.hpp"
 
-#include "CmsStatus.hpp"
 #include "common/Dispatcher.hpp"
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
-#include "networking/ResponseResult.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
@@ -63,10 +63,10 @@ private:
     std::unique_ptr<JoinableThread> workerThread_;
     std::unique_ptr<Timer> intervalTimer_;
     int collectInterval_;
-    bool started_ = false;
-    bool registered_ = false;
+    bool started_;
+    bool registered_;
     DateTime lastChecked_;
-    size_t requiredFiles_ = 0;
+    size_t requiredFiles_;
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;

@@ -1,8 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "Common.hpp"
-#include "ScheduleParser.hpp"
-#include "ScheduleSerializer.hpp"
+#include "schedule/ScheduleParser.hpp"
+#include "schedule/ScheduleSerializer.hpp"
+#include "schedule/tests/Common.hpp"
+
 #include "common/fs/FilePath.hpp"
 
 const std::string ScheduleWritePath = "fakeScheduleWrite.xml";

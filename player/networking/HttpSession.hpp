@@ -11,8 +11,8 @@
 
 #include <boost/thread/future.hpp>
 
-#include "HostInfo.hpp"
-#include "ResponseResult.hpp"
+#include "common/types/Uri.hpp"
+#include "networking/ResponseResult.hpp"
 
 namespace http = boost::beast::http;
 namespace ip = boost::asio::ip;
@@ -25,7 +25,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession>
 public:
     HttpSession(boost::asio::io_context& ioc);
 
-    boost::future<HttpResponseResult> send(const HostInfo& info, const http::request<http::string_body>& request);
+    boost::future<HttpResponseResult> send(const Uri& uri, const http::request<http::string_body>& request);
     void cancel();
 
 private:
@@ -33,7 +33,7 @@ private:
     void setHttpResult(const HttpResponseResult& result);
 
     template <typename Callback>
-    void resolve(const std::string& host, unsigned short port, Callback callback);
+    void resolve(const Uri::Host& host, const Uri::Port& port, Callback callback);
     void onResolved(const boost::system::error_code& ec, ip::tcp::resolver::results_type results);
 
     template <typename Callback>
@@ -54,8 +54,8 @@ private:
 
 private:
     ip::tcp::resolver resolver_;
+    bool useSsl_ = false;
     std::unique_ptr<ssl::stream<ip::tcp::socket>> socket_;
-    HostInfo hostInfo_;
     http::request<http::string_body> request_;
     http::response_parser<http::string_body> response_;
     boost::beast::flat_buffer buffer_;

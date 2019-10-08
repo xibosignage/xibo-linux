@@ -6,7 +6,7 @@
 #include "control/widgets/ImageWidgetFactory.hpp"
 
 #include "common/fs/FilePath.hpp"
-#include "common/types/ResourceFile.hpp"
+#include "common/fs/Resource.hpp"
 
 const std::string DefaultColor = "#000";
 
@@ -16,18 +16,18 @@ std::unique_ptr<Xibo::MainLayout> MainLayoutParser::parseBy(int layoutId)
 {
     try
     {
-        ResourceFile xlfFile{std::to_string(layoutId) + ".xlf"};
-        auto root = Parsing::xmlFromPath(xlfFile);
+        Resource xlfFile{std::to_string(layoutId) + ".xlf"};
+        auto root = Parsing::xmlFrom(xlfFile);
         return layoutFrom(root.get_child(XlfResources::LayoutNode));
     }
     catch (std::exception& e)
     {
         std::string message = "Layout " + std::to_string(layoutId) + " is invalid or missing. Reason: ";
-        throw MainLayoutParser::Error(message + e.what());
+        throw MainLayoutParser::Error("MainLayoutParser", message + e.what());
     }
 }
 
-std::unique_ptr<Xibo::MainLayout> MainLayoutParser::layoutFrom(const PtreeNode& node)
+std::unique_ptr<Xibo::MainLayout> MainLayoutParser::layoutFrom(const XmlNode& node)
 {
     auto options = optionsFrom(node);
     auto layout = std::make_unique<MainLayoutImpl>(options);
@@ -38,32 +38,28 @@ std::unique_ptr<Xibo::MainLayout> MainLayoutParser::layoutFrom(const PtreeNode& 
     return layout;
 }
 
-MainLayoutOptions MainLayoutParser::optionsFrom(const PtreeNode& node)
+MainLayoutOptions MainLayoutParser::optionsFrom(const XmlNode& node)
 {
-    MainLayoutOptions options;
+    auto width = node.get<int>(XlfResources::MainLayout::Width);
+    auto height = node.get<int>(XlfResources::MainLayout::Height);
 
-    options.width = node.get<int>(XlfResources::MainLayout::Width);
-    options.height = node.get<int>(XlfResources::MainLayout::Height);
+    auto backgroundUri = backgroundUriFrom(node);
+    auto backgroundColor = backgroundColorFrom(node);
 
-    options.backgroundUri = backgroundUriFrom(node);
-    options.backgroundColor = backgroundColorFrom(node);
-
-    return options;
+    return MainLayoutOptions{width, height, backgroundUri, backgroundColor};
 }
 
-Uri MainLayoutParser::backgroundUriFrom(const PtreeNode& node)
+boost::optional<Uri> MainLayoutParser::backgroundUriFrom(const XmlNode& node)
 {
     auto uri = node.get_optional<std::string>(XlfResources::MainLayout::BackgroundPath);
-
     if (uri)
     {
-        return Uri{ResourceFile{uri.value()}};
+        return Uri::fromFile(Resource{uri.value()});
     }
-
     return {};
 }
 
-Color MainLayoutParser::backgroundColorFrom(const PtreeNode& node)
+Color MainLayoutParser::backgroundColorFrom(const XmlNode& node)
 {
     auto color = node.get<std::string>(XlfResources::MainLayout::BackgroundColor);
 
@@ -74,16 +70,15 @@ std::shared_ptr<Xibo::Image> MainLayoutParser::createBackground(const MainLayout
 {
     auto background = ImageWidgetFactory::create(options.width, options.height);
 
-    // TODO: remove isValid
-    if (options.backgroundUri.isValid())
-        background->loadFrom(options.backgroundUri, Xibo::Image::PreserveRatio::False);
+    if (options.backgroundUri)
+        background->loadFrom(options.backgroundUri.value(), Xibo::Image::PreserveRatio::False);
     else
         background->setColor(options.backgroundColor);
 
     return background;
 }
 
-void MainLayoutParser::addRegions(Xibo::MainLayout& layout, const PtreeNode& layoutNode)
+void MainLayoutParser::addRegions(Xibo::MainLayout& layout, const XmlNode& layoutNode)
 {
     for (auto [nodeName, node] : layoutNode)
     {

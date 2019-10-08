@@ -32,7 +32,6 @@ void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
     media_.emplace_back(std::move(media));
 }
 
-// TODO: use Box with align/valign instead
 std::pair<int, int> RegionImpl::calcMediaPosition(Xibo::Media& media)
 {
     auto mediaView = media.view();

@@ -17,10 +17,9 @@ WindowGtk::WindowGtk() : WidgetGtk(handler_), cursorVisible_(true), fullscreen_(
     });
 }
 
-// TODO: use children propagation
 void WindowGtk::showAll()
 {
-    handler_.show_all();
+    handler_.show();
 
     if (child_)
     {
@@ -28,7 +27,6 @@ void WindowGtk::showAll()
     }
 }
 
-// TODO: use children propagation
 void WindowGtk::scale(double scaleX, double scaleY)
 {
     WidgetGtk::scale(scaleX, scaleX);
@@ -50,7 +48,7 @@ void WindowGtk::onRealized()
         }
         else
         {
-            Log::error("Error while setting blank cursor");
+            Log::error("[WindowGtk] Blank cursor hasn't been set");
         }
     }
 }
@@ -143,7 +141,7 @@ void WindowGtk::fullscreen()
     }
     else
     {
-        Log::error("Error while setting fullscreen mode");
+        Log::error("[WindowGtk] Fullscreen mode hasn't been activated");
     }
 }
 
@@ -203,7 +201,7 @@ void WindowGtk::setBackgroundColor(const Color& color)
     }
     else
     {
-        Log::error("Error while overriding background color");
+        Log::error("[WindowGtk] Background color hasn't been set");
     }
 }
 

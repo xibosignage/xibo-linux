@@ -23,7 +23,7 @@ void GstVideoPlayer::createPipeline()
     audioSink_ = Gst::AutoAudioSink::create();
 
     if (!videoConverter_ || !videoScale_ || !videoSink_ || !queue_ || !capsfilter_ || !audioConverter_ || !audioSink_)
-        throw GstMediaPlayer::Error{"[GstVideoPlayer] Error while creating pipeline"};
+        throw GstMediaPlayer::Error{"GstAudioPlayer", "Error while creating pipeline"};
 
     pipeline_->add(source_)->add(decodebin_);
     source_->link(decodebin_);

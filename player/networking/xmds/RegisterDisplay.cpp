@@ -1,6 +1,7 @@
 #include "RegisterDisplay.hpp"
-#include "Resources.hpp"
+
 #include "common/Utils.hpp"
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::RegisterDisplay;
 
@@ -42,10 +43,10 @@ Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string&
 {
 }
 
-RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const PtreeNode& node)
+RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const XmlNode& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
-    auto displayNode = Parsing::xmlFromString(activationMessage).get_child(Resources::Display);
+    auto displayNode = Parsing::xmlFrom(activationMessage).get_child(Resources::Display);
     auto attrs = displayNode.get_child(Resources::DisplayAttrs);
 
     RegisterDisplay::Result result;

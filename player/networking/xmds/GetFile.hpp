@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BaseRequestSerializer.hpp"
-#include "BaseResponseParser.hpp"
-#include "Soap.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 
@@ -39,5 +39,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetFile::Result parseBody(const PtreeNode& node) override;
+    GetFile::Result parseBody(const XmlNode& node) override;
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/core/ignore_unused.hpp>
-#include <boost/property_tree/ptree.hpp>
 
 #include "common/Parsing.hpp"
 #include "networking/ResponseResult.hpp"
@@ -12,8 +11,7 @@ namespace Soap
     class BaseResponseParser
     {
     public:
-        using OptionalParsedNode = boost::optional<PtreeNode&>;
-        using ParsedNode = PtreeNode;
+        using OptionalXmlNode = boost::optional<XmlNode&>;
 
         BaseResponseParser(const std::string& response) : response_(response)
         {
@@ -36,14 +34,14 @@ namespace Soap
                 return parseBodyImpl(bodyNode);
             }
 
-            return std::pair{PlayerError{PlayerError::Type::SOAP, response_}, Result{}};
+            return std::pair{PlayerError{"SOAP", response_}, Result{}};
         }
 
     protected:
-        virtual Result parseBody(const ParsedNode& node) = 0;
+        virtual Result parseBody(const XmlNode& node) = 0;
 
     private:
-        ResponseResult<Result> parseBodyImpl(const ParsedNode& node)
+        ResponseResult<Result> parseBodyImpl(const XmlNode& node)
         {
             using namespace std::string_literals;
 
@@ -55,7 +53,7 @@ namespace Soap
             {
                 std::string error = "Error while parsing response. Details: "s + e.what();
 
-                return std::pair{PlayerError{PlayerError::Type::SOAP, error}, Result{}};
+                return std::pair{PlayerError{"SOAP", error}, Result{}};
             }
         }
 
@@ -63,28 +61,27 @@ namespace Soap
         {
             try
             {
-                responseTree_ =
-                    Parsing::xmlFromString(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
+                responseTree_ = Parsing::xmlFrom(response).get_child("SOAP-ENV:Envelope").get_child("SOAP-ENV:Body");
             }
             catch (std::exception&)
             {
             }
         }
 
-        OptionalParsedNode getFaultNode()
+        OptionalXmlNode getFaultNode()
         {
             return responseTree_->get_child_optional("SOAP-ENV:Fault");
         }
 
-        PlayerError makeErrorFromNode(OptionalParsedNode faultNode)
+        PlayerError makeErrorFromNode(OptionalXmlNode faultNode)
         {
             auto faultMessage = faultNode->template get<std::string>("faultstring");
-            return PlayerError{PlayerError::Type::SOAP, faultMessage};
+            return PlayerError{"SOAP", faultMessage};
         }
 
     private:
         std::string response_;
-        boost::optional<ParsedNode> responseTree_;
+        boost::optional<XmlNode> responseTree_;
     };
 
 }

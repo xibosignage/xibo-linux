@@ -1,13 +1,9 @@
 #pragma once
 
-#include "common/types/ColorToHexConverter.hpp"
-#include "common/types/StrongType.hpp"
+#include "common/types/internal/ColorToHexConverter.hpp"
 
 struct Color
 {
-    // TODO: remove default color
-    Color() = default;
-
     static Color fromString(const std::string& color)
     {
         ColorToHexConverter converter;

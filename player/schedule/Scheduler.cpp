@@ -4,7 +4,7 @@
 #include "common/fs/Resources.hpp"
 #include "common/logger/Logging.hpp"
 
-Scheduler::Scheduler(const IFileCache& fileCache) : fileCache_{fileCache}, schedule_{} {}
+Scheduler::Scheduler(const FileCache& fileCache) : fileCache_{fileCache}, schedule_{} {}
 
 // TODO make an optional to differentiate between empty and non-inialized schedule
 void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
@@ -173,9 +173,9 @@ void Scheduler::restartTimer()
     auto dt = closestLayoutDt();
     auto duration = (dt - DateTime::now()).total_seconds();
 
-    if (dt.isValid() && duration > 0)
+    if (dt.valid() && duration > 0)
     {
-        Log::debug("Timer restarted with value: {}", duration);
+        Log::trace("[Scheduler] Timer restarted: {}", duration);
 
         timer_.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
     }
@@ -193,7 +193,7 @@ SchedulerStatus Scheduler::status() const
     fillSchedulerStatus(status, schedule_.regularLayouts);
     fillSchedulerStatus(status, schedule_.overlayLayouts);
 
-    status.generatedTime = DateTime::toString(schedule_.generatedTime);
+    status.generatedTime = schedule_.generatedTime.string();
     status.currentLayout = currentLayoutId();
 
     return status;

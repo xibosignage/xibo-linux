@@ -1,27 +1,23 @@
-
 #pragma once
 
-#include <boost/optional/optional.hpp>
+#include "common/PlayerRuntimeError.hpp"
+#include "common/system/MacAddress.hpp"
+
 #include <net/if.h>
 #include <string>
 
 using SocketDescriptor = int;
 using InterfaceFlags = short int;
 
-class MacAddressError : public std::exception
-{
-public:
-    MacAddressError(std::string_view error);
-    const char* what() const noexcept override;
-
-private:
-    std::string_view error_;
-};
-
 class MacAddressFetcher
 {
 public:
-    static boost::optional<std::string> get();
+    class Error : public PlayerRuntimeError
+    {
+        using PlayerRuntimeError::PlayerRuntimeError;
+    };
+
+    static MacAddress fetch();
 
 private:
     static SocketDescriptor openSocket();

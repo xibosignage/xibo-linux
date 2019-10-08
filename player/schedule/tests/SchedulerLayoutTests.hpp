@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SchedulerReloadTests.hpp"
+#include "schedule/tests/SchedulerReloadTests.hpp"
 
 class SchedulerLayoutTests : public SchedulerTests
 {

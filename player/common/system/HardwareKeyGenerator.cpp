@@ -1,22 +1,20 @@
-#include "HardwareKey.hpp"
+#include "HardwareKeyGenerator.hpp"
 
-#include "common/MacAddressFetcher.hpp"
 #include "common/Utils.hpp"
+#include "common/system/System.hpp"
 
 #include <boost/process/child.hpp>
 #include <boost/process/io.hpp>
 #include <regex>
 
-const std::string UndefinedMacAddress = "00:00:00:00:00:00";
-
-std::string HardwareKey::generate()
+HardwareKey HardwareKeyGenerator::generate()
 {
-    auto key = cpuid() + macAddress() + volumeSerial();
+    auto key = cpuid() + static_cast<std::string>(System::macAddress()) + volumeSerial();
 
-    return Utils::md5hash(key);
+    return HardwareKey{Md5Hash::fromString(key)};
 }
 
-std::string HardwareKey::cpuid()
+std::string HardwareKeyGenerator::cpuid()
 {
     const int CPUID_BUFFER = 25;
 
@@ -29,17 +27,15 @@ std::string HardwareKey::cpuid()
     return buffer;
 }
 
-inline void HardwareKey::nativeCpuid(unsigned int* eax, unsigned int* ebx, unsigned int* ecx, unsigned int* edx)
+inline void HardwareKeyGenerator::nativeCpuid(unsigned int* eax,
+                                              unsigned int* ebx,
+                                              unsigned int* ecx,
+                                              unsigned int* edx)
 {
     asm volatile("cpuid" : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx) : "0"(*eax), "2"(*ecx) : "memory");
 }
 
-std::string HardwareKey::macAddress()
-{
-    return MacAddressFetcher::get().value_or(UndefinedMacAddress);
-}
-
-std::string HardwareKey::volumeSerial()
+std::string HardwareKeyGenerator::volumeSerial()
 {
     namespace bp = boost::process;
 
@@ -57,7 +53,7 @@ std::string HardwareKey::volumeSerial()
     return volumeSerial;
 }
 
-std::string HardwareKey::retrieveVolumeSerial(boost::process::ipstream& stream)
+std::string HardwareKeyGenerator::retrieveVolumeSerial(boost::process::ipstream& stream)
 {
     const int SERIAL_CAPTURE_GROUP = 1;
     const std::regex SERIAL_REGEX{"ID_SERIAL_SHORT=(.+)"};

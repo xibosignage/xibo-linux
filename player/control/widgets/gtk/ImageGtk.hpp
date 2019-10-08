@@ -8,9 +8,9 @@
 class ImageGtk : public WidgetGtk<Xibo::Image>
 {
 public:
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     ImageGtk(int width, int height, bool useAlpha);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/PlayerRuntimeError.hpp"
 #include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerOptions.hpp"
 #include "control/media/player/gst/GstFwd.hpp"
@@ -11,9 +12,9 @@ namespace ph = std::placeholders;
 class GstMediaPlayer : public Xibo::MediaPlayer
 {
 public:
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     template <typename Player>

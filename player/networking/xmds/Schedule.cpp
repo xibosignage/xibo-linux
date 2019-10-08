@@ -1,5 +1,6 @@
 #include "Schedule.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::Schedule;
 
@@ -18,7 +19,7 @@ Soap::ResponseParser<Schedule::Result>::ResponseParser(const std::string& soapRe
 {
 }
 
-Schedule::Result Soap::ResponseParser<Schedule::Result>::parseBody(const PtreeNode& scheduleNode)
+Schedule::Result Soap::ResponseParser<Schedule::Result>::parseBody(const XmlNode& scheduleNode)
 {
     Schedule::Result result;
     result.scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);

@@ -1,6 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
+#include "common/Parsing.hpp"
+#include "common/PlayerRuntimeError.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/MediaOptions.hpp"
 #include "control/transitions/Transition.hpp"
@@ -19,31 +20,31 @@ class MediaParser
 public:
     virtual ~MediaParser() = default;
 
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
-    std::unique_ptr<Xibo::Media> mediaFrom(const PtreeNode& node, int parentWidth, int parentHeight);
+    std::unique_ptr<Xibo::Media> mediaFrom(const XmlNode& node, int parentWidth, int parentHeight);
 
 protected:
-    virtual MediaOptions::Type typeFrom(const PtreeNode& node);
-    virtual int idFrom(const PtreeNode& node);
-    virtual Uri uriFrom(const PtreeNode& node);
-    virtual int durationFrom(const PtreeNode& node);
-    virtual MediaGeometry geometryFrom(const PtreeNode& node);
+    virtual MediaOptions::Type typeFrom(const XmlNode& node);
+    virtual int idFrom(const XmlNode& node);
+    virtual Uri uriFrom(const XmlNode& node);
+    virtual int durationFrom(const XmlNode& node);
+    virtual MediaGeometry geometryFrom(const XmlNode& node);
     virtual std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& options,
-                                                     const PtreeNode& node,
+                                                     const XmlNode& node,
                                                      int width,
                                                      int height) = 0;
 
 private:
-    MediaOptions baseOptionsFrom(const PtreeNode& node);
-    void attach(Xibo::Media& media, const PtreeNode& node);
+    MediaOptions baseOptionsFrom(const XmlNode& node);
+    void attach(Xibo::Media& media, const XmlNode& node);
 
-    std::unique_ptr<TransitionExecutor> inTransitionFrom(const PtreeNode& node,
+    std::unique_ptr<TransitionExecutor> inTransitionFrom(const XmlNode& node,
                                                          const std::shared_ptr<Xibo::Widget>& view);
-    std::unique_ptr<TransitionExecutor> outTransitionFrom(const PtreeNode& node,
+    std::unique_ptr<TransitionExecutor> outTransitionFrom(const XmlNode& node,
                                                           const std::shared_ptr<Xibo::Widget>& view);
 
     template <Transition::Heading heading>

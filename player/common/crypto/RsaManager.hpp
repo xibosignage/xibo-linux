@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CryptoUtils.hpp"
+#include "common/crypto/CryptoUtils.hpp"
 
 class RsaManager
 {

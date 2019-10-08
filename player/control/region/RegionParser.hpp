@@ -1,6 +1,7 @@
 #pragma once
 
-#include "constants.hpp"
+#include "common/Parsing.hpp"
+#include "common/PlayerRuntimeError.hpp"
 #include "control/media/MediaOptions.hpp"
 #include "control/region/Region.hpp"
 #include "control/region/RegionOptions.hpp"
@@ -15,16 +16,16 @@ struct RegionPosition
 class RegionParser
 {
 public:
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
-    std::unique_ptr<Xibo::Region> regionFrom(const PtreeNode& node);
-    RegionPosition positionFrom(const PtreeNode& node);
+    std::unique_ptr<Xibo::Region> regionFrom(const XmlNode& node);
+    RegionPosition positionFrom(const XmlNode& node);
 
 private:
-    RegionOptions optionsFrom(const PtreeNode& node);
-    void addMedia(Xibo::Region& region, const PtreeNode& node);
-    MediaOptions::Type mediaTypeFrom(const PtreeNode& node);
+    RegionOptions optionsFrom(const XmlNode& node);
+    void addMedia(Xibo::Region& region, const XmlNode& node);
+    MediaOptions::Type mediaTypeFrom(const XmlNode& node);
 };

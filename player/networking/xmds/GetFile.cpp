@@ -1,5 +1,6 @@
 #include "GetFile.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::GetFile;
 
@@ -24,7 +25,7 @@ Soap::ResponseParser<GetFile::Result>::ResponseParser(const std::string& soapRes
 {
 }
 
-GetFile::Result Soap::ResponseParser<GetFile::Result>::parseBody(const PtreeNode& node)
+GetFile::Result Soap::ResponseParser<GetFile::Result>::parseBody(const XmlNode& node)
 {
     GetFile::Result result;
     result.base64chunk = node.get<std::string>(Resources::FileChunk);

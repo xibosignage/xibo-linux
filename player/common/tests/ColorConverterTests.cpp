@@ -1,6 +1,6 @@
 #include "ColorConverterTests.hpp"
 
-#include "common/types/ColorToHexConverter.hpp"
+#include "common/types/internal/ColorToHexConverter.hpp"
 
 const std::vector<ColorTest> validColors = {{"#000", 255},
                                             {"#FFF", 4294967295},

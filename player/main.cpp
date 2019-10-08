@@ -12,7 +12,7 @@ int main(int /*argc*/, char** /*argv*/)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[Main] {}", e.what());
     }
 
     return 0;

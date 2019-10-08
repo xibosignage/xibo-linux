@@ -1,5 +1,6 @@
 #pragma once
 
+#include "common/PlayerRuntimeError.hpp"
 #include "control/widgets/Widget.hpp"
 
 #include <gtkmm/widget.h>
@@ -18,9 +19,9 @@ class WidgetGtk : public Interface, public IWidgetGtk
 public:
     static_assert(std::is_base_of_v<Xibo::Widget, Interface>, "Should implement Widget");
 
-    struct Error : std::runtime_error
+    struct Error : PlayerRuntimeError
     {
-        using std::runtime_error::runtime_error;
+        using PlayerRuntimeError::PlayerRuntimeError;
     };
 
     WidgetGtk(Gtk::Widget& widget) : widget_(widget) {}
@@ -97,17 +98,18 @@ protected:
 
     void checkSize(int width, int height)
     {
-        if (width < 0 || height < 0) throw WidgetGtk::Error{"size should be non-negative"};
+        if (width < 0 || height < 0) throw WidgetGtk::Error{"WidgetGtk", "Size should be non-negative"};
     }
 
     void checkScale(double scaleX, double scaleY)
     {
-        if (scaleX <= 0.0 || scaleY <= 0.0) throw WidgetGtk::Error{"scale factor should be positive"};
+        if (scaleX <= 0.0 || scaleY <= 0.0) throw WidgetGtk::Error{"WidgetGtk", "Scale factor should be positive"};
     }
 
     void checkOpacity(double opacity)
     {
-        if (opacity < 0.0 || opacity > 1.0) throw WidgetGtk::Error{"opacity should be in range [0.0; 1.0]"};
+        if (opacity < 0.0 || opacity > 1.0)
+            throw WidgetGtk::Error{"WidgetGtk", "Opacity should be in range [0.0; 1.0]"};
     }
 
 private:

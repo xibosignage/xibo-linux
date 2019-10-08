@@ -2,17 +2,17 @@
 
 #include <boost/thread/future.hpp>
 
-#include "GetFile.hpp"
-#include "GetResource.hpp"
-#include "MediaInventory.hpp"
-#include "RegisterDisplay.hpp"
-#include "RequiredFiles.hpp"
-#include "Schedule.hpp"
-#include "SubmitLog.hpp"
-#include "SubmitScreenShot.hpp"
+#include "networking/ResponseResult.hpp"
+#include "networking/xmds/GetFile.hpp"
+#include "networking/xmds/GetResource.hpp"
+#include "networking/xmds/MediaInventory.hpp"
+#include "networking/xmds/RegisterDisplay.hpp"
+#include "networking/xmds/RequiredFiles.hpp"
+#include "networking/xmds/Schedule.hpp"
+#include "networking/xmds/SubmitLog.hpp"
+#include "networking/xmds/SubmitScreenShot.hpp"
 
 #include "common/types/Uri.hpp"
-#include "networking/ResponseResult.hpp"
 
 class XmdsRequestSender
 {

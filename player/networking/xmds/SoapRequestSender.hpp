@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Soap.hpp"
-
 #include "networking/HttpClient.hpp"
 #include "networking/ResponseResult.hpp"
+#include "networking/xmds/Soap.hpp"
+
 #include "utils/Managers.hpp"
 
 namespace SoapRequestHelper

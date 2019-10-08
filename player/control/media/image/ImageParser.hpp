@@ -5,9 +5,9 @@
 class ImageParser : public MediaParser
 {
 protected:
-    MediaGeometry geometryFrom(const PtreeNode& node) override;
+    MediaGeometry geometryFrom(const XmlNode& node) override;
     std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& options,
-                                             const PtreeNode& node,
+                                             const XmlNode& node,
                                              int width,
                                              int height) override;
 };

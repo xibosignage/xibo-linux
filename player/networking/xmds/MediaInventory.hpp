@@ -1,9 +1,10 @@
 #pragma once
 
-#include "BaseRequestSerializer.hpp"
-#include "BaseResponseParser.hpp"
-#include "MediaInventoryField.hpp"
-#include "Soap.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/MediaInventoryField.hpp"
+#include "networking/xmds/Soap.hpp"
+
 #include "common/Field.hpp"
 
 namespace MediaInventory
@@ -36,5 +37,5 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    MediaInventory::Result parseBody(const PtreeNode& node) override;
+    MediaInventory::Result parseBody(const XmlNode& node) override;
 };

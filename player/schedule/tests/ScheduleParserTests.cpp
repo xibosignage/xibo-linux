@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Common.hpp"
-#include "ScheduleParser.hpp"
 #include "common/fs/FilePath.hpp"
+#include "schedule/ScheduleParser.hpp"
+#include "schedule/tests/Common.hpp"
 
 const std::string ScheduleReadPath = "fakeScheduleRead.xml";
 const std::string ScheduleReadPathInvalid = "fakeScheduleInvalid.xml";

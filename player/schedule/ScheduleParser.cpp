@@ -7,7 +7,6 @@
 #include "networking/xmds/Resources.hpp"
 
 #include <boost/core/ignore_unused.hpp>
-#include <boost/property_tree/xml_parser.hpp>
 
 namespace Resources = XmdsResources::Schedule;
 
@@ -17,11 +16,11 @@ LayoutSchedule ScheduleParser::scheduleFrom(const FilePath& path)
     {
         if (!FileSystem::exists(path)) return {};
 
-        return scheduleFromImpl(Parsing::xmlFromPath(path));
+        return scheduleFromImpl(Parsing::xmlFrom(path));
     }
     catch (std::exception&)
     {
-        throw ScheduleParser::Error{"Schedule is invalid"};
+        throw ScheduleParser::Error{"ScheduleParser", "Schedule is invalid"};
     }
 }
 
@@ -29,15 +28,15 @@ LayoutSchedule ScheduleParser::scheduleFrom(const std::string& xmlSchedule)
 {
     try
     {
-        return scheduleFromImpl(Parsing::xmlFromString(xmlSchedule));
+        return scheduleFromImpl(Parsing::xmlFrom(xmlSchedule));
     }
     catch (std::exception&)
     {
-        throw ScheduleParser::Error{"Schedule is invalid"};
+        throw ScheduleParser::Error{"ScheduleParser", "Schedule is invalid"};
     }
 }
 
-LayoutSchedule ScheduleParser::scheduleFromImpl(const PtreeNode& scheduleXml)
+LayoutSchedule ScheduleParser::scheduleFromImpl(const XmlNode& scheduleXml)
 {
     LayoutSchedule schedule;
     auto scheduleNode = scheduleXml.get_child(Resources::Schedule);
@@ -59,7 +58,7 @@ LayoutSchedule ScheduleParser::scheduleFromImpl(const PtreeNode& scheduleXml)
     return schedule;
 }
 
-ScheduledLayout ScheduleParser::scheduledLayoutFrom(const PtreeNode& node)
+ScheduledLayout ScheduleParser::scheduledLayoutFrom(const XmlNode& node)
 {
     ScheduledLayout layout;
 
@@ -77,7 +76,7 @@ ScheduledLayout ScheduleParser::scheduledLayoutFrom(const PtreeNode& node)
     return layout;
 }
 
-DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const PtreeNode& node)
+DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const XmlNode& node)
 {
     DefaultScheduledLayout layout;
 
@@ -90,7 +89,7 @@ DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const PtreeNode& node)
     return layout;
 }
 
-LayoutList ScheduleParser::overlayLayoutsFrom(const PtreeNode& overlaysNode)
+LayoutList ScheduleParser::overlayLayoutsFrom(const XmlNode& overlaysNode)
 {
     LayoutList overlayLayouts;
 
@@ -103,7 +102,7 @@ LayoutList ScheduleParser::overlayLayoutsFrom(const PtreeNode& overlaysNode)
     return overlayLayouts;
 }
 
-LayoutDependants ScheduleParser::dependantsFrom(const PtreeNode& dependantsNode)
+LayoutDependants ScheduleParser::dependantsFrom(const XmlNode& dependantsNode)
 {
     LayoutDependants dependants;
 

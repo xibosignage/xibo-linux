@@ -3,7 +3,6 @@
 #include "constants.hpp"
 
 #include "common/Parsing.hpp"
-#include "common/Utils.hpp"
 #include "common/crypto/RsaManager.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/logger/Logging.hpp"
@@ -26,7 +25,7 @@ void XmrManager::connect(const std::string& host)
     subcriber_.messageReceived().connect([this](const MultiPartMessage& message) { processMultipartMessage(message); });
     subcriber_.run(host);
 
-    Log::info("Connected to XMR publisher");
+    Log::info("[XMR] Connected to publisher");
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
@@ -68,15 +67,14 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
 }
 
-// TODO: strong type
 std::string XmrManager::decryptMessage(const std::string& encryptedBase64Key, const std::string& encryptedBase64Message)
 {
     auto privateKey = RsaManager::instance().privateKey();
 
-    auto encryptedKey = Utils::fromBase64(encryptedBase64Key);
+    auto encryptedKey = CryptoUtils::fromBase64(encryptedBase64Key);
     auto messageKey = CryptoUtils::decryptPrivateKeyPkcs(encryptedKey, privateKey);
 
-    auto encryptedMessage = Utils::fromBase64(encryptedBase64Message);
+    auto encryptedMessage = CryptoUtils::fromBase64(encryptedBase64Message);
 
     return CryptoUtils::decryptRc4(encryptedMessage, messageKey);
 }

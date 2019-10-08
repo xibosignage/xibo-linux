@@ -6,42 +6,43 @@
 #include "control/media/player/audio/AudioFactory.hpp"
 
 #include "common/fs/FileSystem.hpp"
-#include "common/types/ResourceFile.hpp"
+#include "common/fs/Resource.hpp"
+#include "constants.hpp"
 
 const bool DefaultAudioLooped = false;
 const int DefaultDuration = 0;
 
-MediaOptions::Type AudioNodeParser::typeFrom(const PtreeNode& /*node*/)
+MediaOptions::Type AudioNodeParser::typeFrom(const XmlNode& /*node*/)
 {
     return {XlfResources::Media::AudioNodeType, XlfResources::Media::NativeRender};
 }
 
-int AudioNodeParser::idFrom(const PtreeNode& node)
+int AudioNodeParser::idFrom(const XmlNode& node)
 {
     auto uriNode = node.get_child(XlfResources::AudioNode::Uri);
     return uriNode.get<int>(XlfResources::AudioNode::Id);
 }
 
-Uri AudioNodeParser::uriFrom(const PtreeNode& node)
+Uri AudioNodeParser::uriFrom(const XmlNode& node)
 {
     auto uriNode = node.get_child(XlfResources::AudioNode::Uri);
     auto uri = uriNode.get_value<std::string>();
 
     // TODO: remove duplicate
-    ResourceFile fullPath{uri};
+    Resource fullPath{uri};
 
     if (!FileSystem::isRegularFile(fullPath)) return Uri::fromString(uri);
 
-    return Uri{fullPath};
+    return Uri::fromFile(uri);
 }
 
-int AudioNodeParser::durationFrom(const PtreeNode& /*node*/)
+int AudioNodeParser::durationFrom(const XmlNode& /*node*/)
 {
     return DefaultDuration;
 }
 
 std::unique_ptr<Xibo::Media> AudioNodeParser::createMedia(const MediaOptions& baseOptions,
-                                                          const PtreeNode& node,
+                                                          const XmlNode& node,
                                                           int /*width*/,
                                                           int /*height*/)
 {

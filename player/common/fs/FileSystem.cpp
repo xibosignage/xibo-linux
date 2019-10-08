@@ -1,5 +1,6 @@
 #include "FileSystem.hpp"
-#include "FilePath.hpp"
+
+#include "common/fs/FilePath.hpp"
 
 #include <boost/filesystem.hpp>
 #include <fstream>

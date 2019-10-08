@@ -4,13 +4,13 @@
 #include "control/layout/OverlayLayoutParser.hpp"
 #include "control/widgets/Widget.hpp"
 
-#include "common/fs/IFileCache.hpp"
+#include "common/fs/FileCache.hpp"
 #include "common/logger/Logging.hpp"
 #include "schedule/Scheduler.hpp"
 
 #include "config.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler, IFileCache& fileCache) :
+LayoutsManager::LayoutsManager(Scheduler& scheduler, FileCache& fileCache) :
     scheduler_(scheduler),
     fileCache_(fileCache)
 {
@@ -91,7 +91,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto layout = parser.parseBy(layoutId);
 
         layout->expired().connect([this, layoutId]() {
-            Log::trace("Layout {} expired", layoutId);
+            Log::trace("[LayoutsManager] Layout {} expired", layoutId);
 
             if constexpr (std::is_same_v<LayoutParser, MainLayoutParser>)
             {
@@ -107,8 +107,8 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
-        Log::info("Check resource folder to find out what happened");
+        Log::error("[LayoutsManager] {}", e.what());
+        Log::info("[LayoutsManager] Check resource folder to find out what happened");
     }
 
     return nullptr;

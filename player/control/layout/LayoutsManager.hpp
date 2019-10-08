@@ -7,7 +7,7 @@
 #include <vector>
 
 class Scheduler;
-class IFileCache;
+class FileCache;
 
 using MainLayoutLoaded = boost::signals2::signal<void(const std::shared_ptr<Xibo::Widget>&)>;
 using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::shared_ptr<Xibo::Widget>>&)>;
@@ -15,7 +15,7 @@ using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::share
 class LayoutsManager
 {
 public:
-    LayoutsManager(Scheduler& scheduler, IFileCache& fileCache);
+    LayoutsManager(Scheduler& scheduler, FileCache& fileCache);
 
     void fetchAllLayouts();
     void fetchMainLayout();
@@ -32,7 +32,7 @@ private:
     std::unique_ptr<Xibo::MainLayout> mainLayout_;
     std::map<int, std::unique_ptr<Xibo::MainLayout>> overlayLayouts_;
     Scheduler& scheduler_;
-    IFileCache& fileCache_;
+    FileCache& fileCache_;
 
     MainLayoutLoaded mainLayoutFetched_;
     OverlaysLoaded overlaysFetched_;

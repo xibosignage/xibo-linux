@@ -2,25 +2,17 @@
 
 #include "common/logger/Logging.hpp"
 
+#include <boost/format.hpp>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-#include <boost/format.hpp>
-
 const std::size_t ConfigBufferSize = 1024;
 const std::size_t MacAddressBuffer = 100;
+const MacAddress UndefinedMacAddress{"00:00:00:00:00:00"};
 const int InvalidSocket = -1;
 
-MacAddressError::MacAddressError(std::string_view error) : error_(error) {}
-
-const char* MacAddressError::what() const noexcept
-{
-    return error_.data();
-}
-
-// TODO: strong type
-boost::optional<std::string> MacAddressFetcher::get()
+MacAddress MacAddressFetcher::fetch()
 {
     try
     {
@@ -30,12 +22,11 @@ boost::optional<std::string> MacAddressFetcher::get()
         auto interfaceConfig = getInterfaceConfig(socket, buffer);
         auto interfaceRequest = findInterface(socket, interfaceConfig);
 
-        return retrieveMacAddress(socket, interfaceRequest);
+        return MacAddress{retrieveMacAddress(socket, interfaceRequest)};
     }
-    catch (MacAddressError& error)
+    catch (std::exception&)
     {
-        Log::error("MAC address was not fetched: {}", error.what());
-        return {};
+        return UndefinedMacAddress;
     }
 }
 
@@ -44,7 +35,7 @@ SocketDescriptor MacAddressFetcher::openSocket()
     SocketDescriptor sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
     if (sock == InvalidSocket)
     {
-        throw MacAddressError{"Socket was not opened"};
+        throw MacAddressFetcher::Error{"MAC", "Socket was not opened"};
     }
     return sock;
 }
@@ -60,7 +51,7 @@ ifconf MacAddressFetcher::getInterfaceConfig(SocketDescriptor socket, char* buff
         return interfaceConfig;
     }
 
-    throw MacAddressError{"Interface Config was not recieved"};
+    throw MacAddressFetcher::Error{"MAC", "Interface Config was not recieved"};
 }
 
 ifreq MacAddressFetcher::findInterface(SocketDescriptor socket, ifconf& interfaceConfig)
@@ -81,7 +72,7 @@ ifreq MacAddressFetcher::findInterface(SocketDescriptor socket, ifconf& interfac
         }
     }
 
-    throw MacAddressError{"Interface Request was not found"};
+    throw MacAddressFetcher::Error{"MAC", "Interface Request was not found"};
 }
 
 std::string MacAddressFetcher::retrieveMacAddress(SocketDescriptor socket, ifreq& interfaceRequest)
@@ -96,7 +87,7 @@ std::string MacAddressFetcher::retrieveMacAddress(SocketDescriptor socket, ifreq
         return macAddress;
     }
 
-    throw MacAddressError{"MAC Address was not retrived from request"};
+    throw MacAddressFetcher::Error{"MAC", "MAC Address was not retrived from request"};
 }
 
 InterfaceFlags MacAddressFetcher::retrieveFlags(SocketDescriptor socket, ifreq& interfaceRequest)
@@ -106,7 +97,7 @@ InterfaceFlags MacAddressFetcher::retrieveFlags(SocketDescriptor socket, ifreq& 
         return interfaceRequest.ifr_flags;
     }
 
-    throw MacAddressError{"Flags were not retrived from frequest"};
+    throw MacAddressFetcher::Error{"MAC", "Flags were not retrived from frequest"};
 }
 
 bool MacAddressFetcher::isNotLoopback(InterfaceFlags flags)

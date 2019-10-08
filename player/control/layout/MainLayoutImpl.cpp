@@ -57,7 +57,7 @@ std::shared_ptr<Xibo::Widget> MainLayoutImpl::view()
 
 void MainLayoutImpl::onRegionExpired(int regionId)
 {
-    Log::trace("Region {} expired", regionId);
+    Log::trace("[MainLayout] Region {} expired", regionId);
     expiredRegions_.insert(regionId);
 
     if (areAllRegionsExpired())
