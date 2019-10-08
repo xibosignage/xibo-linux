@@ -1,13 +1,14 @@
 #include "XmdsFileDownloader.hpp"
-#include "XmdsRequestSender.hpp"
 
-#include "common/Utils.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
 const std::size_t DefaultChunkSize = 524288;
 
 XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) : xmdsSender_(xmdsSender) {}
 
-boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId, const std::string& fileType,
+boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId,
+                                                               const std::string& fileType,
                                                                std::size_t fileSize)
 {
     std::size_t fileOffset = 0;
@@ -33,7 +34,7 @@ XmdsResponseResult XmdsFileDownloader::combineAllChunks(DownloadXmdsFilesResult&
         auto [error, result] = future.get();
         if (!error)
         {
-            fileContent += Utils::fromBase64(result.base64chunk);
+            fileContent += CryptoUtils::fromBase64(result.base64chunk);
         }
         else
         {

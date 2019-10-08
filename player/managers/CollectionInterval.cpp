@@ -1,15 +1,14 @@
 #include "CollectionInterval.hpp"
+
+#include "common/dt/DateTime.hpp"
+#include "common/dt/Timer.hpp"
+#include "common/logger/Logging.hpp"
+#include "common/logger/XmlLogsRetriever.hpp"
 #include "config.hpp"
 
 #include "networking/xmds/XmdsRequestSender.hpp"
-
-#include "common/dt/DateTime.hpp"
-#include "common/logger/Logging.hpp"
-
-#include "common/dt/Timer.hpp"
 #include "utils/Managers.hpp"
 #include "utils/ScreenShoter.hpp"
-#include "xmlsink/XmlLogsRetriever.hpp"
 
 #include <glibmm/main.h>
 
@@ -19,8 +18,12 @@ namespace ph = std::placeholders;
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
     xmdsSender_{xmdsSender},
     intervalTimer_{std::make_unique<Timer>()},
-    collectInterval_{DefaultInterval}
+    collectInterval_{DefaultInterval},
+    started_{false},
+    registered_{false},
+    requiredFiles_{0}
 {
+    assert(intervalTimer_);
 }
 
 void CollectionInterval::startRegularCollection()
@@ -84,7 +87,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
         auto displayError = getDisplayStatus(result.status);
         if (!displayError)
         {
-            Log::debug("[RegisterDisplay] Success");
+            Log::debug("[XMDS::RegisterDisplay] Success");
 
             registered_ = true;
             lastChecked_ = DateTime::now();
@@ -118,8 +121,8 @@ PlayerError CollectionInterval::getDisplayStatus(const RegisterDisplay::Result::
     {
         case DisplayCode::Ready: return {};
         case DisplayCode::Added:
-        case DisplayCode::Waiting: return {PlayerError::Type::CMS, status.message};
-        default: return {PlayerError::Type::CMS, "Unknown error with RegisterDisplay"};
+        case DisplayCode::Waiting: return {"CMS", status.message};
+        default: return {"CMS", "Unknown error with RegisterDisplay"};
     }
 }
 
@@ -127,7 +130,7 @@ void CollectionInterval::updateInterval(int collectInterval)
 {
     if (collectInterval_ != collectInterval)
     {
-        Log::debug("[CollectionInterval] Interval updated. Old: {}, New: {}", collectInterval_, collectInterval);
+        Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
         collectInterval_ = collectInterval;
     }
 }
@@ -169,7 +172,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     auto [error, result] = requiredFiles;
     if (!error)
     {
-        Log::debug("[RequiredFiles] Received");
+        Log::debug("[XMDS::RequiredFiles] Received");
 
         RequiredFilesDownloader downloader{xmdsSender_};
 
@@ -197,7 +200,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     auto [error, result] = schedule;
     if (!error)
     {
-        Log::debug("[Schedule] Received");
+        Log::debug("[XMDS::Schedule] Received");
         scheduleAvailable_.emit(result);
     }
     else
@@ -212,12 +215,12 @@ void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
         auto [error, result] = future.get();
         if (error)
         {
-            Log::error("[MediaInventory] {}", error);
+            Log::error("[XMDS::MediaInventory] {}", error);
         }
         else
         {
             std::string message = result.success ? "Updated" : "Not updated";
-            Log::debug("[MediaInventory] {}", message);
+            Log::debug("[XMDS::MediaInventory] {}", message);
         }
     });
 }
@@ -229,11 +232,11 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
     {
         if (result.success)
         {
-            Log::debug("[SubmitLogs] Submitted");
+            Log::debug("[XMDS::SubmitLogs] Submitted");
         }
         else
         {
-            Log::debug("[SubmitLogs] Not submited due to unknown error");
+            Log::debug("[XMDS::SubmitLogs] Not submited due to unknown error");
         }
     }
     else
@@ -249,12 +252,12 @@ void CollectionInterval::submitScreenShot()
             auto [error, result] = future.get();
             if (error)
             {
-                Log::error("[SubmitScreenShot] {}", error);
+                Log::error("[XMDS::SubmitScreenShot] {}", error);
             }
             else
             {
                 std::string message = result.success ? "Submitted" : "Not submitted";
-                Log::debug("[SubmitScreenShot] {}", message);
+                Log::debug("[XMDS::SubmitScreenShot] {}", message);
             }
         });
     });

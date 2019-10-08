@@ -1,12 +1,12 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
-#include "OverlayLayoutQueue.hpp"
-#include "RegularLayoutQueue.hpp"
-#include "SchedulerStatus.hpp"
+#include "schedule/LayoutSchedule.hpp"
+#include "schedule/OverlayLayoutQueue.hpp"
+#include "schedule/RegularLayoutQueue.hpp"
+#include "schedule/SchedulerStatus.hpp"
 
 #include "common/dt/Timer.hpp"
-#include "common/fs/IFileCache.hpp"
+#include "common/fs/FileCache.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -16,7 +16,7 @@ using SignalLayoutsUpdated = boost::signals2::signal<void()>;
 class Scheduler
 {
 public:
-    Scheduler(const IFileCache& fileCache);
+    Scheduler(const FileCache& fileCache);
     void reloadSchedule(LayoutSchedule&& schedule);
     void reloadQueue();
 
@@ -44,10 +44,10 @@ private:
     bool layoutValid(const Layout& layout) const;
 
     template <typename LayoutsList>
-    void schedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
+    void fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
 
 private:
-    const IFileCache& fileCache_;
+    const FileCache& fileCache_;
     LayoutSchedule schedule_;
     RegularLayoutQueue regularQueue_;
     OverlayLayoutQueue overlayQueue_;

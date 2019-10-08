@@ -1,13 +1,15 @@
 #include "WebViewParser.hpp"
 
+#include "control/media/webview/WebViewFactory.hpp"
+#include "control/media/webview/WebViewResources.hpp"
+
+#include "control/media/Media.hpp"
+#include "control/media/MediaResources.hpp"
+
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
-#include "utils/Managers.hpp"
-
-#include "networking/WebServer.hpp"  // FIXME remove dependency
-
-#include "control/media/MediaResources.hpp"
-#include "control/media/webview/WebViewResources.hpp"
+#include "networking/WebServer.hpp"  // TODO: remove dependency
+#include "utils/Managers.hpp"        // TODO: remove dependency
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>
@@ -17,24 +19,16 @@ const int DefaultWebviewMode = 0;
 const int NativeModeid = 1;
 
 const std::regex DurationRegex("DURATION=([0-9]+)");
+const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
 const std::string DefaultWebviewExtension = ".html";
 
-int WebViewParser::durationFrom(const ptree_node& node)
+int WebViewParser::durationFrom(const XmlNode& node)
 {
     auto baseDuration = MediaParser::durationFrom(node);
     return parseDuration(uriFrom(node).path()).value_or(baseDuration);
 }
 
-ExtraOptions WebViewParser::extraOptionsImpl(const ptree_node& node)
-{
-    auto transparency = node.get<bool>(XlfResources::WebView::Transparency, DefaultTransparency);
-    auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
-
-    return {{XlfResources::WebView::Transparency, std::to_string(transparency)},
-            {XlfResources::WebView::ModeId, std::to_string(mode)}};
-}
-
-std::optional<int> WebViewParser::parseDuration(const FilePath& path)
+boost::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
     auto fileContent = FileSystem::readFromFile(path);
 
@@ -43,22 +37,22 @@ std::optional<int> WebViewParser::parseDuration(const FilePath& path)
 
     std::regex_search(fileContent, matchedGroups, DurationRegex);
 
-    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : std::optional<int>{};
+    return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : boost::optional<int>{};
 }
 
-Uri WebViewParser::uriFrom(const ptree_node& node)
+Uri WebViewParser::uriFrom(const XmlNode& node)
 {
     auto mode = node.get<int>(XlfResources::WebView::ModeId, DefaultWebviewMode);
 
     if (mode != NativeModeid)
     {
         auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
-        return Uri{Managers::webserver().address() + fileName};
+        return Uri::fromString(Managers::webserver().address() + fileName);
     }
     else
     {
         auto uri = node.get<std::string>(XlfResources::Media::Uri);
-        return Uri{removeEscapedSymbolsFromUri(uri)};
+        return Uri::fromString(removeEscapedSymbolsFromUri(uri));
     }
 }
 
@@ -85,4 +79,15 @@ std::string WebViewParser::removeEscapedSymbolsFromUri(std::string url)
     boost::replace_all(url, "%5D", "[");
 
     return url;
+}
+
+std::unique_ptr<Xibo::Media> WebViewParser::createMedia(const MediaOptions& options,
+                                                        const XmlNode& node,
+                                                        int width,
+                                                        int height)
+{
+    auto transparency = node.get<bool>(XlfResources::WebView::Transparency, DefaultTransparency);
+
+    WebViewFactory factory;
+    return factory.create(options, width, height, transparency);
 }

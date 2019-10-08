@@ -1,10 +1,10 @@
 #include <boost/process/child.hpp>
 #include <iostream>
 
+#include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "config.hpp"
-
 #include "common/settings/CmsSettings.hpp"
+#include "config.hpp"
 
 void setupNewConfigDir()
 {

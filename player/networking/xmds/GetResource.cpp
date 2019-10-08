@@ -1,5 +1,6 @@
 #include "GetResource.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::GetResource;
 
@@ -10,8 +11,12 @@ Soap::RequestSerializer<GetResource::Request>::RequestSerializer(const GetResour
 
 std::string Soap::RequestSerializer<GetResource::Request>::string()
 {
-    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().layoutId,
-                         request().regionId, request().mediaId);
+    return createRequest(Resources::Name,
+                         request().serverKey,
+                         request().hardwareKey,
+                         request().layoutId,
+                         request().regionId,
+                         request().mediaId);
 }
 
 Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soapResponse) :
@@ -19,7 +24,7 @@ Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soa
 {
 }
 
-GetResource::Result Soap::ResponseParser<GetResource::Result>::parseBody(const ptree_node& node)
+GetResource::Result Soap::ResponseParser<GetResource::Result>::parseBody(const XmlNode& node)
 {
     GetResource::Result result;
     result.resource = node.get<std::string>(Resources::Resource);

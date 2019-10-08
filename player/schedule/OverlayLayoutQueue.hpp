@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LayoutQueue.hpp"
+#include "schedule/LayoutQueue.hpp"
 
 using OverlaysIds = std::vector<int>;
 

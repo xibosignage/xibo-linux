@@ -3,6 +3,8 @@
 #include "common/logger/Logging.hpp"
 #include "constants.hpp"
 
+const char* const HeartbeatChannel = "H";
+
 ZeromqSubscriber::ZeromqSubscriber() : context_{1} {}
 
 void ZeromqSubscriber::stop()

@@ -1,5 +1,6 @@
 #include "SubmitLog.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::SubmitLog;
 
@@ -18,7 +19,7 @@ Soap::ResponseParser<SubmitLog::Result>::ResponseParser(const std::string& soapR
 {
 }
 
-SubmitLog::Result Soap::ResponseParser<SubmitLog::Result>::parseBody(const ptree_node& node)
+SubmitLog::Result Soap::ResponseParser<SubmitLog::Result>::parseBody(const XmlNode& node)
 {
     SubmitLog::Result result;
     result.success = node.get<bool>(Resources::Success);

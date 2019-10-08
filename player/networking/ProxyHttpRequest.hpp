@@ -1,9 +1,7 @@
 #pragma once
 
-#include "HostInfo.hpp"
-#include "ProxyInfo.hpp"
-#include "common/Utils.hpp"
-#include "common/uri/Uri.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "common/types/Uri.hpp"
 #include "constants.hpp"
 
 #include <boost/beast/http/message.hpp>
@@ -17,19 +15,15 @@ const std::string DefaultHttpTarget = "/";
 class ProxyHttpRequest
 {
 public:
-    ProxyHttpRequest(http::verb method, const ProxyInfo& info, const Uri& uri, const std::string& body) :
+    ProxyHttpRequest(http::verb method,
+                     const boost::optional<Uri::UserInfo>& proxyUserInfo,
+                     const Uri& target,
+                     const std::string& body) :
         method_(method),
-        proxyUri_(info.host + DefaultHttpTarget),
-        username_(info.username),
-        password_(info.password),
-        uri_(uri),
+        proxyUserInfo_(proxyUserInfo),
+        target_(target),
         body_(std::move(body))
     {
-    }
-
-    HostInfo hostInfo()
-    {
-        return HostInfo{proxyUri_.host(), proxyUri_.port(), proxyUri_.scheme() == Uri::Scheme::HTTPS};
     }
 
     http::request<http::string_body> get()
@@ -37,12 +31,13 @@ public:
         http::request<http::string_body> request;
 
         request.method(method_);
-        request.target(uri_.string());
+        request.target(target_.string());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, uri_.host());
-        if (auto credentials = getCredentials())
+        request.set(http::field::host, static_cast<std::string>(target_.authority().host()));
+        if (proxyUserInfo_)
         {
-            request.set(http::field::proxy_authorization, "Basic " + Utils::toBase64(credentials.value()));
+            request.set(http::field::proxy_authorization,
+                        "Basic " + CryptoUtils::toBase64(static_cast<std::string>(proxyUserInfo_.value())));
         }
         request.body() = std::move(body_);
         request.prepare_payload();
@@ -50,21 +45,9 @@ public:
         return request;
     }
 
-    boost::optional<std::string> getCredentials()
-    {
-        if (!username_.empty() && !password_.empty())
-        {
-            return username_ + ":" + password_;
-        }
-
-        return {};
-    }
-
 private:
     http::verb method_;
-    Uri proxyUri_;
-    std::string username_;
-    std::string password_;
-    Uri uri_;
+    boost::optional<Uri::UserInfo> proxyUserInfo_;
+    Uri target_;
     std::string body_;
 };

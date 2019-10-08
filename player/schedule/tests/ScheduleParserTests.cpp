@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "Common.hpp"
-#include "ScheduleParser.hpp"
 #include "common/fs/FilePath.hpp"
+#include "schedule/ScheduleParser.hpp"
+#include "schedule/tests/Common.hpp"
 
 const std::string ScheduleReadPath = "fakeScheduleRead.xml";
 const std::string ScheduleReadPathInvalid = "fakeScheduleInvalid.xml";
@@ -25,7 +25,7 @@ TEST(ScheduleParser, LoadFromFileInvalid)
 {
     ScheduleParser parser;
 
-    ASSERT_THROW(parser.scheduleFrom(FilePath{ScheduleReadPathInvalid}), ScheduleParseException);
+    ASSERT_THROW(parser.scheduleFrom(FilePath{ScheduleReadPathInvalid}), ScheduleParser::Error);
 }
 
 TEST(ScheduleParser, LoadFromString)
@@ -39,5 +39,5 @@ TEST(ScheduleParser, LoadFromStringInvalid)
 {
     ScheduleParser parser;
 
-    ASSERT_THROW(parser.scheduleFrom(std::string{"invalid"}), ScheduleParseException);
+    ASSERT_THROW(parser.scheduleFrom(std::string{"invalid"}), ScheduleParser::Error);
 }

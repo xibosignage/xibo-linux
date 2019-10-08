@@ -7,11 +7,14 @@ class FilePath;
 class WebViewParser : public MediaParser
 {
 protected:
-    Uri uriFrom(const ptree_node& node) override;
-    int durationFrom(const ptree_node& node) override;
-    ExtraOptions extraOptionsImpl(const ptree_node& node) override;
+    Uri uriFrom(const XmlNode& node) override;
+    int durationFrom(const XmlNode& node) override;
+    std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& options,
+                                             const XmlNode& node,
+                                             int width,
+                                             int height) override;
 
 private:
-    std::optional<int> parseDuration(const FilePath& path);
+    boost::optional<int> parseDuration(const FilePath& path);
     std::string removeEscapedSymbolsFromUri(std::string url);
 };

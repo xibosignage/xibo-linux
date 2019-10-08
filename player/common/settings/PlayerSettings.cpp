@@ -1,20 +1,43 @@
 #include "PlayerSettings.hpp"
-#include "PlayerSettingsSerializer.hpp"
 
-void PlayerSettings::loadFrom(const FilePath& file)
+#include "common/logger/Logging.hpp"
+#include "common/settings/PlayerSettingsSerializer.hpp"
+
+void PlayerSettings::fromFile(const FilePath& file)
 {
-    PlayerSettingsSerializer serializer;
-    serializer.loadFrom(file, *this);
+    try
+    {
+        PlayerSettingsSerializer serializer;
+        serializer.loadFrom(file, *this);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
 }
 
-void PlayerSettings::loadFrom(const ptree_node& node)
+void PlayerSettings::fromNode(const XmlNode& node)
 {
-    PlayerSettingsSerializer serializer;
-    serializer.loadFrom(node, *this);
+    try
+    {
+        PlayerSettingsSerializer serializer;
+        serializer.loadFrom(node, *this);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
 }
 
 void PlayerSettings::saveTo(const FilePath& file)
 {
-    PlayerSettingsSerializer serializer;
-    serializer.saveTo(file, *this);
+    try
+    {
+        PlayerSettingsSerializer serializer;
+        serializer.saveTo(file, *this);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
 }

@@ -1,15 +1,18 @@
 #include "LayoutsManager.hpp"
-#include "XlfLayoutLoader.hpp"
-#include "control/common/IOverlayLayout.hpp"
 
-#include "common/logger/Logging.hpp"
-#include "config.hpp"
-#include "schedule/Scheduler.hpp"
+#include "control/layout/MainLayoutParser.hpp"
+#include "control/layout/OverlayLayoutParser.hpp"
+#include "control/widgets/Widget.hpp"
 
 #include "common/fs/FileCache.hpp"
-#include "utils/Managers.hpp"
+#include "common/logger/Logging.hpp"
+#include "schedule/Scheduler.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler) : scheduler_(scheduler)
+#include "config.hpp"
+
+LayoutsManager::LayoutsManager(Scheduler& scheduler, FileCache& fileCache) :
+    scheduler_(scheduler),
+    fileCache_(fileCache)
 {
     scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
     scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
@@ -37,14 +40,14 @@ void LayoutsManager::fetchMainLayout()
 
     if (id != EmptyLayoutId)
     {
-        mainLayout_ = createLayout<XlfMainLayoutLoader>(id);
+        mainLayout_ = createLayout<MainLayoutParser>(id);
         if (mainLayout_)
         {
             mainLayoutFetched_(mainLayout_->view());
         }
         else
         {
-            Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
+            fileCache_.markAsInvalid(std::to_string(id) + ".xlf");
             scheduler_.reloadQueue();
             mainLayoutFetched_(nullptr);
         }
@@ -57,13 +60,13 @@ void LayoutsManager::fetchMainLayout()
 
 void LayoutsManager::fetchOverlays()
 {
-    std::vector<std::shared_ptr<IOverlayLayout>> overlays;
+    std::vector<std::shared_ptr<Xibo::Widget>> overlays;
 
     overlayLayouts_.clear();
 
     for (int id : scheduler_.overlayLayouts())
     {
-        auto overlayLayout = createLayout<XlfOverlayLayoutLoader>(id);
+        auto overlayLayout = createLayout<OverlayLayoutParser>(id);
         if (overlayLayout)
         {
             overlays.emplace_back(overlayLayout->view());
@@ -71,7 +74,7 @@ void LayoutsManager::fetchOverlays()
         }
         else
         {
-            Managers::fileManager().markAsInvalid(std::to_string(id) + ".xlf");
+            fileCache_.markAsInvalid(std::to_string(id) + ".xlf");
             scheduler_.reloadQueue();
         }
     }
@@ -79,17 +82,18 @@ void LayoutsManager::fetchOverlays()
     overlaysFetched_(overlays);
 }
 
-template <typename LayoutLoader>
-std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
+template <typename LayoutParser>
+std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
 {
     try
     {
-        auto layout = LayoutLoader::loadBy(layoutId);
+        LayoutParser parser;
+        auto layout = parser.parseBy(layoutId);
 
         layout->expired().connect([this, layoutId]() {
-            Log::trace("Layout {} expired", layoutId);
+            Log::trace("[LayoutsManager] Layout {} expired", layoutId);
 
-            if constexpr (std::is_same_v<LayoutLoader, XlfMainLayoutLoader>)
+            if constexpr (std::is_same_v<LayoutParser, MainLayoutParser>)
             {
                 fetchMainLayout();
             }
@@ -103,8 +107,8 @@ std::unique_ptr<IMainLayout> LayoutsManager::createLayout(int layoutId)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
-        Log::info("Check resource folder to find out what happened");
+        Log::error("[LayoutsManager] {}", e.what());
+        Log::info("[LayoutsManager] Check resource folder to find out what happened");
     }
 
     return nullptr;

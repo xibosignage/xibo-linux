@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "control/MainWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
 
 class FilePath;
 using ScreenShotTaken = std::function<void(const std::string&)>;
@@ -15,7 +15,7 @@ using SurfaceCreated = std::function<void(const Cairo::RefPtr<Cairo::Surface>&)>
 class ScreenShoter
 {
 public:
-    ScreenShoter(MainWindow& window);
+    ScreenShoter(Xibo::Window& window);
     void takeBase64(ScreenShotTaken callback);
 
 private:
@@ -24,5 +24,5 @@ private:
     void takeXDisplayScreenshot(SurfaceCreated callback);
 
 private:
-    MainWindow& window_;
+    WindowGtk& window_;
 };

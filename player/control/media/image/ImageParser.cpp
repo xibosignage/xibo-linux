@@ -1,12 +1,14 @@
 #include "ImageParser.hpp"
 
+#include "control/media/Media.hpp"
 #include "control/media/MediaResources.hpp"
+#include "control/media/image/ImageFactory.hpp"
 
 const MediaGeometry::ScaleType DefaultScaleType = MediaGeometry::ScaleType::Scaled;
 const MediaGeometry::Align DefaultAlign = MediaGeometry::Align::Center;
 const MediaGeometry::Valign DefaultValign = MediaGeometry::Valign::Middle;
 
-MediaGeometry ImageParser::geometryFrom(const ptree_node& node)
+MediaGeometry ImageParser::geometryFrom(const XmlNode& node)
 {
     auto scaleType = node.get<MediaGeometry::ScaleType>(XlfResources::Media::Geometry::ScaleType, DefaultScaleType);
     auto align = node.get<MediaGeometry::Align>(XlfResources::Media::Geometry::Align, DefaultAlign);
@@ -15,7 +17,11 @@ MediaGeometry ImageParser::geometryFrom(const ptree_node& node)
     return MediaGeometry{scaleType, align, valign};
 }
 
-ExtraOptions ImageParser::extraOptionsImpl(const ptree_node& /*node*/)
+std::unique_ptr<Xibo::Media> ImageParser::createMedia(const MediaOptions& options,
+                                                      const XmlNode& /*node*/,
+                                                      int width,
+                                                      int height)
 {
-    return {};
+    ImageFactory factory;
+    return factory.create(options, width, height);
 }

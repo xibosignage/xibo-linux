@@ -1,29 +1,18 @@
 #include "AudioFactory.hpp"
 
-#include "control/media/player/MediaPlayer.hpp"
-#include "control/media/player/MediaPlayerResources.hpp"
-#include "control/media/player/PlayableMedia.hpp"
-
 #include "constants.hpp"
+#include "control/media/player/PlayableMedia.hpp"
+#include "control/media/player/audio/GstAudioPlayer.hpp"
 
-std::unique_ptr<IMedia> AudioFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<Xibo::Media> AudioFactory::create(const MediaPlayerOptions& options)
 {
-    auto playerOptions = createPlayerOptions(baseOptions, options);
-
-    return std::make_unique<PlayableMedia>(playerOptions, createPlayer(playerOptions));
+    return std::make_unique<PlayableMedia>(options, createPlayer(options));
 }
 
-MediaPlayerOptions AudioFactory::createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<Xibo::MediaPlayer> AudioFactory::createPlayer(const MediaPlayerOptions& options)
 {
-    auto looped = static_cast<MediaPlayerOptions::Loop>(std::stoi(options.at(XlfResources::Player::Loop)));
-    int volume = std::stoi(options.at(XlfResources::Player::Volume));
-
-    return MediaPlayerOptions{baseOptions, MediaPlayerOptions::Mute::Disable, looped, volume};
-}
-
-std::unique_ptr<IMediaPlayer> AudioFactory::createPlayer(const MediaPlayerOptions& options)
-{
-    auto player = std::make_unique<MediaPlayer>();
+    auto location = options.uri.scheme() == Uri::FileScheme ? MediaPlayerOptions::Local : MediaPlayerOptions::Network;
+    auto player = GstMediaPlayer::create<GstAudioPlayer>(location);
 
     player->setVolume(options.volume);
     player->load(options.uri);

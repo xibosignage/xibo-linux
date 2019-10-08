@@ -1,5 +1,5 @@
-#include "SchedulerReloadTests.hpp"
-#include "Scheduler.hpp"
+#include "schedule/tests/SchedulerReloadTests.hpp"
+#include "schedule/Scheduler.hpp"
 
 #include "testutils/Utils.hpp"
 

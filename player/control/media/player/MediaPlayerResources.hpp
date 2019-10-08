@@ -1,13 +1,13 @@
 #pragma once
 
 #include "common/Parsing.hpp"
-#include "control/common/XlfResources.hpp"
+#include "control/XlfResources.hpp"
 
 namespace XlfResources::Player
 {
-    const std::string Mute = XlfResources::option("mute");
-    const std::string Loop = XlfResources::option("loop");
-    const std::string Volume = XlfResources::option("volume");
+    const std::string Mute = Parsing::xmlOption("mute");
+    const std::string Loop = Parsing::xmlOption("loop");
+    const std::string Volume = Parsing::xmlOption("volume");
 }
 
 namespace XlfResources::AudioNode

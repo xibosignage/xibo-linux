@@ -1,9 +1,9 @@
 #include "MediaInventoryItem.hpp"
 
+#include "common/logger/Logging.hpp"
+
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <chrono>
-
-#include "common/logger/Logging.hpp"
 
 const std::string DEFAULT_RESOURCE_TYPE = "resource";
 

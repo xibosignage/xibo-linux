@@ -1,6 +1,8 @@
 #pragma once
 
+#include "common/crypto/Md5Hash.hpp"
 #include "common/logger/Logging.hpp"
+
 #include "networking/ResponseResult.hpp"
 #include "networking/xmds/MediaInventoryItem.hpp"
 
@@ -35,7 +37,7 @@ private:
 
         for (auto&& file : requiredFiles)
         {
-            Log::trace(file);
+            Log::trace("[RequiredFile] {}", file);
 
             if (shouldBeDownloaded(file))
             {
@@ -63,11 +65,10 @@ private:
         return items;
     }
 
-    void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
+    void saveRegularFile(const std::string& filename, const std::string& content, const Md5Hash& hash);
     void saveResourceFile(const std::string& filename, const std::string& fileContent);
 
-    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName,
-                                 const std::string& hash);
+    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName, const Md5Hash& hash);
     bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
 
     bool shouldBeDownloaded(const RegularFile& file) const;

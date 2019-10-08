@@ -1,8 +1,8 @@
 #pragma once
 
-#include "BaseRequestSerializer.hpp"
-#include "BaseResponseParser.hpp"
-#include "Soap.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 #include "networking/RequiredItems.hpp"
@@ -44,13 +44,14 @@ public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result parseBody(const ptree_node& node) override;
+    RequiredFiles::Result parseBody(const XmlNode& node) override;
 
 private:
-    RegularFile parseRegularFile(const ptree_node& attrs);
-    ResourceFile parseResourceFile(const ptree_node& attrs);
-    std::pair<std::string, std::string> parseFileNameAndPath(RegularFile::DownloadType dType, std::string_view fType,
-                                                             const ptree_node& attrs);
+    RegularFile parseRegularFile(const XmlNode& attrs);
+    ResourceFile parseResourceFile(const XmlNode& attrs);
+    std::pair<std::string, std::string> parseFileNameAndPath(RegularFile::DownloadType dType,
+                                                             std::string_view fType,
+                                                             const XmlNode& attrs);
 
     bool isLayout(std::string_view type) const;
     bool isMedia(std::string_view type) const;

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "IMedia.hpp"
-#include "MediaOptions.hpp"
-#include "constants.hpp"
-
-#include <boost/property_tree/ptree.hpp>
+#include "common/Parsing.hpp"
+#include "common/PlayerRuntimeError.hpp"
+#include "control/media/Media.hpp"
+#include "control/media/MediaOptions.hpp"
+#include "control/transitions/Transition.hpp"
 
 std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType);
 std::istream& operator>>(std::istream& in, MediaGeometry::Align& align);
@@ -13,33 +13,43 @@ std::istream& operator>>(std::istream& in, MediaGeometry::Valign& valign);
 std::istream& operator>>(std::istream& in, Transition::Type& type);
 std::istream& operator>>(std::istream& in, Transition::Direction& direction);
 
-class IMedia;
 class TransitionExecutor;
 
 class MediaParser
 {
 public:
     virtual ~MediaParser() = default;
-    std::unique_ptr<IMedia> mediaFrom(const ptree_node& node, int parentWidth, int parentHeight);
+
+    struct Error : PlayerRuntimeError
+    {
+        using PlayerRuntimeError::PlayerRuntimeError;
+    };
+
+    std::unique_ptr<Xibo::Media> mediaFrom(const XmlNode& node, int parentWidth, int parentHeight);
 
 protected:
-    virtual MediaOptions::Type typeFrom(const ptree_node& node);
-    virtual int idFrom(const ptree_node& node);
-    virtual Uri uriFrom(const ptree_node& node);
-    virtual int durationFrom(const ptree_node& node);
-    virtual MediaGeometry geometryFrom(const ptree_node& node);
-    virtual ExtraOptions extraOptionsImpl(const ptree_node& node) = 0;
+    virtual MediaOptions::Type typeFrom(const XmlNode& node);
+    virtual int idFrom(const XmlNode& node);
+    virtual Uri uriFrom(const XmlNode& node);
+    virtual int durationFrom(const XmlNode& node);
+    virtual MediaGeometry geometryFrom(const XmlNode& node);
+    virtual std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& options,
+                                                     const XmlNode& node,
+                                                     int width,
+                                                     int height) = 0;
 
 private:
-    MediaOptions baseOptionsFrom(const ptree_node& node);
-    ExtraOptions extraOptions(const ptree_node& node, int parentWidth, int parentHeight);
-    std::unique_ptr<IMedia> createMedia(const MediaOptions& options, const ExtraOptions& extraOptions);
-    void attach(IMedia& media, const ptree_node& node);
+    MediaOptions baseOptionsFrom(const XmlNode& node);
+    void attach(Xibo::Media& media, const XmlNode& node);
 
-    std::unique_ptr<TransitionExecutor> inTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
-    std::unique_ptr<TransitionExecutor> outTransitionFrom(const ptree_node& node, const std::shared_ptr<IWidget>& view);
+    std::unique_ptr<TransitionExecutor> inTransitionFrom(const XmlNode& node,
+                                                         const std::shared_ptr<Xibo::Widget>& view);
+    std::unique_ptr<TransitionExecutor> outTransitionFrom(const XmlNode& node,
+                                                          const std::shared_ptr<Xibo::Widget>& view);
 
     template <Transition::Heading heading>
-    std::unique_ptr<TransitionExecutor> createTransition(Transition::Type typeFrom, Transition::Direction direction,
-                                                         int durationFrom, const std::shared_ptr<IWidget>& view);
+    std::unique_ptr<TransitionExecutor> createTransition(Transition::Type typeFrom,
+                                                         Transition::Direction direction,
+                                                         int durationFrom,
+                                                         const std::shared_ptr<Xibo::Widget>& view);
 };

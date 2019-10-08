@@ -14,8 +14,8 @@ AllowShortLoopsOnASingleLine: 'true'
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: 'false'
 AlwaysBreakTemplateDeclarations: 'Yes'
-BinPackArguments: 'true'
-BinPackParameters: 'true'
+BinPackArguments: 'false'
+BinPackParameters: 'false'
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: true
@@ -46,6 +46,7 @@ KeepEmptyLinesAtTheStartOfBlocks: 'false'
 Language: Cpp
 NamespaceIndentation: All
 PenaltyBreakAssignment: '0'
+PenaltyReturnTypeOnItsOwnLine: 1000000
 PointerAlignment: Left
 ReflowComments: 'true'
 SortIncludes: 'true'

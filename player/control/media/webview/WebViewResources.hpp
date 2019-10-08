@@ -1,9 +1,10 @@
 #pragma once
 
-#include "control/common/XlfResources.hpp"
+#include "common/Parsing.hpp"
+#include "control/XlfResources.hpp"
 
 namespace XlfResources::WebView
 {
-    const std::string Transparency = XlfResources::option("transparency");
-    const std::string ModeId = XlfResources::option("modeid");
+    const std::string Transparency = Parsing::xmlOption("transparency");
+    const std::string ModeId = Parsing::xmlOption("modeid");
 }

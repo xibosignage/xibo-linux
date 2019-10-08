@@ -1,91 +1,83 @@
 #include "RegionParser.hpp"
-#include "GetMediaPosition.hpp"
-#include "Region.hpp"
-#include "RegionResources.hpp"
-#include "RegionView.hpp"
 
-#include "control/media/MediaCreatorsRepo.hpp"
+#include "control/region/RegionImpl.hpp"
+#include "control/region/RegionResources.hpp"
+
+#include "control/media/MediaParsersRepo.hpp"
 
 const int DefaultRegionZindex = 0;
 const bool DefaultRegionLoop = false;
 
-std::unique_ptr<IRegion> RegionParser::regionFrom(const ptree_node& node)
+using namespace std::string_literals;
+
+std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const XmlNode& node)
 {
-    auto options = optionsFrom(node);
-    auto view = createView(options);
-    auto region = createRegion(options, view);
+    try
+    {
+        auto region = std::make_unique<RegionImpl>(optionsFrom(node));
 
-    addMedia(*region, node);
+        addMedia(*region, node);
 
-    return region;
+        return region;
+    }
+    catch (std::exception& e)
+    {
+        throw RegionParser::Error{"RegionParser", "Region is invalid. Reason: "s + e.what()};
+    }
 }
 
-RegionOptions RegionParser::optionsFrom(const ptree_node& node)
+RegionPosition RegionParser::positionFrom(const XmlNode& node)
+{
+    try
+    {
+        RegionPosition position;
+
+        position.left = static_cast<int>(node.get<float>(XlfResources::Region::Left));
+        position.top = static_cast<int>(node.get<float>(XlfResources::Region::Top));
+        position.zorder = node.get<int>(XlfResources::Region::Zindex, DefaultRegionZindex);
+
+        return position;
+    }
+    catch (std::exception& e)
+    {
+        throw RegionParser::Error{"RegionParser", "Position is invalid. Reason: "s + e.what()};
+    }
+}
+
+RegionOptions RegionParser::optionsFrom(const XmlNode& node)
 {
     RegionOptions options;
 
     options.id = node.get<int>(XlfResources::Region::Id);
     options.width = static_cast<int>(node.get<float>(XlfResources::Region::Width));
     options.height = static_cast<int>(node.get<float>(XlfResources::Region::Height));
-    options.left = static_cast<int>(node.get<float>(XlfResources::Region::Left));
-    options.top = static_cast<int>(node.get<float>(XlfResources::Region::Top));
-    options.zindex = node.get<int>(XlfResources::Region::Zindex, DefaultRegionZindex);
     options.loop = static_cast<RegionOptions::Loop>(node.get<bool>(XlfResources::Region::Loop, DefaultRegionLoop));
 
     return options;
 }
 
-std::unique_ptr<IRegion> RegionParser::createRegion(const RegionOptions& options,
-                                                    const std::shared_ptr<IRegionView>& view)
-{
-    return std::make_unique<Region>(options.id, options.loop, view);
-}
-
-std::shared_ptr<IRegionView> RegionParser::createView(const RegionOptions& options)
-{
-    return std::make_shared<RegionView>(options.width, options.height);
-}
-
-void RegionParser::addMedia(IRegion& region, const ptree_node& regionNode)
+void RegionParser::addMedia(Xibo::Region& region, const XmlNode& regionNode)
 {
     for (auto [nodeName, node] : regionNode)
     {
         if (nodeName != XlfResources::MediaNode) continue;
 
-        auto&& parser = MediaCreatorsRepo::get<MediaParser>(mediaTypeFrom(node));
+        auto parser = MediaParsersRepo::get(mediaTypeFrom(node));
         if (parser)
         {
+            // TODO: don't use width/height if media type is widget-less
             int width = region.view()->width();
             int height = region.view()->height();
 
-            auto media = parser->mediaFrom(node, width, height);
-            auto [x, y] = mediaPositionInRegion(region, *media);
-
-            region.addMedia(std::move(media), x, y);
+            region.addMedia(parser->mediaFrom(node, width, height));
         }
     }
 }
 
-MediaOptions::Type RegionParser::mediaTypeFrom(const ptree_node& node)
+MediaOptions::Type RegionParser::mediaTypeFrom(const XmlNode& node)
 {
     auto type = node.get<std::string>(XlfResources::Media::Type);
     auto render = node.get<std::string>(XlfResources::Media::Render);
 
     return {type, render};
-}
-
-std::pair<int, int> RegionParser::mediaPositionInRegion(IRegion& region, IMedia& media)
-{
-    auto regionView = region.view();
-    auto mediaView = media.view();
-    if (regionView && mediaView)
-    {
-        GetMediaPosition positionCalc{regionView->width(), regionView->height()};
-        int x = positionCalc.getMediaX(mediaView->width(), media.align());
-        int y = positionCalc.getMediaY(mediaView->height(), media.valign());
-
-        return {x, y};
-    }
-
-    return {DefaultXPos, DefaultYPos};
 }

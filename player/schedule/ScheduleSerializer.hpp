@@ -1,25 +1,26 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
-#include "constants.hpp"
+#include "common/Parsing.hpp"
+#include "common/PlayerRuntimeError.hpp"
+#include "schedule/LayoutSchedule.hpp"
 
 class FilePath;
-
-struct ScheduleSerializeException : public std::exception
-{
-    const char* what() const noexcept override;
-};
 
 class ScheduleSerializer
 {
 public:
+    struct Error : PlayerRuntimeError
+    {
+        using PlayerRuntimeError::PlayerRuntimeError;
+    };
+
     void scheduleTo(const LayoutSchedule& schedule, const FilePath& path);
 
 private:
     void scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path);
 
-    ptree_node scheduledLayoutNode(const ScheduledLayout& layout);
-    ptree_node overlaysNode(const LayoutList& overlays);
-    ptree_node defaultLayoutNode(const DefaultScheduledLayout& layout);
-    ptree_node dependantsNode(const LayoutDependants& dependants);
+    XmlNode scheduledLayoutNode(const ScheduledLayout& layout);
+    XmlNode overlaysNode(const LayoutList& overlays);
+    XmlNode defaultLayoutNode(const DefaultScheduledLayout& layout);
+    XmlNode dependantsNode(const LayoutDependants& dependants);
 };

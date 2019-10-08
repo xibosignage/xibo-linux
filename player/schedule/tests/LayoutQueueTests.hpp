@@ -2,12 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "Common.hpp"
-#include "OverlayLayoutQueue.hpp"
-#include "RegularLayoutQueue.hpp"
+#include "schedule/OverlayLayoutQueue.hpp"
+#include "schedule/RegularLayoutQueue.hpp"
+#include "schedule/tests/Common.hpp"
 
-const std::vector<std::vector<int>> PrioritiesToTest = {{0, 1, 2}, {0, 2, 1}, {1, 2, 0},
-                                                        {1, 0, 2}, {2, 1, 0}, {2, 0, 1}};
+const std::vector<std::vector<int>> PrioritiesToTest =
+    {{0, 1, 2}, {0, 2, 1}, {1, 2, 0}, {1, 0, 2}, {2, 1, 0}, {2, 0, 1}};
 
 template <typename Queue>
 Queue queueWithPriorities(const std::vector<LayoutId>& priorities)

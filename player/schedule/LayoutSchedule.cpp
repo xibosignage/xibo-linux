@@ -1,6 +1,28 @@
 #include "LayoutSchedule.hpp"
 
+#include "schedule/ScheduleParser.hpp"
+#include "schedule/ScheduleSerializer.hpp"
+
 #include "common/Utils.hpp"
+#include "common/fs/FilePath.hpp"
+
+LayoutSchedule LayoutSchedule::fromFile(const FilePath& path)
+{
+    ScheduleParser parser;
+    return parser.scheduleFrom(path);
+}
+
+LayoutSchedule LayoutSchedule::fromString(const std::string& string)
+{
+    ScheduleParser parser;
+    return parser.scheduleFrom(string);
+}
+
+void LayoutSchedule::toFile(const FilePath& path) const
+{
+    ScheduleSerializer serializer;
+    serializer.scheduleTo(*this, path);
+}
 
 bool operator==(const LayoutSchedule& first, const LayoutSchedule& second)
 {

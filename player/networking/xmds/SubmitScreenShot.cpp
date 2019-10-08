@@ -1,5 +1,6 @@
 #include "SubmitScreenShot.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::SubmitScreenShot;
 
@@ -18,7 +19,7 @@ Soap::ResponseParser<SubmitScreenShot::Result>::ResponseParser(const std::string
 {
 }
 
-SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBody(const ptree_node& node)
+SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBody(const XmlNode& node)
 {
     SubmitScreenShot::Result result;
     result.success = node.get<bool>(Resources::Success);

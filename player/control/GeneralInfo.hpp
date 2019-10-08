@@ -5,6 +5,7 @@
 struct GeneralInfo
 {
     DateTime currentDateTime;
+    // FIXME: strong type
     std::string projectVersion;
     std::string codeVersion;
     std::string cmsAddress;

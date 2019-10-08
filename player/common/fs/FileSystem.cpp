@@ -1,5 +1,6 @@
 #include "FileSystem.hpp"
-#include "FilePath.hpp"
+
+#include "common/fs/FilePath.hpp"
 
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -63,7 +64,7 @@ FilePath FileSystem::currentPath()
 
 std::string FileSystem::readFromFile(const FilePath& path)
 {
-    std::ifstream in{path};
+    std::ifstream in{path.string()};
 
     std::stringstream buffer;
     buffer << in.rdbuf();
@@ -73,7 +74,7 @@ std::string FileSystem::readFromFile(const FilePath& path)
 
 void FileSystem::writeToFile(const FilePath& path, const std::string& content)
 {
-    std::ofstream out(path);
+    std::ofstream out(path.string());
 
     out << content;
 }

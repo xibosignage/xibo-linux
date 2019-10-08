@@ -1,8 +1,7 @@
 #pragma once
 
-#include "HostInfo.hpp"
-#include "common/Utils.hpp"
-#include "common/uri/Uri.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "common/types/Uri.hpp"
 #include "constants.hpp"
 
 #include <boost/beast/http/message.hpp>
@@ -21,11 +20,6 @@ public:
     {
     }
 
-    HostInfo hostInfo()
-    {
-        return HostInfo{uri_.host(), uri_.port(), uri_.scheme() == Uri::Scheme::HTTPS};
-    }
-
     http::request<http::string_body> get()
     {
         http::request<http::string_body> request;
@@ -33,10 +27,11 @@ public:
         request.method(method_);
         request.target(uri_.path());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, uri_.host());
-        if (auto credentials = uri_.credentials())
+        request.set(http::field::host, static_cast<std::string>(uri_.authority().host()));
+        if (auto userinfo = uri_.authority().optionalUserInfo())
         {
-            request.set(http::field::authorization, "Basic " + Utils::toBase64(credentials.value()));
+            request.set(http::field::authorization,
+                        "Basic " + CryptoUtils::toBase64(static_cast<std::string>(userinfo.value())));
         }
         request.body() = std::move(body_);
         request.prepare_payload();

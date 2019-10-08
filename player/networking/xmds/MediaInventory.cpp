@@ -1,5 +1,6 @@
 #include "MediaInventory.hpp"
-#include "Resources.hpp"
+
+#include "networking/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::MediaInventory;
 
@@ -18,7 +19,7 @@ Soap::ResponseParser<MediaInventory::Result>::ResponseParser(const std::string& 
 {
 }
 
-MediaInventory::Result Soap::ResponseParser<MediaInventory::Result>::parseBody(const ptree_node& node)
+MediaInventory::Result Soap::ResponseParser<MediaInventory::Result>::parseBody(const XmlNode& node)
 {
     MediaInventory::Result result;
     result.success = node.get<bool>(Resources::Success);
