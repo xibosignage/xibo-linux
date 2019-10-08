@@ -5,9 +5,8 @@
 
 class FilePath;
 
-class PlayerSettings
+struct PlayerSettings
 {
-public:
     void fromFile(const FilePath& file);
     void fromNode(const XmlNode& node);
     void saveTo(const FilePath& file);

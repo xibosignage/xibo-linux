@@ -5,6 +5,7 @@
 
 #include <boost/process/child.hpp>
 
+#include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
 #include "config.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
@@ -37,7 +38,6 @@ void MainWindowController::initUi()
     ui_->get_widget(Resources::Ui::ConnectionStatusLabel, connectionStatus_);
     ui_->get_widget(Resources::Ui::SaveButton, saveSettings_);
     ui_->get_widget(Resources::Ui::LaunchClientButton, launchClient_);
-    ui_->get_widget(Resources::Ui::DisplayAdminButton, displayAdmin_);
     ui_->get_widget(Resources::Ui::ExitButton, exit_);
 }
 
@@ -47,9 +47,9 @@ void MainWindowController::updateControls(const CmsSettings& settings)
     keyField_->set_text(Glib::ustring{settings.key});
     resourcesPathField_->set_text(Glib::ustring{settings.resourcesPath});
 
-    usernameField_->set_text(Glib::ustring{settings.username});
-    passwordField_->set_text(Glib::ustring{settings.password});
-    domainField_->set_text(Glib::ustring{settings.domain});
+    usernameField_->set_text(Glib::ustring{settings.username()});
+    passwordField_->set_text(Glib::ustring{settings.password()});
+    domainField_->set_text(Glib::ustring{settings.domain()});
     displayIdField_->set_text(Glib::ustring{settings.displayId});
 }
 
@@ -57,7 +57,6 @@ void MainWindowController::connectSignals()
 {
     saveSettings_->signal_clicked().connect(std::bind(&MainWindowController::onSaveSettingsClicked, this));
     launchClient_->signal_clicked().connect(std::bind(&MainWindowController::onLaunchClientClicked, this));
-    displayAdmin_->signal_clicked().connect(std::bind(&MainWindowController::onDisplayAdminClicked, this));
     browseResourcesPath_->signal_clicked().connect(
         std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
     exit_->signal_clicked().connect(std::bind(&Gtk::Window::close, mainWindow_));
@@ -77,9 +76,9 @@ void MainWindowController::onSaveSettingsClicked()
 std::string MainWindowController::getDisplayId()
 {
     std::string displayId = displayIdField_->get_text();
-    std::string key = static_cast<std::string>(System::hardwareKey());
+    auto keyHash = static_cast<Md5Hash>(System::hardwareKey());
 
-    return displayId.empty() ? key : displayId;
+    return displayId.empty() ? static_cast<std::string>(keyHash) : displayId;
 }
 
 std::string MainWindowController::connectToCms(const std::string& cmsAddress,
@@ -115,11 +114,9 @@ void MainWindowController::updateSettings()
     settings_.key = keyField_->get_text();
     std::string path = resourcesPathField_->get_text();
     settings_.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
-
-    settings_.username = usernameField_->get_text();
-    settings_.password = passwordField_->get_text();
-    settings_.domain = domainField_->get_text();
     settings_.displayId = displayIdField_->get_text();
+
+    settings_.updateProxy(domainField_->get_text(), usernameField_->get_text(), passwordField_->get_text());
 
     settings_.saveTo(ProjectResources::cmsSettingsPath());
 }
@@ -148,9 +145,4 @@ void MainWindowController::onBrowseResourcesPathClicked()
         case (Gtk::RESPONSE_OK): resourcesPathField_->set_text(dialog.get_filename()); break;
         default: break;
     }
-}
-
-void MainWindowController::onDisplayAdminClicked()
-{
-    //    m_mainWindow->show_uri(m_cmsAddress->get_text(), static_cast<unsigned int>(std::time(nullptr)));
 }

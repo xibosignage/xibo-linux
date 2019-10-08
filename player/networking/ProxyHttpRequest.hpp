@@ -1,7 +1,5 @@
 #pragma once
 
-#include "networking/ProxyInfo.hpp"
-
 #include "common/crypto/CryptoUtils.hpp"
 #include "common/types/Uri.hpp"
 #include "constants.hpp"
@@ -17,11 +15,13 @@ const std::string DefaultHttpTarget = "/";
 class ProxyHttpRequest
 {
 public:
-    ProxyHttpRequest(http::verb method, const ProxyInfo& info, const Uri& uri, const std::string& body) :
+    ProxyHttpRequest(http::verb method,
+                     const boost::optional<Uri::UserInfo>& proxyUserInfo,
+                     const Uri& target,
+                     const std::string& body) :
         method_(method),
-        username_(info.username),
-        password_(info.password),
-        uri_(uri),
+        proxyUserInfo_(proxyUserInfo),
+        target_(target),
         body_(std::move(body))
     {
     }
@@ -31,13 +31,13 @@ public:
         http::request<http::string_body> request;
 
         request.method(method_);
-        request.target(uri_.string());
+        request.target(target_.string());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, static_cast<std::string>(uri_.authority().host()));
-        if (auto info = uri_.authority().optionalUserInfo())
+        request.set(http::field::host, static_cast<std::string>(target_.authority().host()));
+        if (proxyUserInfo_)
         {
             request.set(http::field::proxy_authorization,
-                        "Basic " + CryptoUtils::toBase64(static_cast<std::string>(info.value())));
+                        "Basic " + CryptoUtils::toBase64(static_cast<std::string>(proxyUserInfo_.value())));
         }
         request.body() = std::move(body_);
         request.prepare_payload();
@@ -47,8 +47,7 @@ public:
 
 private:
     http::verb method_;
-    std::string username_;
-    std::string password_;
-    Uri uri_;
+    boost::optional<Uri::UserInfo> proxyUserInfo_;
+    Uri target_;
     std::string body_;
 };

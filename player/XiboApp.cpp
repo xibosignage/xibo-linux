@@ -90,8 +90,8 @@ XiboApp::XiboApp(const std::string& name) :
     webserver_->setRootDirectory(Resources::directory());
     webserver_->run(playerSettings_.embeddedServerPort);
 
-    Log::debug("[XiboApp] {}", webserver_->address());
-    HttpClient::instance().setProxyServer(cmsSettings_.domain, cmsSettings_.username, cmsSettings_.password);
+    Log::error("[XiboApp] {}", webserver_->address());
+    HttpClient::instance().setProxyServer(cmsSettings_.proxy());
     RsaManager::instance().load();
     setupXmrManager();
 

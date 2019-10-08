@@ -11,7 +11,7 @@ HardwareKey HardwareKeyGenerator::generate()
 {
     auto key = cpuid() + static_cast<std::string>(System::macAddress()) + volumeSerial();
 
-    return HardwareKey{key};
+    return HardwareKey{Md5Hash::fromString(key)};
 }
 
 std::string HardwareKeyGenerator::cpuid()

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/PlayerRuntimeError.hpp"
+#include "common/system/MacAddress.hpp"
 
 #include <net/if.h>
 #include <string>
@@ -16,7 +17,7 @@ public:
         using PlayerRuntimeError::PlayerRuntimeError;
     };
 
-    static std::string fetch();
+    static MacAddress fetch();
 
 private:
     static SocketDescriptor openSocket();

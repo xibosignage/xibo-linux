@@ -21,7 +21,7 @@ std::string Utils::toString(Uri::Host::Type val)
 
 Uri::Host Uri::Host::fromString(const std::string& host)
 {
-    if (host.empty()) throw PlayerRuntimeError{"Uri::Uri::Host", "Invalid"};
+    if (host.empty()) throw PlayerRuntimeError{"Uri::Host", "Invalid"};
 
     std::smatch baseMatch;
     if (std::regex_match(host, baseMatch, IpRegex))

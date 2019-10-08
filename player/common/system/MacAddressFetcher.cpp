@@ -9,10 +9,10 @@
 
 const std::size_t ConfigBufferSize = 1024;
 const std::size_t MacAddressBuffer = 100;
-const std::string UndefinedMacAddress = "00:00:00:00:00:00";
+const MacAddress UndefinedMacAddress{"00:00:00:00:00:00"};
 const int InvalidSocket = -1;
 
-std::string MacAddressFetcher::fetch()
+MacAddress MacAddressFetcher::fetch()
 {
     try
     {
@@ -22,7 +22,7 @@ std::string MacAddressFetcher::fetch()
         auto interfaceConfig = getInterfaceConfig(socket, buffer);
         auto interfaceRequest = findInterface(socket, interfaceConfig);
 
-        return retrieveMacAddress(socket, interfaceRequest);
+        return MacAddress{retrieveMacAddress(socket, interfaceRequest)};
     }
     catch (std::exception&)
     {

@@ -47,17 +47,27 @@ public:
     class Port : public StrongType<unsigned short>
     {
     public:
+        struct Error : PlayerRuntimeError
+        {
+            using PlayerRuntimeError::PlayerRuntimeError;
+        };
+
         explicit Port(unsigned short value);
         static Port fromScheme(const Uri::Scheme& scheme);
 
         std::string string() const;
     };
 
-    struct UserInfo : StrongType<std::string>
+    class UserInfo : public StrongType<std::string>
     {
+    public:
+        struct Error : PlayerRuntimeError
+        {
+            using PlayerRuntimeError::PlayerRuntimeError;
+        };
+
         UserInfo(const std::string& username, const std::string& password);
-        UserInfo(const std::string& username);
-        static UserInfo fromString(const std::string& optionalUserInfo);
+        static UserInfo fromString(const std::string& userInfo);
 
         const std::string& username() const;
         const std::string& password() const;
@@ -72,8 +82,8 @@ public:
     public:
         Authority(const boost::optional<UserInfo>& info, const Host& host, const boost::optional<Port>& optionalPort);
 
-        boost::optional<UserInfo> optionalUserInfo() const;
         UserInfo userInfo() const;
+        boost::optional<UserInfo> optionalUserInfo() const;
         const Host& host() const;
         boost::optional<Port> optionalPort() const;
         Port port() const;
@@ -87,9 +97,9 @@ public:
     static Uri fromString(const std::string& str);
     static Uri fromFile(const FilePath& path);
 
-    Uri(Scheme scheme, const Authority& authority, const std::string& path);
-    Uri(Scheme scheme, const Host& optionalHost, const std::string& path);
-    Uri(Scheme scheme, const std::string& path);
+    Uri(const Scheme& scheme, const Authority& authority, const std::string& path);
+    Uri(const Scheme& scheme, const Host& optionalHost, const std::string& path);
+    Uri(const Scheme& scheme, const std::string& path);
 
     std::string string() const;
     boost::optional<Authority> optionalAuthority() const;

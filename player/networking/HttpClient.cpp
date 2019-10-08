@@ -37,12 +37,12 @@ void HttpClient::shutdown()
     }
 }
 
-// TODO: strong type
-void HttpClient::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
+void HttpClient::setProxyServer(const boost::optional<Uri>& proxy)
 {
-    if (!host.empty())
+    proxy_ = proxy;
+    if (proxy_)
     {
-        proxyInfo_ = ProxyInfo{host, username, password};
+        Log::debug("[HttpClient] Proxy set: {}", proxy_->string());
     }
 }
 
@@ -74,10 +74,10 @@ boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri&
     auto session = std::make_shared<HttpSession>(ioc_);
     activeSessions_.push_back(session);
 
-    if (proxyInfo_)
+    if (proxy_)
     {
-        ProxyHttpRequest request{method, proxyInfo_.value(), uri, body};
-        return session->send(uri, request.get());
+        ProxyHttpRequest request{method, proxy_->authority().optionalUserInfo(), uri, body};
+        return session->send(proxy_.value(), request.get());
     }
     else
     {

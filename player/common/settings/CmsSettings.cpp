@@ -28,3 +28,32 @@ void CmsSettings::saveTo(const FilePath& settingsFile)
         Log::error(e.what());
     }
 }
+
+void CmsSettings::updateProxy(const std::string& domain, const std::string& username, const std::string& password)
+{
+    CmsSettingsSerializer serializer;
+    domain_ = domain;
+    username_ = username;
+    password_ = password;
+    proxy_ = serializer.proxyFrom(domain, username, password);
+}
+
+std::string CmsSettings::domain() const
+{
+    return domain_;
+}
+
+std::string CmsSettings::username() const
+{
+    return username_;
+}
+
+std::string CmsSettings::password() const
+{
+    return password_;
+}
+
+boost::optional<Uri> CmsSettings::proxy() const
+{
+    return proxy_;
+}

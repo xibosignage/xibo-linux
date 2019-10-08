@@ -27,7 +27,6 @@ private:
     void showSettingsSavedMessage();
     void onLaunchClientClicked();
     void onBrowseResourcesPathClicked();
-    void onDisplayAdminClicked();
 
 private:
     Glib::RefPtr<Gtk::Builder> ui_;
@@ -49,6 +48,5 @@ private:
     Gtk::Label* connectionStatus_;
     Gtk::Button* saveSettings_;
     Gtk::Button* launchClient_;
-    Gtk::Button* displayAdmin_;
     Gtk::Button* exit_;
 };

@@ -43,21 +43,21 @@ Uri Uri::fromFile(const FilePath& path)
     return Uri{Scheme{"file"}, path.string()};
 }
 
-Uri::Uri(Uri::Scheme scheme, const Authority& authority, const std::string& path) :
+Uri::Uri(const Scheme& scheme, const Authority& authority, const std::string& path) :
     scheme_(scheme),
     authority_(authority),
     path_(path)
 {
 }
 
-Uri::Uri(Uri::Scheme scheme, const Host& host, const std::string& path) :
+Uri::Uri(const Scheme& scheme, const Host& host, const std::string& path) :
     scheme_(scheme),
     authority_(Authority{{}, host, Uri::Port::fromScheme(scheme)}),
     path_(path)
 {
 }
 
-Uri::Uri(Uri::Scheme scheme, const std::string& path) : scheme_(scheme), path_(path) {}
+Uri::Uri(const Scheme& scheme, const std::string& path) : scheme_(scheme), path_(path) {}
 
 std::string Uri::string() const
 {
@@ -90,6 +90,8 @@ boost::optional<Uri::Authority> Uri::optionalAuthority() const
 
 Uri::Authority Uri::authority() const
 {
+    assert(authority_);
+
     return authority_.value();
 }
 
@@ -108,6 +110,10 @@ std::ostream& operator<<(std::ostream& out, const Uri& uri)
     out << "Scheme: " << static_cast<std::string>(uri.scheme());
     if (auto auth = uri.optionalAuthority())
     {
+        if (auto info = auth->optionalUserInfo())
+        {
+            out << " UserInfo: " << static_cast<std::string>(info.value());
+        }
         out << " HostType: " << Utils::toString(auth->host().type());
         out << " Host: " << static_cast<std::string>(auth->host());
         if (auto port = auth->optionalPort())

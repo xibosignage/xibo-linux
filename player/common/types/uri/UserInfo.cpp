@@ -3,13 +3,13 @@
 #include <boost/algorithm/string.hpp>
 
 Uri::UserInfo::UserInfo(const std::string& username, const std::string& password) :
-    StrongType{username + ":" + password},
     username_(username),
     password_(password)
 {
-}
+    if (username.empty()) throw Error{"Uri::UserInfo", "Username can't be empty"};
 
-Uri::UserInfo::UserInfo(const std::string& username) : StrongType{username}, username_(username) {}
+    value_ = password.empty() ? username : username + ":" + password;
+}
 
 Uri::UserInfo Uri::UserInfo::fromString(const std::string& userinfo)
 {
@@ -18,10 +18,10 @@ Uri::UserInfo Uri::UserInfo::fromString(const std::string& userinfo)
     std::vector<std::string> splittedUserinfo;
     boost::split(splittedUserinfo, userinfo, boost::is_any_of(":"));
 
-    if (splittedUserinfo.size() == 1) return Uri::UserInfo{splittedUserinfo[UserName]};
+    if (splittedUserinfo.size() == 1) return Uri::UserInfo{splittedUserinfo[UserName], std::string{}};
     if (splittedUserinfo.size() == 2) return Uri::UserInfo{splittedUserinfo[UserName], splittedUserinfo[Password]};
 
-    throw PlayerRuntimeError{"Uri::UserInfo", "Parse error"};
+    throw Error{"Uri::UserInfo", "Parse error"};
 }
 
 const std::string& Uri::UserInfo::username() const

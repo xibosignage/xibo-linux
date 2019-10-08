@@ -16,6 +16,8 @@ boost::optional<Uri::UserInfo> Uri::Authority::optionalUserInfo() const
 
 Uri::UserInfo Uri::Authority::userInfo() const
 {
+    assert(userInfo_);
+
     return userInfo_.value();
 }
 
@@ -31,5 +33,7 @@ boost::optional<Uri::Port> Uri::Authority::optionalPort() const
 
 Uri::Port Uri::Authority::port() const
 {
+    assert(port_);
+
     return port_.value();
 }

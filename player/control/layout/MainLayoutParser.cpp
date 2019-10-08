@@ -40,15 +40,13 @@ std::unique_ptr<Xibo::MainLayout> MainLayoutParser::layoutFrom(const XmlNode& no
 
 MainLayoutOptions MainLayoutParser::optionsFrom(const XmlNode& node)
 {
-    MainLayoutOptions options;
+    auto width = node.get<int>(XlfResources::MainLayout::Width);
+    auto height = node.get<int>(XlfResources::MainLayout::Height);
 
-    options.width = node.get<int>(XlfResources::MainLayout::Width);
-    options.height = node.get<int>(XlfResources::MainLayout::Height);
+    auto backgroundUri = backgroundUriFrom(node);
+    auto backgroundColor = backgroundColorFrom(node);
 
-    options.backgroundUri = backgroundUriFrom(node);
-    options.backgroundColor = backgroundColorFrom(node);
-
-    return options;
+    return MainLayoutOptions{width, height, backgroundUri, backgroundColor};
 }
 
 boost::optional<Uri> MainLayoutParser::backgroundUriFrom(const XmlNode& node)

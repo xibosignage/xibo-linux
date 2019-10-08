@@ -2,8 +2,6 @@
 
 #include "common/JoinableThread.hpp"
 #include "common/types/Uri.hpp"
-
-#include "networking/ProxyInfo.hpp"
 #include "networking/ResponseResult.hpp"
 
 #include <boost/asio/io_context.hpp>
@@ -23,7 +21,7 @@ public:
     static HttpClient& instance();
 
     void shutdown();
-    void setProxyServer(const std::string& host, const std::string& username, const std::string& password);
+    void setProxyServer(const boost::optional<Uri>& uri);
     boost::future<HttpResponseResult> get(const Uri& uri);
     boost::future<HttpResponseResult> post(const Uri& uri, const std::string& body);
 
@@ -40,5 +38,5 @@ private:
     boost::asio::io_context::work work_;
     std::vector<std::unique_ptr<JoinableThread>> workerThreads_;
     std::vector<std::weak_ptr<HttpSession>> activeSessions_;
-    boost::optional<ProxyInfo> proxyInfo_;
+    boost::optional<Uri> proxy_;
 };

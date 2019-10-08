@@ -20,8 +20,6 @@ public:
     virtual void saveTo(const FilePath& file, const Settings& settings) = 0;
 
 protected:
-    ~SettingsSerializer() = default;
-
     template <typename... Args>
     void loadFromImpl(const FilePath& file, Field<Args>&... fields)
     {

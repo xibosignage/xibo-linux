@@ -19,11 +19,6 @@ public:
         }
     }
 
-    bool active() const
-    {
-        return thread_->joinable();
-    }
-
 private:
     std::unique_ptr<std::thread> thread_;
 };

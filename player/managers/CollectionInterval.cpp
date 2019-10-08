@@ -130,8 +130,8 @@ void CollectionInterval::updateInterval(int collectInterval)
 {
     if (collectInterval_ != collectInterval)
     {
-        Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval_, collectInterval);
-        //        collectInterval_ = collectInterval;
+        Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
+        collectInterval_ = collectInterval;
     }
 }
 
