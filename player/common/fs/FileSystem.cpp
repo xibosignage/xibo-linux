@@ -4,6 +4,7 @@
 
 #include <boost/filesystem.hpp>
 #include <fstream>
+#include <sstream>
 
 namespace fs = boost::filesystem;
 
@@ -59,6 +60,16 @@ bool FileSystem::createDirectory(const FilePath& path)
 FilePath FileSystem::currentPath()
 {
     return fs::current_path();
+}
+
+std::string FileSystem::readFromFile(const FilePath& path)
+{
+    std::ifstream in{path.string()};
+
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+
+    return buffer.str();
 }
 
 void FileSystem::writeToFile(const FilePath& path, const std::string& content)

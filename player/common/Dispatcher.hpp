@@ -2,7 +2,6 @@
 #define DISPATCHER_HPP
 
 #include <glibmm/dispatcher.h>
-#include <iostream>
 #include <thread>
 #include <tuple>
 

@@ -3,8 +3,6 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
 
-#include <fstream>
-
 void FileCacheImpl::loadFrom(const FilePath& cacheFile)
 {
     cacheFile_ = cacheFile;
@@ -43,8 +41,7 @@ void FileCacheImpl::save(const std::string& fileName, const std::string& fileCon
 {
     auto filePath = Resources::directory() / fileName;
 
-    std::ofstream out(filePath.string());
-    out << fileContent;
+    FileSystem::writeToFile(filePath, fileContent);
 
     addToCache(fileName, Md5Hash::fromString(fileContent), hash);
 }

@@ -6,12 +6,12 @@
 #include "control/media/Media.hpp"
 #include "control/media/MediaResources.hpp"
 
+#include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
 #include "networking/WebServer.hpp"  // TODO: remove dependency
 #include "utils/Managers.hpp"        // TODO: remove dependency
 
 #include <boost/algorithm/string/replace.hpp>
-#include <fstream>
 #include <regex>
 
 const bool DefaultTransparency = true;
@@ -30,16 +30,12 @@ int WebViewParser::durationFrom(const XmlNode& node)
 
 boost::optional<int> WebViewParser::parseDuration(const FilePath& path)
 {
-    std::ifstream in(path.string());
+    auto fileContent = FileSystem::readFromFile(path);
 
     std::smatch matchedGroups;
-    std::string line;
     const int DurationGroup = 1;
 
-    while (std::getline(in, line))
-    {
-        if (std::regex_search(line, matchedGroups, DurationRegex) && matchedGroups.size() > 1) break;
-    }
+    std::regex_search(fileContent, matchedGroups, DurationRegex);
 
     return matchedGroups.size() > 1 ? std::stoi(matchedGroups[DurationGroup].str()) : boost::optional<int>{};
 }

@@ -1,9 +1,8 @@
 #include "Md5Hash.hpp"
 
-#include "common/fs/FilePath.hpp"
+#include "common/fs/FileSystem.hpp"
 
 #include <boost/format.hpp>
-#include <fstream>
 #include <openssl/md5.h>
 #include <sstream>
 
@@ -22,8 +21,7 @@ Md5Hash Md5Hash::fromString(std::string_view data)
 
 Md5Hash Md5Hash::fromFile(const FilePath& path)
 {
-    std::ifstream in{path.string()};
-    std::string fileContent{(std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>()};
+    auto fileContent = FileSystem::readFromFile(path);
 
     return Md5Hash::fromString(fileContent.data());
 }

@@ -10,7 +10,6 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
 
-#include <fstream>
 #include <regex>
 
 const std::regex ViewPortWidth{"(content=\"width=)(.*)(\".*)"};
@@ -47,17 +46,9 @@ void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
 {
     auto filename = uri.path().substr(1);
     auto path = Resources::directory() / filename;
-    std::string fileContent;
-    {
-        std::ifstream stream(path.string());
-        std::stringstream buffer;
-        buffer << stream.rdbuf();
 
-        std::regex_search(fileContent, ViewPortWidth);
-        fileContent = std::regex_replace(buffer.str(), ViewPortWidth, "$1 " + std::to_string(width) + "$3");
-    }
-    {
-        std::ofstream stream(path.string(), std::ios::out | std::ios::trunc);
-        stream << fileContent;
-    }
+    auto originalContent = FileSystem::readFromFile(path);
+    auto updatedContent = std::regex_replace(originalContent, ViewPortWidth, "$1 " + std::to_string(width) + "$3");
+
+    FileSystem::writeToFile(path, updatedContent);
 }
