@@ -31,6 +31,20 @@ public:
 
 private:
     template <typename RequiredFileType>
+    DownloadResult tryDownloadRequiredFile(const RequiredFileType& requiredFile)
+    {
+        try
+        {
+            return downloadRequiredFile(requiredFile);
+        }
+        catch (std::exception& e)
+        {
+            Log::error("[RequiredFile] {}", e.what());
+        }
+        return {};
+    }
+
+    template <typename RequiredFileType>
     DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
     {
         DownloadResults results;
@@ -41,7 +55,11 @@ private:
 
             if (shouldBeDownloaded(file))
             {
-                results.emplace_back(downloadRequiredFile(file));
+                auto result = tryDownloadRequiredFile(file);
+                if (result.has_value())
+                {
+                    results.emplace_back(std::move(result));
+                }
             }
         }
 

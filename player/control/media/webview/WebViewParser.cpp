@@ -8,8 +8,8 @@
 
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
-#include "networking/WebServer.hpp"  // TODO: remove dependency
-#include "utils/Managers.hpp"        // TODO: remove dependency
+#include "networking/WebServer.hpp"
+#include "utils/Managers.hpp"  // TODO: remove dependency
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>

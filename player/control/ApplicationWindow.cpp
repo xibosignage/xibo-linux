@@ -38,6 +38,7 @@ ApplicationWindow<Window>::ApplicationWindow() :
     });
 }
 
+// TODO should we handle exception here?
 template <typename Window>
 void ApplicationWindow<Window>::setMainLayout(const MainLayoutWidget& child)
 {
@@ -47,6 +48,7 @@ void ApplicationWindow<Window>::setMainLayout(const MainLayoutWidget& child)
     scaleLayoutToWindowBounds(child);
 }
 
+// TODO should we handle exception here?
 template <typename Window>
 void ApplicationWindow<Window>::setOverlays(const OverlaysWidgets& children)
 {
@@ -60,6 +62,7 @@ void ApplicationWindow<Window>::setOverlays(const OverlaysWidgets& children)
     }
 }
 
+// TODO should we handle exception here?
 template <typename Window>
 void ApplicationWindow<Window>::showSplashScreen()
 {

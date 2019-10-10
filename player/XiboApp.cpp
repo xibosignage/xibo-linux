@@ -255,11 +255,18 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
 {
-    Log::setLevel(settings.logLevel);
-    collectionInterval_->updateInterval(settings.collectInterval);
-    xmrManager_->connect(settings.xmrNetworkAddress);
-    mainWindow_->setSize(settings.width, settings.height);
-    mainWindow_->move(settings.x, settings.y);
+    try
+    {
+        Log::setLevel(settings.logLevel);
+        collectionInterval_->updateInterval(settings.collectInterval);
+        xmrManager_->connect(settings.xmrNetworkAddress);
+        mainWindow_->setSize(settings.width, settings.height);
+        mainWindow_->move(settings.x, settings.y);
 
-    Log::debug("[XiboApp] Player settings updated");
+        Log::debug("[XiboApp] Player settings updated");
+    }
+    catch (std::exception& e)
+    {
+        Log::error("[XiboApp] Error while upadting settings: {}", e.what());
+    }
 }

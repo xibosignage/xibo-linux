@@ -5,23 +5,47 @@
 
 #include "common/Utils.hpp"
 #include "common/fs/FilePath.hpp"
+#include "common/logger/Logging.hpp"
 
 LayoutSchedule LayoutSchedule::fromFile(const FilePath& path)
 {
-    ScheduleParser parser;
-    return parser.scheduleFrom(path);
+    try
+    {
+        ScheduleParser parser;
+        return parser.scheduleFrom(path);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
+    return {};
 }
 
 LayoutSchedule LayoutSchedule::fromString(const std::string& string)
 {
-    ScheduleParser parser;
-    return parser.scheduleFrom(string);
+    try
+    {
+        ScheduleParser parser;
+        return parser.scheduleFrom(string);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
+    return {};
 }
 
 void LayoutSchedule::toFile(const FilePath& path) const
 {
-    ScheduleSerializer serializer;
-    serializer.scheduleTo(*this, path);
+    try
+    {
+        ScheduleSerializer serializer;
+        serializer.scheduleTo(*this, path);
+    }
+    catch (std::exception& e)
+    {
+        Log::error(e.what());
+    }
 }
 
 bool operator==(const LayoutSchedule& first, const LayoutSchedule& second)
