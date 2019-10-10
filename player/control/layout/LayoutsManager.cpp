@@ -18,12 +18,6 @@ LayoutsManager::LayoutsManager(Scheduler& scheduler, FileCache& fileCache) :
     scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
 }
 
-void LayoutsManager::fetchAllLayouts()
-{
-    fetchMainLayout();
-    fetchOverlays();
-}
-
 MainLayoutLoaded& LayoutsManager::mainLayoutFetched()
 {
     return mainLayoutFetched_;

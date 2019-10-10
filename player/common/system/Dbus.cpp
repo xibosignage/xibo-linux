@@ -6,6 +6,8 @@
 
 Dbus::Error::Error(DBusError error) : PlayerRuntimeError("DBus", ""), error_(error) {}
 
+// TODO managed objects
+
 const char* Dbus::Error::what() const noexcept
 {
     return error_.name;

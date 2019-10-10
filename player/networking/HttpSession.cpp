@@ -40,7 +40,6 @@ boost::future<HttpResponseResult> HttpSession::send(const Uri& uri, const http::
     return result_.get_future();
 }
 
-// TODO: strong type
 template <typename Callback>
 void HttpSession::resolve(const Uri::Host& host, const Uri::Port& port, Callback callback)
 {

@@ -17,7 +17,6 @@ class LayoutsManager
 public:
     LayoutsManager(Scheduler& scheduler, FileCache& fileCache);
 
-    void fetchAllLayouts();
     void fetchMainLayout();
     void fetchOverlays();
 

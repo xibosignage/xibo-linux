@@ -19,6 +19,7 @@ MessageReceived& ZeromqSubscriber::messageReceived()
     return messageReceived_;
 }
 
+// FIXME exception for zeromq thread
 void ZeromqSubscriber::run(const std::string& host)
 {
     worker_ = std::make_unique<JoinableThread>([this, host]() { processMessageQueue(host); });
@@ -28,8 +29,6 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host)
 {
     zmq::socket_t socket{context_, ZMQ_SUB};
     tryConnect(socket, host);
-    socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
-    socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
 
     while (!stopped_)
     {
@@ -49,6 +48,8 @@ void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host
     try
     {
         socket.connect(host);
+        socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
+        socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
     }
     catch (zmq::error_t&)
     {

@@ -176,6 +176,7 @@ void WindowGtk::unfullscreen()
     });
 }
 
+// TODO: use window_state
 bool WindowGtk::isFullscreen() const
 {
     return fullscreen_;
