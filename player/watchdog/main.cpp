@@ -26,7 +26,7 @@ void setupNewConfigDir()
 
             if (settings.resourcesPath == oldConfigDirectory() / ResourcesDir)
             {
-                settings.resourcesPath = defaultResourcesDir();
+                settings.resourcesPath = defaultResourcesDir().string();
                 settings.saveTo(ProjectResources::cmsSettingsPath());
             }
         }

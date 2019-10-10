@@ -1,6 +1,7 @@
 *.autosave
 *.txt.user
-*.snap*
+xibo-*.snap*
+snap
 gcov
 build*
 prime

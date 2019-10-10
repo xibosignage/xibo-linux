@@ -1,0 +1,13 @@
+FROM xibo-linux
+
+RUN apt-get install -y snapcraft
+
+ENV LC_ALL C.UTF-8
+ENV SNAPCRAFT_SETUP_CORE 1
+
+RUN cd /app && \
+    snapcraft && \
+    snapcraft login --with snapcraft.login && \
+    snapcraft push *.snap
+
+CMD []

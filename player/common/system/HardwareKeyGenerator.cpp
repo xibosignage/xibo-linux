@@ -18,7 +18,7 @@ std::string HardwareKeyGenerator::cpuid()
 {
     const int CPUID_BUFFER = 25;
 
-    unsigned int eax = 0, ebx, ecx, edx;
+    unsigned int eax = 0, ebx = 0, ecx = 0, edx = 0;
     nativeCpuid(&eax, &ebx, &ecx, &edx);
 
     char buffer[CPUID_BUFFER] = {0};
