@@ -149,10 +149,4 @@ RUN cd /app && \
 
 RUN cp -r /app/_build/. /app/build
 
-RUN apt-get install -y snapcraft
-
-RUN cd /app && \
-    snapcraft && \
-    snapcraft login --with snapcraft.login && \
-    snapcraft push *.snap
 CMD []
