@@ -11,6 +11,8 @@
 #include "control/media/player/gst/VideoScale.hpp"
 #include "control/media/player/gst/Volume.hpp"
 
+#include "control/widgets/render/OutputWindowGtk.hpp"
+
 void GstVideoPlayer::createPipeline()
 {
     videoConverter_ = Gst::VideoConvert::create();
@@ -24,6 +26,8 @@ void GstVideoPlayer::createPipeline()
     if (!videoConverter_ || !videoScale_ || !videoSink_ || !queue_ || !capsfilter_ || !audioConverter_ || !audioSink_)
         throw GstMediaPlayer::Error{"GstVideoPlayer", "Error while creating pipeline"};
 
+    GstMediaPlayer::setOutputWindow(createInternalWindow());
+
     pipeline_->add(source_)->add(decodebin_);
     source_->link(decodebin_);
 
@@ -32,4 +36,15 @@ void GstVideoPlayer::createPipeline()
 
     pipeline_->add(audioConverter_)->add(volume_)->add(audioSink_);
     audioConverter_->link(volume_)->link(audioSink_);
+}
+
+std::shared_ptr<Xibo::OutputWindow> GstVideoPlayer::createInternalWindow()
+{
+    GtkWidget* widget = nullptr;
+    g_object_get(videoSink_->handler(), "widget", &widget, nullptr);
+    if (widget)
+    {
+        return std::make_shared<OutputWindowGtk>(Glib::wrap(widget));
+    }
+    return nullptr;
 }

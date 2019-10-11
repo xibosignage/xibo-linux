@@ -4,6 +4,9 @@
 
 class GstVideoPlayer : public GstMediaPlayer
 {
-protected:
+public:
     void createPipeline() override;
+
+protected:
+    std::shared_ptr<Xibo::OutputWindow> createInternalWindow();
 };
