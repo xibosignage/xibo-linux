@@ -119,10 +119,11 @@ void ApplicationWindow<Window>::setSize(int width, int height)
     }
     else
     {
-        statusScreen_->setSize(static_cast<int>(width * StatusScreenScaleX),
-                               static_cast<int>(height * StatusScreenScaleY));
         Window::setSize(width, height);
     }
+
+    statusScreen_->setSize(static_cast<int>(this->width() * StatusScreenScaleX),
+                           static_cast<int>(this->height() * StatusScreenScaleY));
 }
 
 template <typename Window>
