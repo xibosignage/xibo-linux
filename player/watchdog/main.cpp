@@ -44,8 +44,13 @@ int main()
 
     if (FileSystem::exists(ProjectResources::cmsSettingsPath()))
     {
-        boost::process::child playerBin{ProjectResources::playerBinary()};
-        playerBin.wait();
+        while (true)
+        {
+            boost::process::child playerBin{ProjectResources::playerBinary()};
+            playerBin.wait();
+            std::cerr << "Player exited with code " << playerBin.exit_code() << std::endl;
+            sleep(3);
+        }
     }
     else
     {
