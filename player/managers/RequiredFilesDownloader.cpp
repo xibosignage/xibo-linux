@@ -1,42 +1,43 @@
 #include "RequiredFilesDownloader.hpp"
 
+#include "networking/HttpClient.hpp"
 #include "networking/xmds/XmdsFileDownloader.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "networking/HttpClient.hpp"
 
-#include "utils/Managers.hpp"
+#include "common/fs/FileCacheImpl.hpp"
 #include "common/fs/Resources.hpp"
-#include "common/Utils.hpp"
-#include "common/fs/FileCache.hpp"
+#include "utils/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
-    m_xmdsRequestSender(xmdsRequestSender),
-    m_xmdsFileDownloader(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
+    xmdsRequestSender_(xmdsRequestSender),
+    xmdsFileDownloader_(std::make_unique<XmdsFileDownloader>(xmdsRequestSender))
 {
 }
 
-RequiredFilesDownloader::~RequiredFilesDownloader()
-{
-}
+RequiredFilesDownloader::~RequiredFilesDownloader() {}
 
-void RequiredFilesDownloader::saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash)
+void RequiredFilesDownloader::saveRegularFile(const std::string& filename,
+                                              const std::string& content,
+                                              const Md5Hash& hash)
 {
     Managers::fileManager().save(filename, content, hash);
 }
 
 void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
 {
-    std::string hash = Utils::md5hash(content);
-    if(!Managers::fileManager().cached(filename, hash))
+    auto hash = Md5Hash::fromString(content);
+    if (!Managers::fileManager().cached(filename, hash))
     {
         Managers::fileManager().save(filename, content, hash);
     }
 }
 
-bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const std::string& filename, const std::string& hash)
+bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result,
+                                                      const std::string& filename,
+                                                      const Md5Hash& hash)
 {
     auto [error, fileContent] = result;
-    if(!error)
+    if (!error)
     {
         saveRegularFile(filename, fileContent, hash);
 
@@ -53,7 +54,7 @@ bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResul
 bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResult& result, const std::string& filename)
 {
     auto [error, fileContent] = result;
-    if(!error)
+    if (!error)
     {
         saveResourceFile(filename, fileContent);
 
@@ -69,8 +70,7 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return m_xmdsRequestSender.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future){
-
+    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
         auto fileName = std::to_string(res.mediaId) + ".html";
         auto [error, result] = future.get();
 
@@ -80,23 +80,25 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile&
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    if(file.downloadType == DownloadType::HTTP)
+    if (file.downloadType == RegularFile::DownloadType::HTTP)
     {
-        return HttpClient::instance().get(file.url).then([this, file](boost::future<HttpResponseResult> future){
-            return onRegularFileDownloaded(future.get(), file.name, file.hash);
+        auto uri = Uri::fromString(file.url);
+        return HttpClient::instance().get(uri).then([this, file](boost::future<HttpResponseResult> future) {
+            return onRegularFileDownloaded(future.get(), file.name, Md5Hash{file.hash});
         });
     }
     else
     {
-        return m_xmdsFileDownloader->download(file.id, file.type, file.size).then([this, file](boost::future<XmdsResponseResult> future){
-            return onRegularFileDownloaded(future.get(), file.name, file.hash);
-        });
+        return xmdsFileDownloader_->download(file.id, file.type, file.size)
+            .then([this, file](boost::future<XmdsResponseResult> future) {
+                return onRegularFileDownloaded(future.get(), file.name, Md5Hash{file.hash});
+            });
     }
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !Managers::fileManager().valid(file.name) || !Managers::fileManager().cached(file.name, file.hash);
+    return !Managers::fileManager().valid(file.name) || !Managers::fileManager().cached(file.name, Md5Hash{file.hash});
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const

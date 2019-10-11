@@ -4,43 +4,42 @@ const int DefaultPriority = 0;
 
 void LayoutQueue::clear()
 {
-    m_queue.clear();
+    queue_.clear();
 }
 
 size_t LayoutQueue::size() const
 {
-    return m_queue.size();
+    return queue_.size();
 }
 
 bool LayoutQueue::empty() const
 {
-    return m_queue.empty();
+    return queue_.empty();
 }
 
 LayoutQueue::ConstIterator LayoutQueue::begin() const
 {
-    return m_queue.begin();
+    return queue_.begin();
 }
 
 LayoutQueue::ConstIterator LayoutQueue::end() const
 {
-    return m_queue.end();
+    return queue_.end();
 }
 
-const std::vector<ScheduledLayout>&LayoutQueue::queue() const
+const std::vector<ScheduledLayout>& LayoutQueue::queue() const
 {
-    return m_queue;
+    return queue_;
 }
 
-const ScheduledLayout&LayoutQueue::at(size_t index) const
+const ScheduledLayout& LayoutQueue::at(size_t index) const
 {
-    return m_queue.at(index);
+    return queue_.at(index);
 }
 
 int LayoutQueue::highestPriority() const
 {
-    if(empty())
-        return DefaultPriority;
+    if (empty()) return DefaultPriority;
 
     return at(FirstItemIndex).priority;
 }

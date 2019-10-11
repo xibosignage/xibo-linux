@@ -1,26 +1,24 @@
 #include "ImageFactory.hpp"
 
-#include "control/common/Image.hpp"
-#include "control/media/Media.hpp"
-#include "control/media/MediaResources.hpp"
+#include "control/media/MediaImpl.hpp"
+#include "control/widgets/ImageWidgetFactory.hpp"
 
-#include "common/fs/FilePath.hpp"
-
-std::unique_ptr<IMedia> ImageFactory::create(const MediaOptions& baseOptions, const ExtraOptions& options)
+std::unique_ptr<Xibo::Media> ImageFactory::create(const MediaOptions& baseOptions, int width, int height)
 {
-    int width = std::stoi(options.at(XlfResources::Media::Width));
-    int height = std::stoi(options.at(XlfResources::Media::Height));
-
-    auto view = createView(baseOptions.uri, width, height, baseOptions.geometry.scaleType);
-    return std::make_unique<Media>(baseOptions, view);
+    auto media = std::make_unique<MediaImpl>(baseOptions);
+    media->setWidget(createWidget(baseOptions.uri, width, height, baseOptions.geometry.scaleType));
+    return media;
 }
 
-std::shared_ptr<IImage> ImageFactory::createView(const Uri& uri, int width, int height, MediaGeometry::ScaleType scaleType)
+std::shared_ptr<Xibo::Image> ImageFactory::createWidget(const Uri& uri,
+                                                        int width,
+                                                        int height,
+                                                        MediaGeometry::ScaleType scaleType)
 {
-    auto image = std::make_shared<Image>(width, height);
+    auto image = ImageWidgetFactory::create(width, height);
 
     bool isScaled = scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    image->loadFromFile(uri.path(), isScaled);
+    image->loadFrom(uri, static_cast<Xibo::Image::PreserveRatio>(isScaled));
 
     return image;
 }

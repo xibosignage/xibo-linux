@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseRequestSerializer.hpp"
-#include "BaseResponseParser.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 
@@ -20,22 +20,20 @@ namespace Schedule
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
 {
 public:
     RequestSerializer(const Schedule::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Result parseBody(const ptree_node& scheduleNode) override;
-
+    Schedule::Result parseBody(const XmlNode& scheduleNode) override;
 };

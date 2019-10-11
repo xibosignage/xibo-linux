@@ -1,8 +1,10 @@
 #include "FileSystem.hpp"
-#include "FilePath.hpp"
 
-#include <fstream>
+#include "common/fs/FilePath.hpp"
+
 #include <boost/filesystem.hpp>
+#include <fstream>
+#include <sstream>
 
 namespace fs = boost::filesystem;
 
@@ -18,7 +20,7 @@ bool FileSystem::isDirectory(const FilePath& path)
 
 void FileSystem::move(const FilePath& source, const FilePath& dest)
 {
-    if(exists(source))
+    if (exists(source))
     {
         copy(source, dest);
         removeAll(source);
@@ -60,9 +62,19 @@ FilePath FileSystem::currentPath()
     return fs::current_path();
 }
 
+std::string FileSystem::readFromFile(const FilePath& path)
+{
+    std::ifstream in{path.string()};
+
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+
+    return buffer.str();
+}
+
 void FileSystem::writeToFile(const FilePath& path, const std::string& content)
 {
-    std::ofstream out(path);
+    std::ofstream out(path.string());
 
     out << content;
 }

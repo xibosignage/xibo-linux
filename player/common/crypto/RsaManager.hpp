@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CryptoUtils.hpp"
+#include "common/crypto/CryptoUtils.hpp"
 
 class RsaManager
 {
@@ -16,6 +16,5 @@ private:
     RsaManager() = default;
 
 private:
-    RsaKeyPair m_keys;
-
+    RsaKeyPair keys_;
 };

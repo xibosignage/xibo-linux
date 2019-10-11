@@ -1,17 +1,12 @@
 #pragma once
 
-#include "common/uri/Uri.hpp"
-
-#include "control/common/transitions/Transition.hpp"
-#include "MediaGeometry.hpp"
-
-#include <map>
-
-using ExtraOptions = std::map<std::string, std::string>;
+#include "common/types/Uri.hpp"
+#include "control/media/MediaGeometry.hpp"
 
 struct MediaOptions
 {
-    struct Type{
+    struct Type
+    {
         std::string type;
         std::string render;
     } type;

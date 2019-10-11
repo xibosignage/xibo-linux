@@ -1,50 +1,33 @@
 #pragma once
 
-#include "IMedia.hpp"
-#include "MediaOptions.hpp"
+#include "control/media/MediaGeometry.hpp"
+#include "control/widgets/Widget.hpp"
 
-#include "common/dt/Timer.hpp"
+#include <boost/signals2/signal.hpp>
+#include <memory>
 
-#include "control/common/transitions/TransitionExecutor.hpp"
-#include "control/common/IWidget.hpp"
+using SignalMediaFinished = boost::signals2::signal<void()>;
+class TransitionExecutor;
 
-class Media : public IMedia
+namespace Xibo
 {
-public:
-    Media(const MediaOptions& options, const std::shared_ptr<IWidget>& view);
+    class Media
+    {
+    public:
+        virtual ~Media() = default;
 
-    void attach(std::unique_ptr<IMedia>&& attachedMedia) override;
-    void start() override;
-    void stop() override;
+        virtual void setWidget(const std::shared_ptr<Widget>& widget) = 0;
+        virtual void attach(std::unique_ptr<Media>&& attachedMedia) = 0;
+        virtual void start() = 0;
+        virtual void stop() = 0;
 
-    void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
-    void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
+        virtual void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
+        virtual void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
 
-    SignalMediaFinished& mediaFinished() override;
+        virtual SignalMediaFinished& mediaFinished() = 0;
 
-    MediaGeometry::Align align() const override;
-    MediaGeometry::Valign valign() const override;
-    std::shared_ptr<IWidget> view() override;
-
-protected:
-    virtual void onStarted();
-    virtual void onStopped();
-
-private:
-    void startTimer(int duration);
-    void startAttachedMedia();
-    void stopAttachedMedia();
-
-    void applyInTransition();
-    void applyOutTransition();
-
-private:
-    MediaOptions m_options;
-    std::shared_ptr<IWidget> m_view;
-    std::unique_ptr<IMedia> m_attachedMedia;
-    std::unique_ptr<Timer> m_timer;
-    std::unique_ptr<TransitionExecutor> m_inTransition;
-    std::unique_ptr<TransitionExecutor> m_outTransition;
-    SignalMediaFinished m_mediaFinished;
-
-};
+        virtual MediaGeometry::Align align() const = 0;
+        virtual MediaGeometry::Valign valign() const = 0;
+        virtual std::shared_ptr<Widget> view() = 0;
+    };
+}

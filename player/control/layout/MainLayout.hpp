@@ -1,34 +1,24 @@
 #pragma once
 
-#include "IMainLayout.hpp"
+#include "control/region/Region.hpp"
+#include "control/widgets/Image.hpp"
 
-#include "control/common/IOverlayLayout.hpp"
-#include "control/region/IRegion.hpp"
+#include <boost/signals2/signal.hpp>
+#include <memory>
 
-#include <vector>
-#include <set>
-#include <boost/noncopyable.hpp>
+using SignalLayoutExpired = boost::signals2::signal<void()>;
 
-class MainLayout : public IMainLayout, private boost::noncopyable
+namespace Xibo
 {
-public:
-    MainLayout(const std::shared_ptr<IOverlayLayout>& view);
+    class MainLayout
+    {
+    public:
+        virtual ~MainLayout() = default;
 
-    void addRegion(std::unique_ptr<IRegion>&& region, int x, int y, int z) override;
-    SignalLayoutExpired& expired() override;
-
-    void restart() override;
-
-    std::shared_ptr<IOverlayLayout> view() override;
-
-private:
-    void onRegionExpired(int regionId);
-    bool areAllRegionsExpired() const;
-
-private:
-    std::shared_ptr<IOverlayLayout> m_view;
-    std::vector<std::unique_ptr<IRegion>> m_regions;
-    std::set<int> m_expiredRegions;
-    SignalLayoutExpired m_layoutExpired;
-
-};
+        virtual void setBackground(std::shared_ptr<Image>&& background) = 0;
+        virtual void addRegion(std::unique_ptr<Region>&& region, int x, int y, int z) = 0;
+        virtual SignalLayoutExpired& expired() = 0;
+        virtual void restart() = 0;
+        virtual WidgetPtr view() = 0;
+    };
+}

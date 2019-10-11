@@ -1,10 +1,11 @@
 #pragma once
 
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/MediaInventoryField.hpp"
+#include "networking/xmds/Soap.hpp"
+
 #include "common/Field.hpp"
-#include "MediaInventoryField.hpp"
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
 
 namespace MediaInventory
 {
@@ -21,22 +22,20 @@ namespace MediaInventory
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
 {
 public:
     RequestSerializer(const MediaInventory::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<MediaInventory::Result> : public BaseResponseParser<MediaInventory::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    MediaInventory::Result parseBody(const ptree_node& node) override;
-
+    MediaInventory::Result parseBody(const XmlNode& node) override;
 };

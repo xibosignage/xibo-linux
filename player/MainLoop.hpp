@@ -2,7 +2,7 @@
 
 #include <gtkmm/application.h>
 
-class MainWindow;
+class WindowGtk;
 
 using ShutdownAction = std::function<void()>;
 using IdleAction = std::function<bool()>;
@@ -12,15 +12,14 @@ class MainLoop
 public:
     MainLoop(const std::string& name);
 
-    int run(MainWindow& adaptor);
+    int run(WindowGtk& adaptor);
     void quit();
 
     void setShutdownAction(const ShutdownAction& action);
     void setIdleAction(const IdleAction& action);
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parentApp;
-    sigc::connection m_idleConnection;
-    ShutdownAction m_shutdownAction;
-
+    Glib::RefPtr<Gtk::Application> parentApp_;
+    sigc::connection idleConnection_;
+    ShutdownAction shutdownAction_;
 };

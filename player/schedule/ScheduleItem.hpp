@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "common/dt/DateTime.hpp"
 
@@ -28,8 +28,8 @@ struct ScheduledLayout
     LayoutDependants dependants;
 };
 
-bool operator== (const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
-bool operator!= (const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
+bool operator==(const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
+bool operator!=(const DefaultScheduledLayout& first, const DefaultScheduledLayout& second);
 
-bool operator== (const ScheduledLayout& first, const ScheduledLayout& second);
-bool operator!= (const ScheduledLayout& first, const ScheduledLayout& second);
+bool operator==(const ScheduledLayout& first, const ScheduledLayout& second);
+bool operator!=(const ScheduledLayout& first, const ScheduledLayout& second);

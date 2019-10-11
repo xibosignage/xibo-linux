@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 
@@ -21,22 +21,20 @@ namespace SubmitScreenShot
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<SubmitScreenShot::Request> : public BaseRequestSerializer<SubmitScreenShot::Request>
 {
 public:
     RequestSerializer(const SubmitScreenShot::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<SubmitScreenShot::Result> : public BaseResponseParser<SubmitScreenShot::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitScreenShot::Result parseBody(const ptree_node& node) override;
-
+    SubmitScreenShot::Result parseBody(const XmlNode& node) override;
 };

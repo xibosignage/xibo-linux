@@ -1,17 +1,17 @@
 #pragma once
 
-#include "RequiredFilesDownloader.hpp"
+#include "managers/CmsStatus.hpp"
+#include "managers/RequiredFilesDownloader.hpp"
 
+#include "networking/ResponseResult.hpp"
 #include "networking/xmds/RegisterDisplay.hpp"
 #include "networking/xmds/RequiredFiles.hpp"
 #include "networking/xmds/Schedule.hpp"
 #include "networking/xmds/SubmitLog.hpp"
 
-#include "common/dt/Timer.hpp"
-#include "networking/ResponseResult.hpp"
-#include "common/JoinableThread.hpp"
 #include "common/Dispatcher.hpp"
-#include "CmsStatus.hpp"
+#include "common/JoinableThread.hpp"
+#include "common/dt/Timer.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
@@ -49,7 +49,8 @@ private:
     void sessionFinished(CollectionSessionPtr session, PlayerError = {});
     void onRegularCollectionFinished(const PlayerError& error);
 
-    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay, CollectionSessionPtr session);
+    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay,
+                             CollectionSessionPtr session);
     PlayerError getDisplayStatus(const RegisterDisplay::Result::Status& status);
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
@@ -58,16 +59,16 @@ private:
     void submitScreenShot();
 
 private:
-    XmdsRequestSender& m_xmdsSender;
-    std::unique_ptr<JoinableThread> m_workerThread;
-    std::unique_ptr<Timer> m_intervalTimer;
-    int m_collectInterval;
-    bool m_started = false;
-    bool m_registered = false;
-    DateTime m_lastChecked;
-    size_t m_requiredFiles = 0;
-    SignalSettingsUpdated m_settingsUpdated;
-    SignalScheduleAvailable m_scheduleAvailable;
-    SignalCollectionFinished m_collectionFinished;
-    SignalFilesDownloaded m_filesDownloaded;
+    XmdsRequestSender& xmdsSender_;
+    std::unique_ptr<JoinableThread> workerThread_;
+    std::unique_ptr<Timer> intervalTimer_;
+    int collectInterval_;
+    bool started_;
+    bool registered_;
+    DateTime lastChecked_;
+    size_t requiredFiles_;
+    SignalSettingsUpdated settingsUpdated_;
+    SignalScheduleAvailable scheduleAvailable_;
+    SignalCollectionFinished collectionFinished_;
+    SignalFilesDownloaded filesDownloaded_;
 };

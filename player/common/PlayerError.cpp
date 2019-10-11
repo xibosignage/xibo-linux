@@ -1,44 +1,25 @@
 #include "PlayerError.hpp"
 
-#include <iostream>
+#include <istream>
 
-PlayerError::PlayerError(PlayerError::Type type, std::string_view message) : m_type(type), m_message(message)
-{
-}
+PlayerError::PlayerError(std::string_view domain, std::string_view message) : domain_(domain), message_(message) {}
 
 PlayerError::operator bool() const noexcept
 {
-    return m_type != PlayerError::Type::Success;
+    return !domain_.empty() || !message_.empty();
 }
 
-PlayerError::Type PlayerError::type() const noexcept
+const std::string& PlayerError::domain() const
 {
-    return m_type;
+    return domain_;
 }
 
-std::string PlayerError::name() const
+const std::string& PlayerError::message() const
 {
-    switch(m_type)
-    {
-        case PlayerError::Type::HTTP:
-            return "HTTP";
-        case PlayerError::Type::SOAP:
-            return "SOAP";
-        case PlayerError::Type::CMS:
-            return "CMS";
-        default:
-            break;
-    }
-
-    return {};
-}
-
-std::string PlayerError::message() const
-{
-    return m_message;
+    return message_;
 }
 
 std::ostream& operator<<(std::ostream& out, const PlayerError& error)
 {
-    return out << "[" << error.name() << "] " << error.message();
+    return out << "[" << error.domain() << "] " << error.message();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LayoutQueue.hpp"
+#include "schedule/LayoutQueue.hpp"
 
 using OverlaysIds = std::vector<int>;
 
@@ -11,12 +11,11 @@ public:
     {
         OverlaysIds ids;
 
-        for(auto&& layout : queue())
+        for (auto&& layout : queue())
         {
             ids.push_back(layout.id);
         }
 
         return ids;
     }
-
 };

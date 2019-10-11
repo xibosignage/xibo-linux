@@ -1,42 +1,43 @@
 #include "PlayableMedia.hpp"
 
-#include "control/media/Media.hpp"
-#include "video/IVideoWindow.hpp"
-
-PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player) :
-    Media(options, player->outputWindow()),
-    m_player(std::move(player))
+PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<Xibo::MediaPlayer>&& player) :
+    MediaImpl(options),
+    player_(std::move(player))
 {
-    mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
+    assert(player_);
 
-    m_player->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
-}
-
-void PlayableMedia::onMediaFinished()
-{
-    m_player->stopPlayback();
+    MediaImpl::setWidget(player_->outputWindow());
+    MediaImpl::mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
+    player_->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
 }
 
 void PlayableMedia::onStarted()
 {
-    m_player->play();
+    player_->showOutputWindow();
+    player_->play();
 }
 
 void PlayableMedia::onStopped()
 {
-    m_player->stopAndRemove();
+    player_->hideOutputWindow();
+    player_->stop();
+}
+
+void PlayableMedia::onMediaFinished()
+{
+    player_->stop();
 }
 
 void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
 {
-    if(options.duration == 0)
+    if (options.duration == 0)
     {
         mediaFinished()();
         return;
     }
 
-    if(options.looped == MediaPlayerOptions::Loop::Enable)
+    if (options.looped == MediaPlayerOptions::Loop::Enable)
     {
-        m_player->play();
+        player_->play();
     }
 }

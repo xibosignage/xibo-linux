@@ -1,19 +1,17 @@
 #pragma once
 
-#include "control/media/MediaFactory.hpp"
+#include "control/media/Media.hpp"
+#include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerOptions.hpp"
-#include "gstwrapper/Inspector.hpp"
+#include "control/widgets/render/OutputWindow.hpp"
 
-class IMediaPlayer;
-class IVideoWindow;
+#include <memory>
 
-class VideoFactory : public MediaFactory
+class VideoFactory
 {
 public:
-    std::unique_ptr<IMedia> create(const MediaOptions& baseOptions, const ExtraOptions& options) override;
+    std::unique_ptr<Xibo::Media> create(const MediaPlayerOptions& options, int width, int height);
 
 private:
-    MediaPlayerOptions createPlayerOptions(const MediaOptions& baseOptions, const ExtraOptions& options);
-    std::unique_ptr<IMediaPlayer> createPlayer(const MediaPlayerOptions& options, int width, int height);
-    std::shared_ptr<IVideoWindow> createView(int width, int height, MediaGeometry::ScaleType scaleType, const Gst::InspectorResult& info);
+    std::unique_ptr<Xibo::MediaPlayer> createPlayer(const MediaPlayerOptions& options, int width, int height);
 };

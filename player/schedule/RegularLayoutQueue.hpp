@@ -1,14 +1,14 @@
 #pragma once
 
-#include "LayoutQueue.hpp"
+#include "schedule/LayoutQueue.hpp"
 
 class RegularLayoutQueue : public LayoutQueue
 {
 public:
-    template<typename T, typename = std::enable_if_t<std::is_same_v<std::decay_t<T>, DefaultScheduledLayout>>>
+    template <typename T, typename = std::enable_if_t<std::is_same_v<std::decay_t<T>, DefaultScheduledLayout>>>
     void addDefault(T&& layout)
     {
-        m_defaultLayout = std::forward<T>(layout);
+        defaultLayout_ = std::forward<T>(layout);
     }
 
     void updateCurrent(LayoutId id);
@@ -22,8 +22,7 @@ private:
     boost::optional<size_t> layoutIndexBy(LayoutId id) const;
 
 private:
-    boost::optional<DefaultScheduledLayout> m_defaultLayout;
-    mutable size_t m_nextIndex = FirstItemIndex;
-    mutable LayoutId m_currentId = EmptyLayoutId;
-
+    boost::optional<DefaultScheduledLayout> defaultLayout_;
+    mutable size_t nextIndex_ = FirstItemIndex;
+    mutable LayoutId currentId_ = EmptyLayoutId;
 };

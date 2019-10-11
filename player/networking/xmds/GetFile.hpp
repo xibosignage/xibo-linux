@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 
@@ -24,22 +24,20 @@ namespace GetFile
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<GetFile::Request> : public BaseRequestSerializer<GetFile::Request>
 {
 public:
     RequestSerializer(const GetFile::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<GetFile::Result> : public BaseResponseParser<GetFile::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetFile::Result parseBody(const ptree_node& node) override;
-
+    GetFile::Result parseBody(const XmlNode& node) override;
 };

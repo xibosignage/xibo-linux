@@ -1,11 +1,11 @@
 #pragma once
 
+#include <cairomm/surface.h>
+#include <functional>
 #include <string>
 #include <vector>
-#include <functional>
-#include <cairomm/surface.h>
 
-#include "control/MainWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
 
 class FilePath;
 using ScreenShotTaken = std::function<void(const std::string&)>;
@@ -15,7 +15,7 @@ using SurfaceCreated = std::function<void(const Cairo::RefPtr<Cairo::Surface>&)>
 class ScreenShoter
 {
 public:
-    ScreenShoter(MainWindow& window);
+    ScreenShoter(Xibo::Window& window);
     void takeBase64(ScreenShotTaken callback);
 
 private:
@@ -24,7 +24,5 @@ private:
     void takeXDisplayScreenshot(SurfaceCreated callback);
 
 private:
-    MainWindow& m_window;
-
-
+    WindowGtk& window_;
 };

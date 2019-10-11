@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/dt/DateTime.hpp"
+#include "managers/XmrStatus.hpp"
 #include "networking/ZeromqSubscriber.hpp"
-#include "XmrStatus.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -35,9 +35,8 @@ private:
     bool isMessageExpired(const XmrMessage& message);
 
 private:
-    ZeromqSubscriber m_subcriber;
-    CollectionIntervalAction m_collectionIntervalAction;
-    ScreenshotAction m_screenshotAction;
-    XmrStatus m_info;
-
+    ZeromqSubscriber subcriber_;
+    CollectionIntervalAction collectionIntervalAction_;
+    ScreenshotAction screenshotAction_;
+    XmrStatus info_;
 };

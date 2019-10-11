@@ -1,7 +1,8 @@
 #pragma once
 
-#include <utility>
 #include "common/PlayerError.hpp"
 
-template<typename Result>
+#include <utility>
+
+template <typename Result>
 using ResponseResult = std::pair<PlayerError, Result>;

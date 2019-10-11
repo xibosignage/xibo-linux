@@ -1,43 +1,40 @@
 #include "XmdsFileDownloader.hpp"
-#include "XmdsRequestSender.hpp"
 
-#include "common/Utils.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "networking/xmds/XmdsRequestSender.hpp"
 
 const std::size_t DefaultChunkSize = 524288;
 
-XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) :
-    m_xmdsSender(xmdsSender)
-{
-}
+XmdsFileDownloader::XmdsFileDownloader(XmdsRequestSender& xmdsSender) : xmdsSender_(xmdsSender) {}
 
-boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId, const std::string& fileType, std::size_t fileSize)
+boost::future<XmdsResponseResult> XmdsFileDownloader::download(int fileId,
+                                                               const std::string& fileType,
+                                                               std::size_t fileSize)
 {
     std::size_t fileOffset = 0;
     DownloadXmdsFilesResult results;
 
-    while(fileOffset < fileSize)
+    while (fileOffset < fileSize)
     {
         std::size_t chunkSize = fileOffset + DefaultChunkSize >= fileSize ? fileSize - fileOffset : DefaultChunkSize;
 
-        results.emplace_back(m_xmdsSender.getFile(fileId, fileType, fileOffset, chunkSize));
+        results.emplace_back(xmdsSender_.getFile(fileId, fileType, fileOffset, chunkSize));
 
         fileOffset += chunkSize;
     }
 
-    return boost::async([=, results = std::move(results)]() mutable {
-        return combineAllChunks(results);
-    });
+    return boost::async([=, results = std::move(results)]() mutable { return combineAllChunks(results); });
 }
 
 XmdsResponseResult XmdsFileDownloader::combineAllChunks(DownloadXmdsFilesResult& results)
 {
     std::string fileContent;
-    for(auto&& future : results)
+    for (auto&& future : results)
     {
         auto [error, result] = future.get();
-        if(!error)
+        if (!error)
         {
-            fileContent += Utils::fromBase64(result.base64chunk);
+            fileContent += CryptoUtils::fromBase64(result.base64chunk);
         }
         else
         {

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "control/common/XlfResources.hpp"
 #include "common/Parsing.hpp"
+#include "control/XlfResources.hpp"
 
 namespace XlfResources::MainLayout
 {

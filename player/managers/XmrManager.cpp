@@ -2,11 +2,10 @@
 
 #include "constants.hpp"
 
-#include "common/dt/DateTimeProvider.hpp"
-#include "common/logger/Logging.hpp"
 #include "common/Parsing.hpp"
-#include "common/Utils.hpp"
 #include "common/crypto/RsaManager.hpp"
+#include "common/dt/DateTime.hpp"
+#include "common/logger/Logging.hpp"
 
 const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
@@ -14,40 +13,39 @@ const size_t MESSAGE_PART = 2;
 
 XmrManager::~XmrManager()
 {
-    m_subcriber.stop();
+    subcriber_.stop();
 }
 
+// TODO: strong type
 void XmrManager::connect(const std::string& host)
 {
-    if(m_info.host == host) return;
+    if (info_.host == host) return;
 
-    m_info.host = host;
-    m_subcriber.messageReceived().connect([this](const MultiPartMessage& message){
-        processMultipartMessage(message);
-    });
-    m_subcriber.run(host);
+    info_.host = host;
+    subcriber_.messageReceived().connect([this](const MultiPartMessage& message) { processMultipartMessage(message); });
+    subcriber_.run(host);
 
-    Log::info("Connected to XMR publisher");
+    Log::info("[XMR] Connected to publisher");
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
 {
-    return m_collectionIntervalAction;
+    return collectionIntervalAction_;
 }
 
 ScreenshotAction& XmrManager::screenshot()
 {
-    return m_screenshotAction;
+    return screenshotAction_;
 }
 
 XmrStatus XmrManager::status()
 {
-    return m_info;
+    return info_;
 }
 
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
-    if(multipart[CHANNEL_PART] == XmrChannel)
+    if (multipart[CHANNEL_PART] == XmrChannel)
     {
         try
         {
@@ -56,7 +54,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 
             processXmrMessage(xmrMessage);
 
-            m_info.lastMessageDt = DateTimeProvider::now();
+            info_.lastMessageDt = DateTime::now();
         }
         catch (std::exception& e)
         {
@@ -65,7 +63,7 @@ void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
     }
     else
     {
-        m_info.lastHeartbeatDt = DateTimeProvider::now();
+        info_.lastHeartbeatDt = DateTime::now();
     }
 }
 
@@ -73,10 +71,10 @@ std::string XmrManager::decryptMessage(const std::string& encryptedBase64Key, co
 {
     auto privateKey = RsaManager::instance().privateKey();
 
-    auto encryptedKey = Utils::fromBase64(encryptedBase64Key);
+    auto encryptedKey = CryptoUtils::fromBase64(encryptedBase64Key);
     auto messageKey = CryptoUtils::decryptPrivateKeyPkcs(encryptedKey, privateKey);
 
-    auto encryptedMessage = Utils::fromBase64(encryptedBase64Message);
+    auto encryptedMessage = CryptoUtils::fromBase64(encryptedBase64Message);
 
     return CryptoUtils::decryptRc4(encryptedMessage, messageKey);
 }
@@ -87,7 +85,7 @@ XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 
     XmrMessage message;
     message.action = tree.get<std::string>("action");
-    message.createdDt = DateTimeProvider::fromIsoExtendedString(tree.get<std::string>("createdDt"));
+    message.createdDt = DateTime::fromIsoExtendedString(tree.get<std::string>("createdDt"));
     message.ttl = tree.get<int>("ttl");
 
     return message;
@@ -95,22 +93,22 @@ XmrMessage XmrManager::parseMessage(const std::string& jsonMessage)
 
 void XmrManager::processXmrMessage(const XmrMessage& message)
 {
-    if(isMessageExpired(message)) return;
+    if (isMessageExpired(message)) return;
 
-    if(message.action == "collectNow")
+    if (message.action == "collectNow")
     {
-        m_collectionIntervalAction();
+        collectionIntervalAction_();
     }
-    else if(message.action == "screenShot")
+    else if (message.action == "screenShot")
     {
-        m_screenshotAction();
+        screenshotAction_();
     }
 }
 
 bool XmrManager::isMessageExpired(const XmrMessage& message)
 {
-    auto resultDt = message.createdDt + DateTimeSeconds(message.ttl);
-    if(resultDt < DateTimeProvider::nowUtc())
+    auto resultDt = message.createdDt + DateTime::Seconds(message.ttl);
+    if (resultDt < DateTime::nowUtc())
     {
         return true;
     }

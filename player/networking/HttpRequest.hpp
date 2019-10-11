@@ -1,13 +1,12 @@
 #pragma once
 
-#include "HostInfo.hpp"
+#include "common/crypto/CryptoUtils.hpp"
+#include "common/types/Uri.hpp"
 #include "constants.hpp"
-#include "common/Utils.hpp"
-#include "common/uri/Uri.hpp"
 
-#include <boost/beast/http/verb.hpp>
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>
+#include <boost/beast/http/verb.hpp>
 
 namespace http = boost::beast::http;
 
@@ -15,37 +14,33 @@ class HttpRequest
 {
 public:
     HttpRequest(http::verb method, const Uri& uri, const std::string& body) :
-        m_method(method), m_uri(uri), m_body(std::move(body))
+        method_(method),
+        uri_(uri),
+        body_(std::move(body))
     {
-    }
-
-    HostInfo hostInfo()
-    {
-        return HostInfo{m_uri.host(), m_uri.port(), m_uri.scheme() == Uri::Scheme::HTTPS};
     }
 
     http::request<http::string_body> get()
     {
         http::request<http::string_body> request;
 
-        request.method(m_method);
-        request.target(m_uri.path());
+        request.method(method_);
+        request.target(uri_.path());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, m_uri.host());
-        if(auto credentials = m_uri.credentials())
+        request.set(http::field::host, static_cast<std::string>(uri_.authority().host()));
+        if (auto userinfo = uri_.authority().optionalUserInfo())
         {
-            request.set(http::field::authorization, "Basic " + Utils::toBase64(credentials.value()));
+            request.set(http::field::authorization,
+                        "Basic " + CryptoUtils::toBase64(static_cast<std::string>(userinfo.value())));
         }
-        request.body() = std::move(m_body);
+        request.body() = std::move(body_);
         request.prepare_payload();
 
         return request;
     }
 
 private:
-    http::verb m_method;
-    Uri m_uri;
-    std::string m_body;
-
-
+    http::verb method_;
+    Uri uri_;
+    std::string body_;
 };

@@ -1,18 +1,12 @@
 #include "ScheduleSerializer.hpp"
 
-#include "networking/xmds/Resources.hpp"
-#include "common/fs/FilePath.hpp"
-#include "common/dt/DateTimeProvider.hpp"
 #include "common/Parsing.hpp"
+#include "common/dt/DateTime.hpp"
+#include "common/fs/FilePath.hpp"
+#include "networking/xmds/Resources.hpp"  // TODO: remove dependency
 
-#include <boost/property_tree/xml_parser.hpp>
-
+// TODO: remove dependency
 namespace Resources = XmdsResources::Schedule;
-
-const char* ScheduleSerializeException::what() const noexcept
-{
-    return "Schedule serialize failed";
-}
 
 void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePath& path)
 {
@@ -22,17 +16,17 @@ void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePa
     }
     catch (std::exception&)
     {
-        throw ScheduleSerializeException{};
+        throw ScheduleSerializer::Error{"ScheduleSerializer", "Schedule serialization failed"};
     }
 }
 
 void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path)
 {
-    ptree_node root;
+    XmlNode root;
     auto& scheduleNode = root.add_child(Resources::Schedule, {});
-    scheduleNode.put(Resources::Generated, DateTimeProvider::toString(schedule.generatedTime));
+    scheduleNode.put(Resources::Generated, schedule.generatedTime.string());
 
-    for(auto&& layout : schedule.regularLayouts)
+    for (auto&& layout : schedule.regularLayouts)
     {
         scheduleNode.add_child(Resources::Layout, scheduledLayoutNode(layout));
     }
@@ -41,16 +35,16 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
     scheduleNode.add_child(Resources::GlobalDependants, dependantsNode(schedule.globalDependants));
     scheduleNode.add_child(Resources::DefaultLayout, defaultLayoutNode(schedule.defaultLayout));
 
-    boost::property_tree::write_xml(path, root);
+    Parsing::xmlTreeToFile(path, root);
 }
 
-ptree_node ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)
+XmlNode ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)
 {
-    ptree_node node;
+    XmlNode node;
 
     node.put(Resources::Id, layout.id);
-    node.put(Resources::StartDT, DateTimeProvider::toString(layout.startDT));
-    node.put(Resources::EndDT, DateTimeProvider::toString(layout.endDT));
+    node.put(Resources::StartDT, layout.startDT.string());
+    node.put(Resources::EndDT, layout.endDT.string());
     node.put(Resources::ScheduleId, layout.scheduleId);
     node.put(Resources::Priority, layout.priority);
     node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));
@@ -58,11 +52,11 @@ ptree_node ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout
     return node;
 }
 
-ptree_node ScheduleSerializer::overlaysNode(const LayoutList& overlays)
+XmlNode ScheduleSerializer::overlaysNode(const LayoutList& overlays)
 {
-    ptree_node node;
+    XmlNode node;
 
-    for(auto&& layout : overlays)
+    for (auto&& layout : overlays)
     {
         node.add_child(Resources::OverlayLayout, scheduledLayoutNode(layout));
     }
@@ -70,9 +64,9 @@ ptree_node ScheduleSerializer::overlaysNode(const LayoutList& overlays)
     return node;
 }
 
-ptree_node ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& layout)
+XmlNode ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& layout)
 {
-    ptree_node node;
+    XmlNode node;
 
     node.put(Resources::Id, layout.id);
     node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));
@@ -80,11 +74,11 @@ ptree_node ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& l
     return node;
 }
 
-ptree_node ScheduleSerializer::dependantsNode(const LayoutDependants& dependants)
+XmlNode ScheduleSerializer::dependantsNode(const LayoutDependants& dependants)
 {
-    ptree_node node;
+    XmlNode node;
 
-    for(auto&& dependant : dependants)
+    for (auto&& dependant : dependants)
     {
         node.add(Resources::DependantFile, dependant);
     }

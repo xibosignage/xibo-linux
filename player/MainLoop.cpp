@@ -1,44 +1,39 @@
 #include "MainLoop.hpp"
 
-#include "control/MainWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
 
 #include <glibmm/main.h>
 
-MainLoop::MainLoop(const std::string& name) :
-    m_parentApp(Gtk::Application::create(name))
-{
-}
+MainLoop::MainLoop(const std::string& name) : parentApp_(Gtk::Application::create(name)) {}
 
-int MainLoop::run(MainWindow& adaptor)
+int MainLoop::run(WindowGtk& adaptor)
 {
     auto&& windowHandler = adaptor.get();
 
-    m_parentApp->signal_shutdown().connect([this](){
-        m_idleConnection.disconnect();
-        if(m_shutdownAction)
+    parentApp_->signal_shutdown().connect([this]() {
+        idleConnection_.disconnect();
+        if (shutdownAction_)
         {
-            m_shutdownAction();
+            shutdownAction_();
         }
     });
 
-    m_parentApp->signal_startup().connect([this, &windowHandler](){
-        m_parentApp->add_window(windowHandler);
-    });
+    parentApp_->signal_startup().connect([this, &windowHandler]() { parentApp_->add_window(windowHandler); });
 
-    return m_parentApp->run();
+    return parentApp_->run();
 }
 
 void MainLoop::quit()
 {
-    m_parentApp->quit();
+    parentApp_->quit();
 }
 
 void MainLoop::setShutdownAction(const ShutdownAction& action)
 {
-    m_shutdownAction = action;
+    shutdownAction_ = action;
 }
 
 void MainLoop::setIdleAction(const IdleAction& action)
 {
-    m_idleConnection = Glib::MainContext::get_default()->signal_idle().connect(action);
+    idleConnection_ = Glib::MainContext::get_default()->signal_idle().connect(action);
 }

@@ -58,7 +58,7 @@ RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOO
     rm -r /root/boost_${BOOST} && \
     rm /root/boost.tar.gz
 
-ENV SPDLOG=1.1.0
+ENV SPDLOG=1.4.1
 RUN curl -o /root/spdlog.tar.gz -SL https://github.com/gabime/spdlog/archive/v${SPDLOG}.tar.gz && \
     cd /root && \
     tar -zxvf spdlog.tar.gz && \
@@ -148,13 +148,5 @@ RUN cd /app && \
     make install
 
 RUN cp -r /app/_build/. /app/build
-
-RUN apt-get install -y snapcraft
-
-RUN cd /app && \
-    snapcraft && \
-    snapcraft login --with snapcraft.login && \
-    snapcraft push *.snap
-
 
 CMD []

@@ -1,54 +1,30 @@
 #pragma once
 
-#include "IMediaPlayer.hpp"
-#include "gstwrapper/GstFwd.hpp"
-#include "video/VideoWindow.hpp"
+#include "control/widgets/render/OutputWindow.hpp"
 
-#include <functional>
+#include <boost/signals2/signal.hpp>
 
-class MediaPlayer : public IMediaPlayer
+class Uri;
+using SignalPlaybackFinished = boost::signals2::signal<void()>;
+
+namespace Xibo
 {
-public:
-    MediaPlayer();
-    ~MediaPlayer() override;
+    class MediaPlayer
+    {
+    public:
+        virtual ~MediaPlayer() = default;
 
-    void setOutputWindow(const std::shared_ptr<IVideoWindow>& window) override;
-    std::shared_ptr<IVideoWindow> outputWindow() const override;
+        virtual void load(const Uri& uri) = 0;
+        virtual void setVolume(int volume) = 0;
 
-    void load(const Uri& uri) override;
-    void setVolume(int volume) override;
+        virtual void showOutputWindow() = 0;
+        virtual void hideOutputWindow() = 0;
+        virtual void setOutputWindow(const std::shared_ptr<OutputWindow>& outputWindow) = 0;
+        virtual const std::shared_ptr<OutputWindow>& outputWindow() const = 0;
 
-    void play() override;
-    void stopAndRemove() override;
-    void stopPlayback() override;
+        virtual void play() = 0;
+        virtual void stop() = 0;
 
-    SignalPlaybackFinished& playbackFinished() override;
-    Gst::InspectorResult mediaInfo() const override;
-
-private:
-    bool busMessageWatch(const Gst::RefPtr<Gst::Message>& message);
-    void noMorePads();
-    void inspectFile(const Uri& uri);
-    void onPadAdded(const Gst::RefPtr<Gst::Pad>& pad);
-    void init();
-    void createGstElements();
-
-private:
-    std::shared_ptr<IVideoWindow> m_outputWindow;
-
-    Gst::RefPtr<Gst::Pipeline> m_pipeline;
-    Gst::RefPtr<Gst::UriSrc> m_source;
-    Gst::RefPtr<Gst::Decodebin> m_decodebin;
-    Gst::RefPtr<Gst::Volume> m_volume;
-    Gst::RefPtr<Gst::VideoConvert> m_videoConverter;
-    Gst::RefPtr<Gst::VideoScale> m_videoScale;
-    Gst::RefPtr<Gst::Element> m_videoSink;
-    Gst::RefPtr<Gst::AudioConvert> m_audioConverter;
-    Gst::RefPtr<Gst::AutoAudioSink> m_audioSink;
-    Gst::RefPtr<Gst::Queue> m_queue;
-    Gst::RefPtr<Gst::Capsfilter> m_capsfilter;
-    Gst::RefPtr<Gst::Inspector> m_inspector;
-    Gst::InspectorResult m_mediaInfo;
-    SignalPlaybackFinished m_playbackFinished;
-
-};
+        virtual SignalPlaybackFinished& playbackFinished() = 0;
+    };
+}

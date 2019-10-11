@@ -1,18 +1,18 @@
 #pragma once
 
+#include <istream>
 #include <string>
 #include <vector>
-#include <iostream>
-
-enum class DownloadType
-{
-    HTTP,
-    XMDS,
-    Invalid
-};
 
 struct RegularFile
 {
+    enum class DownloadType
+    {
+        HTTP,
+        XMDS,
+        Invalid
+    };
+
     int id;
     size_t size;
     std::string hash;
@@ -29,17 +29,8 @@ struct ResourceFile
     int mediaId;
 };
 
-inline std::ostream& operator<<(std::ostream& out, const RegularFile& file)
-{
-    out << "FileType: " << file.type << " ID: " << file.id << " Size: " << file.size << std::endl;
-    out << "MD5: " << file.hash << " FileName: " << file.name << " DownloadType: " << static_cast<int>(file.downloadType);
-    return out;
-}
+std::ostream& operator<<(std::ostream& out, const RegularFile& file);
+std::ostream& operator<<(std::ostream& out, const ResourceFile& res);
 
-inline std::ostream& operator<<(std::ostream& out, const ResourceFile& res)
-{
-    return out << "Layout ID: " << res.layoutId << " Region ID: " << res.regionId << " Media ID: " << res.mediaId;
-}
-
-template<typename RequriedFile>
+template <typename RequriedFile>
 using FilesToDownload = std::vector<RequriedFile>;

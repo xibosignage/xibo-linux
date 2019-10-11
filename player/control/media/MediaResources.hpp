@@ -1,7 +1,7 @@
 #pragma once
 
-#include "control/common/XlfResources.hpp"
 #include "common/Parsing.hpp"
+#include "control/XlfResources.hpp"
 
 namespace XlfResources::Media
 {
@@ -10,7 +10,7 @@ namespace XlfResources::Media
     const std::string Render = Parsing::xmlAttr("render");
     const std::string Width = Parsing::xmlAttr("width");
     const std::string Height = Parsing::xmlAttr("height");
-    const std::string Uri = XlfResources::option("uri");
+    const std::string Uri = Parsing::xmlOption("uri");
     const std::string Duration = Parsing::xmlAttr("duration");
 
     const std::string AudioType = "audio";
@@ -30,17 +30,17 @@ namespace XlfResources::Media
 
     namespace Geometry
     {
-        const std::string ScaleType = XlfResources::option("scaleType");
+        const std::string ScaleType = Parsing::xmlOption("scaleType");
         const std::string Scaled = "center";
         const std::string Aspect = "aspect";
         const std::string Stretch = "stretch";
 
-        const std::string Align = XlfResources::option("align");
+        const std::string Align = Parsing::xmlOption("align");
         const std::string RightAlign = "right";
         const std::string CenterAlign = "center";
         const std::string LeftAlign = "left";
 
-        const std::string Valign = XlfResources::option("valign");
+        const std::string Valign = Parsing::xmlOption("valign");
         const std::string TopValign = "top";
         const std::string MiddleValign = "middle";
         const std::string BottomValign = "bottom";
@@ -61,13 +61,13 @@ namespace XlfResources::Media
         const std::string W = "W";
         const std::string NW = "NW";
 
-        const std::string InType = XlfResources::option("transIn");
-        const std::string InDirection = XlfResources::option("transInDirection");
-        const std::string InDuration = XlfResources::option("transInDuration");
+        const std::string InType = Parsing::xmlOption("transIn");
+        const std::string InDirection = Parsing::xmlOption("transInDirection");
+        const std::string InDuration = Parsing::xmlOption("transInDuration");
 
-        const std::string OutType = XlfResources::option("transOut");
-        const std::string OutDirection = XlfResources::option("transOutDirection");
-        const std::string OutDuration = XlfResources::option("transOutDuration");
+        const std::string OutType = Parsing::xmlOption("transOut");
+        const std::string OutDirection = Parsing::xmlOption("transOutDirection");
+        const std::string OutDuration = Parsing::xmlOption("transOutDuration");
     }
 
 }

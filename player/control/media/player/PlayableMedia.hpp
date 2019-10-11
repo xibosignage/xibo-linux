@@ -1,23 +1,22 @@
 #pragma once
 
-#include "MediaPlayerOptions.hpp"
-#include "IMediaPlayer.hpp"
-#include "control/media/Media.hpp"
+#include "control/media/MediaImpl.hpp"
+#include "control/media/player/MediaPlayer.hpp"
+#include "control/media/player/MediaPlayerOptions.hpp"
 
-class PlayableMedia : public Media
+class PlayableMedia : public MediaImpl
 {
 public:
-    PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<IMediaPlayer>&& player);
+    PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<Xibo::MediaPlayer>&& player);
 
 protected:
     void onStarted() override;
     void onStopped() override;
 
 private:
-    void onMediaFinished();
     void onPlaybackFinished(const MediaPlayerOptions& options);
+    void onMediaFinished();
 
 private:
-    std::unique_ptr<IMediaPlayer> m_player;
-
+    std::unique_ptr<Xibo::MediaPlayer> player_;
 };

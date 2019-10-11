@@ -7,6 +7,9 @@
 #include "common/settings/PlayerSettings.hpp"
 #include "control/GeneralInfo.hpp"
 
+#include "control/ApplicationWindow.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
+
 class MainLoop;
 class XmdsRequestSender;
 class HttpClient;
@@ -16,10 +19,12 @@ class CollectionInterval;
 class PlayerError;
 class ScreenShoter;
 class XmrManager;
-class MainWindowController;
-class MainWindow;
+using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
 class XiboWebServer;
 class LayoutsManager;
+class XiboApp;
+
+XiboApp& xiboApp();
 
 class XiboApp
 {
@@ -29,7 +34,6 @@ public:
     ~XiboApp();
 
     static XiboApp& create(const std::string& name);
-    static XiboApp& app();
 
     FileCache& fileManager();
     ScreenShoter& screenShoter();
@@ -39,10 +43,10 @@ public:
 
 private:
     static std::vector<spdlog::sink_ptr> createLoggerSinks();
-    static void registerVideoSink();
 
     XiboApp(const std::string& name);
     void setupXmrManager();
+    void setupLayoutManager();
     std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
 
     void onCollectionFinished(const PlayerError& error);
@@ -52,19 +56,16 @@ private:
     GeneralInfo collectGeneralInfo();
 
 private:
-    std::unique_ptr<MainLoop> m_mainLoop;
-    std::unique_ptr<FileCache> m_fileCache;
-    std::unique_ptr<Scheduler> m_scheduler;
-    std::unique_ptr<CollectionInterval> m_collectionInterval;
-    std::unique_ptr<XmdsRequestSender> m_xmdsManager;
-    std::unique_ptr<ScreenShoter> m_screenShoter;
-    std::unique_ptr<XmrManager> m_xmrManager;
-    std::shared_ptr<MainWindow> m_mainWindow;
-    std::unique_ptr<MainWindowController> m_windowController;
-    std::shared_ptr<XiboWebServer> m_webserver;
-    std::unique_ptr<LayoutsManager> m_layoutsManager;
-    CmsSettings m_cmsSettings;
-    PlayerSettings m_playerSettings;
-
-    static std::unique_ptr<XiboApp> m_app;
+    std::unique_ptr<MainLoop> mainLoop_;
+    std::unique_ptr<FileCache> fileCache_;
+    std::unique_ptr<Scheduler> scheduler_;
+    std::unique_ptr<CollectionInterval> collectionInterval_;
+    std::unique_ptr<XmdsRequestSender> xmdsManager_;
+    std::unique_ptr<ScreenShoter> screenShoter_;
+    std::unique_ptr<XmrManager> xmrManager_;
+    std::shared_ptr<ApplicationWindowGtk> mainWindow_;
+    std::shared_ptr<XiboWebServer> webserver_;
+    std::unique_ptr<LayoutsManager> layoutsManager_;
+    CmsSettings cmsSettings_;
+    PlayerSettings playerSettings_;
 };

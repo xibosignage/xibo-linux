@@ -1,8 +1,13 @@
 #include "CryptoUtils.hpp"
-#include "fs/FilePath.hpp"
 
-#include <cryptopp/files.h>
+#include "common/fs/FilePath.hpp"
+
+// We use weak ARC4 due to CMS restrictions
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
+#include <boost/beast/core/detail/base64.hpp>
 #include <cryptopp/arc4.h>
+#include <cryptopp/files.h>
 #include <cryptopp/osrng.h>
 
 RsaKeyPair CryptoUtils::generateRsaKeys(unsigned int keyLength)
@@ -44,18 +49,31 @@ std::string CryptoUtils::decryptPrivateKeyPkcs(const std::string& message, const
     std::string dectypedMessage;
     CryptoPP::AutoSeededRandomPool rng;
     CryptoPP::RSAES_PKCS1v15_Decryptor decryptor{key};
-    CryptoPP::StringSource{message, true, new CryptoPP::PK_DecryptorFilter{rng, decryptor, new CryptoPP::StringSink{dectypedMessage}}};
+    CryptoPP::StringSource{
+        message, true, new CryptoPP::PK_DecryptorFilter{rng, decryptor, new CryptoPP::StringSink{dectypedMessage}}};
 
     return dectypedMessage;
 }
 
+// TODO: output message should not be created from input message
+// TODO: key should be const unsigned char*
 std::string CryptoUtils::decryptRc4(const std::string& message, const std::string& key)
 {
     auto messageRaw = reinterpret_cast<unsigned char*>(const_cast<char*>(message.c_str()));
     auto keyRaw = reinterpret_cast<unsigned char*>(const_cast<char*>(key.c_str()));
 
-    CryptoPP::ARC4 rc4{keyRaw, key.size()};
+    CryptoPP::Weak::ARC4 rc4{keyRaw, key.size()};
     rc4.ProcessString(messageRaw, message.size());
 
     return message;
+}
+
+std::string CryptoUtils::toBase64(const std::string& text)
+{
+    return boost::beast::detail::base64_encode(text);
+}
+
+std::string CryptoUtils::fromBase64(const std::string& text)
+{
+    return boost::beast::detail::base64_decode(text);
 }

@@ -22,7 +22,7 @@ TYPED_TEST(LayoutQueueTest, ClearAndEmpty)
 
 TYPED_TEST(LayoutQueueTest, LayoutsWithDifferentPriorities)
 {
-    for(auto&& priorities : PrioritiesToTest)
+    for (auto&& priorities : PrioritiesToTest)
     {
         auto queue = queueWithPriorities<typename TestFixture::QueueType>(priorities);
 

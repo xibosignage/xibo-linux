@@ -1,25 +1,19 @@
 #include "HttpClient.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/uri/Uri.hpp"
-#include "common/uri/UriParseError.hpp"
+#include "common/types/Uri.hpp"
 
-#include "HttpSession.hpp"
-#include "HttpRequest.hpp"
-#include "ProxyHttpRequest.hpp"
+#include "networking/HttpRequest.hpp"
+#include "networking/HttpSession.hpp"
+#include "networking/ProxyHttpRequest.hpp"
 
 const int DefaultConcurrentRequests = 4;
 
-HttpClient::HttpClient() :
-    m_work{m_ioc}
+HttpClient::HttpClient() : work_{ioc_}
 {
-    for(int i = 0; i != DefaultConcurrentRequests; ++i)
+    for (int i = 0; i != DefaultConcurrentRequests; ++i)
     {
-        m_workerThreads.push_back(std::make_unique<JoinableThread>([=](){
-            Log::trace("HTTP thread started");
-
-            m_ioc.run();
-        }));
+        workerThreads_.push_back(std::make_unique<JoinableThread>([=]() { ioc_.run(); }));
     }
 }
 
@@ -36,26 +30,27 @@ HttpClient& HttpClient::instance()
 
 void HttpClient::shutdown()
 {
-    if(!m_ioc.stopped())
+    if (!ioc_.stopped())
     {
-        m_ioc.stop();
+        ioc_.stop();
         cancelActiveSession();
     }
 }
 
-void HttpClient::setProxyServer(const std::string& host, const std::string& username, const std::string& password)
+void HttpClient::setProxyServer(const boost::optional<Uri>& proxy)
 {
-    if(!host.empty())
+    proxy_ = proxy;
+    if (proxy_)
     {
-        m_proxyInfo = ProxyInfo{host, username, password};
+        Log::debug("[HttpClient] Proxy set: {}", proxy_->string());
     }
 }
 
 void HttpClient::cancelActiveSession()
 {
-    for(auto&& session : m_activeSessions)
+    for (auto&& session : activeSessions_)
     {
-        if(!session.expired())
+        if (!session.expired())
         {
             session.lock()->cancel();
         }
@@ -74,28 +69,26 @@ boost::future<HttpResponseResult> HttpClient::post(const Uri& uri, const std::st
 
 boost::future<HttpResponseResult> HttpClient::send(http::verb method, const Uri& uri, const std::string& body)
 {
-    if(m_ioc.stopped()) return managerStoppedError();
+    if (ioc_.stopped()) return managerStoppedError();
 
-    auto session = std::make_shared<HttpSession>(m_ioc);
-    m_activeSessions.push_back(session);
+    auto session = std::make_shared<HttpSession>(ioc_);
+    activeSessions_.push_back(session);
 
-    Log::trace(uri);
-
-    if(m_proxyInfo)
+    if (proxy_)
     {
-        ProxyHttpRequest request{method, m_proxyInfo.value(), uri, body};
-        return session->send(request.hostInfo(), request.get());
+        ProxyHttpRequest request{method, proxy_->authority().optionalUserInfo(), uri, body};
+        return session->send(proxy_.value(), request.get());
     }
     else
     {
         HttpRequest request{method, uri, body};
-        return session->send(request.hostInfo(), request.get());
+        return session->send(uri, request.get());
     }
 }
 
 boost::future<HttpResponseResult> HttpClient::managerStoppedError()
 {
     boost::promise<HttpResponseResult> result;
-    result.set_value(HttpResponseResult{PlayerError{PlayerError::Type::HTTP, "Manager Stopped"}, {}});
+    result.set_value(HttpResponseResult{PlayerError{"HTTP", "Manager Stopped"}, {}});
     return result.get_future();
 }

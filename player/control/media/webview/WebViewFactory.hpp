@@ -1,16 +1,20 @@
 #pragma once
 
-#include "control/media/MediaFactory.hpp"
-#include "WebViewOptions.hpp"
+#include "control/media/Media.hpp"
+#include "control/media/MediaOptions.hpp"
+#include "control/media/webview/WebView.hpp"
 
-class IWebView;
+#include <memory>
 
-class WebViewFactory : public MediaFactory
+class WebViewFactory
 {
-protected:
-    std::unique_ptr<IMedia> create(const MediaOptions& baseOptions, const ExtraOptions& options) override;
+public:
+    std::unique_ptr<Xibo::Media> create(const MediaOptions& baseOptions, int width, int height, bool transparency);
 
 private:
-    std::shared_ptr<IWebView> createView(const Uri& uri, int width, int height, WebViewOptions::Transparency transparency);
+    std::shared_ptr<Xibo::WebView> createView(const Uri& uri,
+                                              int width,
+                                              int height,
+                                              Xibo::WebView::Transparency transparency);
     void updateViewPortWidth(const Uri& uri, int width);
 };

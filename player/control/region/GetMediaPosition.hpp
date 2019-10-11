@@ -1,6 +1,6 @@
 #pragma once
 
-#include "control/media/MediaGeometry.hpp"
+#include "control/media/Media.hpp"
 
 #include <utility>
 
@@ -13,7 +13,6 @@ public:
     int getMediaY(int height, MediaGeometry::Valign valign) const;
 
 private:
-    int m_regionWidth;
-    int m_regionHeight;
-
+    int regionWidth_;
+    int regionHeight_;
 };

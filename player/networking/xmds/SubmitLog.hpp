@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 
@@ -21,23 +21,20 @@ namespace SubmitLog
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<SubmitLog::Request> : public BaseRequestSerializer<SubmitLog::Request>
 {
 public:
     RequestSerializer(const SubmitLog::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<SubmitLog::Result> : public BaseResponseParser<SubmitLog::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitLog::Result parseBody(const ptree_node& node) override;
-
+    SubmitLog::Result parseBody(const XmlNode& node) override;
 };
-

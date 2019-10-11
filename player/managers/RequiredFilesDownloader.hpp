@@ -1,8 +1,10 @@
 #pragma once
 
+#include "common/crypto/Md5Hash.hpp"
+#include "common/logger/Logging.hpp"
+
 #include "networking/ResponseResult.hpp"
 #include "networking/xmds/MediaInventoryItem.hpp"
-#include "common/logger/Logging.hpp"
 
 #include <boost/thread/future.hpp>
 
@@ -18,40 +20,59 @@ public:
     RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender);
     ~RequiredFilesDownloader();
 
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
     boost::future<MediaInventoryItems> download(const FilesToDownload<RequiredFileType>& files)
     {
-        return boost::async(boost::launch::async, [this, files = std::move(files)](){
+        return boost::async(boost::launch::async, [this, files = std::move(files)]() {
             auto downloadResults = downloadAll(files);
             return retrieveDownloadResults(files, std::move(downloadResults));
         });
     }
 
 private:
-    template<typename RequiredFileType>
+    template <typename RequiredFileType>
+    DownloadResult tryDownloadRequiredFile(const RequiredFileType& requiredFile)
+    {
+        try
+        {
+            return downloadRequiredFile(requiredFile);
+        }
+        catch (std::exception& e)
+        {
+            Log::error("[RequiredFile] {}", e.what());
+        }
+        return {};
+    }
+
+    template <typename RequiredFileType>
     DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
     {
         DownloadResults results;
 
-        for(auto&& file : requiredFiles)
+        for (auto&& file : requiredFiles)
         {
-            Log::trace(file);
+            Log::trace("[RequiredFile] {}", file);
 
-            if(shouldBeDownloaded(file))
+            if (shouldBeDownloaded(file))
             {
-                results.emplace_back(downloadRequiredFile(file));
+                auto result = tryDownloadRequiredFile(file);
+                if (result.has_value())
+                {
+                    results.emplace_back(std::move(result));
+                }
             }
         }
 
         return results;
     }
 
-    template<typename RequiredFileType>
-    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files, DownloadResults&& results)
+    template <typename RequiredFileType>
+    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files,
+                                                DownloadResults&& results)
     {
         MediaInventoryItems items;
 
-        for(std::size_t i = 0; i != results.size(); ++i)
+        for (std::size_t i = 0; i != results.size(); ++i)
         {
             bool downloadComplete = results[i].get();
             auto&& downloadedFile = files[i];
@@ -62,10 +83,10 @@ private:
         return items;
     }
 
-    void saveRegularFile(const std::string& filename, const std::string& content, const std::string& hash);
+    void saveRegularFile(const std::string& filename, const std::string& content, const Md5Hash& hash);
     void saveResourceFile(const std::string& filename, const std::string& fileContent);
 
-    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName, const std::string& hash);
+    bool onRegularFileDownloaded(const ResponseContentResult& result, const std::string& fileName, const Md5Hash& hash);
     bool onResourceFileDownloaded(const ResponseContentResult& result, const std::string& fileName);
 
     bool shouldBeDownloaded(const RegularFile& file) const;
@@ -77,8 +98,6 @@ private:
     DownloadResult downloadXmdsFile(const RegularFile& file);
 
 private:
-    XmdsRequestSender& m_xmdsRequestSender;
-    std::unique_ptr<XmdsFileDownloader> m_xmdsFileDownloader;
-
+    XmdsRequestSender& xmdsRequestSender_;
+    std::unique_ptr<XmdsFileDownloader> xmdsFileDownloader_;
 };
-

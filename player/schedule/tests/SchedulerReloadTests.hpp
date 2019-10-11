@@ -1,10 +1,10 @@
 #pragma once
 
-#include <gtest/gtest.h>
+#include "common/dt/DateTime.hpp"
+#include "schedule/tests/Common.hpp"
+#include "schedule/tests/FakeFileCache.hpp"
 
-#include "FakeFileCache.hpp"
-#include "Common.hpp"
-#include "common/dt/DateTimeProvider.hpp"
+#include <gtest/gtest.h>
 
 class Scheduler;
 
@@ -13,17 +13,17 @@ class SchedulerTests : public testing::Test
 public:
     std::unique_ptr<Scheduler> construct()
     {
-        return std::make_unique<Scheduler>(*fileCache);
+        return std::make_unique<Scheduler>(*fileCache_);
     }
 
     void SetUp() override
     {
-        fileCache = std::make_unique<testing::NiceMock<FakeFileCache>>();
+        fileCache_ = std::make_unique<testing::NiceMock<FakeFileCache>>();
     }
 
     void TearDown() override
     {
-        fileCache.reset();
+        fileCache_.reset();
     }
 
 protected:
@@ -31,7 +31,7 @@ protected:
     {
         DefaultScheduledLayout layout;
 
-        ON_CALL(*this->fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
+        ON_CALL(*this->fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
         layout.id = id;
 
         return layout;
@@ -41,24 +41,28 @@ protected:
     {
         auto layout = ScheduleTests::scheduledLayout(id, id, priority);
 
-        ON_CALL(*fileCache, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
-        layout.startDT = DateTimeProvider::now() - DateTimeHours(1);
-        layout.endDT = DateTimeProvider::now() + DateTimeHours(1);
+        ON_CALL(*fileCache_, valid(std::to_string(id) + ".xlf")).WillByDefault(testing::Return(true));
+        layout.startDT = DateTime::now() - DateTime::Hours(1);
+        layout.endDT = DateTime::now() + DateTime::Hours(1);
 
         return layout;
     }
 
-    struct RegularTag { };
-    struct OverlayTag { };
+    struct RegularTag
+    {
+    };
+    struct OverlayTag
+    {
+    };
 
-    template<typename Tag, typename... Ids>
+    template <typename Tag, typename... Ids>
     LayoutSchedule makeSchedule(int defaultId, Ids... regularIds)
     {
         LayoutSchedule schedule;
 
         schedule.defaultLayout = defaultLayout(defaultId);
 
-        if constexpr(std::is_same_v<Tag, RegularTag>)
+        if constexpr (std::is_same_v<Tag, RegularTag>)
         {
             (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
         }
@@ -70,19 +74,18 @@ protected:
         return schedule;
     }
 
-    template<typename... Ids>
+    template <typename... Ids>
     LayoutSchedule makeRegularSchedule(int defaultId, Ids... regularIds)
     {
         return makeSchedule<RegularTag>(defaultId, regularIds...);
     }
 
-    template<typename... Ids>
+    template <typename... Ids>
     LayoutSchedule makeOverlaySchedule(Ids... regularIds)
     {
         return makeSchedule<OverlayTag>(DefaultId, regularIds...);
     }
 
 protected:
-    std::unique_ptr<FakeFileCache> fileCache;
-
+    std::unique_ptr<FakeFileCache> fileCache_;
 };

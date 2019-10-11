@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LayoutSchedule.hpp"
+#include "schedule/LayoutSchedule.hpp"
 
 const int DefaultSchediledId = 0;
 const int DefaultId = 1;
@@ -35,4 +35,3 @@ namespace ScheduleTests
     ScheduledLayout scheduledLayout();
     LayoutSchedule schedule();
 }
-

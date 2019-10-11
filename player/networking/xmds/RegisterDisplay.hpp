@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Soap.hpp"
-#include "BaseResponseParser.hpp"
-#include "BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseRequestSerializer.hpp"
+#include "networking/xmds/BaseResponseParser.hpp"
+#include "networking/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 #include "common/settings/PlayerSettings.hpp"
@@ -43,22 +43,20 @@ namespace RegisterDisplay
     };
 }
 
-template<>
+template <>
 class Soap::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
 {
 public:
     RequestSerializer(const RegisterDisplay::Request& request);
     std::string string();
-
 };
 
-template<>
+template <>
 class Soap::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result parseBody(const ptree_node& node) override;
-
+    RegisterDisplay::Result parseBody(const XmlNode& node) override;
 };

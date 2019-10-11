@@ -1,9 +1,9 @@
 #pragma once
 
-#include "MediaInventoryItem.hpp"
 #include "common/Field.hpp"
+#include "networking/xmds/MediaInventoryItem.hpp"
 
-template<>
+template <>
 class Field<MediaInventoryItems>
 {
 public:
@@ -19,6 +19,6 @@ private:
     std::string toXmlString(MediaInventoryItems&& items);
 
 private:
-    std::string m_fieldName;
-    std::string m_xmlItems;
+    std::string fieldName_;
+    std::string xmlItems_;
 };

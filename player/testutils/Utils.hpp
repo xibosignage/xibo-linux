@@ -1,27 +1,23 @@
 #pragma once
 
-#include <memory>
 #include <functional>
+#include <memory>
 
-template<typename R, typename... Args>
+template <typename R, typename... Args>
 class FakeSlot;
 
-template<typename R, typename... Args>
+template <typename R, typename... Args>
 class FakeSlot<R(Args...)>
 {
 public:
     using Action = std::function<void()>;
 
-    FakeSlot(const Action& action = {}) :
-        m_action(action),
-        m_called(std::make_shared<size_t>(0))
-    {
-    }
+    FakeSlot(const Action& action = {}) : m_action(action), m_called(std::make_shared<size_t>(0)) {}
 
     void operator()(Args&&... /*args*/)
     {
         ++*m_called;
-        if(m_action)
+        if (m_action)
         {
             m_action();
         }
@@ -50,5 +46,4 @@ public:
 private:
     Action m_action;
     std::shared_ptr<size_t> m_called;
-
 };

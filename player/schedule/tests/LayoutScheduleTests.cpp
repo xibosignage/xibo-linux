@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "LayoutSchedule.hpp"
-#include "Common.hpp"
+#include "schedule/LayoutSchedule.hpp"
+#include "schedule/tests/Common.hpp"
 
 TEST(LayoutScheduleEquality, Empty)
 {
@@ -14,8 +14,8 @@ TEST(LayoutScheduleEquality, ByGeneratedTime)
 {
     LayoutSchedule first{}, second{};
 
-    first.generatedTime = DateTime(Date(2019, 1, 1), Time(1, 1, 1));
-    second.generatedTime = DateTime(Date(2019, 1, 1), Time(1, 2, 1));
+    first.generatedTime = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 1, 1));
+    second.generatedTime = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 2, 1));
 
     ASSERT_NE(first, second);
 }
@@ -127,8 +127,8 @@ TEST(ScheduleLayoutEquality, ByStartDt)
 {
     ScheduledLayout first{}, second{};
 
-    first.startDT = DateTime(Date(2019, 1, 1), Time(1, 1, 1));
-    second.startDT = DateTime(Date(2019, 1, 1), Time(1, 2, 1));
+    first.startDT = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 1, 1));
+    second.startDT = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 2, 1));
 
     ASSERT_NE(first, second);
 }
@@ -137,8 +137,8 @@ TEST(ScheduleLayoutEquality, ByEndDt)
 {
     ScheduledLayout first{}, second{};
 
-    first.endDT = DateTime(Date(2019, 1, 1), Time(1, 1, 1));
-    second.endDT = DateTime(Date(2019, 1, 1), Time(1, 2, 1));
+    first.endDT = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 1, 1));
+    second.endDT = DateTime(DateTime::Date(2019, 1, 1), DateTime::Time(1, 2, 1));
 
     ASSERT_NE(first, second);
 }

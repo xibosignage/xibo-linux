@@ -1,57 +1,55 @@
 #include "MediaInventoryItem.hpp"
 
-#include <chrono>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
 #include "common/logger/Logging.hpp"
+
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
 
 const std::string DEFAULT_RESOURCE_TYPE = "resource";
 
 MediaInventoryItem::MediaInventoryItem(const RegularFile& file, bool downloadComplete) :
     MediaInventoryItem(downloadComplete)
 {
-    m_type = file.type;
-    m_id = file.id;
-    m_md5 = file.hash;
+    type_ = file.type;
+    id_ = file.id;
+    md5_ = file.hash;
 }
 
 MediaInventoryItem::MediaInventoryItem(const ResourceFile& file, bool downloadComplete) :
     MediaInventoryItem(downloadComplete)
 {
-    m_type = DEFAULT_RESOURCE_TYPE;
-    m_id = file.mediaId;
+    type_ = DEFAULT_RESOURCE_TYPE;
+    id_ = file.mediaId;
 }
 
-MediaInventoryItem::MediaInventoryItem(bool downloadComplete) :
-    m_downloadComplete(downloadComplete)
+MediaInventoryItem::MediaInventoryItem(bool downloadComplete) : downloadComplete_(downloadComplete)
 {
     auto timepoint = std::chrono::system_clock::now();
     auto duration = timepoint.time_since_epoch();
-    m_lastChecked = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count());
+    lastChecked_ = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(duration).count());
 }
 
 const std::string& MediaInventoryItem::type() const
 {
-    return m_type;
+    return type_;
 }
 
 int MediaInventoryItem::id() const
 {
-    return m_id;
+    return id_;
 }
 
 bool MediaInventoryItem::downloadComplete() const
 {
-    return m_downloadComplete;
+    return downloadComplete_;
 }
 
 const std::string& MediaInventoryItem::md5() const
 {
-    return m_md5;
+    return md5_;
 }
 
 const std::string& MediaInventoryItem::lastChecked() const
 {
-    return m_lastChecked;
+    return lastChecked_;
 }
-
