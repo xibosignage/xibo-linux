@@ -14,12 +14,15 @@ const int MinDisplayWidth = 160;
 const int MinDisplayHeight = 120;
 const int DefaultPos = 0;
 
+const double StatusScreenScaleX = 0.5;
+const double StatusScreenScaleY = 1;
+
 template class ApplicationWindow<WindowGtk>;
 
 template <typename Window>
 ApplicationWindow<Window>::ApplicationWindow() :
     layout_(OverlayLayoutFactory::create(MinDisplayWidth, MinDisplayHeight)),
-    statusScreen_(StatusScreenFactory::create(640, 480))
+    statusScreen_(StatusScreenFactory::create(static_cast<Window&>(*this), MinDisplayWidth, MinDisplayHeight))
 {
     assert(layout_);
     assert(statusScreen_);
@@ -116,6 +119,8 @@ void ApplicationWindow<Window>::setSize(int width, int height)
     }
     else
     {
+        statusScreen_->setSize(static_cast<int>(width * StatusScreenScaleX),
+                               static_cast<int>(height * StatusScreenScaleY));
         Window::setSize(width, height);
     }
 }

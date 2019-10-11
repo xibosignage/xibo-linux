@@ -7,10 +7,11 @@
 
 namespace StatusScreenFactory
 {
-    inline std::unique_ptr<Xibo::StatusScreen> create(int width, int height)
+    template <typename Window>
+    inline std::unique_ptr<Xibo::StatusScreen> create(Window& parentWindow, int width, int height)
     {
 #ifdef USE_GTK
-        return std::make_unique<StatusScreenGtk>(width, height);
+        return std::make_unique<StatusScreenGtk>(parentWindow, width, height);
 #else
         return nullptr;
 #endif
