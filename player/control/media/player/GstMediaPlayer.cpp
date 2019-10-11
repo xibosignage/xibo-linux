@@ -12,7 +12,6 @@
 #include "control/media/player/gst/VideoConvert.hpp"
 #include "control/media/player/gst/VideoScale.hpp"
 #include "control/media/player/gst/Volume.hpp"
-#include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
@@ -94,9 +93,6 @@ void GstMediaPlayer::setOutputWindow(const std::shared_ptr<Xibo::OutputWindow>& 
         boost::format videoFmt{"video/x-raw, width = (int)%1%, height = (int)%2%"};
         capsfilter_->setCaps(Gst::Caps::create((videoFmt % outputWindow_->width() % outputWindow_->height()).str()));
     });
-
-    auto sink = GST_XIBOVIDEOSINK(videoSink_->handler());
-    gst_xibovideosink_set_handler(sink, outputWindow_);
 }
 
 const std::shared_ptr<Xibo::OutputWindow>& GstMediaPlayer::outputWindow() const

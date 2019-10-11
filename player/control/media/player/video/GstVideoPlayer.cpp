@@ -10,20 +10,19 @@
 #include "control/media/player/gst/VideoConvert.hpp"
 #include "control/media/player/gst/VideoScale.hpp"
 #include "control/media/player/gst/Volume.hpp"
-#include "control/media/player/video/XiboVideoSink.hpp"
 
 void GstVideoPlayer::createPipeline()
 {
     videoConverter_ = Gst::VideoConvert::create();
     videoScale_ = Gst::VideoScale::create();
-    videoSink_ = Gst::Element::create("xibovideosink");
+    videoSink_ = Gst::Element::create("gtksink");
     queue_ = Gst::Queue::create();
     capsfilter_ = Gst::Capsfilter::create();
     audioConverter_ = Gst::AudioConvert::create();
     audioSink_ = Gst::AutoAudioSink::create();
 
     if (!videoConverter_ || !videoScale_ || !videoSink_ || !queue_ || !capsfilter_ || !audioConverter_ || !audioSink_)
-        throw GstMediaPlayer::Error{"GstAudioPlayer", "Error while creating pipeline"};
+        throw GstMediaPlayer::Error{"GstVideoPlayer", "Error while creating pipeline"};
 
     pipeline_->add(source_)->add(decodebin_);
     source_->link(decodebin_);

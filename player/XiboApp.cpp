@@ -7,7 +7,6 @@
 #include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
 #include "control/media/MediaParsersRepo.hpp"
-#include "control/media/player/video/XiboVideoSink.hpp"
 
 #include "managers/CollectionInterval.hpp"
 #include "managers/XmrManager.hpp"
@@ -44,28 +43,10 @@ XiboApp& XiboApp::create(const std::string& name)
     auto logger = Log::create();
 
     gst_init(nullptr, nullptr);
-    registerVideoSink();
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *g_app;
-}
-
-void XiboApp::registerVideoSink()
-{
-    if (!gst_plugin_register_static(GST_VERSION_MAJOR,
-                                    GST_VERSION_MINOR,
-                                    "Xibo Video Sink",
-                                    "Video Sink Plugin for gstreamer",
-                                    pluginInit,
-                                    "0.5",
-                                    "GPL",
-                                    "source",
-                                    "package",
-                                    "http://github.com/Stivius"))
-    {
-        throw PlayerRuntimeError{"XiboApp", "XiboVideoSink was not registered"};
-    }
 }
 
 XiboApp::XiboApp(const std::string& name) :
