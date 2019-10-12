@@ -7,8 +7,6 @@
 #include "config.hpp"
 
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "utils/Managers.hpp"
-#include "utils/ScreenShoter.hpp"
 
 #include <glibmm/main.h>
 
@@ -98,8 +96,6 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
-
-            submitScreenShot();
 
             XmlLogsRetriever logsRetriever;
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
@@ -243,22 +239,4 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
     {
         sessionFinished(session, error);
     }
-}
-
-void CollectionInterval::submitScreenShot()
-{
-    Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
-        xmdsSender_.submitScreenShot(screenshot).then([](auto future) {
-            auto [error, result] = future.get();
-            if (error)
-            {
-                Log::error("[XMDS::SubmitScreenShot] {}", error);
-            }
-            else
-            {
-                std::string message = result.success ? "Submitted" : "Not submitted";
-                Log::debug("[XMDS::SubmitScreenShot] {}", message);
-            }
-        });
-    });
 }
