@@ -34,11 +34,12 @@ public:
 
     SignalKeyPressed& keyPressed() override;
     Gtk::Window& get() override;
+    NativeWindow nativeWindow() override;
 
 private:
     void setWindowSize(int width, int height);
     void onRealized();
-    Gdk::Rectangle getCurrentMonitorGeometry() const;
+    Gdk::Rectangle currentMonitorGeometry() const;
 
 private:
     Gtk::Window handler_;

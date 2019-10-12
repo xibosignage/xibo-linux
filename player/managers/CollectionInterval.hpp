@@ -56,7 +56,6 @@ private:
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitLog(const ResponseResult<SubmitLog::Result>& requiredFiles, CollectionSessionPtr session);
-    void submitScreenShot();
 
 private:
     XmdsRequestSender& xmdsSender_;

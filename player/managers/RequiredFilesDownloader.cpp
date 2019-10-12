@@ -6,7 +6,7 @@
 
 #include "common/fs/FileCacheImpl.hpp"
 #include "common/fs/Resources.hpp"
-#include "utils/Managers.hpp"
+#include "managers/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     xmdsRequestSender_(xmdsRequestSender),

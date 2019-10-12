@@ -4,7 +4,7 @@
 #include "networking/ResponseResult.hpp"
 #include "networking/xmds/Soap.hpp"
 
-#include "utils/Managers.hpp"
+#include "managers/Managers.hpp"
 
 namespace SoapRequestHelper
 {

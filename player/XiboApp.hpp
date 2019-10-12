@@ -5,9 +5,9 @@
 
 #include "common/settings/CmsSettings.hpp"
 #include "common/settings/PlayerSettings.hpp"
-#include "control/GeneralInfo.hpp"
 
 #include "control/ApplicationWindow.hpp"
+#include "control/GeneralInfo.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
 
 class MainLoop;
@@ -16,6 +16,7 @@ class HttpClient;
 class Scheduler;
 class FileCache;
 class CollectionInterval;
+class ScreenShotInterval;
 class PlayerError;
 class ScreenShoter;
 class XmrManager;
@@ -61,6 +62,7 @@ private:
     std::unique_ptr<FileCache> fileCache_;
     std::unique_ptr<Scheduler> scheduler_;
     std::unique_ptr<CollectionInterval> collectionInterval_;
+    std::unique_ptr<ScreenShotInterval> screenShotInterval_;
     std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<ScreenShoter> screenShoter_;
     std::unique_ptr<XmrManager> xmrManager_;
