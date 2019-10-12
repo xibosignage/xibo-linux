@@ -18,8 +18,8 @@ std::string Utils::toString(RegularFile::DownloadType val)
 std::ostream& operator<<(std::ostream& out, const RegularFile& file)
 {
     out << "FileType: " << file.type << " ID: " << file.id << " Size: " << file.size << std::endl;
-    out << "MD5: " << file.hash << " FileName: " << file.name
-        << " DownloadType: " << Utils::toString(file.downloadType);
+    out << "MD5: " << file.hash << " FileName: " << file.name << " DownloadType: " << Utils::toString(file.downloadType)
+        << " URL: " << file.url;
     return out;
 }
 
