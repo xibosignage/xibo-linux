@@ -145,8 +145,6 @@ void HttpSession::onRead(const boost::system::error_code& ec, std::size_t /*byte
     sessionFinished(ec);
 }
 
-#include "common/logger/Logging.hpp"
-
 void HttpSession::sessionFinished(const boost::system::error_code& ec)
 {
     if (!ec)
@@ -158,12 +156,7 @@ void HttpSession::sessionFinished(const boost::system::error_code& ec)
         }
         else
         {
-            std::string responseMessage{message.reason()};
-            std::string errorMessage = std::to_string(message.result_int());
-            if (!responseMessage.empty())
-            {
-                errorMessage += " " + responseMessage;
-            }
+            std::string errorMessage = std::to_string(message.result_int()) + " " + std::string{message.reason()};
             PlayerError error{"HTTP", errorMessage};
             setHttpResult(HttpResponseResult{error, {}});
         }
