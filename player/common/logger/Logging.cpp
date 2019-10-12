@@ -39,7 +39,7 @@ std::shared_ptr<spdlog::logger> Log::create(const std::vector<spdlog::sink_ptr>&
 
 void Log::setLevel(const std::string& level)
 {
-    if (level == "trace")
+    if (level == "trace" || level == "audit")
         logger()->set_level(spdlog::level::trace);
     else if (level == "debug")
         logger()->set_level(spdlog::level::debug);
