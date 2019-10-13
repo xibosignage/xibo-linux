@@ -48,7 +48,7 @@ private:
 
 private:
     const FileCache& fileCache_;
-    LayoutSchedule schedule_;
+    boost::optional<LayoutSchedule> schedule_;
     RegularLayoutQueue regularQueue_;
     OverlayLayoutQueue overlayQueue_;
     SignalScheduleUpdated scheduleUpdated_;
