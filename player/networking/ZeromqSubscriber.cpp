@@ -3,15 +3,19 @@
 #include "common/logger/Logging.hpp"
 #include "constants.hpp"
 
-const char* const HeartbeatChannel = "H";
-
-ZeromqSubscriber::ZeromqSubscriber() : context_{1} {}
+ZeromqSubscriber::ZeromqSubscriber() : stopped_(true) {}
 
 void ZeromqSubscriber::stop()
 {
-    stopped_ = true;
-    context_.close();
-    worker_.reset();
+    if (!stopped_)
+    {
+        stopped_ = true;
+        if (context_)
+        {
+            context_->close();
+        }
+        worker_.reset();
+    }
 }
 
 MessageReceived& ZeromqSubscriber::messageReceived()
@@ -19,16 +23,38 @@ MessageReceived& ZeromqSubscriber::messageReceived()
     return messageReceived_;
 }
 
-// FIXME exception for zeromq thread
-void ZeromqSubscriber::run(const std::string& host)
+void ZeromqSubscriber::run(const std::string& host, const Channels& channels)
 {
-    worker_ = std::make_unique<JoinableThread>([this, host]() { processMessageQueue(host); });
+    stop();
+    worker_ = std::make_unique<JoinableThread>(
+        [this, host, channels = std::move(channels)]() { processMessageQueue(host, channels); });
 }
 
-void ZeromqSubscriber::processMessageQueue(const std::string& host)
+bool ZeromqSubscriber::init()
 {
-    zmq::socket_t socket{context_, ZMQ_SUB};
-    tryConnect(socket, host);
+    try
+    {
+        context_ = std::make_unique<zmq::context_t>(1);
+        stopped_ = false;
+
+        return true;
+    }
+    catch (zmq::error_t& ex)
+    {
+        Log::error("[ZMQ] Init error {}", ex.what());
+    }
+
+    return false;
+}
+
+void ZeromqSubscriber::processMessageQueue(const std::string& host, const Channels& channels)
+{
+    if (!init()) return;
+
+    zmq::socket_t socket{*context_, ZMQ_SUB};
+    tryConnect(socket, host, channels);
+
+    Log::info("[ZMQ] Successful connection");
 
     while (!stopped_)
     {
@@ -38,22 +64,28 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host)
         }
         catch (const zmq::error_t& ex)
         {
-            if (ex.num() != ETERM) throw;
+            if (ex.num() != ETERM)
+            {
+                Log::error("[ZMQ] Receive message error: {}", ex.what());
+            }
         }
     }
 }
 
-void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host)
+void ZeromqSubscriber::tryConnect(zmq::socket_t& socket, const std::string& host, const Channels& channels)
 {
     try
     {
         socket.connect(host);
-        socket.setsockopt(ZMQ_SUBSCRIBE, HeartbeatChannel, std::strlen(HeartbeatChannel));
-        socket.setsockopt(ZMQ_SUBSCRIBE, XmrChannel, std::strlen(XmrChannel));
+        for (auto&& channel : channels)
+        {
+            socket.setsockopt(ZMQ_SUBSCRIBE, channel.c_str(), channel.size());
+        }
     }
-    catch (zmq::error_t&)
+    catch (zmq::error_t& ex)
     {
-        Log::error("[ZeroMQ] Unsuccesful connection to {}", host);
+        stopped_ = true;
+        Log::error("[ZMQ] Unsuccesful connection to {}. Reason: {}", host, ex.what());
     }
 }
 
