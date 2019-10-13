@@ -31,7 +31,7 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     request.clientCode = clientCode;
     request.clientVersion = clientVersion;
     request.macAddress = static_cast<std::string>(System::macAddress());
-    request.xmrChannel = XmrChannel;
+    request.xmrChannel = MainXmrChannel;
     request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName;
 
