@@ -45,6 +45,7 @@ private:
 
     template <typename LayoutsList>
     void fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const;
+    void addDefaultToStatus(SchedulerStatus& status, const DefaultScheduledLayout& layout) const;
 
 private:
     const FileCache& fileCache_;

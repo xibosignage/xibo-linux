@@ -199,6 +199,7 @@ SchedulerStatus Scheduler::status() const
 
     fillSchedulerStatus(status, schedule_->regularLayouts);
     fillSchedulerStatus(status, schedule_->overlayLayouts);
+    addDefaultToStatus(status, schedule_->defaultLayout);
 
     status.generatedTime = schedule_->generatedTime.string();
     status.currentLayout = currentLayoutId();
@@ -223,5 +224,17 @@ void Scheduler::fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& 
         {
             status.invalidLayouts.emplace_back(layout.id);
         }
+    }
+}
+
+void Scheduler::addDefaultToStatus(SchedulerStatus& status, const DefaultScheduledLayout& layout) const
+{
+    if (layoutValid(layout))
+    {
+        status.validLayouts.emplace_back(layout.id);
+    }
+    else
+    {
+        status.invalidLayouts.emplace_back(layout.id);
     }
 }
