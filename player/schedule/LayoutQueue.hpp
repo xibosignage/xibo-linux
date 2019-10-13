@@ -30,8 +30,8 @@ public:
     bool empty() const;
     size_t size() const;
 
-    ConstIterator begin() const;
-    ConstIterator end() const;
+    ConstIterator begin() const;  // TODO tests
+    ConstIterator end() const;    // TODO tests
 
 protected:
     ~LayoutQueue() = default;
