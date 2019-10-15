@@ -1,6 +1,5 @@
 #pragma once
 
-#include "control/layout/LayoutStat.hpp"
 #include "control/layout/MainLayout.hpp"
 #include "control/layout/MainLayoutOptions.hpp"
 #include "control/region/Region.hpp"
@@ -19,6 +18,7 @@ public:
     void addRegion(std::unique_ptr<Xibo::Region>&& region, int x, int y, int z) override;
     SignalLayoutExpired& expired() override;
     SignalLayoutStatReady& statReady() override;
+    SignalLayoutMediaStatsReady& mediaStatsReady() override;
     void restart() override;
     std::shared_ptr<Xibo::Widget> view() override;
     int id() const override;
@@ -31,9 +31,13 @@ private:
 private:
     MainLayoutOptions options_;
     std::shared_ptr<Xibo::OverlayLayout> view_;
-    LayoutStats layoutStats_;
+
+    LayoutStat layoutStats_;
+    std::vector<MediaStat> mediaStats_;
+    SignalLayoutStatReady statsReady_;
+    SignalLayoutMediaStatsReady mediaStatsReady_;
+
     std::vector<std::unique_ptr<Xibo::Region>> regions_;
     std::set<int> expiredRegions_;
     SignalLayoutExpired layoutExpired_;
-    SignalLayoutStatReady statsReady_;
 };

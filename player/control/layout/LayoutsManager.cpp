@@ -84,7 +84,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         LayoutParser parser;
         auto layout = parser.parseBy(layoutId);
 
-        layout->statReady().connect([](const LayoutStats& stat) { Log::debug(stat); });
+        layout->statReady().connect([](const LayoutStat& stat) { Log::debug(stat); });
 
         layout->expired().connect([this, layoutId]() {
             Log::trace("[LayoutsManager] Layout {} expired", layoutId);

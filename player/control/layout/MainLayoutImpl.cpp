@@ -53,8 +53,7 @@ void MainLayoutImpl::monitorMediaStats(Xibo::Region& region)
         {
             media->enableStat(options_.statEnabled);
         }
-        media->statReady().connect(
-            [this](const MediaStat& stat) { layoutStats_.mediaStats.emplace_back(std::move(stat)); });
+        media->statReady().connect([this](const MediaStat& stat) { mediaStats_.emplace_back(std::move(stat)); });
     }
 }
 
@@ -68,9 +67,15 @@ SignalLayoutStatReady& MainLayoutImpl::statReady()
     return statsReady_;
 }
 
+SignalLayoutMediaStatsReady& MainLayoutImpl::mediaStatsReady()
+{
+    return mediaStatsReady_;
+}
+
 void MainLayoutImpl::restart()
 {
     layoutStats_.clear();
+    mediaStats_.clear();
     expiredRegions_.clear();
 
     for (auto&& region : regions_)
@@ -99,10 +104,11 @@ void MainLayoutImpl::onRegionExpired(int regionId)
         if (options_.statEnabled)
         {
             layoutStats_.finished = DateTime::now();
-        }
-        if (options_.statEnabled || !layoutStats_.mediaStats.empty())
-        {
             statsReady_(layoutStats_);
+        }
+        if (!mediaStats_.empty())
+        {
+            mediaStatsReady_(mediaStats_);
         }
 
         layoutExpired_();

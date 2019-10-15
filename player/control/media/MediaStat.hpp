@@ -17,6 +17,7 @@ struct MediaStat
 inline std::ostream& operator<<(std::ostream& out, const MediaStat& stats)
 {
     out << "Media ID: " << stats.id << " Started: " << stats.started.string()
-        << " Finished: " << stats.finished.string() << " Duration: " << (stats.finished - stats.started).seconds();
+        << " Finished: " << stats.finished.string() << " Duration: " << (stats.finished - stats.started).seconds()
+        << std::endl;
     return out;
 }
