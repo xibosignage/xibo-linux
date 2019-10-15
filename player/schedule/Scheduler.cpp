@@ -207,7 +207,7 @@ SchedulerStatus Scheduler::status() const
     return status;
 }
 
-int Scheduler::scheduleId(LayoutId id) const
+int Scheduler::scheduleIdBy(LayoutId id) const
 {
     assert(schedule_);
 

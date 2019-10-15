@@ -6,6 +6,7 @@
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "config.hpp"
 
+#include "managers/StatsRecorder.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include <glibmm/main.h>
@@ -101,8 +102,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
 
-            //            auto submitStatsResult = xmdsSender_.submitStats("").get();
-            //            onSubmitStats(submitStatsResult, session);
+            auto submitStatsResult = xmdsSender_.submitStats(StatsRecorder::get().xmlString()).get();
+            onSubmitStats(submitStatsResult, session);
         }
         sessionFinished(session, displayError);
     }
