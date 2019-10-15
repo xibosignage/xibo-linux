@@ -19,10 +19,9 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host,
 {
 }
 
-boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::registerDisplay(
-    const std::string& clientCode,
-    const std::string& clientVersion,
-    const std::string& displayName)
+FutureResponseResult<RegisterDisplay::Result> XmdsRequestSender::registerDisplay(const std::string& clientCode,
+                                                                                 const std::string& clientVersion,
+                                                                                 const std::string& displayName)
 {
     RegisterDisplay::Request request;
     request.serverKey = serverKey_;
@@ -38,7 +37,7 @@ boost::future<ResponseResult<RegisterDisplay::Result>> XmdsRequestSender::regist
     return SoapRequestHelper::sendRequest<RegisterDisplay::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<RequiredFiles::Result>> XmdsRequestSender::requiredFiles()
+FutureResponseResult<RequiredFiles::Result> XmdsRequestSender::requiredFiles()
 {
     RequiredFiles::Request request;
     request.serverKey = serverKey_;
@@ -47,7 +46,7 @@ boost::future<ResponseResult<RequiredFiles::Result>> XmdsRequestSender::required
     return SoapRequestHelper::sendRequest<RequiredFiles::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<Schedule::Result>> XmdsRequestSender::schedule()
+FutureResponseResult<Schedule::Result> XmdsRequestSender::schedule()
 {
     Schedule::Request request;
     request.serverKey = serverKey_;
@@ -56,9 +55,7 @@ boost::future<ResponseResult<Schedule::Result>> XmdsRequestSender::schedule()
     return SoapRequestHelper::sendRequest<Schedule::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<GetResource::Result>> XmdsRequestSender::getResource(int layoutId,
-                                                                                  int regionId,
-                                                                                  int mediaId)
+FutureResponseResult<GetResource::Result> XmdsRequestSender::getResource(int layoutId, int regionId, int mediaId)
 {
     GetResource::Request request;
     request.serverKey = serverKey_;
@@ -70,10 +67,10 @@ boost::future<ResponseResult<GetResource::Result>> XmdsRequestSender::getResourc
     return SoapRequestHelper::sendRequest<GetResource::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<GetFile::Result>> XmdsRequestSender::getFile(int fileId,
-                                                                          const std::string& fileType,
-                                                                          std::size_t chunkOffset,
-                                                                          std::size_t chunkSize)
+FutureResponseResult<GetFile::Result> XmdsRequestSender::getFile(int fileId,
+                                                                 const std::string& fileType,
+                                                                 std::size_t chunkOffset,
+                                                                 std::size_t chunkSize)
 {
     GetFile::Request request;
     request.serverKey = serverKey_;
@@ -86,17 +83,17 @@ boost::future<ResponseResult<GetFile::Result>> XmdsRequestSender::getFile(int fi
     return SoapRequestHelper::sendRequest<GetFile::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<MediaInventory::Result>> XmdsRequestSender::mediaInventory(MediaInventoryItems&& items)
+FutureResponseResult<MediaInventory::Result> XmdsRequestSender::mediaInventory(MediaInventoryItems&& inventory)
 {
     MediaInventory::Request request;
     request.serverKey = serverKey_;
     request.hardwareKey = hardwareKey_;
-    request.inventory = std::move(items);
+    request.inventory = std::move(inventory);
 
     return SoapRequestHelper::sendRequest<MediaInventory::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<SubmitLog::Result>> XmdsRequestSender::submitLogs(const std::string& logXml)
+FutureResponseResult<SubmitLog::Result> XmdsRequestSender::submitLogs(const std::string& logXml)
 {
     SubmitLog::Request request;
     request.serverKey = serverKey_;
@@ -106,8 +103,17 @@ boost::future<ResponseResult<SubmitLog::Result>> XmdsRequestSender::submitLogs(c
     return SoapRequestHelper::sendRequest<SubmitLog::Result>(uri_, request);
 }
 
-boost::future<ResponseResult<SubmitScreenShot::Result>> XmdsRequestSender::submitScreenShot(
-    const std::string& screenShot)
+FutureResponseResult<SubmitStats::Result> XmdsRequestSender::submitStats(const std::string& statXml)
+{
+    SubmitStats::Request request;
+    request.serverKey = serverKey_;
+    request.hardwareKey = hardwareKey_;
+    request.statXml = std::string("<![CDATA[") + statXml + "]]>";
+
+    return SoapRequestHelper::sendRequest<SubmitStats::Result>(uri_, request);
+}
+
+FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
 {
     SubmitScreenShot::Request request;
     request.serverKey = serverKey_;
