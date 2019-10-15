@@ -207,6 +207,42 @@ SchedulerStatus Scheduler::status() const
     return status;
 }
 
+int Scheduler::scheduleId(LayoutId id) const
+{
+    assert(schedule_);
+
+    auto layout = layoutById(id);
+    if (layout)
+    {
+        return layout->scheduleId;
+    }
+    return DefaultScheduleId;
+}
+
+boost::optional<ScheduledLayout> Scheduler::layoutById(int id) const
+{
+    assert(schedule_);
+
+    {
+        auto&& regularLayouts = schedule_->regularLayouts;
+        auto it = std::find_if(regularLayouts.begin(), regularLayouts.end(), [id](const ScheduledLayout& other) {
+            return other.id == id;
+        });
+
+        if (it != regularLayouts.end()) return *it;
+    }
+    {
+        auto&& overlayLayouts = schedule_->overlayLayouts;
+        auto it = std::find_if(overlayLayouts.begin(), overlayLayouts.end(), [id](const ScheduledLayout& other) {
+            return other.id == id;
+        });
+
+        if (it != overlayLayouts.end()) return *it;
+    }
+
+    return {};
+}
+
 template <typename LayoutsList>
 void Scheduler::fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& layouts) const
 {
