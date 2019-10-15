@@ -3,7 +3,6 @@
 #include "constants.hpp"
 #include "control/media/player/PlayableMedia.hpp"
 #include "control/media/player/video/GstVideoPlayer.hpp"
-#include "control/widgets/render/OutputWindowFactory.hpp"
 
 std::unique_ptr<Xibo::Media> VideoFactory::create(const MediaPlayerOptions& options, int width, int height)
 {
@@ -18,26 +17,12 @@ std::unique_ptr<Xibo::MediaPlayer> VideoFactory::createPlayer(const MediaPlayerO
 
     player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MinVolume : MaxVolume);
     player->load(options.uri);
-    player->setOutputWindow(createView(width, height, options.geometry.scaleType));
 
-    return player;
-}
-
-std::shared_ptr<Xibo::OutputWindow> VideoFactory::createView(int width, int height, MediaGeometry::ScaleType scaleType)
-{
-    auto view = OutputWindowFactory::create(width, height);
-
-    if (scaleType == MediaGeometry::ScaleType::Scaled)
+    // TODO set window explicitly if no internal window created
+    if (auto output = player->outputWindow())
     {
-        //        double scaleX = static_cast<double>(view->width()) / info.frameWidth;
-        //        double scaleY = static_cast<double>(view->height()) / info.frameHeight;
-        //        double scaleFactor = std::min(scaleX, scaleY);
-
-        //        int scaledWidth = static_cast<int>(info.frameWidth * scaleFactor);
-        //        int scaledHeight = static_cast<int>(info.frameHeight * scaleFactor);
-
-        //        view->setSize(scaledWidth, scaledHeight);
+        output->setSize(width, height);
     }
 
-    return view;
+    return player;
 }

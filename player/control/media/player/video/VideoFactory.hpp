@@ -14,5 +14,4 @@ public:
 
 private:
     std::unique_ptr<Xibo::MediaPlayer> createPlayer(const MediaPlayerOptions& options, int width, int height);
-    std::shared_ptr<Xibo::OutputWindow> createView(int width, int height, MediaGeometry::ScaleType scaleType);
 };
