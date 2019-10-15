@@ -6,6 +6,7 @@
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "config.hpp"
 
+#include "managers/StatsRecorder.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
 
 #include <glibmm/main.h>
@@ -100,6 +101,9 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             XmlLogsRetriever logsRetriever;
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
+
+            auto submitStatsResult = xmdsSender_.submitStats(StatsRecorder::get().xmlString()).get();
+            onSubmitStats(submitStatsResult, session);
         }
         sessionFinished(session, displayError);
     }
@@ -129,6 +133,11 @@ void CollectionInterval::updateInterval(int collectInterval)
         Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
         collectInterval_ = collectInterval;
     }
+}
+
+void CollectionInterval::statsAggregation(const std::string& aggregationLevel)
+{
+    statsAggregation_ = aggregationLevel;
 }
 
 CmsStatus CollectionInterval::status()
@@ -232,7 +241,28 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
         }
         else
         {
-            Log::debug("[XMDS::SubmitLogs] Not submited due to unknown error");
+            Log::error("[XMDS::SubmitLogs] Not submited due to unknown error");
+        }
+    }
+    else
+    {
+        sessionFinished(session, error);
+    }
+}
+
+void CollectionInterval::onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult,
+                                       CollectionSessionPtr session)
+{
+    auto [error, result] = statsResult;
+    if (!error)
+    {
+        if (result.success)
+        {
+            Log::debug("[XMDS::SubmitStats] Submitted");
+        }
+        else
+        {
+            Log::error("[XMDS::SubmitStats] Not submited due to unknown error");
         }
     }
     else

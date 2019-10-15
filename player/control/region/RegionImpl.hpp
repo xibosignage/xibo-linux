@@ -17,11 +17,13 @@ public:
     SignalRegionExpired& expired() override;
     std::shared_ptr<Xibo::Widget> view() override;
 
+    const MediaList& mediaList() const override;
+
 private:
     void placeMedia(size_t mediaIndex);
     void removeMedia(size_t mediaIndex);
     void onMediaDurationTimeout();
-    void onMediaRemoved();
+
     std::pair<int, int> calcMediaPosition(Xibo::Media& media);
 
     bool shouldBeMediaReplaced() const;
@@ -31,7 +33,7 @@ private:
 private:
     RegionOptions options_;
     std::shared_ptr<Xibo::FixedLayout> view_;
-    std::vector<std::unique_ptr<Xibo::Media>> media_;
+    MediaList mediaList_;
     size_t currentMediaIndex_;
     SignalRegionExpired regionExpired_;
 };

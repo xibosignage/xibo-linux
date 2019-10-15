@@ -12,6 +12,7 @@ namespace XlfResources::Media
     const std::string Height = Parsing::xmlAttr("height");
     const std::string Uri = Parsing::xmlOption("uri");
     const std::string Duration = Parsing::xmlAttr("duration");
+    const std::string EnableStat = Parsing::xmlOption("enableStat");
 
     const std::string AudioType = "audio";
     const std::string AudioNodeType = "audionode";
@@ -68,6 +69,13 @@ namespace XlfResources::Media
         const std::string OutType = Parsing::xmlOption("transOut");
         const std::string OutDirection = Parsing::xmlOption("transOutDirection");
         const std::string OutDuration = Parsing::xmlOption("transOutDuration");
+    }
+
+    namespace StatsPolicy
+    {
+        const std::string Off = "Off";
+        const std::string On = "On";
+        const std::string Inherit = "Inherit";
     }
 
 }

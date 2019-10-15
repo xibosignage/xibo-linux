@@ -91,6 +91,21 @@ std::istream& operator>>(std::istream& in, Transition::Direction& direction)
     return in;
 }
 
+std::istream& operator>>(std::istream& in, MediaOptions::StatPolicy& policy)
+{
+    std::string temp;
+    in >> temp;
+
+    if (temp == XlfResources::Media::StatsPolicy::Off)
+        policy = MediaOptions::StatPolicy::Off;
+    else if (temp == XlfResources::Media::StatsPolicy::On)
+        policy = MediaOptions::StatPolicy::On;
+    else if (temp == XlfResources::Media::StatsPolicy::Inherit)
+        policy = MediaOptions::StatPolicy::Inherit;
+
+    return in;
+}
+
 std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node, int parentWidth, int parentHeight)
 {
     using namespace std::string_literals;
@@ -100,8 +115,8 @@ std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node, int par
         auto baseOptions = baseOptionsFrom(node);
         auto media = createMedia(baseOptions, node, parentWidth, parentHeight);
 
-        media->setInTransition(inTransitionFrom(node, media->view()));
-        media->setOutTransition(outTransitionFrom(node, media->view()));
+        media->inTransition(inTransitionFrom(node, media->view()));
+        media->outTransition(outTransitionFrom(node, media->view()));
 
         attach(*media, node);
 
@@ -119,9 +134,10 @@ MediaOptions MediaParser::baseOptionsFrom(const XmlNode& node)
     auto id = idFrom(node);
     auto uri = uriFrom(node);
     auto duration = durationFrom(node);
+    auto stat = statFrom(node);
     auto geometry = geometryFrom(node);
 
-    return MediaOptions{type, id, uri, duration, geometry};
+    return MediaOptions{type, id, uri, duration, stat, geometry};
 }
 
 MediaOptions::Type MediaParser::typeFrom(const XmlNode& node)
@@ -159,6 +175,11 @@ int MediaParser::durationFrom(const XmlNode& node)
 MediaGeometry MediaParser::geometryFrom(const XmlNode& /*node*/)
 {
     return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
+}
+
+MediaOptions::StatPolicy MediaParser::statFrom(const XmlNode& node)
+{
+    return node.get<MediaOptions::StatPolicy>(XlfResources::Media::EnableStat, MediaOptions::StatPolicy::Inherit);
 }
 
 void MediaParser::attach(Xibo::Media& media, const XmlNode& node)

@@ -11,6 +11,7 @@ using LayoutList = std::vector<ScheduledLayout>;
 using LayoutId = int;
 
 const LayoutId EmptyLayoutId = 0;
+const int DefaultScheduleId = 0;
 
 struct DefaultScheduledLayout
 {

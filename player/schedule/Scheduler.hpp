@@ -23,7 +23,8 @@ public:
     LayoutId nextLayout() const;
     LayoutId currentLayoutId() const;
     OverlaysIds overlayLayouts() const;
-    SchedulerStatus status() const;  // TODO tests
+    SchedulerStatus status() const;     // TODO tests
+    int scheduleIdBy(LayoutId id) const;  // TODO tests
 
     SignalScheduleUpdated& scheduleUpdated();
     SignalLayoutsUpdated& layoutUpdated();
@@ -35,6 +36,8 @@ private:
 
     OverlayLayoutQueue overlayQueueFrom(const LayoutSchedule& schedule);
     void updateCurrentOverlays(const OverlaysIds& ids);
+
+    boost::optional<ScheduledLayout> layoutById(int id) const;
 
     void restartTimer();
     DateTime closestLayoutDt();

@@ -9,6 +9,7 @@
 #include "common/fs/Resource.hpp"
 
 const std::string DefaultColor = "#000";
+const bool DefaultStatsEnabled = false;
 
 using namespace std::string_literals;
 
@@ -16,6 +17,8 @@ std::unique_ptr<Xibo::MainLayout> MainLayoutParser::parseBy(int layoutId)
 {
     try
     {
+        layoutId_ = layoutId;
+
         Resource xlfFile{std::to_string(layoutId) + ".xlf"};
         auto root = Parsing::xmlFrom(xlfFile);
         return layoutFrom(root.get_child(XlfResources::LayoutNode));
@@ -42,11 +45,12 @@ MainLayoutOptions MainLayoutParser::optionsFrom(const XmlNode& node)
 {
     auto width = node.get<int>(XlfResources::MainLayout::Width);
     auto height = node.get<int>(XlfResources::MainLayout::Height);
+    auto statsEnabled = node.get<bool>(XlfResources::MainLayout::StatsEnabled, DefaultStatsEnabled);
 
     auto backgroundUri = backgroundUriFrom(node);
     auto backgroundColor = backgroundColorFrom(node);
 
-    return MainLayoutOptions{width, height, backgroundUri, backgroundColor};
+    return MainLayoutOptions{layoutId_, width, height, statsEnabled, backgroundUri, backgroundColor};
 }
 
 boost::optional<Uri> MainLayoutParser::backgroundUriFrom(const XmlNode& node)

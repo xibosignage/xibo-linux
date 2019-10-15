@@ -12,5 +12,4 @@ namespace Soap
 
     template <typename Response>
     class RequestSerializer;
-
 }
