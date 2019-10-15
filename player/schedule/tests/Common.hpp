@@ -2,9 +2,8 @@
 
 #include "schedule/LayoutSchedule.hpp"
 
-const int DefaultSchediledId = 0;
-const int DefaultId = 1;
-const int DefaultPriority = 0;
+const int DefaultTestId = 1;
+const int DefaultTestPriority = 0;
 
 const std::string ScheduleXml = R"(<?xml version="1.0"?>
                                <schedule generated="2019-01-08 08:00:00" fitlerFrom="2019-07-26 07:00:00" fitlerTo="2019-07-28 07:00:00">

@@ -12,7 +12,7 @@ namespace ScheduleTests
 
     ScheduledLayout scheduledLayout()
     {
-        return ScheduledLayout{DefaultSchediledId, DefaultId, DefaultPriority, {}, {}, {}};
+        return ScheduledLayout{DefaultScheduleId, DefaultTestId, DefaultTestPriority, {}, {}, {}};
     }
 
     DefaultScheduledLayout defaultLayout()

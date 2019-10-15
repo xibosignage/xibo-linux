@@ -10,14 +10,14 @@ const std::vector<std::vector<int>> PrioritiesToTest =
     {{0, 1, 2}, {0, 2, 1}, {1, 2, 0}, {1, 0, 2}, {2, 1, 0}, {2, 0, 1}};
 
 template <typename Queue>
-Queue queueWithPriorities(const std::vector<LayoutId>& priorities)
+Queue queueWithPriorities(const std::vector<int>& priorities)
 {
     Queue queue;
 
     for (size_t i = 0; i != priorities.size(); ++i)
     {
         int step = static_cast<int>(i);
-        queue.add(ScheduleTests::scheduledLayout(DefaultSchediledId + step, DefaultId + step, priorities[i]));
+        queue.add(ScheduleTests::scheduledLayout(DefaultScheduleId + step, DefaultTestId + step, priorities[i]));
     }
 
     return queue;
@@ -26,7 +26,7 @@ Queue queueWithPriorities(const std::vector<LayoutId>& priorities)
 template <typename Queue>
 Queue queueWithSamePriorities(size_t queueSize = 3)
 {
-    std::vector<LayoutId> priorities(queueSize, DefaultPriority);
+    std::vector<int> priorities(queueSize, DefaultTestPriority);
 
     return queueWithPriorities<Queue>(priorities);
 }

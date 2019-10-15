@@ -24,8 +24,8 @@ TEST(LayoutScheduleEquality, ByDefaultLayoutId)
 {
     LayoutSchedule first{}, second{};
 
-    first.defaultLayout.id = DefaultId;
-    second.defaultLayout.id = DefaultId + 1;
+    first.defaultLayout.id = DefaultTestId;
+    second.defaultLayout.id = DefaultTestId + 1;
 
     ASSERT_NE(first, second);
 }
@@ -97,8 +97,8 @@ TEST(ScheduleLayoutEquality, ById)
 {
     ScheduledLayout first{}, second{};
 
-    first.id = DefaultId;
-    second.id = DefaultId + 1;
+    first.id = DefaultTestId;
+    second.id = DefaultTestId + 1;
 
     ASSERT_NE(first, second);
 }
@@ -107,8 +107,8 @@ TEST(ScheduleLayoutEquality, ByScheduleId)
 {
     ScheduledLayout first{}, second{};
 
-    first.scheduleId = DefaultSchediledId;
-    second.scheduleId = DefaultSchediledId + 1;
+    first.scheduleId = DefaultScheduleId;
+    second.scheduleId = DefaultScheduleId + 1;
 
     ASSERT_NE(first, second);
 }
@@ -117,8 +117,8 @@ TEST(ScheduleLayoutEquality, ByPriority)
 {
     ScheduledLayout first{}, second{};
 
-    first.priority = DefaultPriority;
-    second.priority = DefaultPriority + 1;
+    first.priority = DefaultTestPriority;
+    second.priority = DefaultTestPriority + 1;
 
     ASSERT_NE(first, second);
 }

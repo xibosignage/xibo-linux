@@ -45,13 +45,13 @@ TEST(RegularLayoutQueue, NextLayoutOnEmptyQueue)
 TEST(RegularLayoutQueue, NextLayoutOnDefaultLayout)
 {
     auto queue = queueWithPriorities<RegularLayoutQueue>({});
-    queue.addDefault(DefaultScheduledLayout{DefaultId, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId, {}});
 
     ASSERT_EQ(queue.size(), 0);
-    ASSERT_TRUE(queue.inQueue(DefaultId));
+    ASSERT_TRUE(queue.inQueue(DefaultTestId));
 
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 }
 
 TEST(RegularLayoutQueue, NextLayoutGivesTheHighestPriority)
@@ -59,101 +59,101 @@ TEST(RegularLayoutQueue, NextLayoutGivesTheHighestPriority)
     auto queue = queueWithPriorities<RegularLayoutQueue>({0, 1, 2});
 
     ASSERT_EQ(queue.size(), 1);
-    ASSERT_FALSE(queue.inQueue(DefaultId));
-    ASSERT_FALSE(queue.inQueue(DefaultId + 1));
-    ASSERT_TRUE(queue.inQueue(DefaultId + 2));
+    ASSERT_FALSE(queue.inQueue(DefaultTestId));
+    ASSERT_FALSE(queue.inQueue(DefaultTestId + 1));
+    ASSERT_TRUE(queue.inQueue(DefaultTestId + 2));
 
-    EXPECT_EQ(queue.next(), DefaultId + 2);
-    EXPECT_EQ(queue.current(), DefaultId + 2);
-    EXPECT_EQ(queue.next(), DefaultId + 2);
-    EXPECT_EQ(queue.current(), DefaultId + 2);
+    EXPECT_EQ(queue.next(), DefaultTestId + 2);
+    EXPECT_EQ(queue.current(), DefaultTestId + 2);
+    EXPECT_EQ(queue.next(), DefaultTestId + 2);
+    EXPECT_EQ(queue.current(), DefaultTestId + 2);
 }
 
 TEST(RegularLayoutQueue, NextLayoutShouldPreservePosition)
 {
     auto queue = queueWithSamePriorities<RegularLayoutQueue>();
-    queue.addDefault(DefaultScheduledLayout{DefaultId + 3, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId + 3, {}});
 
     ASSERT_EQ(queue.size(), 3);
-    ASSERT_TRUE(queue.inQueue(DefaultId));
-    ASSERT_TRUE(queue.inQueue(DefaultId + 1));
-    ASSERT_TRUE(queue.inQueue(DefaultId + 2));
+    ASSERT_TRUE(queue.inQueue(DefaultTestId));
+    ASSERT_TRUE(queue.inQueue(DefaultTestId + 1));
+    ASSERT_TRUE(queue.inQueue(DefaultTestId + 2));
 
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
-    EXPECT_EQ(queue.next(), DefaultId + 1);
-    EXPECT_EQ(queue.current(), DefaultId + 1);
-    EXPECT_EQ(queue.next(), DefaultId + 2);
-    EXPECT_EQ(queue.current(), DefaultId + 2);
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
+    EXPECT_EQ(queue.next(), DefaultTestId + 1);
+    EXPECT_EQ(queue.current(), DefaultTestId + 1);
+    EXPECT_EQ(queue.next(), DefaultTestId + 2);
+    EXPECT_EQ(queue.current(), DefaultTestId + 2);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 }
 
 TEST(RegularLayoutQueue, UpdateCurrentLayoutScheduledAndDefault)
 {
     const size_t QueueSize = 5;
     auto queue = queueWithSamePriorities<RegularLayoutQueue>(QueueSize);
-    queue.addDefault(DefaultScheduledLayout{DefaultId + 5, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId + 5, {}});
 
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 
-    queue.updateCurrent(DefaultId + 3);
+    queue.updateCurrent(DefaultTestId + 3);
 
-    EXPECT_EQ(queue.next(), DefaultId + 4);
-    EXPECT_EQ(queue.current(), DefaultId + 4);
+    EXPECT_EQ(queue.next(), DefaultTestId + 4);
+    EXPECT_EQ(queue.current(), DefaultTestId + 4);
 }
 
 TEST(RegularLayoutQueue, UpdateCurrentLayoutNotInQueueScheduled)
 {
     const size_t QueueSize = 5;
     auto queue = queueWithSamePriorities<RegularLayoutQueue>(QueueSize);
-    queue.addDefault(DefaultScheduledLayout{DefaultId + 5, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId + 5, {}});
 
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 
-    queue.updateCurrent(DefaultId + 10);
+    queue.updateCurrent(DefaultTestId + 10);
 
-    EXPECT_EQ(queue.next(), DefaultId + 1);
-    EXPECT_EQ(queue.current(), DefaultId + 1);
+    EXPECT_EQ(queue.next(), DefaultTestId + 1);
+    EXPECT_EQ(queue.current(), DefaultTestId + 1);
 }
 
 TEST(RegularLayoutQueue, UpdateCurrentLayoutWithDefaultInFilledQueue)
 {
     const size_t QueueSize = 5;
     auto queue = queueWithSamePriorities<RegularLayoutQueue>(QueueSize);
-    queue.addDefault(DefaultScheduledLayout{DefaultId + 5, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId + 5, {}});
 
-    EXPECT_EQ(queue.next(), DefaultId);
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.next(), DefaultTestId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 
-    queue.updateCurrent(DefaultId + 5);
+    queue.updateCurrent(DefaultTestId + 5);
 
-    EXPECT_EQ(queue.next(), DefaultId + 1);
-    EXPECT_EQ(queue.current(), DefaultId + 1);
+    EXPECT_EQ(queue.next(), DefaultTestId + 1);
+    EXPECT_EQ(queue.current(), DefaultTestId + 1);
 }
 
 TEST(RegularLayoutQueue, UpdateCurrentLayoutWithDefaultOnly)
 {
     auto queue = queueWithSamePriorities<RegularLayoutQueue>({});
-    queue.addDefault(DefaultScheduledLayout{DefaultId, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId, {}});
 
     EXPECT_EQ(queue.current(), EmptyLayoutId);
 
-    queue.updateCurrent(DefaultId);
+    queue.updateCurrent(DefaultTestId);
 
-    EXPECT_EQ(queue.current(), DefaultId);
+    EXPECT_EQ(queue.current(), DefaultTestId);
 }
 
 TEST(RegularLayoutQueue, UpdateCurrentLayoutNotInQueueDefault)
 {
     auto queue = queueWithSamePriorities<RegularLayoutQueue>({});
-    queue.addDefault(DefaultScheduledLayout{DefaultId, {}});
+    queue.addDefault(DefaultScheduledLayout{DefaultTestId, {}});
 
     EXPECT_EQ(queue.current(), EmptyLayoutId);
 
-    queue.updateCurrent(DefaultId + 5);
+    queue.updateCurrent(DefaultTestId + 5);
 
     EXPECT_EQ(queue.current(), EmptyLayoutId);
 }
