@@ -3,7 +3,6 @@
 #include "common/Parsing.hpp"
 #include "common/PlayerRuntimeError.hpp"
 #include "control/media/Media.hpp"
-#include "control/media/MediaOptions.hpp"
 #include "control/transitions/Transition.hpp"
 
 std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType);
@@ -12,6 +11,8 @@ std::istream& operator>>(std::istream& in, MediaGeometry::Valign& valign);
 
 std::istream& operator>>(std::istream& in, Transition::Type& type);
 std::istream& operator>>(std::istream& in, Transition::Direction& direction);
+
+std::istream& operator>>(std::istream& in, MediaOptions::StatPolicy& policy);
 
 class TransitionExecutor;
 
@@ -33,6 +34,7 @@ protected:
     virtual Uri uriFrom(const XmlNode& node);
     virtual int durationFrom(const XmlNode& node);
     virtual MediaGeometry geometryFrom(const XmlNode& node);
+    virtual MediaOptions::StatPolicy statFrom(const XmlNode& node);
     virtual std::unique_ptr<Xibo::Media> createMedia(const MediaOptions& options,
                                                      const XmlNode& node,
                                                      int width,

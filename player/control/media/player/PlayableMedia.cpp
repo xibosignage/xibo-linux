@@ -7,7 +7,7 @@ PlayableMedia::PlayableMedia(const MediaPlayerOptions& options, std::unique_ptr<
     assert(player_);
 
     MediaImpl::setWidget(player_->outputWindow());
-    MediaImpl::mediaFinished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
+    MediaImpl::finished().connect(std::bind(&PlayableMedia::onMediaFinished, this));
     player_->playbackFinished().connect(std::bind(&PlayableMedia::onPlaybackFinished, this, options));
 }
 
@@ -32,7 +32,7 @@ void PlayableMedia::onPlaybackFinished(const MediaPlayerOptions& options)
 {
     if (options.duration == 0)
     {
-        mediaFinished()();
+        finished()();
         return;
     }
 

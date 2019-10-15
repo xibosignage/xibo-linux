@@ -7,6 +7,7 @@
 #include <memory>
 
 using SignalRegionExpired = boost::signals2::signal<void(int)>;
+using MediaList = std::vector<std::unique_ptr<Xibo::Media>>;
 
 namespace Xibo
 {
@@ -18,6 +19,7 @@ namespace Xibo
         virtual void addMedia(std::unique_ptr<Media>&& media) = 0;
         virtual void start() = 0;
         virtual SignalRegionExpired& expired() = 0;
+        virtual const MediaList& mediaList() const = 0;
         virtual std::shared_ptr<Widget> view() = 0;
     };
 }

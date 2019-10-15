@@ -9,8 +9,16 @@
 namespace ph = std::placeholders;
 
 MainLayoutImpl::MainLayoutImpl(const MainLayoutOptions& options) :
+    options_(options),
     view_(OverlayLayoutFactory::create(options.width, options.height))
 {
+    if (options_.statEnabled)
+    {
+        view_->shown().connect([this]() {
+            layoutStats_.id = options_.id;
+            layoutStats_.started = DateTime::now();
+        });
+    }
 }
 
 void MainLayoutImpl::setBackground(std::shared_ptr<Xibo::Image>&& background)
@@ -31,8 +39,23 @@ void MainLayoutImpl::addRegion(std::unique_ptr<Xibo::Region>&& region, int x, in
 
     view_->addChild(region->view(), x, y, z);
     region->expired().connect(std::bind(&MainLayoutImpl::onRegionExpired, this, ph::_1));
+    monitorMediaStats(*region);
 
     regions_.emplace_back(std::move(region));
+}
+
+void MainLayoutImpl::monitorMediaStats(Xibo::Region& region)
+{
+    for (auto&& media : region.mediaList())
+    {
+        auto statPolicy = media->statPolicy();
+        if (statPolicy == MediaOptions::StatPolicy::Inherit)
+        {
+            media->enableStat(options_.statEnabled);
+        }
+        media->statReady().connect(
+            [this](const MediaStat& stat) { layoutStats_.mediaStats.emplace_back(std::move(stat)); });
+    }
 }
 
 SignalLayoutExpired& MainLayoutImpl::expired()
@@ -40,8 +63,14 @@ SignalLayoutExpired& MainLayoutImpl::expired()
     return layoutExpired_;
 }
 
+SignalLayoutStatReady& MainLayoutImpl::statReady()
+{
+    return statsReady_;
+}
+
 void MainLayoutImpl::restart()
 {
+    layoutStats_.clear();
     expiredRegions_.clear();
 
     for (auto&& region : regions_)
@@ -55,6 +84,11 @@ std::shared_ptr<Xibo::Widget> MainLayoutImpl::view()
     return view_;
 }
 
+int MainLayoutImpl::id() const
+{
+    return options_.id;
+}
+
 void MainLayoutImpl::onRegionExpired(int regionId)
 {
     Log::trace("[MainLayout] Region {} expired", regionId);
@@ -62,6 +96,15 @@ void MainLayoutImpl::onRegionExpired(int regionId)
 
     if (areAllRegionsExpired())
     {
+        if (options_.statEnabled)
+        {
+            layoutStats_.finished = DateTime::now();
+        }
+        if (options_.statEnabled || !layoutStats_.mediaStats.empty())
+        {
+            statsReady_(layoutStats_);
+        }
+
         layoutExpired_();
     }
 }

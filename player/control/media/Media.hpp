@@ -1,13 +1,15 @@
 #pragma once
 
-#include "control/media/MediaGeometry.hpp"
+#include "control/media/MediaOptions.hpp"
+#include "control/media/MediaStat.hpp"
 #include "control/widgets/Widget.hpp"
 
 #include <boost/signals2/signal.hpp>
-#include <memory>
+
+class TransitionExecutor;
 
 using SignalMediaFinished = boost::signals2::signal<void()>;
-class TransitionExecutor;
+using SignalMediaStatReady = boost::signals2::signal<void(const MediaStat&)>;
 
 namespace Xibo
 {
@@ -21,10 +23,14 @@ namespace Xibo
         virtual void start() = 0;
         virtual void stop() = 0;
 
-        virtual void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
-        virtual void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
+        virtual void enableStat(bool enable) = 0;
+        virtual MediaOptions::StatPolicy statPolicy() const = 0;
 
-        virtual SignalMediaFinished& mediaFinished() = 0;
+        virtual void inTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
+        virtual void outTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;
+
+        virtual SignalMediaFinished& finished() = 0;
+        virtual SignalMediaStatReady& statReady() = 0;
 
         virtual MediaGeometry::Align align() const = 0;
         virtual MediaGeometry::Valign valign() const = 0;
