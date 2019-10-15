@@ -134,6 +134,11 @@ void CollectionInterval::updateInterval(int collectInterval)
     }
 }
 
+void CollectionInterval::statsAggregation(const std::string& aggregationLevel)
+{
+    statsAggregation_ = aggregationLevel;
+}
+
 CmsStatus CollectionInterval::status()
 {
     CmsStatus status;

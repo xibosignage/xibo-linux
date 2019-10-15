@@ -15,6 +15,7 @@ struct PlayerSettings
     Field<std::string> downloadStartWindow{"downloadStartWindow", "00:00"};
     Field<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
     Field<bool> statsEnabled{"statsEnabled", false};
+    Field<std::string> aggregationLevel{"aggregationLevel", "Individual"};
     Field<std::string> xmrNetworkAddress{"xmrNetworkAddress"};
     Field<int> width{"sizeX", 0};
     Field<int> height{"sizeY", 0};

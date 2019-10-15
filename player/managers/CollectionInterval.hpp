@@ -37,6 +37,7 @@ public:
     void stop();
     void collect(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
+    void statsAggregation(const std::string& aggregationLevel);
     CmsStatus status();
 
     SignalSettingsUpdated& settingsUpdated();
@@ -68,6 +69,7 @@ private:
     bool registered_;
     DateTime lastChecked_;
     size_t requiredFiles_;
+    std::string statsAggregation_;
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;
