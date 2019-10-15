@@ -16,10 +16,14 @@ public:
     void start() override;
     void stop() override;
 
-    void setInTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
-    void setOutTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
+    void enableStat(bool enable) override;
+    MediaOptions::StatPolicy statPolicy() const override;
 
-    SignalMediaFinished& mediaFinished() override;
+    void inTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
+    void outTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
+
+    SignalMediaFinished& finished() override;
+    SignalMediaStatReady& statReady() override;
 
     MediaGeometry::Align align() const override;
     MediaGeometry::Valign valign() const override;
@@ -31,6 +35,8 @@ protected:
 
 private:
     void startTimer(int duration);
+    void sendStat();
+
     void startAttachedMedia();
     void stopAttachedMedia();
 
@@ -39,10 +45,15 @@ private:
 
 private:
     MediaOptions options_;
+    std::unique_ptr<Timer> timer_;
+
+    bool enableStat_;
+    MediaStat stat_;
+
     std::shared_ptr<Xibo::Widget> widget_;
     std::unique_ptr<Xibo::Media> attachedMedia_;
-    std::unique_ptr<Timer> timer_;
     std::unique_ptr<TransitionExecutor> inTransition_;
     std::unique_ptr<TransitionExecutor> outTransition_;
-    SignalMediaFinished mediaFinished_;
+    SignalMediaFinished finished_;
+    SignalMediaStatReady statReady_;
 };

@@ -11,7 +11,7 @@ TEST_F(SchedulerLayoutTests, NoRegularLayoutsDefaultLayoutInvalid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout.id = DefaultId;
+    schedule.defaultLayout.id = DefaultTestId;
     scheduler->reloadSchedule(std::move(schedule));
 
     ASSERT_EQ(scheduler->nextLayout(), EmptyLayoutId);
@@ -22,10 +22,10 @@ TEST_F(SchedulerLayoutTests, NoRegularLayoutsDefaultLayoutValid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
     scheduler->reloadSchedule(std::move(schedule));
 
-    ASSERT_EQ(scheduler->nextLayout(), DefaultId);
+    ASSERT_EQ(scheduler->nextLayout(), DefaultTestId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInCache)
@@ -33,15 +33,15 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInCache)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
     for (int i = 1; i <= 3; ++i)
     {
-        addToQueue(schedule, notInCacheLayout(DefaultId + i, DefaultPriority));
+        addToQueue(schedule, notInCacheLayout(DefaultTestId + i, DefaultTestPriority));
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInRange)
@@ -49,15 +49,15 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllNotInRange)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
     for (int i = 1; i <= 3; ++i)
     {
-        addToQueue(schedule, notInRangeLayout(DefaultId + i, DefaultPriority));
+        addToQueue(schedule, notInRangeLayout(DefaultTestId + i, DefaultTestPriority));
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllValid)
@@ -65,17 +65,17 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePriorityAllValid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
     for (int i = 1; i <= 3; ++i)
     {
-        addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority));
+        addToQueue(schedule, validLayout(DefaultTestId + i, DefaultTestPriority));
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 2);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 2);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInCache)
@@ -83,15 +83,15 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInCache)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
-    addToQueue(schedule, validLayout(DefaultId + 1, DefaultPriority));
-    addToQueue(schedule, notInCacheLayout(DefaultId + 2, DefaultPriority));
-    addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
+    addToQueue(schedule, validLayout(DefaultTestId + 1, DefaultTestPriority));
+    addToQueue(schedule, notInCacheLayout(DefaultTestId + 2, DefaultTestPriority));
+    addToQueue(schedule, validLayout(DefaultTestId + 3, DefaultTestPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInRange)
@@ -99,15 +99,15 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsSamePrioritySomeNotInRange)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
-    addToQueue(schedule, validLayout(DefaultId + 1, DefaultPriority));
-    addToQueue(schedule, notInRangeLayout(DefaultId + 2, DefaultPriority));
-    addToQueue(schedule, validLayout(DefaultId + 3, DefaultPriority));
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
+    addToQueue(schedule, validLayout(DefaultTestId + 1, DefaultTestPriority));
+    addToQueue(schedule, notInRangeLayout(DefaultTestId + 2, DefaultTestPriority));
+    addToQueue(schedule, validLayout(DefaultTestId + 3, DefaultTestPriority));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesAllValid)
@@ -115,15 +115,15 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesAllValid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
     for (int i = 1; i <= 3; ++i)
     {
-        addToQueue(schedule, validLayout(DefaultId + i, DefaultPriority + i));
+        addToQueue(schedule, validLayout(DefaultTestId + i, DefaultTestPriority + i));
     }
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 3);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 3);
 }
 
 TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesSomeInvalid)
@@ -131,12 +131,12 @@ TEST_F(SchedulerLayoutTests, RegularLayoutsDifferentPrioritiesSomeInvalid)
     auto scheduler = construct();
     LayoutSchedule schedule{};
 
-    schedule.defaultLayout = defaultLayout(DefaultId);
-    addToQueue(schedule, validLayout(DefaultId + 1, DefaultPriority + 1));
-    addToQueue(schedule, notInRangeLayout(DefaultId + 2, DefaultPriority + 2));
-    addToQueue(schedule, notInCacheLayout(DefaultId + 3, DefaultPriority + 3));
+    schedule.defaultLayout = defaultLayout(DefaultTestId);
+    addToQueue(schedule, validLayout(DefaultTestId + 1, DefaultTestPriority + 1));
+    addToQueue(schedule, notInRangeLayout(DefaultTestId + 2, DefaultTestPriority + 2));
+    addToQueue(schedule, notInCacheLayout(DefaultTestId + 3, DefaultTestPriority + 3));
     scheduler->reloadSchedule(std::move(schedule));
 
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
-    EXPECT_EQ(scheduler->nextLayout(), DefaultId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
+    EXPECT_EQ(scheduler->nextLayout(), DefaultTestId + 1);
 }

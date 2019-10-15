@@ -2,10 +2,10 @@
 
 #include "common/types/Color.hpp"
 #include "control/widgets/KeyboardKey.hpp"
+#include "control/widgets/NativeWindow.hpp"
 #include "control/widgets/Widget.hpp"
 
 #include <boost/signals2/signal.hpp>
-#include <memory>
 
 using SignalKeyPressed = boost::signals2::signal<void(const KeyboardKey&)>;
 
@@ -26,6 +26,7 @@ namespace Xibo
         virtual void unfullscreen() = 0;
         virtual bool isFullscreen() const = 0;
         virtual void setCursorVisible(bool cursorVisible) = 0;
+        virtual NativeWindow nativeWindow() = 0;
 
         virtual void setBackgroundColor(const Color& color) = 0;
         virtual SignalKeyPressed& keyPressed() = 0;

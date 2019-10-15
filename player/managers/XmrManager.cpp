@@ -11,6 +11,9 @@ const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
 const size_t MESSAGE_PART = 2;
 
+const char* const HearbeatChannel = "H";
+const Channels XmrChannels{MainXmrChannel, HearbeatChannel};
+
 XmrManager::~XmrManager()
 {
     subcriber_.stop();
@@ -23,9 +26,7 @@ void XmrManager::connect(const std::string& host)
 
     info_.host = host;
     subcriber_.messageReceived().connect([this](const MultiPartMessage& message) { processMultipartMessage(message); });
-    subcriber_.run(host);
-
-    Log::info("[XMR] Connected to publisher");
+    subcriber_.run(host, XmrChannels);
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
@@ -45,7 +46,7 @@ XmrStatus XmrManager::status()
 
 void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
 {
-    if (multipart[CHANNEL_PART] == XmrChannel)
+    if (multipart[CHANNEL_PART] == MainXmrChannel)
     {
         try
         {

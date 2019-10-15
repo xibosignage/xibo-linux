@@ -41,7 +41,7 @@ void Log::setLevel(const std::string& level)
 {
     if (level == "trace")
         logger()->set_level(spdlog::level::trace);
-    else if (level == "audit")
+    else if (level == "debug")
         logger()->set_level(spdlog::level::debug);
     else if (level == "info")
         logger()->set_level(spdlog::level::info);

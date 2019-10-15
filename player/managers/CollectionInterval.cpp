@@ -6,9 +6,8 @@
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "config.hpp"
 
+#include "managers/StatsRecorder.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "utils/Managers.hpp"
-#include "utils/ScreenShoter.hpp"
 
 #include <glibmm/main.h>
 
@@ -99,11 +98,12 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             onSchedule(scheduleResult, session);
             onRequiredFiles(requiredFilesResult, session);
 
-            submitScreenShot();
-
             XmlLogsRetriever logsRetriever;
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
+
+            auto submitStatsResult = xmdsSender_.submitStats(StatsRecorder::get().xmlString()).get();
+            onSubmitStats(submitStatsResult, session);
         }
         sessionFinished(session, displayError);
     }
@@ -133,6 +133,11 @@ void CollectionInterval::updateInterval(int collectInterval)
         Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
         collectInterval_ = collectInterval;
     }
+}
+
+void CollectionInterval::statsAggregation(const std::string& aggregationLevel)
+{
+    statsAggregation_ = aggregationLevel;
 }
 
 CmsStatus CollectionInterval::status()
@@ -236,7 +241,7 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
         }
         else
         {
-            Log::debug("[XMDS::SubmitLogs] Not submited due to unknown error");
+            Log::error("[XMDS::SubmitLogs] Not submited due to unknown error");
         }
     }
     else
@@ -245,20 +250,23 @@ void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& lo
     }
 }
 
-void CollectionInterval::submitScreenShot()
+void CollectionInterval::onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult,
+                                       CollectionSessionPtr session)
 {
-    Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
-        xmdsSender_.submitScreenShot(screenshot).then([](auto future) {
-            auto [error, result] = future.get();
-            if (error)
-            {
-                Log::error("[XMDS::SubmitScreenShot] {}", error);
-            }
-            else
-            {
-                std::string message = result.success ? "Submitted" : "Not submitted";
-                Log::debug("[XMDS::SubmitScreenShot] {}", message);
-            }
-        });
-    });
+    auto [error, result] = statsResult;
+    if (!error)
+    {
+        if (result.success)
+        {
+            Log::debug("[XMDS::SubmitStats] Submitted");
+        }
+        else
+        {
+            Log::error("[XMDS::SubmitStats] Not submited due to unknown error");
+        }
+    }
+    else
+    {
+        sessionFinished(session, error);
+    }
 }

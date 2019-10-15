@@ -7,6 +7,8 @@
 #include <boost/format.hpp>
 #include <gtkmm/cssprovider.h>
 
+#include <gdk/gdkx.h>
+
 WindowGtk::WindowGtk() : WidgetGtk(handler_), cursorVisible_(true), fullscreen_(false)
 {
     handler_.signal_realize().connect(std::bind(&WindowGtk::onRealized, this));
@@ -131,7 +133,7 @@ SignalKeyPressed& WindowGtk::keyPressed()
 
 void WindowGtk::fullscreen()
 {
-    auto area = getCurrentMonitorGeometry();
+    auto area = currentMonitorGeometry();
 
     if (!area.has_zero_area())
     {
@@ -145,7 +147,7 @@ void WindowGtk::fullscreen()
     }
 }
 
-Gdk::Rectangle WindowGtk::getCurrentMonitorGeometry() const
+Gdk::Rectangle WindowGtk::currentMonitorGeometry() const
 {
     Gdk::Rectangle area;
     auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(handler_.get_screen());
@@ -204,6 +206,16 @@ void WindowGtk::setBackgroundColor(const Color& color)
     {
         Log::error("[WindowGtk] Background color hasn't been set");
     }
+}
+
+NativeWindow WindowGtk::nativeWindow()
+{
+    auto window = handler_.get_window();
+    if (window)
+    {
+        return gdk_x11_window_get_xid(window->gobj());
+    }
+    return DefaultNativeWindow;
 }
 
 void WindowGtk::setKeepAbove(bool keep_above)

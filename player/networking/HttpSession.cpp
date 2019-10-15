@@ -149,7 +149,17 @@ void HttpSession::sessionFinished(const boost::system::error_code& ec)
 {
     if (!ec)
     {
-        setHttpResult(HttpResponseResult{PlayerError{}, response_.get().body()});
+        auto&& message = response_.get();
+        if (message.result() == http::status::ok)
+        {
+            setHttpResult(HttpResponseResult{PlayerError{}, response_.get().body()});
+        }
+        else
+        {
+            std::string errorMessage = std::to_string(message.result_int()) + " " + std::string{message.reason()};
+            PlayerError error{"HTTP", errorMessage};
+            setHttpResult(HttpResponseResult{error, {}});
+        }
     }
     else
     {

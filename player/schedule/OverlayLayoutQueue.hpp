@@ -7,7 +7,7 @@ using OverlaysIds = std::vector<int>;
 class OverlayLayoutQueue : public LayoutQueue
 {
 public:
-    OverlaysIds overlays() const
+    OverlaysIds overlays() const  // TODO tests
     {
         OverlaysIds ids;
 

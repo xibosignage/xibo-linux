@@ -26,6 +26,4 @@ namespace Xibo
 
         virtual SignalShown& shown() = 0;
     };
-
-    using WidgetPtr = std::shared_ptr<Widget>;
 }

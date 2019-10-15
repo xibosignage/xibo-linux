@@ -15,6 +15,7 @@ void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& se
                  settings.displayName,
                  settings.preventSleep,
                  settings.statsEnabled,
+                 settings.aggregationLevel,
                  settings.screenshotSize,
                  settings.collectInterval,
                  settings.downloadEndWindow,

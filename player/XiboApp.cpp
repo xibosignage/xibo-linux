@@ -11,6 +11,8 @@
 #include "managers/CollectionInterval.hpp"
 #include "managers/XmrManager.hpp"
 #include "schedule/Scheduler.hpp"
+#include "screenshot/ScreeShoterFactory.hpp"
+#include "screenshot/ScreenShotInterval.hpp"
 
 #include "networking/HttpClient.hpp"
 #include "networking/WebServer.hpp"
@@ -25,7 +27,6 @@
 #include "common/settings/CmsSettings.hpp"
 #include "common/settings/PlayerSettings.hpp"
 #include "common/system/System.hpp"
-#include "utils/ScreenShoter.hpp"
 
 #include <boost/date_time/time_clock.hpp>
 #include <glibmm/main.h>
@@ -71,7 +72,7 @@ XiboApp::XiboApp(const std::string& name) :
     webserver_->setRootDirectory(Resources::directory());
     webserver_->run(playerSettings_.embeddedServerPort);
 
-    Log::error("[XiboApp] {}", webserver_->address());
+    Log::info("[XiboApp] {}", webserver_->address());
     HttpClient::instance().setProxyServer(cmsSettings_.proxy());
     RsaManager::instance().load();
     setupXmrManager();
@@ -99,13 +100,17 @@ void XiboApp::setupXmrManager()
     xmrManager_->screenshot().connect([this]() {
         Log::info("[XMR] Taking unscheduled screenshot");
 
-        Managers::screenShoter().takeBase64([this](const std::string& screenshot) {
+        screenShoter_->takeBase64([this](const std::string& screenshot) {
             xmdsManager_->submitScreenShot(screenshot).then([](auto future) {
                 auto [error, result] = future.get();
-                boost::ignore_unused(result);
                 if (error)
                 {
                     Log::error("[XMDS::SubmitScreenShot] {}", error);
+                }
+                else
+                {
+                    std::string message = result.success ? "Submitted" : "Not submitted";
+                    Log::debug("[XMDS::SubmitScreenShot] {}", message);
                 }
             });
         });
@@ -147,9 +152,10 @@ int XiboApp::run()
         mainWindow_->updateStatusScreen(info);
     });
 
-    screenShoter_ = std::make_unique<ScreenShoter>(*mainWindow_);
+    screenShoter_ = ScreenShoterFactory::create(*mainWindow_);
     xmdsManager_ =
         std::make_unique<XmdsRequestSender>(cmsSettings_.cmsAddress, cmsSettings_.key, cmsSettings_.displayId);
+    screenShotInterval_ = std::make_unique<ScreenShotInterval>(*xmdsManager_, *screenShoter_);
     collectionInterval_ = createCollectionInterval(*xmdsManager_);
 
     applyPlayerSettings(playerSettings_);
@@ -243,6 +249,7 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
         xmrManager_->connect(settings.xmrNetworkAddress);
         mainWindow_->setSize(settings.width, settings.height);
         mainWindow_->move(settings.x, settings.y);
+        screenShotInterval_->updateInterval(settings.collectInterval);
 
         Log::debug("[XiboApp] Player settings updated");
     }

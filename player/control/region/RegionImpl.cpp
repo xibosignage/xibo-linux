@@ -19,7 +19,7 @@ void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
 {
     assert(media);
 
-    media->mediaFinished().connect(std::bind(&RegionImpl::onMediaDurationTimeout, this));
+    media->finished().connect(std::bind(&RegionImpl::onMediaDurationTimeout, this));
 
     // Media can be invisible on the screen so we check if media has view
     auto mediaView = media->view();
@@ -29,7 +29,7 @@ void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
         view_->addChild(mediaView, x, y);
     }
 
-    media_.emplace_back(std::move(media));
+    mediaList_.emplace_back(std::move(media));
 }
 
 std::pair<int, int> RegionImpl::calcMediaPosition(Xibo::Media& media)
@@ -45,7 +45,7 @@ std::pair<int, int> RegionImpl::calcMediaPosition(Xibo::Media& media)
 
 void RegionImpl::start()
 {
-    assert(!media_.empty());
+    assert(!mediaList_.empty());
 
     placeMedia(FirstMediaIndex);
 }
@@ -60,15 +60,20 @@ std::shared_ptr<Xibo::Widget> RegionImpl::view()
     return view_;
 }
 
+const MediaList& RegionImpl::mediaList() const
+{
+    return mediaList_;
+}
+
 void RegionImpl::placeMedia(size_t mediaIndex)
 {
     currentMediaIndex_ = mediaIndex;
-    media_[mediaIndex]->start();
+    mediaList_[mediaIndex]->start();
 }
 
 void RegionImpl::removeMedia(size_t mediaIndex)
 {
-    media_[mediaIndex]->stop();
+    mediaList_[mediaIndex]->stop();
 }
 
 void RegionImpl::onMediaDurationTimeout()
@@ -95,14 +100,14 @@ bool RegionImpl::isExpired() const
 
 bool RegionImpl::shouldBeMediaReplaced() const
 {
-    return media_.size() > 1 || options_.loop == RegionOptions::Loop::Enable;
+    return mediaList_.size() > 1 || options_.loop == RegionOptions::Loop::Enable;
 }
 
 size_t RegionImpl::getNextMediaIndex() const
 {
     size_t nextContentIndex = currentMediaIndex_ + 1;
 
-    if (nextContentIndex >= media_.size()) return FirstMediaIndex;
+    if (nextContentIndex >= mediaList_.size()) return FirstMediaIndex;
 
     return nextContentIndex;
 }

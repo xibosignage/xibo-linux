@@ -64,11 +64,11 @@ protected:
 
         if constexpr (std::is_same_v<Tag, RegularTag>)
         {
-            (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
+            (schedule.regularLayouts.emplace_back(validLayout(regularIds, DefaultTestPriority)), ...);
         }
         else
         {
-            (schedule.overlayLayouts.emplace_back(validLayout(regularIds, DefaultPriority)), ...);
+            (schedule.overlayLayouts.emplace_back(validLayout(regularIds, DefaultTestPriority)), ...);
         }
 
         return schedule;
@@ -83,7 +83,7 @@ protected:
     template <typename... Ids>
     LayoutSchedule makeOverlaySchedule(Ids... regularIds)
     {
-        return makeSchedule<OverlayTag>(DefaultId, regularIds...);
+        return makeSchedule<OverlayTag>(DefaultTestId, regularIds...);
     }
 
 protected:

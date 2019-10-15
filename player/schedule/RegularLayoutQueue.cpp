@@ -14,6 +14,9 @@ void RegularLayoutQueue::updateCurrent(LayoutId id)
     if (index)
     {
         nextIndex_ = increaseIndex(index.value());
+    }
+    if (index || defaultLayout_->id == id)
+    {
         currentId_ = id;
     }
 }

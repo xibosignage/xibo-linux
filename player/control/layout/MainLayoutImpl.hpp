@@ -17,15 +17,26 @@ public:
     void setBackground(std::shared_ptr<Xibo::Image>&& background) override;
     void addRegion(std::unique_ptr<Xibo::Region>&& region, int x, int y, int z) override;
     SignalLayoutExpired& expired() override;
+    SignalLayoutStatReady& statReady() override;
+    SignalLayoutMediaStatsReady& mediaStatsReady() override;
     void restart() override;
     std::shared_ptr<Xibo::Widget> view() override;
+    int id() const override;
 
 private:
+    void monitorMediaStats(Xibo::Region& region);
     void onRegionExpired(int regionId);
     bool areAllRegionsExpired() const;
 
 private:
+    MainLayoutOptions options_;
     std::shared_ptr<Xibo::OverlayLayout> view_;
+
+    LayoutStat layoutStats_;
+    std::vector<MediaStat> mediaStats_;
+    SignalLayoutStatReady statsReady_;
+    SignalLayoutMediaStatsReady mediaStatsReady_;
+
     std::vector<std::unique_ptr<Xibo::Region>> regions_;
     std::set<int> expiredRegions_;
     SignalLayoutExpired layoutExpired_;

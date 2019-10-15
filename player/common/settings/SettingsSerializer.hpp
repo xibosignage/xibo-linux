@@ -30,7 +30,7 @@ protected:
         {
             auto tree = Parsing::xmlFrom(file);
 
-            (fields.setValue(tree.get<Args>(std::string{fields.name()})), ...);
+            (fields.setValue(tree.get<Args>(std::string{fields.name()}, fields.value())), ...);
         }
         catch (std::exception& e)
         {

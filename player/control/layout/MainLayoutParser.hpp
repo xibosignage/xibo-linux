@@ -27,4 +27,7 @@ protected:
 
     virtual std::shared_ptr<Xibo::Image> createBackground(const MainLayoutOptions& options);
     void addRegions(Xibo::MainLayout& layout, const XmlNode& node);
+
+private:
+    int layoutId_;
 };

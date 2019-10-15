@@ -6,6 +6,7 @@
 
 #include "common/fs/FileCache.hpp"
 #include "common/logger/Logging.hpp"
+#include "managers/StatsRecorder.hpp"
 #include "schedule/Scheduler.hpp"
 
 #include "config.hpp"
@@ -83,6 +84,13 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
     {
         LayoutParser parser;
         auto layout = parser.parseBy(layoutId);
+        auto scheduleId = scheduler_.scheduleIdBy(layoutId);
+
+        layout->statReady().connect(
+            [scheduleId](const LayoutStat& stat) { StatsRecorder::get().addLayoutStat(scheduleId, stat); });
+        layout->mediaStatsReady().connect([layoutId, scheduleId](const auto& stats) {
+            StatsRecorder::get().addMediaStats(layoutId, scheduleId, stats);
+        });
 
         layout->expired().connect([this, layoutId]() {
             Log::trace("[LayoutsManager] Layout {} expired", layoutId);

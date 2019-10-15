@@ -8,6 +8,7 @@
 #include "networking/xmds/RequiredFiles.hpp"
 #include "networking/xmds/Schedule.hpp"
 #include "networking/xmds/SubmitLog.hpp"
+#include "networking/xmds/SubmitStats.hpp"
 
 #include "common/Dispatcher.hpp"
 #include "common/JoinableThread.hpp"
@@ -36,6 +37,7 @@ public:
     void stop();
     void collect(CollectionResultCallback callback);
     void updateInterval(int collectInterval);
+    void statsAggregation(const std::string& aggregationLevel);
     CmsStatus status();
 
     SignalSettingsUpdated& settingsUpdated();
@@ -55,8 +57,8 @@ private:
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles, CollectionSessionPtr session);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session);
     void updateMediaInventory(MediaInventoryItems&& items);
-    void onSubmitLog(const ResponseResult<SubmitLog::Result>& requiredFiles, CollectionSessionPtr session);
-    void submitScreenShot();
+    void onSubmitLog(const ResponseResult<SubmitLog::Result>& logResult, CollectionSessionPtr session);
+    void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult, CollectionSessionPtr session);
 
 private:
     XmdsRequestSender& xmdsSender_;
@@ -67,6 +69,7 @@ private:
     bool registered_;
     DateTime lastChecked_;
     size_t requiredFiles_;
+    std::string statsAggregation_;
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;

@@ -56,7 +56,7 @@ private:
             if (shouldBeDownloaded(file))
             {
                 auto result = tryDownloadRequiredFile(file);
-                if (result.has_value())
+                if (result.valid())
                 {
                     results.emplace_back(std::move(result));
                 }

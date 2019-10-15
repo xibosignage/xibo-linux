@@ -6,13 +6,12 @@
 
 Scheduler::Scheduler(const FileCache& fileCache) : fileCache_{fileCache}, schedule_{} {}
 
-// TODO make an optional to differentiate between empty and non-inialized schedule
 void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 {
-    if (schedule_ != schedule)
+    if (!schedule_.has_value() || schedule_ != schedule)
     {
         schedule_ = std::move(schedule);
-        scheduleUpdated_(schedule_);
+        scheduleUpdated_(schedule_.value());
 
         reloadQueue();
     }
@@ -20,11 +19,13 @@ void Scheduler::reloadSchedule(LayoutSchedule&& schedule)
 
 void Scheduler::reloadQueue()
 {
+    assert(schedule_);
+
     auto current = currentLayoutId();
     auto overlays = overlayLayouts();
 
-    regularQueue_ = regularQueueFrom(schedule_);
-    overlayQueue_ = overlayQueueFrom(schedule_);
+    regularQueue_ = regularQueueFrom(schedule_.value());
+    overlayQueue_ = overlayQueueFrom(schedule_.value());
     restartTimer();
 
     updateCurrentLayout(current);
@@ -101,6 +102,8 @@ bool Scheduler::layoutOnSchedule(const ScheduledLayout& layout) const
 template <typename Layout>
 bool Scheduler::layoutValid(const Layout& layout) const
 {
+    assert(schedule_);
+
     auto layoutFile = std::to_string(layout.id) + ".xlf";
     if (!fileCache_.valid(layoutFile)) return false;
 
@@ -112,7 +115,7 @@ bool Scheduler::layoutValid(const Layout& layout) const
         }
     }
 
-    for (auto&& dependant : schedule_.globalDependants)
+    for (auto&& dependant : schedule_->globalDependants)
     {
         if (!fileCache_.valid(dependant))
         {
@@ -150,16 +153,18 @@ SignalLayoutsUpdated& Scheduler::overlaysUpdated()
 
 DateTime Scheduler::closestLayoutDt()
 {
+    assert(schedule_);
+
     auto now = DateTime::now();
     DateTime closestDt;
 
-    for (auto&& layout : schedule_.regularLayouts)
+    for (auto&& layout : schedule_->regularLayouts)
     {
         if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
         if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
     }
 
-    for (auto&& layout : schedule_.overlayLayouts)
+    for (auto&& layout : schedule_->overlayLayouts)
     {
         if (now < layout.startDT && layout.startDT < closestDt) closestDt = layout.startDT;
         if (now < layout.endDT && layout.endDT < closestDt) closestDt = layout.endDT;
@@ -188,15 +193,54 @@ SignalLayoutsUpdated& Scheduler::layoutUpdated()
 
 SchedulerStatus Scheduler::status() const
 {
+    assert(schedule_);
+
     SchedulerStatus status;
 
-    fillSchedulerStatus(status, schedule_.regularLayouts);
-    fillSchedulerStatus(status, schedule_.overlayLayouts);
+    fillSchedulerStatus(status, schedule_->regularLayouts);
+    fillSchedulerStatus(status, schedule_->overlayLayouts);
+    addDefaultToStatus(status, schedule_->defaultLayout);
 
-    status.generatedTime = schedule_.generatedTime.string();
+    status.generatedTime = schedule_->generatedTime.string();
     status.currentLayout = currentLayoutId();
 
     return status;
+}
+
+int Scheduler::scheduleIdBy(LayoutId id) const
+{
+    assert(schedule_);
+
+    auto layout = layoutById(id);
+    if (layout)
+    {
+        return layout->scheduleId;
+    }
+    return DefaultScheduleId;
+}
+
+boost::optional<ScheduledLayout> Scheduler::layoutById(int id) const
+{
+    assert(schedule_);
+
+    {
+        auto&& regularLayouts = schedule_->regularLayouts;
+        auto it = std::find_if(regularLayouts.begin(), regularLayouts.end(), [id](const ScheduledLayout& other) {
+            return other.id == id;
+        });
+
+        if (it != regularLayouts.end()) return *it;
+    }
+    {
+        auto&& overlayLayouts = schedule_->overlayLayouts;
+        auto it = std::find_if(overlayLayouts.begin(), overlayLayouts.end(), [id](const ScheduledLayout& other) {
+            return other.id == id;
+        });
+
+        if (it != overlayLayouts.end()) return *it;
+    }
+
+    return {};
 }
 
 template <typename LayoutsList>
@@ -216,5 +260,17 @@ void Scheduler::fillSchedulerStatus(SchedulerStatus& status, const LayoutsList& 
         {
             status.invalidLayouts.emplace_back(layout.id);
         }
+    }
+}
+
+void Scheduler::addDefaultToStatus(SchedulerStatus& status, const DefaultScheduledLayout& layout) const
+{
+    if (layoutValid(layout))
+    {
+        status.validLayouts.emplace_back(layout.id);
+    }
+    else
+    {
+        status.invalidLayouts.emplace_back(layout.id);
     }
 }
