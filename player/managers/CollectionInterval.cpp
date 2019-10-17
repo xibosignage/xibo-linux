@@ -14,8 +14,9 @@
 const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
 
-CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender) :
+CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder) :
     xmdsSender_{xmdsSender},
+    statsRecorder_{statsRecorder},
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     started_{false},
@@ -102,7 +103,8 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
 
-            auto submitStatsResult = xmdsSender_.submitStats(StatsRecorder::get().xmlString()).get();
+            auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.toXml()).get();
+            statsRecorder_.clear();
             onSubmitStats(submitStatsResult, session);
         }
         sessionFinished(session, displayError);

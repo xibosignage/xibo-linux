@@ -20,6 +20,7 @@ using SignalScheduleAvailable = Dispatcher<Schedule::Result>;
 using SignalCollectionFinished = Dispatcher<PlayerError>;
 using SignalFilesDownloaded = Dispatcher<>;
 class XmdsRequestSender;
+class StatsRecorder;
 
 struct CollectionSession
 {
@@ -31,7 +32,7 @@ using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 class CollectionInterval
 {
 public:
-    CollectionInterval(XmdsRequestSender& xmdsSender);
+    CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder);
 
     void startRegularCollection();
     void stop();
@@ -62,6 +63,7 @@ private:
 
 private:
     XmdsRequestSender& xmdsSender_;
+    StatsRecorder& statsRecorder_;
     std::unique_ptr<JoinableThread> workerThread_;
     std::unique_ptr<Timer> intervalTimer_;
     int collectInterval_;

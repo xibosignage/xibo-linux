@@ -11,8 +11,9 @@
 
 #include "config.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler, FileCache& fileCache) :
+LayoutsManager::LayoutsManager(Scheduler& scheduler, StatsRecorder& statsRecorder, FileCache& fileCache) :
     scheduler_(scheduler),
+    statsRecorder_(statsRecorder),
     fileCache_(fileCache)
 {
     scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
@@ -87,9 +88,9 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 
         layout->statReady().connect(
-            [scheduleId](const LayoutStat& stat) { StatsRecorder::get().addLayoutStat(scheduleId, stat); });
-        layout->mediaStatsReady().connect([layoutId, scheduleId](const auto& stats) {
-            StatsRecorder::get().addMediaStats(layoutId, scheduleId, stats);
+            [this, scheduleId](const LayoutStat& stat) { statsRecorder_.addLayoutStat(scheduleId, stat); });
+        layout->mediaStatsReady().connect([this, layoutId, scheduleId](const auto& stats) {
+            statsRecorder_.addMediaStats(layoutId, scheduleId, stats);
         });
 
         layout->expired().connect([this, layoutId]() {

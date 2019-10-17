@@ -9,6 +9,7 @@
 #include "control/media/MediaParsersRepo.hpp"
 
 #include "managers/CollectionInterval.hpp"
+#include "managers/StatsRecorder.hpp"
 #include "managers/XmrManager.hpp"
 #include "schedule/Scheduler.hpp"
 #include "screenshot/ScreeShoterFactory.hpp"
@@ -54,9 +55,10 @@ XiboApp::XiboApp(const std::string& name) :
     mainLoop_(std::make_unique<MainLoop>(name)),
     fileCache_(std::make_unique<FileCacheImpl>()),
     scheduler_(std::make_unique<Scheduler>(*fileCache_)),
+    statsRecorder_(std::make_unique<StatsRecorder>()),
     xmrManager_(std::make_unique<XmrManager>()),
     webserver_(std::make_shared<XiboWebServer>()),
-    layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *fileCache_))
+    layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *statsRecorder_, *fileCache_))
 {
     if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
         throw PlayerRuntimeError{"XiboApp", "Update CMS settings using player options app"};
@@ -212,7 +214,7 @@ GeneralInfo XiboApp::collectGeneralInfo()
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {
-    auto interval = std::make_unique<CollectionInterval>(xmdsManager);
+    auto interval = std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_);
 
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
