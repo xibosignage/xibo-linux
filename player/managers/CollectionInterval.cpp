@@ -38,7 +38,7 @@ void CollectionInterval::stop()
 
 void CollectionInterval::startTimer()
 {
-    intervalTimer_->start(std::chrono::seconds(collectInterval_), [=]() {
+    intervalTimer_->startOnce(std::chrono::seconds(collectInterval_), [=]() {
         collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
     });
 }

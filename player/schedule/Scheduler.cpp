@@ -182,7 +182,7 @@ void Scheduler::restartTimer()
     {
         Log::trace("[Scheduler] Timer restarted: {}", duration);
 
-        timer_.start(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
+        timer_.startOnce(std::chrono::seconds(duration), std::bind(&Scheduler::reloadQueue, this));
     }
 }
 

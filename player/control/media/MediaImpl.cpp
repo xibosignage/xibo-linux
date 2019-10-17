@@ -39,7 +39,7 @@ void MediaImpl::startTimer(int duration)
 {
     if (duration > 0)
     {
-        timer_->start(std::chrono::seconds(duration), [this] { finished_(); });
+        timer_->startOnce(std::chrono::seconds(duration), [this] { finished_(); });
     }
 }
 
