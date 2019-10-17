@@ -13,15 +13,11 @@ ScreenShotInterval::ScreenShotInterval(XmdsRequestSender& sender, ScreenShoter& 
 {
 }
 
-void ScreenShotInterval::start()
-{
-    restartTimer();
-}
-
 void ScreenShotInterval::updateInterval(int interval)
 {
     if (interval_ != interval)
     {
+        Log::debug("[ScreenShotInterval] Interval updated to {} minutes", interval);
         interval_ = interval;
         restartTimer();
     }
@@ -29,10 +25,12 @@ void ScreenShotInterval::updateInterval(int interval)
 
 void ScreenShotInterval::restartTimer()
 {
-    timer_.stop();
     if (interval_ != DefaultInterval)
     {
-        timer_.start(std::chrono::minutes(interval_), [this]() { takeScreenShot(); });
+        timer_.start(std::chrono::minutes(interval_), [this]() {
+            takeScreenShot();
+            return true;
+        });
     }
 }
 

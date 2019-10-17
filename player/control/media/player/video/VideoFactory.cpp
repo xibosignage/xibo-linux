@@ -1,8 +1,8 @@
 #include "VideoFactory.hpp"
 
 #include "constants.hpp"
+#include "control/media/player/GstMediaPlayer.hpp"
 #include "control/media/player/PlayableMedia.hpp"
-#include "control/media/player/video/GstVideoPlayer.hpp"
 
 std::unique_ptr<Xibo::Media> VideoFactory::create(const MediaPlayerOptions& options, int width, int height)
 {
@@ -12,8 +12,7 @@ std::unique_ptr<Xibo::Media> VideoFactory::create(const MediaPlayerOptions& opti
 
 std::unique_ptr<Xibo::MediaPlayer> VideoFactory::createPlayer(const MediaPlayerOptions& options, int width, int height)
 {
-    auto location = options.uri.scheme() == Uri::FileScheme ? MediaPlayerOptions::Local : MediaPlayerOptions::Network;
-    auto player = GstMediaPlayer::create<GstVideoPlayer>(location);
+    auto player = std::make_unique<GstMediaPlayer>();
 
     player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MinVolume : MaxVolume);
     player->load(options.uri);

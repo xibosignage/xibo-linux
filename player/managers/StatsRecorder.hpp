@@ -1,7 +1,5 @@
 #pragma once
 
-#include "common/dt/DateTime.hpp"
-
 #include "control/layout/LayoutStat.hpp"
 #include "control/media/MediaStat.hpp"
 
@@ -22,12 +20,11 @@ public:
         int count;
     };
 
-    static StatsRecorder& get();
-
     void addLayoutStat(int scheduleId, const LayoutStat& stat);
     void addMediaStats(int layoutId, int scheduleId, const std::vector<MediaStat>& mediaStats);
-    std::string xmlString() const;
+    void clear();
+    std::string toXml() const;
 
 private:
-    std::vector<Record> records;
+    std::vector<Record> records_;
 };

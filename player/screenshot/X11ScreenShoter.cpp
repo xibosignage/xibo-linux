@@ -7,9 +7,9 @@
 
 X11ScreenShoter::X11ScreenShoter(Xibo::Window& window) : ScreenShoter(window) {}
 
-void X11ScreenShoter::takeScreenshotNative(NativeWindow window)
+void X11ScreenShoter::takeScreenshotNative(NativeWindow window, const ImageBufferCreated& callback)
 {
-    Glib::MainContext::get_default()->invoke([this, window]() {
+    Glib::MainContext::get_default()->invoke([=]() {
         try
         {
             Display* display = XOpenDisplay(nullptr);
@@ -19,7 +19,7 @@ void X11ScreenShoter::takeScreenshotNative(NativeWindow window)
             auto surface = Cairo::XlibSurface::create(display, window, gwa.visual, gwa.width, gwa.height);
 
             auto buffer = copySurfaceToBuffer(surface);
-            imageBufferCreated()(buffer);
+            callback(buffer);
 
             XCloseDisplay(display);
         }

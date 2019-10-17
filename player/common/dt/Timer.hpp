@@ -11,8 +11,24 @@ public:
     Timer() = default;
     ~Timer();
 
+    template <typename T>
+    void startOnce(std::chrono::duration<int64_t, T> duration, std::function<void()> handler)
+    {
+        startImpl(duration, handler);
+    }
+
+    template <typename T>
+    void start(std::chrono::duration<int64_t, T> duration, std::function<bool()> handler)
+    {
+        startImpl(duration, handler);
+    }
+
+    void stop();
+    bool active() const;
+
+private:
     template <typename T, typename Handler>
-    void start(std::chrono::duration<int64_t, T> duration, Handler handler)
+    void startImpl(std::chrono::duration<int64_t, T> duration, Handler handler)
     {
         stop();
 
@@ -20,10 +36,6 @@ public:
         timerConnection_ = Glib::signal_timeout().connect([=]() { return onTimeout(handler); }, milli.count());
     }
 
-    void stop();
-    bool active() const;
-
-private:
     template <typename Handler>
     bool onTimeout(Handler handler)
     {

@@ -22,6 +22,7 @@ class ScreenShoter;
 class XmrManager;
 using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
 class XiboWebServer;
+class StatsRecorder;
 class LayoutsManager;
 class XiboApp;
 
@@ -64,6 +65,7 @@ private:
     std::unique_ptr<ScreenShotInterval> screenShotInterval_;
     std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<ScreenShoter> screenShoter_;
+    std::unique_ptr<StatsRecorder> statsRecorder_;
     std::unique_ptr<XmrManager> xmrManager_;
     std::shared_ptr<ApplicationWindowGtk> mainWindow_;
     std::shared_ptr<XiboWebServer> webserver_;

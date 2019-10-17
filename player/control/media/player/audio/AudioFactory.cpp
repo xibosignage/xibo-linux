@@ -1,8 +1,8 @@
 #include "AudioFactory.hpp"
 
 #include "constants.hpp"
+#include "control/media/player/GstMediaPlayer.hpp"
 #include "control/media/player/PlayableMedia.hpp"
-#include "control/media/player/audio/GstAudioPlayer.hpp"
 
 std::unique_ptr<Xibo::Media> AudioFactory::create(const MediaPlayerOptions& options)
 {
@@ -11,8 +11,7 @@ std::unique_ptr<Xibo::Media> AudioFactory::create(const MediaPlayerOptions& opti
 
 std::unique_ptr<Xibo::MediaPlayer> AudioFactory::createPlayer(const MediaPlayerOptions& options)
 {
-    auto location = options.uri.scheme() == Uri::FileScheme ? MediaPlayerOptions::Local : MediaPlayerOptions::Network;
-    auto player = GstMediaPlayer::create<GstAudioPlayer>(location);
+    auto player = std::make_unique<GstMediaPlayer>();
 
     player->setVolume(options.volume);
     player->load(options.uri);
