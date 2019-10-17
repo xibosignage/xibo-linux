@@ -13,15 +13,11 @@ ScreenShotInterval::ScreenShotInterval(XmdsRequestSender& sender, ScreenShoter& 
 {
 }
 
-void ScreenShotInterval::start()
-{
-    restartTimer();
-}
-
 void ScreenShotInterval::updateInterval(int interval)
 {
     if (interval_ != interval)
     {
+        Log::debug("[ScreenShotInterval] Interval updated to {} minutes", interval);
         interval_ = interval;
         restartTimer();
     }

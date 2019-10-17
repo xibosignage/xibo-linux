@@ -6,7 +6,8 @@
 #include <vector>
 
 using ScreenShotTaken = std::function<void(const std::string&)>;
-using SignalImageBufferCreated = boost::signals2::signal<void(const std::vector<unsigned char>&)>;
+using ImageBuffer = std::vector<unsigned char>;
+using ImageBufferCreated = std::function<void(const ImageBuffer&)>;
 
 class ScreenShoter
 {
@@ -18,11 +19,8 @@ public:
     NativeWindow nativeWindow() const;
 
 protected:
-    virtual void takeScreenshotNative(NativeWindow window) = 0;
-
-    SignalImageBufferCreated& imageBufferCreated();
+    virtual void takeScreenshotNative(NativeWindow window, const ImageBufferCreated& callback) = 0;
 
 private:
     Xibo::Window& window_;
-    SignalImageBufferCreated imageBufferCreated_;
 };

@@ -10,7 +10,6 @@ class ScreenShotInterval
 public:
     ScreenShotInterval(XmdsRequestSender& sender, ScreenShoter& screenShoter_);
 
-    void start();
     void updateInterval(int interval);
 
 private:

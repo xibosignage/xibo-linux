@@ -249,7 +249,7 @@ void XiboApp::applyPlayerSettings(const PlayerSettings& settings)
         xmrManager_->connect(settings.xmrNetworkAddress);
         mainWindow_->setSize(settings.width, settings.height);
         mainWindow_->move(settings.x, settings.y);
-        screenShotInterval_->updateInterval(settings.collectInterval);
+        screenShotInterval_->updateInterval(settings.screenshotInterval);
 
         Log::debug("[XiboApp] Player settings updated");
     }
