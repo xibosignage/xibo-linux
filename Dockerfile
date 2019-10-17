@@ -15,6 +15,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   libgtkmm-3.0-dev \
   libgstreamer1.0-dev \
+  libgstreamermm-1.0-dev \
   libgstreamer-plugins-base1.0-dev \
   libgstreamer-plugins-bad1.0-dev \
   gstreamer1.0-libav \

@@ -31,7 +31,7 @@
 
 #include <boost/date_time/time_clock.hpp>
 #include <glibmm/main.h>
-#include <gst/gst.h>
+#include <gstreamermm/init.h>
 
 static std::unique_ptr<XiboApp> g_app;
 
@@ -44,7 +44,7 @@ XiboApp& XiboApp::create(const std::string& name)
 {
     auto logger = Log::create();
 
-    gst_init(nullptr, nullptr);
+    Gst::init();
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -121,9 +121,9 @@ void XiboApp::setupXmrManager()
 
 XiboApp::~XiboApp()
 {
-    if (gst_is_initialized())
+    if (Gst::is_initialized())
     {
-        gst_deinit();
+        Gst::deinit();
     }
 }
 

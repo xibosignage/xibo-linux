@@ -65,6 +65,7 @@ parts:
       - lib
     stage-packages:
       - libgstreamer1.0-0
+      - libgstreamermm-1.0-1
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
       - gstreamer1.0-plugins-bad
