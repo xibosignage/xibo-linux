@@ -11,3 +11,4 @@ WORK
 pch.py
 *.json
 commits_config
+snapcraft.login

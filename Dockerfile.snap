@@ -1,13 +1,25 @@
 FROM xibo-linux
 
+# Install snapcraft
 RUN apt-get install -y snapcraft
 
 ENV LC_ALL C.UTF-8
 ENV SNAPCRAFT_SETUP_CORE 1
 
-RUN cd /app && \
-    snapcraft && \
-    snapcraft login --with snapcraft.login && \
+# Pull forward login file
+COPY snapcraft.login /app/snapcraft.login
+
+# Switch into /app to build the snap and push
+WORKDIR /app
+
+# Build snap
+RUN snapcraft
+
+# Make sure we don't have the Dockerfile in here
+RUN rm Dockerfile.snap
+
+# Push snap
+RUN snapcraft login --with snapcraft.login && \
     snapcraft push *.snap
 
 CMD []
