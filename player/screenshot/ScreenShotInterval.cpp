@@ -25,6 +25,7 @@ void ScreenShotInterval::updateInterval(int interval)
 
 void ScreenShotInterval::restartTimer()
 {
+    timer_.stop();
     if (interval_ != DefaultInterval)
     {
         timer_.start(std::chrono::minutes(interval_), [this]() {
