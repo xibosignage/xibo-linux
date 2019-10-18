@@ -15,9 +15,6 @@ WORKDIR /app
 # Build snap
 RUN snapcraft
 
-# Make sure we don't have the Dockerfile in here
-RUN rm Dockerfile.snap
-
 # Push snap
 RUN snapcraft login --with snapcraft.login && \
     snapcraft push *.snap
