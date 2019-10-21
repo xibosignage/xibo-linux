@@ -14,7 +14,8 @@ GstMediaPlayer::GstMediaPlayer() :
     playbin_(Gst::PlayBin::create()),
     videoSink_(Gst::ElementFactory::create_element("gtksink"))
 {
-    if (!playbin_ || !videoSink_) throw Error{"GstMediaPlayer", "Unable to create player"};
+    if (!playbin_) throw Error{"GstMediaPlayer", "Unable to create player: playbin is missing."};
+    if (!videoSink_) throw Error{"GstMediaPlayer", "Unable to create player: gtksink is missing."};
 
     playbin_->set_property("video-sink", videoSink_);
 
