@@ -27,6 +27,8 @@ private:
     void monitorMediaStats(Xibo::Region& region);
     void onRegionExpired(int regionId);
     bool areAllRegionsExpired() const;
+    void startRegions();
+    void stopRegions();
 
 private:
     MainLayoutOptions options_;
