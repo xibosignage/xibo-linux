@@ -50,6 +50,14 @@ void RegionImpl::start()
     placeMedia(FirstMediaIndex);
 }
 
+void RegionImpl::stop()
+{
+    for (auto&& media : mediaList_)
+    {
+        media->stop();
+    }
+}
+
 SignalRegionExpired& RegionImpl::expired()
 {
     return regionExpired_;

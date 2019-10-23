@@ -14,6 +14,7 @@ public:
 
     void addMedia(std::unique_ptr<Xibo::Media>&& media) override;
     void start() override;
+    void stop() override;
     SignalRegionExpired& expired() override;
     std::shared_ptr<Xibo::Widget> view() override;
 

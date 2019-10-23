@@ -72,16 +72,14 @@ SignalLayoutMediaStatsReady& MainLayoutImpl::mediaStatsReady()
     return mediaStatsReady_;
 }
 
+// TODO view_->show() is not called here
 void MainLayoutImpl::restart()
 {
     layoutStats_.clear();
     mediaStats_.clear();
     expiredRegions_.clear();
-
-    for (auto&& region : regions_)
-    {
-        region->start();
-    }
+    stopRegions();
+    startRegions();
 }
 
 std::shared_ptr<Xibo::Widget> MainLayoutImpl::view()
@@ -101,6 +99,7 @@ void MainLayoutImpl::onRegionExpired(int regionId)
 
     if (areAllRegionsExpired())
     {
+        stopRegions();
         if (options_.statEnabled)
         {
             layoutStats_.finished = DateTime::now();
@@ -118,4 +117,20 @@ void MainLayoutImpl::onRegionExpired(int regionId)
 bool MainLayoutImpl::areAllRegionsExpired() const
 {
     return expiredRegions_.size() == regions_.size();
+}
+
+void MainLayoutImpl::startRegions()
+{
+    for (auto&& region : regions_)
+    {
+        region->start();
+    }
+}
+
+void MainLayoutImpl::stopRegions()
+{
+    for (auto&& region : regions_)
+    {
+        region->stop();
+    }
 }

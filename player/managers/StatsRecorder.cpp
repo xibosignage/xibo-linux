@@ -4,7 +4,7 @@
 
 void StatsRecorder::addLayoutStat(int scheduleId, const LayoutStat& stat)
 {
-    long duration = (stat.finished - stat.started).seconds();
+    long duration = (stat.finished - stat.started).total_seconds();
     Record record{"layout", stat.started, stat.finished, scheduleId, stat.id, {}, duration, 1};
     records_.emplace_back(std::move(record));
 }
@@ -13,7 +13,7 @@ void StatsRecorder::addMediaStats(int layoutId, int scheduleId, const std::vecto
 {
     for (auto&& stat : mediaStats)
     {
-        long duration = (stat.finished - stat.started).seconds();
+        long duration = (stat.finished - stat.started).total_seconds();
         Record record{"media", stat.started, stat.finished, scheduleId, layoutId, stat.id, duration, 1};
         records_.emplace_back(std::move(record));
     }
