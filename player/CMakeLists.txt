@@ -13,7 +13,8 @@ add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTUR
 file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
 file(GLOB_RECURSE CONTROL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp)
 file(GLOB OTHER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp)
+                         ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
+                         ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp)
 
 add_subdirectory(schedule)
 add_subdirectory(options)

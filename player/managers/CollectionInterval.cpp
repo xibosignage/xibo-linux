@@ -4,12 +4,13 @@
 #include "common/dt/Timer.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
+
+#include "MainLoop.hpp"
 #include "config.hpp"
 
-#include "managers/StatsRecorder.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-
-#include <glibmm/main.h>
+#include "stat/StatsFormatter.hpp"
+#include "stat/StatsRecorder.hpp"
 
 const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
@@ -103,9 +104,13 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
 
-            auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.toXml()).get();
-            statsRecorder_.clear();
-            onSubmitStats(submitStatsResult, session);
+            if (!statsRecorder_.empty())
+            {
+                StatsFormatter formatter;
+                auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
+                statsRecorder_.clear();
+                onSubmitStats(submitStatsResult, session);
+            }
         }
         sessionFinished(session, displayError);
     }
