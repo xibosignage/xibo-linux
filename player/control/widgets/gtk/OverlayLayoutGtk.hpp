@@ -39,7 +39,6 @@ public:
     void reorderChild(const std::shared_ptr<Xibo::Widget>& child, int z) override;
     void setMainChild(const std::shared_ptr<Xibo::Widget>& mainChild) override;
 
-    void showAll() override;
     void scale(double scaleX, double scaleY) override;
 
     Gtk::Overlay& get() override;

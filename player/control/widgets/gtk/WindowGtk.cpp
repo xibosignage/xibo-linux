@@ -19,16 +19,6 @@ WindowGtk::WindowGtk() : WidgetGtk(handler_), cursorVisible_(true), fullscreen_(
     });
 }
 
-void WindowGtk::showAll()
-{
-    handler_.show();
-
-    if (child_)
-    {
-        child_->showAll();
-    }
-}
-
 void WindowGtk::scale(double scaleX, double scaleY)
 {
     WidgetGtk::scale(scaleX, scaleX);
@@ -105,6 +95,16 @@ void WindowGtk::move(int x, int y)
     if (x != this->x() || y != this->y())
     {
         handler_.move(x, y);
+    }
+}
+
+void WindowGtk::show()
+{
+    WidgetGtk::show();
+
+    if (child_)
+    {
+        child_->show();
     }
 }
 

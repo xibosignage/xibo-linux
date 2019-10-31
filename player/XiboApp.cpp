@@ -162,7 +162,7 @@ int XiboApp::run()
         [](const LayoutSchedule& schedule) { schedule.toFile(ProjectResources::schedulePath()); });
 
     collectionInterval_->startRegularCollection();
-    mainWindow_->showAll();
+    mainWindow_->show();
 
     return mainLoop_->run(*mainWindow_);
 }
@@ -170,10 +170,12 @@ int XiboApp::run()
 void XiboApp::setupLayoutManager()
 {
     layoutsManager_->mainLayoutFetched().connect([this](const MainLayoutWidget& layout) {
+        CHECK_UI_THREAD();
+
         if (layout)
         {
             mainWindow_->setMainLayout(layout);
-            layout->showAll();
+            layout->show();
         }
         else
         {
@@ -182,10 +184,12 @@ void XiboApp::setupLayoutManager()
     });
 
     layoutsManager_->overlaysFetched().connect([this](const OverlaysWidgets& overlays) {
+        CHECK_UI_THREAD();
+
         mainWindow_->setOverlays(overlays);
         for (auto&& layout : overlays)
         {
-            layout->showAll();
+            layout->show();
         }
     });
 }
