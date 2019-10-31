@@ -46,7 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 
-ENV BOOST_MAJOR=1 BOOST_MINOR=69
+ENV BOOST_MAJOR=1 BOOST_MINOR=70
 ENV BOOST=${BOOST_MAJOR}_${BOOST_MINOR}_0 
 RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOOST_MAJOR}.${BOOST_MINOR}.0/source/boost_${BOOST}.tar.gz && \
     cd /root && \

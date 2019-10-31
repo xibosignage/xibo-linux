@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/modules")
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.69 REQUIRED filesystem system date_time thread)
+find_package(Boost 1.70 EXACT REQUIRED filesystem system date_time thread)
 
 # modules
 include(FindSonameLib)
