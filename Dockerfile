@@ -140,6 +140,7 @@ RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archi
 
 RUN mkdir -p /app
 
+VOLUME /build
 ADD . /app
 
 RUN cd /app && \
@@ -148,6 +149,4 @@ RUN cd /app && \
     make -j4 && \
     make install
 
-RUN cp -r /app/_build/. /app/build
-
-CMD []
+ENTRYPOINT cp -r /app/_build/. /build
