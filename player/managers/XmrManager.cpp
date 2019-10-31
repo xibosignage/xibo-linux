@@ -1,5 +1,6 @@
 #include "XmrManager.hpp"
 
+#include "MainLoop.hpp"
 #include "constants.hpp"
 
 #include "common/Parsing.hpp"
@@ -98,11 +99,11 @@ void XmrManager::processXmrMessage(const XmrMessage& message)
 
     if (message.action == "collectNow")
     {
-        collectionIntervalAction_();
+        MainLoop::pushToUiThread([this]() { collectionIntervalAction_(); });
     }
     else if (message.action == "screenShot")
     {
-        screenshotAction_();
+        MainLoop::pushToUiThread([this]() { screenshotAction_(); });
     }
 }
 

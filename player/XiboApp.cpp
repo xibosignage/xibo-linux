@@ -91,12 +91,16 @@ XiboApp::XiboApp(const std::string& name) :
 void XiboApp::setupXmrManager()
 {
     xmrManager_->collectionInterval().connect([this]() {
+        CHECK_UI_THREAD();
+
         Log::info("[XMR] Start unscheduled collection");
 
         collectionInterval_->collect([this](const PlayerError& error) { onCollectionFinished(error); });
     });
 
     xmrManager_->screenshot().connect([this]() {
+        CHECK_UI_THREAD();
+
         Log::info("[XMR] Taking unscheduled screenshot");
 
         screenShoter_->takeBase64([this](const std::string& screenshot) {
@@ -137,6 +141,8 @@ int XiboApp::run()
     setupLayoutManager();
 
     mainWindow_->statusScreenShown().connect([this]() {
+        CHECK_UI_THREAD();
+
         StatusInfo info{
             collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
 
@@ -208,15 +214,23 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
     interval->scheduleAvailable().connect([this](const Schedule::Result& result) {
+        CHECK_UI_THREAD();
+
         scheduler_->reloadSchedule(LayoutSchedule::fromString(result.scheduleXml));
     });
-    interval->filesDownloaded().connect([this]() { scheduler_->reloadQueue(); });
+    interval->filesDownloaded().connect([this]() {
+        CHECK_UI_THREAD();
+
+        scheduler_->reloadQueue();
+    });
 
     return interval;
 }
 
 void XiboApp::onCollectionFinished(const PlayerError& error)
 {
+    CHECK_UI_THREAD();
+
     if (error)
     {
         Log::error("[CollectionInterval] {}", error);
@@ -225,6 +239,8 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
 
 void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 {
+    CHECK_UI_THREAD();
+
     applyPlayerSettings(settings);
 
     playerSettings_ = std::move(settings);

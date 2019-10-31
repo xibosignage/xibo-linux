@@ -10,15 +10,16 @@
 #include "networking/xmds/SubmitLog.hpp"
 #include "networking/xmds/SubmitStats.hpp"
 
-#include "common/Dispatcher.hpp"
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
 
+#include <boost/signals2/signal.hpp>
+
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
-using SignalSettingsUpdated = Dispatcher<PlayerSettings>;
-using SignalScheduleAvailable = Dispatcher<Schedule::Result>;
-using SignalCollectionFinished = Dispatcher<PlayerError>;
-using SignalFilesDownloaded = Dispatcher<>;
+using SignalSettingsUpdated = boost::signals2::signal<void(PlayerSettings)>;
+using SignalScheduleAvailable = boost::signals2::signal<void(Schedule::Result)>;
+using SignalCollectionFinished = boost::signals2::signal<void(PlayerError)>;
+using SignalFilesDownloaded = boost::signals2::signal<void()>;
 class XmdsRequestSender;
 class StatsRecorder;
 

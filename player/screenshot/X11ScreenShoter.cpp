@@ -1,5 +1,6 @@
 #include "X11ScreenShoter.hpp"
 
+#include "MainLoop.hpp"
 #include "common/logger/Logging.hpp"
 
 #include <cairomm/xlib_surface.h>
@@ -9,7 +10,7 @@ X11ScreenShoter::X11ScreenShoter(Xibo::Window& window) : ScreenShoter(window) {}
 
 void X11ScreenShoter::takeScreenshotNative(NativeWindow window, const ImageBufferCreated& callback)
 {
-    Glib::MainContext::get_default()->invoke([=]() {
+    MainLoop::pushToUiThread([=]() {
         try
         {
             Display* display = XOpenDisplay(nullptr);
@@ -27,7 +28,6 @@ void X11ScreenShoter::takeScreenshotNative(NativeWindow window, const ImageBuffe
         {
             Log::error("[X11ScreenShoter] {}", e.what());
         }
-        return false;
     });
 }
 

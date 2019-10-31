@@ -60,7 +60,7 @@ void ZeromqSubscriber::processMessageQueue(const std::string& host, const Channe
     {
         try
         {
-            messageReceived_.emit(recvAll(socket));
+            messageReceived_(recvAll(socket));
         }
         catch (const zmq::error_t& ex)
         {
