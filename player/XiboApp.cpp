@@ -29,9 +29,7 @@
 #include "common/settings/PlayerSettings.hpp"
 #include "common/system/System.hpp"
 
-#include <boost/date_time/time_clock.hpp>
-#include <glibmm/main.h>
-#include <gstreamermm/init.h>
+#include <gst/gst.h>
 
 static std::unique_ptr<XiboApp> g_app;
 
@@ -42,9 +40,8 @@ XiboApp& xiboApp()
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = Log::create();
-
-    Gst::init();
+    Log::create();
+    gst_init(nullptr, nullptr);
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -117,14 +114,6 @@ void XiboApp::setupXmrManager()
             });
         });
     });
-}
-
-XiboApp::~XiboApp()
-{
-    if (Gst::is_initialized())
-    {
-        Gst::deinit();
-    }
 }
 
 FileCache& XiboApp::fileManager()

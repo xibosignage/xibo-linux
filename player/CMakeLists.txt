@@ -1,6 +1,6 @@
 project(player)
 
-pkg_check_modules(GStreamer REQUIRED gstreamermm-1.0>=1.10.0 gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
+pkg_check_modules(GStreamer REQUIRED gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
 pkg_check_modules(WebKit REQUIRED webkitgtk-3.0>=2.4.10)
 pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.18.0)
 pkg_check_modules(Glibmm REQUIRED glibmm-2.4>=2.56.0)
