@@ -40,6 +40,7 @@ public:
     void setMainChild(const std::shared_ptr<Xibo::Widget>& mainChild) override;
 
     void scale(double scaleX, double scaleY) override;
+    void show() override;
 
     Gtk::Overlay& get() override;
 

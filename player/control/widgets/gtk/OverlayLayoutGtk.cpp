@@ -91,6 +91,16 @@ void OverlayLayoutGtk::scale(double scaleX, double scaleY)
     scaleChildren(scaleX, scaleY);
 }
 
+void OverlayLayoutGtk::show()
+{
+    WidgetGtk::show();
+
+    if (mainChild_)
+    {
+        mainChild_->show();
+    }
+}
+
 void OverlayLayoutGtk::scaleChildren(double scaleX, double scaleY)
 {
     for (auto&& childInfo : children_)
