@@ -9,11 +9,11 @@
 #include "control/media/MediaParsersRepo.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/StatsRecorder.hpp"
 #include "managers/XmrManager.hpp"
 #include "schedule/Scheduler.hpp"
 #include "screenshot/ScreeShoterFactory.hpp"
 #include "screenshot/ScreenShotInterval.hpp"
+#include "stat/StatsRecorder.hpp"
 
 #include "networking/HttpClient.hpp"
 #include "networking/WebServer.hpp"
@@ -29,9 +29,7 @@
 #include "common/settings/PlayerSettings.hpp"
 #include "common/system/System.hpp"
 
-#include <boost/date_time/time_clock.hpp>
-#include <glibmm/main.h>
-#include <gstreamermm/init.h>
+#include <gst/gst.h>
 
 static std::unique_ptr<XiboApp> g_app;
 
@@ -42,9 +40,8 @@ XiboApp& xiboApp()
 
 XiboApp& XiboApp::create(const std::string& name)
 {
-    auto logger = Log::create();
-
-    Gst::init();
+    Log::create();
+    gst_init(nullptr, nullptr);
     Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
@@ -94,12 +91,16 @@ XiboApp::XiboApp(const std::string& name) :
 void XiboApp::setupXmrManager()
 {
     xmrManager_->collectionInterval().connect([this]() {
+        CHECK_UI_THREAD();
+
         Log::info("[XMR] Start unscheduled collection");
 
         collectionInterval_->collect([this](const PlayerError& error) { onCollectionFinished(error); });
     });
 
     xmrManager_->screenshot().connect([this]() {
+        CHECK_UI_THREAD();
+
         Log::info("[XMR] Taking unscheduled screenshot");
 
         screenShoter_->takeBase64([this](const std::string& screenshot) {
@@ -117,14 +118,6 @@ void XiboApp::setupXmrManager()
             });
         });
     });
-}
-
-XiboApp::~XiboApp()
-{
-    if (Gst::is_initialized())
-    {
-        Gst::deinit();
-    }
 }
 
 FileCache& XiboApp::fileManager()
@@ -148,6 +141,8 @@ int XiboApp::run()
     setupLayoutManager();
 
     mainWindow_->statusScreenShown().connect([this]() {
+        CHECK_UI_THREAD();
+
         StatusInfo info{
             collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
 
@@ -167,7 +162,7 @@ int XiboApp::run()
         [](const LayoutSchedule& schedule) { schedule.toFile(ProjectResources::schedulePath()); });
 
     collectionInterval_->startRegularCollection();
-    mainWindow_->showAll();
+    mainWindow_->show();
 
     return mainLoop_->run(*mainWindow_);
 }
@@ -175,10 +170,12 @@ int XiboApp::run()
 void XiboApp::setupLayoutManager()
 {
     layoutsManager_->mainLayoutFetched().connect([this](const MainLayoutWidget& layout) {
+        CHECK_UI_THREAD();
+
         if (layout)
         {
             mainWindow_->setMainLayout(layout);
-            layout->showAll();
+            layout->show();
         }
         else
         {
@@ -187,10 +184,12 @@ void XiboApp::setupLayoutManager()
     });
 
     layoutsManager_->overlaysFetched().connect([this](const OverlaysWidgets& overlays) {
+        CHECK_UI_THREAD();
+
         mainWindow_->setOverlays(overlays);
         for (auto&& layout : overlays)
         {
-            layout->showAll();
+            layout->show();
         }
     });
 }
@@ -219,15 +218,23 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));
     interval->scheduleAvailable().connect([this](const Schedule::Result& result) {
+        CHECK_UI_THREAD();
+
         scheduler_->reloadSchedule(LayoutSchedule::fromString(result.scheduleXml));
     });
-    interval->filesDownloaded().connect([this]() { scheduler_->reloadQueue(); });
+    interval->filesDownloaded().connect([this]() {
+        CHECK_UI_THREAD();
+
+        scheduler_->reloadQueue();
+    });
 
     return interval;
 }
 
 void XiboApp::onCollectionFinished(const PlayerError& error)
 {
+    CHECK_UI_THREAD();
+
     if (error)
     {
         Log::error("[CollectionInterval] {}", error);
@@ -236,6 +243,8 @@ void XiboApp::onCollectionFinished(const PlayerError& error)
 
 void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
 {
+    CHECK_UI_THREAD();
+
     applyPlayerSettings(settings);
 
     playerSettings_ = std::move(settings);

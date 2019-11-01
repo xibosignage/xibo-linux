@@ -4,9 +4,6 @@ xibo-*.snap*
 snap
 gcov
 build*
-prime
-stage
-parts
 WORK
 pch.py
 *.json

@@ -4,11 +4,14 @@
 MediaImpl::MediaImpl(const MediaOptions& options) :
     options_(options),
     timer_(std::make_unique<Timer>()),
-    enableStat_(false)
+    statEnabled_(false),
+    playing_(false)
 {
+    assert(timer_);
+
     if (options_.statPolicy != MediaOptions::StatPolicy::Inherit)
     {
-        enableStat_ = options_.statPolicy == MediaOptions::StatPolicy::On ? true : false;
+        statEnabled_ = options_.statPolicy == MediaOptions::StatPolicy::Enable ? true : false;
     }
 }
 
@@ -22,16 +25,21 @@ void MediaImpl::attach(std::unique_ptr<Media>&& attachedMedia)
     attachedMedia_ = std::move(attachedMedia);
 }
 
+bool MediaImpl::playing() const
+{
+    return playing_;
+}
+
 void MediaImpl::start()
 {
-    if (enableStat_)
-    {
-        stat_.started = DateTime::now();
-        stat_.id = options_.id;
-    }
+    if (playing_) return;
 
-    startAttachedMedia();
+    stat_.clear();
+
+    playing_ = true;
+    stat_.started = DateTime::now();
     startTimer(options_.duration);
+    startAttachedMedia();
     onStarted();
 }
 
@@ -40,18 +48,6 @@ void MediaImpl::startTimer(int duration)
     if (duration > 0)
     {
         timer_->startOnce(std::chrono::seconds(duration), [this] { finished_(); });
-    }
-}
-
-void MediaImpl::sendStat()
-{
-    if (enableStat_)
-    {
-        stat_.finished = DateTime::now();
-
-        statReady_(stat_);
-
-        stat_.clear();
     }
 }
 
@@ -73,19 +69,37 @@ void MediaImpl::onStarted()
 
 void MediaImpl::stop()
 {
-    sendStat();
+    if (!playing_) return;
+
+    playing_ = false;
+    stat_.finished = DateTime::now();
+    timer_->stop();
     stopAttachedMedia();
     onStopped();
+    statReady_(stat_);
 }
 
-void MediaImpl::enableStat(bool enable)
+void MediaImpl::statEnabled(bool enable)
 {
-    enableStat_ = enable;
+    if (options_.statPolicy == MediaOptions::StatPolicy::Inherit)
+    {
+        statEnabled_ = enable;
+    }
+}
+
+bool MediaImpl::statEnabled() const
+{
+    return statEnabled_;
 }
 
 MediaOptions::StatPolicy MediaImpl::statPolicy() const
 {
     return options_.statPolicy;
+}
+
+int MediaImpl::id() const
+{
+    return options_.id;
 }
 
 void MediaImpl::inTransition(std::unique_ptr<TransitionExecutor>&& transition)

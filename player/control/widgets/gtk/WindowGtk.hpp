@@ -13,7 +13,6 @@ class WindowGtk : public WidgetGtk<Xibo::Window>
 public:
     WindowGtk();
 
-    void showAll() override;
     void scale(double scaleX, double scaleY) override;
     int width() const override;
     int height() const override;
@@ -21,6 +20,7 @@ public:
     int x() const override;
     int y() const override;
     void move(int x, int y) override;
+    void show() override;
 
     void setChild(const std::shared_ptr<Xibo::Widget>& child) override;
     void disableWindowResize() override;

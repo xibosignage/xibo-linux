@@ -110,22 +110,12 @@ namespace ProjectResources
     const std::string PlayerBin = "player";
     inline std::string playerBinary()
     {
-        auto path = buildDirectory() / PlayerBin;
-#ifdef SNAP_ENABLED
-        return "desktop-launch " + path.string();
-#else
-        return path.string();
-#endif
+        return (buildDirectory() / PlayerBin).string();
     }
 
+    const std::string OptionsBin = "options";
     inline std::string optionsBinary()
     {
-        auto path = buildDirectory() / "options";
-#ifdef SNAP_ENABLED
-        return "desktop-launch " + path.string();
-#else
-        return path.string();
-#endif
+        return (buildDirectory() / OptionsBin).string();
     }
-
 }
