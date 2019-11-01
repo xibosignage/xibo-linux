@@ -1,5 +1,7 @@
 FROM xibo-linux
 
+RUN cp -r /app/_build/. /app/build
+
 # Install snapcraft
 RUN apt-get install -y snapcraft
 
