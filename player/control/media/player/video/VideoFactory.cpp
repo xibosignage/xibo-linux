@@ -15,7 +15,6 @@ std::unique_ptr<Xibo::MediaPlayer> VideoFactory::createPlayer(const MediaPlayerO
     auto player = std::make_unique<GstMediaPlayer>();
 
     player->setVolume(options.muted == MediaPlayerOptions::Mute::Enable ? MinVolume : MaxVolume);
-    player->setAspectRatio(options.geometry.scaleType);
     player->load(options.uri);
 
     // TODO set window explicitly if no internal window created

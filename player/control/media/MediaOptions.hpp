@@ -13,8 +13,8 @@ struct MediaOptions
 
     enum class StatPolicy
     {
-        Disable,
-        Enable,
+        Off,
+        On,
         Inherit
     };
 

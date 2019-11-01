@@ -4,13 +4,12 @@
 #include "common/dt/Timer.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
-
-#include "MainLoop.hpp"
 #include "config.hpp"
 
+#include "managers/StatsRecorder.hpp"
 #include "networking/xmds/XmdsRequestSender.hpp"
-#include "stat/StatsFormatter.hpp"
-#include "stat/StatsRecorder.hpp"
+
+#include <glibmm/main.h>
 
 const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
@@ -47,7 +46,7 @@ void CollectionInterval::startTimer()
 
 void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
 {
-    MainLoop::pushToUiThread([this, error]() { collectionFinished_(error); });
+    collectionFinished_.emit(error);
     startTimer();
 
     Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", collectInterval_);
@@ -69,12 +68,13 @@ void CollectionInterval::collect(CollectionResultCallback callback)
 
 void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
 {
-    MainLoop::pushToUiThread([this, session, error]() {
+    Glib::MainContext::get_default()->invoke([this, session, error]() {
         if (started_)
         {
             startTimer();
         }
         session->callback(error);
+        return false;
     });
 }
 
@@ -91,8 +91,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             registered_ = true;
             lastChecked_ = DateTime::now();
-
-            MainLoop::pushToUiThread([this, result = std::move(result.playerSettings)]() { settingsUpdated_(result); });
+            settingsUpdated_.emit(result.playerSettings);
 
             auto requiredFilesResult = xmdsSender_.requiredFiles().get();
             auto scheduleResult = xmdsSender_.schedule().get();
@@ -104,13 +103,9 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitLog(submitLogsResult, session);
 
-            if (!statsRecorder_.empty())
-            {
-                StatsFormatter formatter;
-                auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
-                statsRecorder_.clear();
-                onSubmitStats(submitStatsResult, session);
-            }
+            auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.toXml()).get();
+            statsRecorder_.clear();
+            onSubmitStats(submitStatsResult, session);
         }
         sessionFinished(session, displayError);
     }
@@ -199,7 +194,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         updateMediaInventory(filesResult.get());
         updateMediaInventory(resourcesResult.get());
 
-        MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
+        filesDownloaded_.emit();
     }
     else
     {
@@ -213,7 +208,7 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     if (!error)
     {
         Log::debug("[XMDS::Schedule] Received");
-        MainLoop::pushToUiThread([this, result = std::move(result)]() { scheduleAvailable_(result); });
+        scheduleAvailable_.emit(result);
     }
     else
     {

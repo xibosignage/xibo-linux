@@ -1,14 +1,14 @@
 #pragma once
 
+#include <memory>
+#include <spdlog/common.h>
+
 #include "common/settings/CmsSettings.hpp"
 #include "common/settings/PlayerSettings.hpp"
 
 #include "control/ApplicationWindow.hpp"
 #include "control/GeneralInfo.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
-
-#include <boost/noncopyable.hpp>
-#include <memory>
 
 class MainLoop;
 class XmdsRequestSender;
@@ -28,9 +28,13 @@ class XiboApp;
 
 XiboApp& xiboApp();
 
-class XiboApp : boost::noncopyable
+class XiboApp
 {
 public:
+    XiboApp(const XiboApp& other) = delete;
+    XiboApp& operator=(const XiboApp& other) = delete;
+    ~XiboApp();
+
     static XiboApp& create(const std::string& name);
 
     FileCache& fileManager();
@@ -40,8 +44,9 @@ public:
     int run();
 
 private:
-    XiboApp(const std::string& name);
+    static std::vector<spdlog::sink_ptr> createLoggerSinks();
 
+    XiboApp(const std::string& name);
     void setupXmrManager();
     void setupLayoutManager();
     std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);

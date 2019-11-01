@@ -11,6 +11,8 @@ RegionImpl::RegionImpl(const RegionOptions& options) :
     currentMediaIndex_(FirstMediaIndex)
 {
     assert(view_);
+
+    view_->shown().connect(std::bind(&RegionImpl::start, this));
 }
 
 void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
@@ -45,7 +47,6 @@ void RegionImpl::start()
 {
     assert(!mediaList_.empty());
 
-    view_->show();
     placeMedia(FirstMediaIndex);
 }
 
@@ -55,7 +56,6 @@ void RegionImpl::stop()
     {
         media->stop();
     }
-    view_->hide();
 }
 
 SignalRegionExpired& RegionImpl::expired()

@@ -6,8 +6,8 @@
 
 #include "common/fs/FileCache.hpp"
 #include "common/logger/Logging.hpp"
+#include "managers/StatsRecorder.hpp"
 #include "schedule/Scheduler.hpp"
-#include "stat/StatsRecorder.hpp"
 
 #include "config.hpp"
 
@@ -36,10 +36,10 @@ void LayoutsManager::fetchMainLayout()
 
     if (id != EmptyLayoutId)
     {
-        currentMainLayout_ = createLayout<MainLayoutParser>(id);
-        if (currentMainLayout_)
+        mainLayout_ = createLayout<MainLayoutParser>(id);
+        if (mainLayout_)
         {
-            mainLayoutFetched_(currentMainLayout_->view());
+            mainLayoutFetched_(mainLayout_->view());
         }
         else
         {
@@ -88,12 +88,9 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 
         layout->statReady().connect(
-            [=](const PlayingStat& stat) { statsRecorder_.addLayoutStat(scheduleId, layoutId, stat); });
-        layout->mediaStatsReady().connect([=](const MediaPlayingStats& stats) {
-            for (auto&& [mediaId, interval] : stats)
-            {
-                statsRecorder_.addMediaStat(scheduleId, layoutId, mediaId, interval);
-            }
+            [this, scheduleId](const LayoutStat& stat) { statsRecorder_.addLayoutStat(scheduleId, stat); });
+        layout->mediaStatsReady().connect([this, layoutId, scheduleId](const auto& stats) {
+            statsRecorder_.addMediaStats(layoutId, scheduleId, stats);
         });
 
         layout->expired().connect([this, layoutId]() {

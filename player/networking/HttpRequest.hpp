@@ -27,7 +27,7 @@ public:
         request.method(method_);
         request.target(uri_.path());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, hostWithPort(uri_.authority()));
+        request.set(http::field::host, static_cast<std::string>(uri_.authority().host()));
         if (auto userinfo = uri_.authority().optionalUserInfo())
         {
             request.set(http::field::authorization,
@@ -37,19 +37,6 @@ public:
         request.prepare_payload();
 
         return request;
-    }
-
-private:
-    std::string hostWithPort(const Uri::Authority& authority)
-    {
-        auto&& host = authority.host();
-
-        if (auto port = authority.optionalPort())
-        {
-            return static_cast<std::string>(host) + ":" + port->string();
-        }
-
-        return static_cast<std::string>(host);
     }
 
 private:

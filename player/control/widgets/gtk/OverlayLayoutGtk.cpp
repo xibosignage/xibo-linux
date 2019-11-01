@@ -81,6 +81,21 @@ void OverlayLayoutGtk::removePreviousMainChild()
     }
 }
 
+void OverlayLayoutGtk::showAll()
+{
+    WidgetGtk::showAll();
+
+    if (mainChild_)
+    {
+        mainChild_->showAll();
+    }
+
+    for (auto&& childInfo : children_)
+    {
+        childInfo.widget->showAll();
+    }
+}
+
 void OverlayLayoutGtk::scale(double scaleX, double scaleY)
 {
     WidgetGtk::scale(scaleX, scaleY);
@@ -89,16 +104,6 @@ void OverlayLayoutGtk::scale(double scaleX, double scaleY)
         mainChild_->scale(scaleX, scaleY);
     }
     scaleChildren(scaleX, scaleY);
-}
-
-void OverlayLayoutGtk::show()
-{
-    WidgetGtk::show();
-
-    if (mainChild_)
-    {
-        mainChild_->show();
-    }
 }
 
 void OverlayLayoutGtk::scaleChildren(double scaleX, double scaleY)

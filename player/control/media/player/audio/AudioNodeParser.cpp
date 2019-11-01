@@ -33,7 +33,7 @@ Uri AudioNodeParser::uriFrom(const XmlNode& node)
 
     if (!FileSystem::isRegularFile(fullPath)) return Uri::fromString(uri);
 
-    return Uri::fromFile(fullPath);
+    return Uri::fromFile(uri);
 }
 
 int AudioNodeParser::durationFrom(const XmlNode& /*node*/)

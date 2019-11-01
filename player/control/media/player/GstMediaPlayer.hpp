@@ -5,7 +5,7 @@
 #include "control/media/player/MediaPlayerOptions.hpp"
 
 #include <functional>
-#include <gst/gstelement.h>
+#include <gstreamermm/playbin.h>
 
 namespace ph = std::placeholders;
 
@@ -22,7 +22,6 @@ public:
 
     void load(const Uri& uri) override;
     void setVolume(int volume) override;
-    void setAspectRatio(MediaGeometry::ScaleType scaleType) override;
     void play() override;
     void stop() override;
     SignalPlaybackFinished& playbackFinished() override;
@@ -33,13 +32,12 @@ public:
     const std::shared_ptr<Xibo::OutputWindow>& outputWindow() const override;
 
 private:
-    static gboolean busMessageWatch(GstBus* bus, GstMessage* msg, gpointer player);
+    bool busMessageWatch(const Glib::RefPtr<Gst::Bus>& bus, const Glib::RefPtr<Gst::Message>& message);
     void checkVolume(int volume);
 
 protected:
-    GstElement* playbin_;
-    GstElement* videoSink_;
-    GstBus* playbinBus_;
+    Glib::RefPtr<Gst::PlayBin> playbin_;
+    Glib::RefPtr<Gst::Element> videoSink_;
 
     std::shared_ptr<Xibo::OutputWindow> outputWindow_;
     SignalPlaybackFinished playbackFinished_;

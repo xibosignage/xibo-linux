@@ -13,9 +13,8 @@ namespace Xibo
 
         virtual void show() = 0;
         virtual void showAll() = 0;
-        virtual void skipShowAll() = 0;
         virtual void hide() = 0;
-        virtual bool visible() const = 0;
+        virtual bool isShown() const = 0;
 
         virtual void scale(double scaleX, double scaleY) = 0;
         virtual void setSize(int width, int height) = 0;

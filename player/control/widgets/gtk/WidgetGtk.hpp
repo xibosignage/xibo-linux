@@ -28,23 +28,14 @@ public:
 
     void show() override
     {
-        if (visible()) return;
-
         widget_.show();
         signalShown_();
     }
 
     void showAll() override
     {
-        if (visible()) return;
-
-        widget_.show_all();
+        widget_.show();
         signalShown_();
-    }
-
-    void skipShowAll() override
-    {
-        widget_.set_no_show_all();
     }
 
     void hide() override
@@ -52,7 +43,7 @@ public:
         widget_.hide();
     }
 
-    bool visible() const override
+    bool isShown() const override
     {
         return widget_.is_visible();
     }

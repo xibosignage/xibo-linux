@@ -5,21 +5,18 @@
 
 ### Building manually
 
-NOTE: These libraries can require additional installations if you haven't such. We have tested only with listed libraries versions, however, it can be possible to build with newer or older versions as well.
+NOTE: these libraries can require additional installations if you haven't such
 - `cmake>=3.14` cross-platform software for managing the build process
-- `gtk>=3.22` and `gtkmm>=3.22` GUI library and C++ bindings
+- `gtk>=3.18` and `gtkmm>=3.18` GUI library and C++ bindings
 - `glib>=2.56` and `glibmm>=2.56` low-level system library written in C and C++ bindings
-- `gstreamer, gstreamer-base-plugins, gstreamer-good-plugins, gstreamer-bad-plugins>=1.14` multimedia framerwork for audio/video playback with plugins
-- `gstreamer1.0-libav`, `gstreamer1.0-gtk3`, `gstreamer1.0-gl`, `gstreamer1.0-vaapi`, `gstreamer1.0-alsa`, `gstreamer1.0-pulseaudio` needed for running/accelerating video content
-- `cryptopp=8.1` for crypto utils (RSA, RC4 etc.)
-- `cryptopp-pem`that is compatiable with `cryptopp` version needed for PEM key format
-- `zeromq=4.3` distributed messaging
-- `spdlog=1.4.1` logging library
-- `gtest=1.8.1` for tests
+- `gstreamer>=1.8`, `gstreamer-base-plugins>=1.8` multimedia framerwork with base plugins
+- `gstreamer1.0-libav` needed for running video content
+- `cryptopp>=8.1` for crypto utils (RSA, RC4 etc.)
+- `zeromq>=4.3` distributed messaging 
 - `webkitgtk>=2.4.10` web content rendering
-- `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
+- `Boost.System>=1.69`, `Boost.Date_Time>=1.69` and `Boost.Thread>=1.69`
 
-### Building with Docker (only for Ubuntu 18.04)
+### Building with Docker (only for Ubuntu 16.04)
 - Install Docker
 - Clone this repository
 - Run `sudo docker build -t xibo-linux .` in the root of the repository

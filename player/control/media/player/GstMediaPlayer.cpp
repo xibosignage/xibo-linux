@@ -2,55 +2,48 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
+
 #include "constants.hpp"
 #include "control/widgets/render/OutputWindowGtk.hpp"
 
-#include <gst/gst.h>
+#include <boost/format.hpp>
+#include <gstreamermm/bus.h>
+#include <gstreamermm/elementfactory.h>
 
 GstMediaPlayer::GstMediaPlayer() :
-    playbin_(gst_element_factory_make("playbin", "playbin")),
-    videoSink_(gst_element_factory_make("gtksink", "videosink")),
-    playbinBus_(nullptr)
+    playbin_(Gst::PlayBin::create()),
+    videoSink_(Gst::ElementFactory::create_element("gtksink"))
 {
     if (!playbin_) throw Error{"GstMediaPlayer", "Unable to create player: playbin is missing."};
     if (!videoSink_) throw Error{"GstMediaPlayer", "Unable to create player: gtksink is missing."};
 
-    g_object_set(playbin_, "video-sink", videoSink_, nullptr);
+    playbin_->set_property("video-sink", videoSink_);
 
-    GtkWidget* widget = nullptr;
-    g_object_get(videoSink_, "widget", &widget, nullptr);
+    Gtk::Widget* widget = nullptr;
+    videoSink_->get_property("widget", widget);
     if (widget)
     {
-        // take ownership and destroy in the container later
-        outputWindow_ = std::make_shared<OutputWindowGtk>(Glib::wrap(widget));
+        outputWindow_ = std::make_shared<OutputWindowGtk>(widget);
     }
 
-    playbinBus_ = gst_element_get_bus(playbin_);
-    gst_bus_add_watch(playbinBus_, static_cast<GstBusFunc>(&GstMediaPlayer::busMessageWatch), this);
+    Glib::RefPtr<Gst::Bus> bus = playbin_->get_bus();
+    bus->add_watch(sigc::mem_fun(*this, &GstMediaPlayer::busMessageWatch));
 }
 
 GstMediaPlayer::~GstMediaPlayer()
 {
-    gst_object_unref(playbinBus_);
-    gst_element_set_state(playbin_, GST_STATE_NULL);
-    gst_object_unref(playbin_);  // videoSink_ should be unrefed as a child
+    playbin_->set_state(Gst::STATE_NULL);
 }
 
 void GstMediaPlayer::load(const Uri& uri)
 {
-    g_object_set(playbin_, "uri", uri.string().c_str(), nullptr);
+    playbin_->set_property("uri", uri.string());
 }
 
 void GstMediaPlayer::setVolume(int volume)
 {
     checkVolume(volume);
-    g_object_set(playbin_, "volume", volume / static_cast<double>(MaxVolume), nullptr);
-}
-
-void GstMediaPlayer::setAspectRatio(MediaGeometry::ScaleType scaleType)
-{
-    bool aspectRatio = scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    g_object_set(playbin_, "force-aspect-ratio", aspectRatio, nullptr);
+    playbin_->set_volume(Gst::STREAM_VOLUME_FORMAT_LINEAR, volume / static_cast<double>(MaxVolume));
 }
 
 void GstMediaPlayer::checkVolume(int volume)
@@ -60,12 +53,12 @@ void GstMediaPlayer::checkVolume(int volume)
 
 void GstMediaPlayer::play()
 {
-    gst_element_set_state(playbin_, GST_STATE_PLAYING);
+    playbin_->set_state(Gst::STATE_PLAYING);
 }
 
 void GstMediaPlayer::stop()
 {
-    gst_element_set_state(playbin_, GST_STATE_NULL);
+    playbin_->set_state(Gst::STATE_NULL);
 }
 
 void GstMediaPlayer::showOutputWindow()
@@ -96,37 +89,33 @@ const std::shared_ptr<Xibo::OutputWindow>& GstMediaPlayer::outputWindow() const
     return outputWindow_;
 }
 
-gboolean GstMediaPlayer::busMessageWatch(GstBus* /*bus*/, GstMessage* msg, gpointer data)
+bool GstMediaPlayer::busMessageWatch(const Glib::RefPtr<Gst::Bus>& /*bus*/, const Glib::RefPtr<Gst::Message>& message)
 {
-    switch (msg->type)
+    switch (message->get_message_type())
     {
-        case GST_MESSAGE_EOS:
-        {
-            assert(data);
-            auto player = reinterpret_cast<GstMediaPlayer*>(data);
-
+        case Gst::MESSAGE_EOS:
             Log::debug("[GstMediaPlayer] End of stream");
-            gst_element_set_state(player->playbin_, GST_STATE_NULL);
-            player->playbackFinished_();
-            break;
-        }
-        case GST_MESSAGE_ERROR:
+            playbin_->set_state(Gst::STATE_NULL);
+            playbackFinished_();
+            return false;
+        case Gst::MESSAGE_ERROR:
         {
-            GError* err = nullptr;
-            gchar* debug_info = nullptr;
-
-            gst_message_parse_error(msg, &err, &debug_info);
-            Log::error("[GstMediaPlayer] Error from element {}: {}", msg->src->name, err->message);
-            if (debug_info)
+            auto messageError = Glib::RefPtr<Gst::MessageError>::cast_static(message);
+            if (messageError)
             {
-                Log::debug("[GstMediaPlayer] Debug details: {}", debug_info);
+                auto error = messageError->parse_error();
+                Log::error("[GstMediaPlayer] {}", error.what());
+                Log::debug("[GstMediaPlayer] Debug details: {}", messageError->parse_debug());
             }
-            g_clear_error(&err);
-            g_free(debug_info);
+            else
+            {
+                Log::error("[GstMediaPlayer] Unknown error");
+            }
             return false;
         }
         default: break;
     }
+
     return true;
 }
 

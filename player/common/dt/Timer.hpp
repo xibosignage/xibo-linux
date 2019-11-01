@@ -5,7 +5,7 @@
 #include <sigc++/connection.h>
 #include <type_traits>
 
-class Timer : public sigc::trackable
+class Timer
 {
 public:
     Timer() = default;

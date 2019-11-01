@@ -1,19 +1,10 @@
 #include "MainLoop.hpp"
 
-#include "common/logger/Logging.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
 
-static std::thread::id g_uiThreadId;
+#include <glibmm/main.h>
 
-MainLoop::MainLoop(const std::string& name) : parentApp_(Gtk::Application::create(name))
-{
-    g_uiThreadId = std::this_thread::get_id();
-}
-
-std::thread::id MainLoop::uiThreadId()
-{
-    return g_uiThreadId;
-}
+MainLoop::MainLoop(const std::string& name) : parentApp_(Gtk::Application::create(name)) {}
 
 int MainLoop::run(WindowGtk& adaptor)
 {

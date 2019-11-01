@@ -1,16 +1,16 @@
 #pragma once
 
+#include "control/layout/LayoutStat.hpp"
+#include "control/media/MediaStat.hpp"
 #include "control/region/Region.hpp"
 #include "control/widgets/Image.hpp"
-#include "stat/PlayingStat.hpp"
 
 #include <boost/signals2/signal.hpp>
 #include <memory>
 
 using SignalLayoutExpired = boost::signals2::signal<void()>;
-using SignalLayoutStatReady = boost::signals2::signal<void(const PlayingStat&)>;
-using MediaPlayingStats = std::multimap<int, PlayingStat>;
-using SignalLayoutMediaStatsReady = boost::signals2::signal<void(const MediaPlayingStats&)>;
+using SignalLayoutStatReady = boost::signals2::signal<void(const LayoutStat&)>;
+using SignalLayoutMediaStatsReady = boost::signals2::signal<void(const std::vector<MediaStat>&)>;
 
 namespace Xibo
 {

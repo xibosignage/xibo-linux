@@ -1,14 +1,14 @@
 #pragma once
 
 #include <atomic>
-#include <boost/signals2/signal.hpp>
 #include <zmq.hpp>
 
+#include "common/Dispatcher.hpp"
 #include "common/JoinableThread.hpp"
 
 using MultiPartMessage = std::vector<std::string>;
 using Channels = std::vector<std::string>;
-using MessageReceived = boost::signals2::signal<void(MultiPartMessage)>;
+using MessageReceived = Dispatcher<MultiPartMessage>;
 
 class ZeromqSubscriber
 {
