@@ -16,12 +16,6 @@ struct MediaPlayerOptions : MediaOptions
         Enable
     };
 
-    enum Location
-    {
-        Local,
-        Network
-    };
-
     Mute muted;
     Loop looped;
     int volume;

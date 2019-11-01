@@ -22,6 +22,7 @@ public:
 
     void load(const Uri& uri) override;
     void setVolume(int volume) override;
+    void setAspectRatio(MediaGeometry::ScaleType scaleType) override;
     void play() override;
     void stop() override;
     SignalPlaybackFinished& playbackFinished() override;

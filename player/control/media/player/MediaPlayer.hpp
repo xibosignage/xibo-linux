@@ -1,5 +1,6 @@
 #pragma once
 
+#include "control/media/MediaGeometry.hpp"
 #include "control/widgets/render/OutputWindow.hpp"
 
 #include <boost/signals2/signal.hpp>
@@ -16,6 +17,7 @@ namespace Xibo
 
         virtual void load(const Uri& uri) = 0;
         virtual void setVolume(int volume) = 0;
+        virtual void setAspectRatio(MediaGeometry::ScaleType scaleType) = 0;
 
         virtual void showOutputWindow() = 0;
         virtual void hideOutputWindow() = 0;

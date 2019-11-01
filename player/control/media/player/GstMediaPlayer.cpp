@@ -2,11 +2,9 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
-
 #include "constants.hpp"
 #include "control/widgets/render/OutputWindowGtk.hpp"
 
-#include <boost/format.hpp>
 #include <gst/gst.h>
 
 GstMediaPlayer::GstMediaPlayer() :
@@ -47,6 +45,12 @@ void GstMediaPlayer::setVolume(int volume)
 {
     checkVolume(volume);
     g_object_set(playbin_, "volume", volume / static_cast<double>(MaxVolume), nullptr);
+}
+
+void GstMediaPlayer::setAspectRatio(MediaGeometry::ScaleType scaleType)
+{
+    bool aspectRatio = scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
+    g_object_set(playbin_, "force-aspect-ratio", aspectRatio, nullptr);
 }
 
 void GstMediaPlayer::checkVolume(int volume)
