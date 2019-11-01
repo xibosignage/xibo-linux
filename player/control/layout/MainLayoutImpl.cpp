@@ -1,4 +1,4 @@
-#include "MainLayoutImpl.hpp"
+﻿#include "MainLayoutImpl.hpp"
 
 #include "control/widgets/FixedLayout.hpp"
 #include "control/widgets/Image.hpp"
@@ -12,13 +12,7 @@ MainLayoutImpl::MainLayoutImpl(const MainLayoutOptions& options) :
     options_(options),
     view_(OverlayLayoutFactory::create(options.width, options.height))
 {
-    if (options_.statEnabled)
-    {
-        view_->shown().connect([this]() {
-            layoutStats_.id = options_.id;
-            layoutStats_.started = DateTime::now();
-        });
-    }
+    view_->shown().connect(std::bind(&MainLayoutImpl::startLayout, this));
 }
 
 void MainLayoutImpl::setBackground(std::shared_ptr<Xibo::Image>&& background)
@@ -48,18 +42,18 @@ void MainLayoutImpl::monitorMediaStats(Xibo::Region& region)
 {
     for (auto&& media : region.mediaList())
     {
-        auto statPolicy = media->statPolicy();
-        if (statPolicy == MediaOptions::StatPolicy::Inherit)
+        media->statEnabled(options_.statEnabled);
+        if (media->statEnabled())
         {
-            media->enableStat(options_.statEnabled);
+            media->statReady().connect(
+                [id = media->id(), this](const PlayingStat& interval) { mediaIntervals_.emplace(id, interval); });
         }
-        media->statReady().connect([this](const MediaStat& stat) { mediaStats_.emplace_back(std::move(stat)); });
     }
 }
 
 SignalLayoutExpired& MainLayoutImpl::expired()
 {
-    return layoutExpired_;
+    return expired_;
 }
 
 SignalLayoutStatReady& MainLayoutImpl::statReady()
@@ -72,14 +66,15 @@ SignalLayoutMediaStatsReady& MainLayoutImpl::mediaStatsReady()
     return mediaStatsReady_;
 }
 
-// TODO view_->show() is not called here
 void MainLayoutImpl::restart()
 {
-    layoutStats_.clear();
-    mediaStats_.clear();
+    stopLayout();
+
+    interval_.clear();
+    mediaIntervals_.clear();
     expiredRegions_.clear();
-    stopRegions();
-    startRegions();
+
+    startLayout();
 }
 
 std::shared_ptr<Xibo::Widget> MainLayoutImpl::view()
@@ -99,19 +94,35 @@ void MainLayoutImpl::onRegionExpired(int regionId)
 
     if (areAllRegionsExpired())
     {
-        stopRegions();
-        if (options_.statEnabled)
-        {
-            layoutStats_.finished = DateTime::now();
-            statsReady_(layoutStats_);
-        }
-        if (!mediaStats_.empty())
-        {
-            mediaStatsReady_(mediaStats_);
-        }
-
-        layoutExpired_();
+        onAllRegionsExpired();
     }
+}
+
+void MainLayoutImpl::onAllRegionsExpired()
+{
+    stopLayout();
+    if (options_.statEnabled)
+    {
+        statsReady_(interval_);
+    }
+    if (!mediaIntervals_.empty())
+    {
+        mediaStatsReady_(mediaIntervals_);
+    }
+
+    expired_();
+}
+
+void MainLayoutImpl::startLayout()
+{
+    interval_.started = DateTime::now();
+    startRegions();
+}
+
+void MainLayoutImpl::stopLayout()
+{
+    interval_.finished = DateTime::now();
+    stopRegions();
 }
 
 bool MainLayoutImpl::areAllRegionsExpired() const

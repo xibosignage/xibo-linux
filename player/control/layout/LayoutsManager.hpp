@@ -33,7 +33,7 @@ private:
     StatsRecorder& statsRecorder_;
     FileCache& fileCache_;
 
-    std::unique_ptr<Xibo::MainLayout> mainLayout_;
+    std::unique_ptr<Xibo::MainLayout> currentMainLayout_;
     std::map<int, std::unique_ptr<Xibo::MainLayout>> overlayLayouts_;
 
     MainLayoutLoaded mainLayoutFetched_;

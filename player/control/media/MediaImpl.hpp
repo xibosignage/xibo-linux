@@ -13,11 +13,14 @@ public:
 
     void setWidget(const std::shared_ptr<Xibo::Widget>& widget) override;
     void attach(std::unique_ptr<Xibo::Media>&& attachedMedia) override;
+    bool playing() const override;
     void start() override;
     void stop() override;
 
-    void enableStat(bool enable) override;
+    void statEnabled(bool enable) override;
+    bool statEnabled() const override;
     MediaOptions::StatPolicy statPolicy() const override;
+    int id() const override;
 
     void inTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
     void outTransition(std::unique_ptr<TransitionExecutor>&& transition) override;
@@ -35,8 +38,6 @@ protected:
 
 private:
     void startTimer(int duration);
-    void sendStat();
-
     void startAttachedMedia();
     void stopAttachedMedia();
 
@@ -46,9 +47,9 @@ private:
 private:
     MediaOptions options_;
     std::unique_ptr<Timer> timer_;
-
-    bool enableStat_;
-    MediaStat stat_;
+    PlayingStat stat_;
+    bool statEnabled_;
+    bool playing_;
 
     std::shared_ptr<Xibo::Widget> widget_;
     std::unique_ptr<Xibo::Media> attachedMedia_;

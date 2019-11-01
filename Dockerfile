@@ -15,7 +15,6 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
   libgtkmm-3.0-dev \
   libgstreamer1.0-dev \
-  libgstreamermm-1.0-dev \
   libgstreamer-plugins-base1.0-dev \
   libgstreamer-plugins-bad1.0-dev \
   gstreamer1.0-libav \
@@ -47,7 +46,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y \
 RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
 
-ENV BOOST_MAJOR=1 BOOST_MINOR=69
+ENV BOOST_MAJOR=1 BOOST_MINOR=70
 ENV BOOST=${BOOST_MAJOR}_${BOOST_MINOR}_0 
 RUN curl -o /root/boost.tar.gz -SL https://dl.bintray.com/boostorg/release/${BOOST_MAJOR}.${BOOST_MINOR}.0/source/boost_${BOOST}.tar.gz && \
     cd /root && \
@@ -140,6 +139,7 @@ RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archi
 
 RUN mkdir -p /app
 
+VOLUME /build
 ADD . /app
 
 RUN cd /app && \
@@ -148,6 +148,4 @@ RUN cd /app && \
     make -j4 && \
     make install
 
-RUN cp -r /app/_build/. /app/build
-
-CMD []
+ENTRYPOINT cp -r /app/_build/. /build

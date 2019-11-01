@@ -97,9 +97,9 @@ std::istream& operator>>(std::istream& in, MediaOptions::StatPolicy& policy)
     in >> temp;
 
     if (temp == XlfResources::Media::StatsPolicy::Off)
-        policy = MediaOptions::StatPolicy::Off;
+        policy = MediaOptions::StatPolicy::Disable;
     else if (temp == XlfResources::Media::StatsPolicy::On)
-        policy = MediaOptions::StatPolicy::On;
+        policy = MediaOptions::StatPolicy::Enable;
     else if (temp == XlfResources::Media::StatsPolicy::Inherit)
         policy = MediaOptions::StatPolicy::Inherit;
 

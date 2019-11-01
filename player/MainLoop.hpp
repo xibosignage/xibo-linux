@@ -1,6 +1,8 @@
 #pragma once
 
+#include <glibmm/main.h>
 #include <gtkmm/application.h>
+#include <thread>
 
 class WindowGtk;
 
@@ -11,6 +13,17 @@ class MainLoop
 {
 public:
     MainLoop(const std::string& name);
+
+    template <typename Callback>
+    static void pushToUiThread(Callback callback)
+    {
+        Glib::MainContext::get_default()->invoke([callback = std::move(callback)] {
+            callback();
+            return false;
+        });
+    }
+
+    static std::thread::id uiThreadId();
 
     int run(WindowGtk& adaptor);
     void quit();
@@ -23,3 +36,5 @@ private:
     sigc::connection idleConnection_;
     ShutdownAction shutdownAction_;
 };
+
+#define CHECK_UI_THREAD() assert(MainLoop::uiThreadId() == std::this_thread::get_id())

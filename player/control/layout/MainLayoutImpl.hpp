@@ -26,6 +26,9 @@ public:
 private:
     void monitorMediaStats(Xibo::Region& region);
     void onRegionExpired(int regionId);
+    void onAllRegionsExpired();
+    void startLayout();
+    void stopLayout();
     bool areAllRegionsExpired() const;
     void startRegions();
     void stopRegions();
@@ -34,12 +37,12 @@ private:
     MainLayoutOptions options_;
     std::shared_ptr<Xibo::OverlayLayout> view_;
 
-    LayoutStat layoutStats_;
-    std::vector<MediaStat> mediaStats_;
+    PlayingStat interval_;
+    MediaPlayingStats mediaIntervals_;
     SignalLayoutStatReady statsReady_;
     SignalLayoutMediaStatsReady mediaStatsReady_;
 
     std::vector<std::unique_ptr<Xibo::Region>> regions_;
     std::set<int> expiredRegions_;
-    SignalLayoutExpired layoutExpired_;
+    SignalLayoutExpired expired_;
 };
