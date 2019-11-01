@@ -1,7 +1,5 @@
 #include "StatsFormatter.hpp"
 
-#include "common/logger/Logging.hpp"
-
 std::string StatsFormatter::toXml(const StatsRecorder::Records& records) const
 {
     XmlNode root;
@@ -11,8 +9,6 @@ std::string StatsFormatter::toXml(const StatsRecorder::Records& records) const
     {
         stats.add_child("stat", createRecordNode(record));
     }
-
-    Log::debug(Parsing::xmlTreeToString(root));
 
     return Parsing::xmlTreeToString(root);
 }
