@@ -2,7 +2,7 @@
 
 #include "common/dt/DateTime.hpp"
 #include "managers/XmrStatus.hpp"
-#include "networking/ZeromqSubscriber.hpp"
+#include "networking/zmq/Subscriber.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -19,8 +19,6 @@ using ScreenshotAction = boost::signals2::signal<void()>;
 class XmrManager
 {
 public:
-    ~XmrManager();
-
     void connect(const std::string& host);
 
     CollectionIntervalAction& collectionInterval();
@@ -35,7 +33,7 @@ private:
     bool isMessageExpired(const XmrMessage& message);
 
 private:
-    ZeromqSubscriber subcriber_;
+    Zmq::Subscriber subcriber_;
     CollectionIntervalAction collectionIntervalAction_;
     ScreenshotAction screenshotAction_;
     XmrStatus info_;

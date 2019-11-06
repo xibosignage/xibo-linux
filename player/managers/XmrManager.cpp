@@ -15,11 +15,6 @@ const size_t MESSAGE_PART = 2;
 const char* const HearbeatChannel = "H";
 const Channels XmrChannels{MainXmrChannel, HearbeatChannel};
 
-XmrManager::~XmrManager()
-{
-    subcriber_.stop();
-}
-
 // TODO: strong type
 void XmrManager::connect(const std::string& host)
 {
