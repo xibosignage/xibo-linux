@@ -108,18 +108,6 @@ RUN curl -o /root/zeromq.tar.gz -SL https://github.com/zeromq/libzmq/releases/do
     rm -r zeromq-${ZEROMQ} && \
     rm zeromq.tar.gz
 
-RUN curl -o /root/cppzmq.tar.gz -SL https://github.com/zeromq/cppzmq/archive/v${ZEROMQ}.tar.gz && \
-    cd /root && \
-    tar -zxvf cppzmq.tar.gz && \
-    cd cppzmq-${ZEROMQ} && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make -j4 install && \
-    cd /root && \
-    rm -r cppzmq-${ZEROMQ} && \
-    rm cppzmq.tar.gz
-
 ENV CRYPTOPP=8_1_0
 ENV CRYPTOPP_PEM=095f08ff2ef9bca7b81036a59f2395e4f08ce2e8
 RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_${CRYPTOPP}.tar.gz && \

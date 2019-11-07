@@ -9,11 +9,11 @@
 #include "control/media/MediaParsersRepo.hpp"
 
 #include "managers/CollectionInterval.hpp"
-#include "managers/XmrManager.hpp"
 #include "schedule/Scheduler.hpp"
 #include "screenshot/ScreeShoterFactory.hpp"
 #include "screenshot/ScreenShotInterval.hpp"
 #include "stat/StatsRecorder.hpp"
+#include "xmr/XmrManager.hpp"
 
 #include "networking/HttpClient.hpp"
 #include "networking/WebServer.hpp"
@@ -80,6 +80,7 @@ XiboApp::XiboApp(const std::string& name) :
 
     mainLoop_->setShutdownAction([this]() {
         layoutsManager_.reset();
+        xmrManager_->stop();
         HttpClient::instance().shutdown();
         if (collectionInterval_)
         {

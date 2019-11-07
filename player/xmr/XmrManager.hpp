@@ -1,8 +1,8 @@
 #pragma once
 
 #include "common/dt/DateTime.hpp"
-#include "managers/XmrStatus.hpp"
-#include "networking/ZeromqSubscriber.hpp"
+#include "xmr/XmrStatus.hpp"
+#include "xmr/zmq/Subscriber.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -19,23 +19,22 @@ using ScreenshotAction = boost::signals2::signal<void()>;
 class XmrManager
 {
 public:
-    ~XmrManager();
-
     void connect(const std::string& host);
+    void stop();
 
     CollectionIntervalAction& collectionInterval();
     ScreenshotAction& screenshot();
     XmrStatus status();
 
 private:
-    void processMultipartMessage(const MultiPartMessage& message);
+    void processMultipartMessage(const Zmq::MultiPartMessage& message);
     std::string decryptMessage(const std::string& key, const std::string& message);
     XmrMessage parseMessage(const std::string& jsonMessage);
     void processXmrMessage(const XmrMessage& message);
     bool isMessageExpired(const XmrMessage& message);
 
 private:
-    ZeromqSubscriber subcriber_;
+    Zmq::Subscriber subscriber_;
     CollectionIntervalAction collectionIntervalAction_;
     ScreenshotAction screenshotAction_;
     XmrStatus info_;

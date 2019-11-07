@@ -21,8 +21,9 @@ add_subdirectory(options)
 add_subdirectory(common)
 add_subdirectory(networking)
 add_subdirectory(watchdog)
+add_subdirectory(xmr)
 
 add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${OTHER_SOURCES} ${CONTROL_SOURCES})
-target_link_libraries(${PROJECT_NAME} X11 networking schedule ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} xmr X11 networking schedule ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES})
 
 copy_libs("${Boost_LIBRARIES}")
