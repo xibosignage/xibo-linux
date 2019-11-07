@@ -1,5 +1,7 @@
 #include "Exception.hpp"
 
+#include <zmq.h>
+
 Zmq::Exception::Exception() : error_(errno) {}
 
 int Zmq::Exception::code() const

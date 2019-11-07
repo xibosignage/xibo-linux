@@ -13,7 +13,7 @@ const size_t KEY_PART = 1;
 const size_t MESSAGE_PART = 2;
 
 const char* const HearbeatChannel = "H";
-const Channels XmrChannels{MainXmrChannel, HearbeatChannel};
+const Zmq::Channels XmrChannels{MainXmrChannel, HearbeatChannel};
 
 // TODO: strong type
 void XmrManager::connect(const std::string& host)
@@ -21,8 +21,14 @@ void XmrManager::connect(const std::string& host)
     if (info_.host == host) return;
 
     info_.host = host;
-    subcriber_.messageReceived().connect([this](const MultiPartMessage& message) { processMultipartMessage(message); });
-    subcriber_.run(host, XmrChannels);
+    subscriber_.messageReceived().connect(
+        [this](const Zmq::MultiPartMessage& message) { processMultipartMessage(message); });
+    subscriber_.run(host, XmrChannels);
+}
+
+void XmrManager::stop()
+{
+    subscriber_.stop();
 }
 
 CollectionIntervalAction& XmrManager::collectionInterval()
@@ -40,7 +46,7 @@ XmrStatus XmrManager::status()
     return info_;
 }
 
-void XmrManager::processMultipartMessage(const MultiPartMessage& multipart)
+void XmrManager::processMultipartMessage(const Zmq::MultiPartMessage& multipart)
 {
     if (multipart[CHANNEL_PART] == MainXmrChannel)
     {

@@ -1,7 +1,11 @@
 #include "Socket.hpp"
+#include "common/logger/Logging.hpp"
+#include "xmr/zmq/Context.hpp"
+#include "xmr/zmq/Exception.hpp"
+#include "xmr/zmq/Message.hpp"
 
-#include "networking/zmq/Context.hpp"
-#include "networking/zmq/Exception.hpp"
+#include <cassert>
+#include <zmq.h>
 
 Zmq::Socket::Socket(Context& context)
 {
@@ -9,9 +13,9 @@ Zmq::Socket::Socket(Context& context)
     if (!handle_) throw Zmq::Exception{};
 }
 
-Zmq::Socket::~Socket()
+Zmq::Socket::~Socket() noexcept
 {
-    close();
+    safeClose();
 }
 
 void* Zmq::Socket::handle()
@@ -21,17 +25,21 @@ void* Zmq::Socket::handle()
 
 void Zmq::Socket::close()
 {
-    if (handle_)
-    {
-        int error = zmq_close(handle_);
-        if (error == ErrorCode) throw Zmq::Exception{};
+    if (safeClose() == ErrorCode) throw Zmq::Exception{};
+}
 
-        handle_ = nullptr;
-    }
+int Zmq::Socket::safeClose() noexcept
+{
+    if (!handle_) return SuccessCode;
+
+    int error = zmq_close(handle_);
+    handle_ = nullptr;
+    return error;
 }
 
 void Zmq::Socket::connect(const std::string& host, const Channels& channels)
 {
+    if (!handle_) return;
     if (zmq_connect(handle_, host.c_str()) == ErrorCode) throw Zmq::Exception{};
 
     for (auto&& channel : channels)
@@ -43,21 +51,21 @@ void Zmq::Socket::connect(const std::string& host, const Channels& channels)
     if (zmq_setsockopt(handle_, ZMQ_LINGER, &linger, sizeof(linger)) == ErrorCode) throw Zmq::Exception{};
 }
 
-MultiPartMessage Zmq::Socket::receiveAll()
+Zmq::MultiPartMessage Zmq::Socket::receiveAll()
 {
+    if (!handle_) return {};
+
     MultiPartMessage composedMessage;
 
     while (1)
     {
-        zmq_msg_t message;
-        zmq_msg_init(&message);
-        if (zmq_msg_recv(&message, handle_, 0) == ErrorCode) throw Zmq::Exception{};
+        Message message;
+        message.receiveData(*this);
 
-        std::string data{static_cast<char*>(zmq_msg_data(&message)), zmq_msg_size(&message)};
+        std::string data{message.data(), message.size()};
         composedMessage.emplace_back(data);
 
-        if (zmq_msg_close(&message) == ErrorCode) throw Zmq::Exception{};
-        if (!zmq_msg_more(&message)) break;
+        if (!message.more()) break;
     }
 
     return composedMessage;

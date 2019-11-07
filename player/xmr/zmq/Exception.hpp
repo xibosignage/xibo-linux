@@ -1,9 +1,9 @@
 #pragma once
 
 #include <exception>
-#include <zmq.h>
 
 const int ErrorCode = -1;
+const int SuccessCode = 0;
 
 namespace Zmq
 {
@@ -13,7 +13,7 @@ namespace Zmq
         Exception();
 
         int code() const;
-        const char* what() const noexcept;
+        const char* what() const noexcept override;
 
     private:
         int error_;

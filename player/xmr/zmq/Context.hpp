@@ -1,8 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <mutex>
-#include <zmq.h>
 
 namespace Zmq
 {
@@ -11,7 +9,7 @@ namespace Zmq
     {
     public:
         Context();
-        ~Context();
+        ~Context() noexcept;
 
         void* handle();
         void shutdown();
@@ -19,7 +17,9 @@ namespace Zmq
         void terminate();
 
     private:
-        std::mutex guard_;
+        int safeTerminate() noexcept;
+
+    private:
         std::atomic_bool running_;
         void* handle_ = nullptr;
     };

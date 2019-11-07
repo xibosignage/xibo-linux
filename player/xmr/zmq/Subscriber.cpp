@@ -1,14 +1,8 @@
 #include "Subscriber.hpp"
-
 #include "common/logger/Logging.hpp"
-#include "networking/zmq/Exception.hpp"
+#include "xmr/zmq/Exception.hpp"
 
-Zmq::Subscriber::Subscriber() {}
-
-Zmq::Subscriber::~Subscriber()
-{
-    stop();
-}
+#include <zmq.h>
 
 void Zmq::Subscriber::stop()
 {
@@ -20,20 +14,27 @@ void Zmq::Subscriber::stop()
     }
 }
 
-MessageReceived& Zmq::Subscriber::messageReceived()
+Zmq::MessageReceived& Zmq::Subscriber::messageReceived()
 {
     return messageReceived_;
 }
 
 void Zmq::Subscriber::run(const std::string& host, const Channels& channels)
 {
-    stop();
+    stop();  // Stop previous connection if needed
     worker_ = std::make_unique<JoinableThread>([this, host, channels = std::move(channels)]() {
-        context_ = std::make_unique<Context>();
-        Socket socket{*context_};
-        socket.connect(host, channels);
+        try
+        {
+            context_ = std::make_unique<Context>();
+            Socket socket{*context_};  // socket should be created on message queue thread
+            socket.connect(host, channels);
 
-        runMessageQueue(socket);
+            runMessageQueue(socket);
+        }
+        catch (std::exception& e)
+        {
+            Log::error("[ZMQ] {}", e.what());
+        }
     });
 }
 

@@ -1,26 +1,18 @@
 #pragma once
 
-#include <boost/signals2/signal.hpp>
-
 #include "common/JoinableThread.hpp"
-#include "networking/zmq/Context.hpp"
-#include "networking/zmq/Socket.hpp"
+#include "xmr/zmq/Context.hpp"
+#include "xmr/zmq/Socket.hpp"
 
-using MessageReceived = boost::signals2::signal<void(const MultiPartMessage&)>;
+#include <boost/signals2/signal.hpp>
 
 namespace Zmq
 {
+    using MessageReceived = boost::signals2::signal<void(const MultiPartMessage&)>;
+
     class Subscriber
     {
     public:
-        struct Error : std::runtime_error
-        {
-            using std::runtime_error::runtime_error;
-        };
-
-        Subscriber();
-        ~Subscriber();
-
         void run(const std::string& host, const Channels& channels);
         void stop();
 
