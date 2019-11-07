@@ -13,6 +13,8 @@ namespace Zmq
     class Subscriber
     {
     public:
+        ~Subscriber();
+
         void run(const std::string& host, const Channels& channels);
         void stop();
 

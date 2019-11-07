@@ -4,6 +4,13 @@
 
 #include <zmq.h>
 
+Zmq::Subscriber::~Subscriber()
+{
+    // check that thread has been joined and context has been terminated
+    assert(!worker_);
+    assert(context_ ? !context_->running() : true);
+}
+
 void Zmq::Subscriber::stop()
 {
     if (context_ && context_->running())
