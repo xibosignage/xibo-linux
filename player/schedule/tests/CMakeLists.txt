@@ -1,14 +1,33 @@
 project(schedule_tests)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_TESTS_DIRECTORY})
+
 find_package(GTest REQUIRED)
-find_library(GMOCK NAMES gmock)
+find_library(GMOCK NAMES gmock) # find include dirs
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp ${CMAKE_CURRENT_SOURCE_DIR}/mocks/*.*pp)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests)
-
-add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} schedule ${GMOCK} ${GTEST_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(${PROJECT_NAME}
+    Common.cpp
+    Common.hpp
+    FakeFileCache.hpp
+    LayoutQueueTests.cpp
+    LayoutQueueTests.hpp
+    LayoutScheduleTests.cpp
+    main.cpp
+    ScheduleParserTests.cpp
+    SchedulerLayoutTests.hpp
+    SchedulerOverlayTests.cpp
+    SchedulerRegularTests.cpp
+    SchedulerReloadTests.cpp
+    SchedulerReloadTests.hpp
+    ScheduleSerializerTests.cpp
+)
+target_link_libraries(${PROJECT_NAME}
+    schedule
+    ${GMOCK}
+    ${GTEST_LIBRARIES}
+)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${GTEST_INCLUDE_DIRS}
+)
 
 add_test(NAME SchedulerTests COMMAND ${PROJECT_NAME} WORKING_DIRECTORY ${CMAKE_TESTS_DIRECTORY})
