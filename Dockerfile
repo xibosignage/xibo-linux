@@ -95,7 +95,7 @@ RUN curl -o /root/gtest.tar.gz https://codeload.github.com/google/googletest/tar
     rm -r googletest-release-${GTEST} && \
     rm gtest.tar.gz
 
-ENV ZEROMQ=4.3.0
+ENV ZEROMQ=4.3.2
 RUN curl -o /root/zeromq.tar.gz -SL https://github.com/zeromq/libzmq/releases/download/v${ZEROMQ}/zeromq-${ZEROMQ}.tar.gz && \
     cd /root && \
     tar -zxvf zeromq.tar.gz && \

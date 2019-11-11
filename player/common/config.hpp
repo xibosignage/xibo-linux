@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "common/fs/FilePath.hpp"
-#include "common/fs/FileSystem.hpp"
+#include "fs/FilePath.hpp"
+#include "fs/FileSystem.hpp"
 
 namespace ProjectResources
 {

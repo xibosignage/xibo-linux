@@ -1,20 +1,88 @@
+cmake_minimum_required(VERSION 3.14.1)
+
 project(player)
 
-pkg_check_modules(GStreamer REQUIRED gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
-pkg_check_modules(WebKit REQUIRED webkitgtk-3.0>=2.4.10)
-pkg_check_modules(Gtkmm REQUIRED gtkmm-3.0>=3.22.0)
-pkg_check_modules(Glibmm REQUIRED glibmm-2.4>=2.56.0)
-pkg_check_modules(Spdlog REQUIRED spdlog>=1.4.1)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${Gtkmm_INCLUDE_DIRS} ${GStreamer_INCLUDE_DIRS}  ${WebKit_INCLUDE_DIRS})
+find_package(PkgConfig REQUIRED)
+find_package(Boost 1.70 EXACT REQUIRED filesystem system date_time thread)
 
-add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
+pkg_check_modules(GSTREAMER REQUIRED gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
+pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
+pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
+pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
+pkg_check_modules(SPDLOG REQUIRED spdlog>=1.4.1)
+pkg_check_modules(X11 REQUIRED x11)
 
-file(GLOB MAIN_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
-file(GLOB_RECURSE CONTROL_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp)
-file(GLOB OTHER_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
-                         ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
+
+add_compile_options(
+    -static-libstdc++ -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
+    "$<$<CONFIG:RELEASE>:-O2>"
+    "$<$<CONFIG:DEBUG>:-g;-O0>"
+)
+
+add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION USE_GTK)
+
+option(SNAP_BUILD "Use SNAP environment during build" OFF)
+if(SNAP_BUILD)
+    add_compile_definitions(SNAP_ENABLED)
+endif(SNAP_BUILD)
+
+file(GLOB MAIN_SOURCES
+    main.cpp
+    MainLoop.cpp
+    MainLoop.hpp
+    XiboApp.cpp
+    XiboApp.hpp
+)
+file(GLOB CONTROL_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/layout/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/region/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/image/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/audio/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/video/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/webview/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/transitions/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/gtk/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/render/*.*pp
+)
+file(GLOB OTHER_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp
+)
+add_executable(${PROJECT_NAME}
+    ${MAIN_SOURCES}
+    ${OTHER_SOURCES}
+    ${CONTROL_SOURCES}
+)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # remove this workaround
+target_link_libraries(${PROJECT_NAME}
+    xmr
+    networking
+    schedule
+    ${X11_LINK_LIBRARIES}
+    ${GTKMM_LINK_LIBRARIES}
+    ${GSTREAMER_LINK_LIBRARIES}
+    ${WEBKITGTK_LINK_LIBRARIES}
+)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${GTKMM_INCLUDE_DIRS}
+    ${GSTREAMER_INCLUDE_DIRS}
+    ${WEBKITGTK_INCLUDE_DIRS}
+)
+
+configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
+configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
+
+enable_testing()
 
 add_subdirectory(schedule)
 add_subdirectory(options)
@@ -23,7 +91,3 @@ add_subdirectory(networking)
 add_subdirectory(watchdog)
 add_subdirectory(xmr)
 
-add_executable(${PROJECT_NAME} ${MAIN_SOURCES} ${OTHER_SOURCES} ${CONTROL_SOURCES})
-target_link_libraries(${PROJECT_NAME} xmr X11 networking schedule ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES})
-
-copy_libs("${Boost_LIBRARIES}")

@@ -1,6 +1,15 @@
 project(options)
 
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
-
-add_executable(${PROJECT_NAME} main.cpp ${SOURCES})
-target_link_libraries(${PROJECT_NAME} networking ${Gtkmm_LINK_LIBRARIES})
+add_executable(${PROJECT_NAME}
+    main.cpp
+    MainWindowController.cpp
+    MainWindowController.hpp
+    Resources.hpp
+)
+target_link_libraries(${PROJECT_NAME}
+    networking
+    ${GTKMM_LINK_LIBRARIES}
+)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${GTKMM_INCLUDE_DIRS}
+)
