@@ -1,8 +1,8 @@
 #include "Scheduler.hpp"
 
 #include "common/dt/DateTime.hpp"
-#include "common/fs/Resources.hpp"
 #include "common/logger/Logging.hpp"
+#include "config/Resources.hpp"
 
 Scheduler::Scheduler(const FileCache& fileCache) : fileCache_{fileCache}, schedule_{} {}
 

@@ -1,11 +1,11 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "networking/HttpClient.hpp"
 #include "cms/xmds/XmdsFileDownloader.hpp"
 #include "cms/xmds/XmdsRequestSender.hpp"
+#include "networking/HttpClient.hpp"
 
 #include "common/fs/FileCacheImpl.hpp"
-#include "common/fs/Resources.hpp"
+#include "config/Resources.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     xmdsRequestSender_(xmdsRequestSender),

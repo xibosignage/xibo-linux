@@ -8,7 +8,7 @@
 #include <gtkmm/label.h>
 
 #include "Resources.hpp"
-#include "common/settings/CmsSettings.hpp"
+#include "config/CmsSettings.hpp"
 
 class MainWindowController
 {

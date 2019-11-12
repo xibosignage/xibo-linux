@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/settings/PlayerSettings.hpp"
-#include "common/settings/SettingsSerializer.hpp"
+#include "config/PlayerSettings.hpp"
+#include "config/SettingsSerializer.hpp"
 
 class PlayerSettingsSerializer : public SettingsSerializer<PlayerSettings>
 {

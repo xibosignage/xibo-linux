@@ -5,7 +5,7 @@
 #include "cms/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
-#include "common/settings/PlayerSettings.hpp"
+#include "config/PlayerSettings.hpp"
 
 namespace RegisterDisplay
 {

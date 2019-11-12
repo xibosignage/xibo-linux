@@ -1,8 +1,5 @@
 #pragma once
 
-#include "common/settings/CmsSettings.hpp"
-#include "common/settings/PlayerSettings.hpp"
-
 #include "control/ApplicationWindow.hpp"
 #include "control/GeneralInfo.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
@@ -25,6 +22,7 @@ class LocalWebServer;
 class StatsRecorder;
 class LayoutsManager;
 class XiboApp;
+struct PlayerSettings;
 
 XiboApp& xiboApp();
 
@@ -65,6 +63,4 @@ private:
     std::shared_ptr<ApplicationWindowGtk> mainWindow_;
     std::shared_ptr<LocalWebServer> webserver_;
     std::unique_ptr<LayoutsManager> layoutsManager_;
-    CmsSettings cmsSettings_;
-    PlayerSettings playerSettings_;
 };

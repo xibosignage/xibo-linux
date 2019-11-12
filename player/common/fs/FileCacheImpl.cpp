@@ -1,8 +1,8 @@
 #include "FileCacheImpl.hpp"
 
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
 #include "common/logger/Logging.hpp"
+#include "config/Resources.hpp"
 
 static XmlNode::path_type attributePath(const std::string& path)
 {

@@ -64,6 +64,7 @@ target_link_libraries(${PROJECT_NAME}
     cms
     networking
     schedule
+    config
     ${X11_LINK_LIBRARIES}
     ${GTKMM_LINK_LIBRARIES}
     ${GSTREAMER_LINK_LIBRARIES}
@@ -84,6 +85,7 @@ add_subdirectory(cms)
 add_subdirectory(schedule)
 add_subdirectory(options)
 add_subdirectory(common)
+add_subdirectory(config)
 add_subdirectory(networking)
 add_subdirectory(watchdog)
 add_subdirectory(xmr)

@@ -32,3 +32,6 @@ private:
     Field<std::string> password_{"password"};
     boost::optional<Uri> proxy_;
 };
+
+CmsSettings& cmsSettings();
+void updateCmsSettings(const CmsSettings& settings);

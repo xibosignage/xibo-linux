@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/settings/CmsSettings.hpp"
-#include "common/settings/SettingsSerializer.hpp"
+#include "config/CmsSettings.hpp"
+#include "config/SettingsSerializer.hpp"
 
 class CmsSettingsSerializer : public SettingsSerializer<CmsSettings>
 {

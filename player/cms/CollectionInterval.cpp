@@ -6,7 +6,7 @@
 #include "common/logger/XmlLogsRetriever.hpp"
 
 #include "MainLoop.hpp"
-#include "config.hpp"
+#include "config/config.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/StatsFormatter.hpp"

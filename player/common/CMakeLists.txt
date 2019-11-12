@@ -10,7 +10,6 @@ file(GLOB SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/dt/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/fs/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/logger/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/settings/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/system/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/types/internal/*.*pp

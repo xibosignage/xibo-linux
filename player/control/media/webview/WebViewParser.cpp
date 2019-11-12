@@ -1,13 +1,13 @@
 #include "WebViewParser.hpp"
 
+#include "control/media/Media.hpp"
+#include "control/media/MediaResources.hpp"
 #include "control/media/webview/WebViewFactory.hpp"
 #include "control/media/webview/WebViewResources.hpp"
 
-#include "control/media/Media.hpp"
-#include "control/media/MediaResources.hpp"
-
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
+#include "config/PlayerSettings.hpp"
+#include "config/Resources.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>

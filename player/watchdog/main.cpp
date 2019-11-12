@@ -3,8 +3,8 @@
 
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/settings/CmsSettings.hpp"
-#include "config.hpp"
+#include "config/CmsSettings.hpp"
+#include "config/config.hpp"
 
 void setupNewConfigDir()
 {

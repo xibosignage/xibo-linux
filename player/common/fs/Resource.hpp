@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/fs/Resources.hpp"
+#include "config/Resources.hpp"
 #include "common/types/internal/WeakType.hpp"
 
 struct Resource : WeakType<FilePath>

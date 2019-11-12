@@ -8,7 +8,7 @@
 
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
+#include "config/Resources.hpp"
 
 #include <regex>
 

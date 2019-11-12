@@ -1,7 +1,9 @@
 #include "CmsSettings.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/settings/CmsSettingsSerializer.hpp"
+#include "config/CmsSettingsSerializer.hpp"
+
+static CmsSettings settings;
 
 void CmsSettings::loadFrom(const FilePath& settingsFile)
 {
@@ -56,4 +58,14 @@ std::string CmsSettings::password() const
 boost::optional<Uri> CmsSettings::proxy() const
 {
     return proxy_;
+}
+
+CmsSettings& cmsSettings()
+{
+    return settings;
+}
+
+void updateCmsSettings(const CmsSettings& newSettings)
+{
+    settings = newSettings;
 }

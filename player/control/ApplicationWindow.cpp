@@ -7,7 +7,7 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
-#include "config.hpp"
+#include "config/config.hpp"
 
 const KeyboardKey StatusScreenKey{"i", 105};
 const int MinDisplayWidth = 160;

@@ -34,3 +34,6 @@ struct PlayerSettings
     Field<std::string> displayName{"displayName"};
     Field<bool> screenshotRequested{"screenshotRequested", false};
 };
+
+PlayerSettings& playerSettings();
+void updatePlayerSettings(const PlayerSettings& settings);

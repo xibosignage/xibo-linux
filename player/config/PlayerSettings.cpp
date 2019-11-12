@@ -1,7 +1,9 @@
 #include "PlayerSettings.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "common/settings/PlayerSettingsSerializer.hpp"
+#include "config/PlayerSettingsSerializer.hpp"
+
+static PlayerSettings settings;
 
 void PlayerSettings::fromFile(const FilePath& file)
 {
@@ -40,4 +42,14 @@ void PlayerSettings::saveTo(const FilePath& file)
     {
         Log::error(e.what());
     }
+}
+
+PlayerSettings& playerSettings()
+{
+    return settings;
+}
+
+void updatePlayerSettings(const PlayerSettings& newSettings)
+{
+    settings = newSettings;
 }

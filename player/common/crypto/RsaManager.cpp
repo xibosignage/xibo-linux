@@ -2,7 +2,7 @@
 
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
-#include "config.hpp"
+#include "config/config.hpp"
 
 const unsigned int RsaKeyLength = 1024;
 
