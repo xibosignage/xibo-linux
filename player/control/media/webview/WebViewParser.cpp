@@ -8,8 +8,6 @@
 
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resources.hpp"
-#include "managers/Managers.hpp"  // TODO: remove dependency
-#include "networking/WebServer.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>
@@ -46,8 +44,8 @@ Uri WebViewParser::uriFrom(const XmlNode& node)
 
     if (mode != NativeModeid)
     {
-        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
-        return Uri::fromString(Managers::webserver().address() + fileName);
+        //        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
+        //        return Uri::fromString(Managers::webserver().address() + fileName);
     }
     else
     {

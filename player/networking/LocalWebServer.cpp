@@ -1,4 +1,4 @@
-#include "WebServer.hpp"
+#include "LocalWebServer.hpp"
 
 #include "common/logger/Logging.hpp"
 
@@ -145,7 +145,7 @@ void Session::close()
     m_socket.shutdown(tcp::socket::shutdown_send, ec);
 }
 
-XiboWebServer::XiboWebServer() : work_(ioc_), acceptor_(ioc_)
+LocalWebServer::LocalWebServer() : work_(ioc_), acceptor_(ioc_)
 {
     for (int i = 0; i != DefaultThreadsCount; ++i)
     {
@@ -157,17 +157,12 @@ XiboWebServer::XiboWebServer() : work_(ioc_), acceptor_(ioc_)
     }
 }
 
-XiboWebServer::~XiboWebServer()
+LocalWebServer::~LocalWebServer()
 {
     ioc_.stop();
 }
 
-std::string XiboWebServer::address() const
-{
-    return "http://" + DefaultLocalAddress + ":" + std::to_string(port_) + "/";
-}
-
-void XiboWebServer::run(unsigned short port)
+void LocalWebServer::run(unsigned short port)
 {
     try
     {
@@ -186,17 +181,17 @@ void XiboWebServer::run(unsigned short port)
     }
 }
 
-void XiboWebServer::setRootDirectory(const FilePath& rootDirectory)
+void LocalWebServer::setRootDirectory(const FilePath& rootDirectory)
 {
     rootDirectory_ = rootDirectory;
 }
 
-void XiboWebServer::doAccept()
+void LocalWebServer::doAccept()
 {
-    acceptor_.async_accept(ioc_, std::bind(&XiboWebServer::onAccept, shared_from_this(), ph::_1, ph::_2));
+    acceptor_.async_accept(ioc_, std::bind(&LocalWebServer::onAccept, shared_from_this(), ph::_1, ph::_2));
 }
 
-void XiboWebServer::onAccept(beast::error_code ec, tcp::socket socket)
+void LocalWebServer::onAccept(beast::error_code ec, tcp::socket socket)
 {
     if (!ec)
     {

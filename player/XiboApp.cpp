@@ -54,7 +54,7 @@ XiboApp::XiboApp(const std::string& name) :
     scheduler_(std::make_unique<Scheduler>(*fileCache_)),
     statsRecorder_(std::make_unique<StatsRecorder>()),
     xmrManager_(std::make_unique<XmrManager>()),
-    webserver_(std::make_shared<XiboWebServer>()),
+    webserver_(std::make_shared<LocalWebServer>()),
     layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *statsRecorder_, *fileCache_))
 {
     if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
@@ -71,7 +71,6 @@ XiboApp::XiboApp(const std::string& name) :
     webserver_->setRootDirectory(Resources::directory());
     webserver_->run(playerSettings_.embeddedServerPort);
 
-    Log::info("[XiboApp] {}", webserver_->address());
     HttpClient::instance().setProxyServer(cmsSettings_.proxy());
     RsaManager::instance().load();
     setupXmrManager();
@@ -131,7 +130,7 @@ ScreenShoter& XiboApp::screenShoter()
     return *screenShoter_;
 }
 
-XiboWebServer& XiboApp::webserver()
+LocalWebServer& XiboApp::webserver()
 {
     return *webserver_;
 }

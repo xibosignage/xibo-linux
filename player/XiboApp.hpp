@@ -21,7 +21,7 @@ class PlayerError;
 class ScreenShoter;
 class XmrManager;
 using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
-class XiboWebServer;
+class LocalWebServer;
 class StatsRecorder;
 class LayoutsManager;
 class XiboApp;
@@ -35,7 +35,7 @@ public:
 
     FileCache& fileManager();
     ScreenShoter& screenShoter();
-    XiboWebServer& webserver();
+    LocalWebServer& webserver();
 
     int run();
 
@@ -63,7 +63,7 @@ private:
     std::unique_ptr<StatsRecorder> statsRecorder_;
     std::unique_ptr<XmrManager> xmrManager_;
     std::shared_ptr<ApplicationWindowGtk> mainWindow_;
-    std::shared_ptr<XiboWebServer> webserver_;
+    std::shared_ptr<LocalWebServer> webserver_;
     std::unique_ptr<LayoutsManager> layoutsManager_;
     CmsSettings cmsSettings_;
     PlayerSettings playerSettings_;

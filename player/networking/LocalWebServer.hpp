@@ -53,13 +53,12 @@ private:
     SendLambda m_lambda;
 };
 
-class XiboWebServer : public std::enable_shared_from_this<XiboWebServer>
+class LocalWebServer : public std::enable_shared_from_this<LocalWebServer>
 {
 public:
-    XiboWebServer();
-    ~XiboWebServer();
+    LocalWebServer();
+    ~LocalWebServer();
 
-    std::string address() const;
     void run(unsigned short port);
     void setRootDirectory(const FilePath& rootDirectory);
 
