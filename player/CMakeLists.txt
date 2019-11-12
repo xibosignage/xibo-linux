@@ -44,7 +44,6 @@ file(GLOB CONTROL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/control/transitions/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/gtk/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/render/*.*pp
 )
 file(GLOB OTHER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp

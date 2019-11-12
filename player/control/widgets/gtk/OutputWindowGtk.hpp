@@ -1,7 +1,7 @@
 #pragma once
 
+#include "control/widgets/OutputWindow.hpp"
 #include "control/widgets/gtk/WidgetGtk.hpp"
-#include "control/widgets/render/OutputWindow.hpp"
 
 class OutputWindowGtk : public WidgetGtk<Xibo::OutputWindow>
 {

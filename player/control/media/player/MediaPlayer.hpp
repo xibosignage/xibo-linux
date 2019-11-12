@@ -1,7 +1,7 @@
 #pragma once
 
 #include "control/media/MediaGeometry.hpp"
-#include "control/widgets/render/OutputWindow.hpp"
+#include "control/widgets/OutputWindow.hpp"
 
 #include <boost/signals2/signal.hpp>
 

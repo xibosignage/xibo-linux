@@ -3,7 +3,7 @@
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
 #include "constants.hpp"
-#include "control/widgets/render/OutputWindowGtk.hpp"
+#include "control/widgets/gtk/OutputWindowGtk.hpp"
 
 #include <gst/gst.h>
 
@@ -17,12 +17,12 @@ GstMediaPlayer::GstMediaPlayer() :
 
     g_object_set(playbin_, "video-sink", videoSink_, nullptr);
 
-    GtkWidget* widget = nullptr;
-    g_object_get(videoSink_, "widget", &widget, nullptr);
-    if (widget)
+    GtkWidget* videoSinkWidget = nullptr;
+    g_object_get(videoSink_, "widget", &videoSinkWidget, nullptr);
+    if (videoSinkWidget)
     {
         // take ownership and destroy in the container later
-        outputWindow_ = std::make_shared<OutputWindowGtk>(Glib::wrap(widget));
+        outputWindow_ = std::make_shared<OutputWindowGtk>(Glib::wrap(videoSinkWidget));
     }
 
     playbinBus_ = gst_element_get_bus(playbin_);
