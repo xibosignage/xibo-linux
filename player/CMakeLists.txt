@@ -31,13 +31,6 @@ if(SNAP_BUILD)
     add_compile_definitions(SNAP_ENABLED)
 endif(SNAP_BUILD)
 
-file(GLOB MAIN_SOURCES
-    main.cpp
-    MainLoop.cpp
-    MainLoop.hpp
-    XiboApp.cpp
-    XiboApp.hpp
-)
 file(GLOB CONTROL_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/control/layout/*.*pp
@@ -59,7 +52,11 @@ file(GLOB OTHER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp
 )
 add_executable(${PROJECT_NAME}
-    ${MAIN_SOURCES}
+    main.cpp
+    MainLoop.cpp
+    MainLoop.hpp
+    XiboApp.cpp
+    XiboApp.hpp
     ${OTHER_SOURCES}
     ${CONTROL_SOURCES}
 )
@@ -85,7 +82,7 @@ configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
 enable_testing()
 
 add_subdirectory(schedule)
-#add_subdirectory(options)
+add_subdirectory(options)
 add_subdirectory(common)
 add_subdirectory(networking)
 add_subdirectory(watchdog)
