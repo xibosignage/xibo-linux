@@ -1,7 +1,7 @@
 #include "XmdsRequestSender.hpp"
 
-#include "networking/xmds/Resources.hpp"
-#include "networking/xmds/SoapRequestSender.hpp"
+#include "cms/xmds/Resources.hpp"
+#include "cms/xmds/SoapRequestSender.hpp"
 
 #include "common/crypto/RsaManager.hpp"
 #include "common/system/System.hpp"

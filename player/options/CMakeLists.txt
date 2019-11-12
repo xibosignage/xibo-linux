@@ -7,7 +7,7 @@ add_executable(${PROJECT_NAME}
     Resources.hpp
 )
 target_link_libraries(${PROJECT_NAME}
-    networking
+    cms
     ${GTKMM_LINK_LIBRARIES}
 )
 target_include_directories(${PROJECT_NAME} PRIVATE

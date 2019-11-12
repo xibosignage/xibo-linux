@@ -47,7 +47,6 @@ file(GLOB CONTROL_SOURCES
 )
 file(GLOB OTHER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/managers/*.*pp
     ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp
 )
 add_executable(${PROJECT_NAME}
@@ -62,6 +61,7 @@ add_executable(${PROJECT_NAME}
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # remove this workaround
 target_link_libraries(${PROJECT_NAME}
     xmr
+    cms
     networking
     schedule
     ${X11_LINK_LIBRARIES}
@@ -80,6 +80,7 @@ configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
 
 enable_testing()
 
+add_subdirectory(cms)
 add_subdirectory(schedule)
 add_subdirectory(options)
 add_subdirectory(common)

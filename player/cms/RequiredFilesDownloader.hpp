@@ -3,8 +3,8 @@
 #include "common/crypto/Md5Hash.hpp"
 #include "common/logger/Logging.hpp"
 
+#include "cms/xmds/MediaInventoryItem.hpp"
 #include "networking/ResponseResult.hpp"
-#include "networking/xmds/MediaInventoryItem.hpp"
 
 #include <boost/thread/future.hpp>
 

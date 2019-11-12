@@ -8,17 +8,17 @@
 #include "control/layout/LayoutsManager.hpp"
 #include "control/media/MediaParsersRepo.hpp"
 
-#include "managers/CollectionInterval.hpp"
+#include "cms/CollectionInterval.hpp"
 #include "schedule/Scheduler.hpp"
 #include "screenshot/ScreeShoterFactory.hpp"
 #include "screenshot/ScreenShotInterval.hpp"
 #include "stat/StatsRecorder.hpp"
 #include "xmr/XmrManager.hpp"
 
+#include "cms/xmds/SoapRequestSender.hpp"
+#include "cms/xmds/XmdsRequestSender.hpp"
 #include "networking/HttpClient.hpp"
-#include "networking/WebServer.hpp"
-#include "networking/xmds/SoapRequestSender.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "networking/LocalWebServer.hpp"
 
 #include "common/PlayerRuntimeError.hpp"
 #include "common/crypto/RsaManager.hpp"

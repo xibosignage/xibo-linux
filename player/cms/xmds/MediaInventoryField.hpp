@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Field.hpp"
-#include "networking/xmds/MediaInventoryItem.hpp"
+#include "cms/xmds/MediaInventoryItem.hpp"
 
 template <>
 class Field<MediaInventoryItems>

@@ -1,7 +1,7 @@
 #include "XmdsFileDownloader.hpp"
 
 #include "common/crypto/CryptoUtils.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "cms/xmds/XmdsRequestSender.hpp"
 
 const std::size_t DefaultChunkSize = 524288;
 

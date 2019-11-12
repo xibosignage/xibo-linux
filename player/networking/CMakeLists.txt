@@ -1,8 +1,5 @@
 project(networking)
 
-file(GLOB XMDS_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/xmds/*.*pp
-)
 add_library(${PROJECT_NAME}
     HttpClient.cpp
     HttpClient.hpp
@@ -13,9 +10,8 @@ add_library(${PROJECT_NAME}
     RequiredItems.cpp
     RequiredItems.hpp
     ResponseResult.hpp
-    WebServer.cpp
-    WebServer.hpp
-    ${XMDS_SOURCES}
+    LocalWebServer.cpp
+    LocalWebServer.hpp
 )
 target_link_libraries(${PROJECT_NAME}
     common

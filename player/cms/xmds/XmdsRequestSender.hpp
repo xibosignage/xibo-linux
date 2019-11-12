@@ -3,15 +3,15 @@
 #include <boost/thread/future.hpp>
 
 #include "networking/ResponseResult.hpp"
-#include "networking/xmds/GetFile.hpp"
-#include "networking/xmds/GetResource.hpp"
-#include "networking/xmds/MediaInventory.hpp"
-#include "networking/xmds/RegisterDisplay.hpp"
-#include "networking/xmds/RequiredFiles.hpp"
-#include "networking/xmds/Schedule.hpp"
-#include "networking/xmds/SubmitLog.hpp"
-#include "networking/xmds/SubmitScreenShot.hpp"
-#include "networking/xmds/SubmitStats.hpp"
+#include "cms/xmds/GetFile.hpp"
+#include "cms/xmds/GetResource.hpp"
+#include "cms/xmds/MediaInventory.hpp"
+#include "cms/xmds/RegisterDisplay.hpp"
+#include "cms/xmds/RequiredFiles.hpp"
+#include "cms/xmds/Schedule.hpp"
+#include "cms/xmds/SubmitLog.hpp"
+#include "cms/xmds/SubmitScreenShot.hpp"
+#include "cms/xmds/SubmitStats.hpp"
 
 #include "common/types/Uri.hpp"
 

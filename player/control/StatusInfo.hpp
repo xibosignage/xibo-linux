@@ -1,8 +1,8 @@
 #pragma once
 
+#include "cms/CmsStatus.hpp"
 #include "control/GeneralInfo.hpp"
 #include "control/StatusScreenFormatter.hpp"
-#include "managers/CmsStatus.hpp"
 #include "schedule/SchedulerStatus.hpp"
 #include "xmr/XmrStatus.hpp"
 

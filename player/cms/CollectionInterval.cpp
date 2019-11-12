@@ -8,7 +8,7 @@
 #include "MainLoop.hpp"
 #include "config.hpp"
 
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/StatsFormatter.hpp"
 #include "stat/StatsRecorder.hpp"
 

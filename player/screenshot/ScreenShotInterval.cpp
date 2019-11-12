@@ -1,7 +1,7 @@
 #include "ScreenShotInterval.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "cms/xmds/XmdsRequestSender.hpp"
 #include "screenshot/ScreenShoter.hpp"
 
 const int DefaultInterval = 0;

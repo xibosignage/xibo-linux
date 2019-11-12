@@ -1,14 +1,14 @@
 #pragma once
 
-#include "managers/CmsStatus.hpp"
-#include "managers/RequiredFilesDownloader.hpp"
+#include "CmsStatus.hpp"
+#include "RequiredFilesDownloader.hpp"
 
+#include "cms/xmds/RegisterDisplay.hpp"
+#include "cms/xmds/RequiredFiles.hpp"
+#include "cms/xmds/Schedule.hpp"
+#include "cms/xmds/SubmitLog.hpp"
+#include "cms/xmds/SubmitStats.hpp"
 #include "networking/ResponseResult.hpp"
-#include "networking/xmds/RegisterDisplay.hpp"
-#include "networking/xmds/RequiredFiles.hpp"
-#include "networking/xmds/Schedule.hpp"
-#include "networking/xmds/SubmitLog.hpp"
-#include "networking/xmds/SubmitStats.hpp"
 
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"

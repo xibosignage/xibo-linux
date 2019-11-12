@@ -2,9 +2,7 @@
 
 #include "networking/HttpClient.hpp"
 #include "networking/ResponseResult.hpp"
-#include "networking/xmds/Soap.hpp"
-
-#include "managers/Managers.hpp"
+#include "cms/xmds/Soap.hpp"
 
 namespace SoapRequestHelper
 {

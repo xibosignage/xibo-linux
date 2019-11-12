@@ -1,8 +1,8 @@
 #pragma once
 
-#include "networking/xmds/BaseRequestSerializer.hpp"
-#include "networking/xmds/BaseResponseParser.hpp"
-#include "networking/xmds/Soap.hpp"
+#include "cms/xmds/BaseRequestSerializer.hpp"
+#include "cms/xmds/BaseResponseParser.hpp"
+#include "cms/xmds/Soap.hpp"
 
 #include "common/Field.hpp"
 #include "networking/RequiredItems.hpp"

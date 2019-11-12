@@ -1,6 +1,6 @@
 #include "GetFile.hpp"
 
-#include "networking/xmds/Resources.hpp"
+#include "cms/xmds/Resources.hpp"
 
 namespace Resources = XmdsResources::GetFile;
 

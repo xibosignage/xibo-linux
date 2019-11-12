@@ -1,6 +1,6 @@
 #include "PlayerSettingsSerializer.hpp"
 
-#include "networking/xmds/Resources.hpp"  // TODO: remove dependency
+#include "cms/xmds/Resources.hpp"  // TODO: remove dependency
 
 using namespace std::string_literals;
 

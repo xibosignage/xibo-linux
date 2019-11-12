@@ -5,10 +5,10 @@
 
 #include <boost/process/child.hpp>
 
+#include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
 #include "config.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
 
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     ui_(ui),

@@ -1,12 +1,11 @@
 #include "RequiredFilesDownloader.hpp"
 
 #include "networking/HttpClient.hpp"
-#include "networking/xmds/XmdsFileDownloader.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "cms/xmds/XmdsFileDownloader.hpp"
+#include "cms/xmds/XmdsRequestSender.hpp"
 
 #include "common/fs/FileCacheImpl.hpp"
 #include "common/fs/Resources.hpp"
-#include "managers/Managers.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender) :
     xmdsRequestSender_(xmdsRequestSender),
@@ -20,15 +19,15 @@ void RequiredFilesDownloader::saveRegularFile(const std::string& filename,
                                               const std::string& content,
                                               const Md5Hash& hash)
 {
-    Managers::fileManager().save(filename, content, hash);
+    //    Managers::fileManager().save(filename, content, hash);
 }
 
 void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
 {
     auto hash = Md5Hash::fromString(content);
-    if (!Managers::fileManager().cached(filename, hash))
+    //    if (!Managers::fileManager().cached(filename, hash))
     {
-        Managers::fileManager().save(filename, content, hash);
+        //        Managers::fileManager().save(filename, content, hash);
     }
 }
 
@@ -98,7 +97,8 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !Managers::fileManager().valid(file.name) || !Managers::fileManager().cached(file.name, Md5Hash{file.hash});
+    //    return !Managers::fileManager().valid(file.name) || !Managers::fileManager().cached(file.name,
+    //    Md5Hash{file.hash});
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
