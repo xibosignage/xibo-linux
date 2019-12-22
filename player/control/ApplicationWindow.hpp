@@ -14,7 +14,7 @@ template <typename Window>
 class ApplicationWindow : public Window
 {
 public:
-    ApplicationWindow();
+    ApplicationWindow(int width, int height, int x, int y);
 
     void setMainLayout(const MainLayoutWidget& child);
     void setOverlays(const OverlaysWidgets& children);

@@ -15,7 +15,7 @@ MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefP
     ui_(ui),
     mainWindow_(window)
 {
-    settings_.loadFrom(AppConfig::cmsSettingsPath());
+    settings_.fromFile(AppConfig::cmsSettingsPath());
 
     initUi();
     updateControls(settings_);
@@ -44,14 +44,14 @@ void MainWindowController::initUi()
 
 void MainWindowController::updateControls(const CmsSettings& settings)
 {
-    cmsAddressField_->set_text(Glib::ustring{settings.cmsAddress});
-    keyField_->set_text(Glib::ustring{settings.key});
-    resourcesPathField_->set_text(Glib::ustring{settings.resourcesPath});
-
+    cmsAddressField_->set_text(Glib::ustring{settings.address()});
+    keyField_->set_text(Glib::ustring{settings.key()});
+    FilePath path = settings.resourcesPath();
+    resourcesPathField_->set_text(Glib::ustring{path.string()});
     usernameField_->set_text(Glib::ustring{settings.username()});
     passwordField_->set_text(Glib::ustring{settings.password()});
     domainField_->set_text(Glib::ustring{settings.domain()});
-    displayIdField_->set_text(Glib::ustring{settings.displayId});
+    displayIdField_->set_text(Glib::ustring{settings.displayId()});
 }
 
 void MainWindowController::connectSignals()
@@ -110,11 +110,11 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
 
 void MainWindowController::updateSettings()
 {
-    settings_.cmsAddress = cmsAddressField_->get_text();
-    settings_.key = keyField_->get_text();
+    settings_.address().setValue(cmsAddressField_->get_text());
+    settings_.key().setValue(keyField_->get_text());
     std::string path = resourcesPathField_->get_text();
-    settings_.resourcesPath = path.empty() ? createDefaultResourceDir() : path;
-    settings_.displayId = displayIdField_->get_text();
+    settings_.resourcesPath().setValue(path.empty() ? createDefaultResourceDir() : path);
+    settings_.displayId().setValue(displayIdField_->get_text());
 
     settings_.updateProxy(domainField_->get_text(), usernameField_->get_text(), passwordField_->get_text());
 

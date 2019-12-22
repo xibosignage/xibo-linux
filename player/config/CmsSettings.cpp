@@ -3,9 +3,7 @@
 #include "common/logger/Logging.hpp"
 #include "config/CmsSettingsSerializer.hpp"
 
-static CmsSettings settings;
-
-void CmsSettings::loadFrom(const FilePath& settingsFile)
+void CmsSettings::fromFile(const FilePath& settingsFile)
 {
     try
     {
@@ -40,32 +38,62 @@ void CmsSettings::updateProxy(const std::string& domain, const std::string& user
     proxy_ = serializer.proxyFrom(domain, username, password);
 }
 
-std::string CmsSettings::domain() const
-{
-    return domain_;
-}
-
-std::string CmsSettings::username() const
-{
-    return username_;
-}
-
-std::string CmsSettings::password() const
-{
-    return password_;
-}
-
 boost::optional<Uri> CmsSettings::proxy() const
 {
     return proxy_;
 }
 
-CmsSettings& cmsSettings()
+Field<std::string>& CmsSettings::address()
 {
-    return settings;
+    return address_;
 }
 
-void updateCmsSettings(const CmsSettings& newSettings)
+const Field<std::string>& CmsSettings::address() const
 {
-    settings = newSettings;
+    return address_;
+}
+
+Field<std::string>& CmsSettings::key()
+{
+    return key_;
+}
+
+const Field<std::string>& CmsSettings::key() const
+{
+    return key_;
+}
+
+Field<FilePath>& CmsSettings::resourcesPath()
+{
+    return resourcesPath_;
+}
+
+const Field<FilePath>& CmsSettings::resourcesPath() const
+{
+    return resourcesPath_;
+}
+
+Field<std::string>& CmsSettings::displayId()
+{
+    return displayId_;
+}
+
+const Field<std::string>& CmsSettings::displayId() const
+{
+    return displayId_;
+}
+
+const Field<std::string>& CmsSettings::domain() const
+{
+    return domain_;
+}
+
+const Field<std::string>& CmsSettings::username() const
+{
+    return username_;
+}
+
+const Field<std::string>& CmsSettings::password() const
+{
+    return password_;
 }

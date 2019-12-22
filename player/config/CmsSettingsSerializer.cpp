@@ -5,13 +5,13 @@
 void CmsSettingsSerializer::loadFrom(const FilePath& file, CmsSettings& settings)
 {
     loadFromImpl(file,
-                 settings.cmsAddress,
-                 settings.key,
-                 settings.resourcesPath,
+                 settings.address_,
+                 settings.key_,
+                 settings.resourcesPath_,
                  settings.username_,
                  settings.password_,
                  settings.domain_,
-                 settings.displayId);
+                 settings.displayId_);
 
     settings.proxy_ = proxyFrom(settings.domain_, settings.username_, settings.password_);
 }
@@ -19,13 +19,13 @@ void CmsSettingsSerializer::loadFrom(const FilePath& file, CmsSettings& settings
 void CmsSettingsSerializer::saveTo(const FilePath& file, const CmsSettings& settings)
 {
     saveToImpl(file,
-               settings.cmsAddress,
-               settings.key,
-               settings.resourcesPath,
+               settings.address_,
+               settings.key_,
+               settings.resourcesPath_,
                settings.username_,
                settings.password_,
                settings.domain_,
-               settings.displayId);
+               settings.displayId_);
 }
 
 boost::optional<Uri> CmsSettingsSerializer::proxyFrom(const std::string& domain,

@@ -4,6 +4,9 @@
 #include "control/GeneralInfo.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
 
+#include "config/CmsSettings.hpp"
+#include "config/PlayerSettings.hpp"
+
 #include <boost/noncopyable.hpp>
 #include <memory>
 
@@ -35,27 +38,29 @@ public:
 private:
     XiboApp(const std::string& name);
 
-    void setupXmrManager();
-    void setupLayoutManager();
+    std::unique_ptr<XmrManager> createXmrManager();
+    std::shared_ptr<ApplicationWindowGtk> createMainWindow();
+    std::unique_ptr<LayoutsManager> createLayoutManager();
     std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
+    std::unique_ptr<ScreenShotInterval> createScreenshotInterval(XmdsRequestSender& xmdsManager, Xibo::Window& window);
 
     void onCollectionFinished(const PlayerError& error);
-    void updateAndApplySettings(const PlayerSettings& settings);
-    void applyPlayerSettings(const PlayerSettings& settings);
-
     GeneralInfo collectGeneralInfo();
 
 private:
+    PlayerSettings playerSettings_;
+    CmsSettings cmsSettings_;
+
     std::unique_ptr<MainLoop> mainLoop_;
     std::unique_ptr<FileCache> fileCache_;
     std::unique_ptr<Scheduler> scheduler_;
     std::unique_ptr<CollectionInterval> collectionInterval_;
     std::unique_ptr<ScreenShotInterval> screenShotInterval_;
-    std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<ScreenShoter> screenShoter_;
+    std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<StatsRecorder> statsRecorder_;
     std::unique_ptr<XmrManager> xmrManager_;
     std::shared_ptr<ApplicationWindowGtk> mainWindow_;
     std::shared_ptr<LocalWebServer> webserver_;
-    std::unique_ptr<LayoutsManager> layoutsManager_;
+    std::unique_ptr<LayoutsManager> layoutManager_;
 };

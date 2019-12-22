@@ -20,8 +20,8 @@ const double StatusScreenScaleY = 1;
 template class ApplicationWindow<WindowGtk>;
 
 template <typename Window>
-ApplicationWindow<Window>::ApplicationWindow() :
-    layout_(OverlayLayoutFactory::create(MinDisplayWidth, MinDisplayHeight)),
+ApplicationWindow<Window>::ApplicationWindow(int width, int height, int x, int y) :
+    layout_(OverlayLayoutFactory::create(width, height)),
     statusScreen_(StatusScreenFactory::create(static_cast<Window&>(*this), MinDisplayWidth, MinDisplayHeight))
 {
     assert(layout_);
@@ -31,6 +31,9 @@ ApplicationWindow<Window>::ApplicationWindow() :
     Window::disableWindowDecoration();
     Window::setCursorVisible(false);
     Window::setBackgroundColor(Color::fromString("#000000"));
+
+    Window::setSize(width, height);
+    Window::move(x, y);
 
     Window::keyPressed().connect([this](const KeyboardKey& key) {
         if (key == StatusScreenKey)

@@ -5,35 +5,86 @@
 
 class FilePath;
 
-struct PlayerSettings
+class PlayerSettings
 {
+    friend class PlayerSettingsSerializer;
+
+public:
+    struct SizeField : NamedField<int, int>
+    {
+        using NamedField<int, int>::NamedField;
+
+        int width() const
+        {
+            return value<0>();
+        }
+
+        int height() const
+        {
+            return value<1>();
+        }
+    };
+
+    struct PositionField : NamedField<int, int>
+    {
+        using NamedField<int, int>::NamedField;
+
+        int x() const
+        {
+            return value<0>();
+        }
+
+        int y() const
+        {
+            return value<1>();
+        }
+    };
+
+public:
+    void fromFields(const PlayerSettings& settings);
     void fromFile(const FilePath& file);
-    void fromNode(const XmlNode& node);
     void saveTo(const FilePath& file);
 
-    NamedField<int> collectInterval{"collectInterval", 900};
-    NamedField<std::string> downloadStartWindow{"downloadStartWindow", "00:00"};
-    NamedField<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
-    NamedField<bool> statsEnabled{"statsEnabled", false};
-    NamedField<std::string> aggregationLevel{"aggregationLevel", "Individual"};
-    NamedField<std::string> xmrNetworkAddress{"xmrNetworkAddress"};
-    NamedField<int> width{"sizeX", 0};
-    NamedField<int> height{"sizeY", 0};
-    NamedField<int> x{"offsetX", 0};
-    NamedField<int> y{"offsetY", 0};
-    NamedField<std::string> logLevel{"logLevel", "debug"};
-    NamedField<bool> shellCommandsEnabled{"shellCommandsEnabled", false};
-    NamedField<bool> modifiedLayoutsEnabled{"modifiedLayoutsEnabled", false};
-    NamedField<int> maxConcurrentDownloads{"maxConcurrentDownloads", 2};
-    NamedField<bool> statusLayoutUpdate{"statusLayoutUpdate", false};
-    NamedField<int> screenshotInterval{"screenshotInterval", 0};
-    NamedField<int> screenshotSize{"screenshotSize", 0};
-    NamedField<int> maxLogFilesUploads{"maxLogFilesUploads", 1};
-    NamedField<unsigned short> embeddedServerPort{"embeddedServerPort", 1234};
-    NamedField<bool> preventSleep{"preventSleep", false};
-    NamedField<std::string> displayName{"displayName"};
-    NamedField<bool> screenshotRequested{"screenshotRequested", false};
-};
+    Field<int>& collectInterval();
+    const Field<int>& collectInterval() const;
 
-PlayerSettings& playerSettings();
-void updatePlayerSettings(const PlayerSettings& settings);
+    Field<bool>& statsEnabled();
+    const Field<bool>& statsEnabled() const;
+
+    Field<std::string>& xmrNetworkAddress();
+    const Field<std::string>& xmrNetworkAddress() const;
+
+    Field<std::string>& logLevel();
+    const Field<std::string>& logLevel() const;
+
+    Field<int>& screenshotInterval();
+    const Field<int>& screenshotInterval() const;
+
+    Field<unsigned short>& embeddedServerPort();
+    const Field<unsigned short>& embeddedServerPort() const;
+
+    Field<bool>& preventSleep();
+    const Field<bool>& preventSleep() const;
+
+    Field<std::string>& displayName();
+    const Field<std::string>& displayName() const;
+
+    SizeField& size();
+    const SizeField& size() const;
+
+    PositionField& position();
+    const PositionField& position() const;
+
+private:
+    NamedField<int> collectInterval_{"collectInterval", 900};
+    NamedField<bool> statsEnabled_{"statsEnabled", false};  // FIXME should listen to value
+    NamedField<std::string> xmrNetworkAddress_{"xmrNetworkAddress"};
+    NamedField<std::string> logLevel_{"logLevel", "debug"};
+    NamedField<int> screenshotInterval_{"screenshotInterval", 0};
+    NamedField<unsigned short> embeddedServerPort_{"embeddedServerPort",
+                                                   1234};   // FIXME should listen to value changed and do reconfig
+    NamedField<bool> preventSleep_{"preventSleep", false};  // FIXME should listen to value changed and do reconfig
+    NamedField<std::string> displayName_{"displayName"};    // FIXME should listen to value
+    SizeField size_{{"sizeX", 0}, {"sizeY", 0}};
+    PositionField position_{{"offsetX", 0}, {"offfsetY", 0}};
+};
