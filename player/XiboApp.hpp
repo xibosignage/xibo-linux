@@ -30,11 +30,6 @@ class XiboApp : boost::noncopyable
 {
 public:
     static XiboApp& create(const std::string& name);
-
-    FileCache& fileManager();
-    ScreenShoter& screenShoter();
-    LocalWebServer& webserver();
-
     int run();
 
 private:

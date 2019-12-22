@@ -13,11 +13,12 @@ using DownloadResults = std::vector<DownloadResult>;
 using ResponseContentResult = ResponseResult<std::string>;
 class XmdsFileDownloader;
 class XmdsRequestSender;
+class FileCache;
 
 class RequiredFilesDownloader
 {
 public:
-    RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender);
+    RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender, FileCache& fileCache);
     ~RequiredFilesDownloader();
 
     template <typename RequiredFileType>
@@ -99,5 +100,6 @@ private:
 
 private:
     XmdsRequestSender& xmdsRequestSender_;
+    FileCache& fileCache_;
     std::unique_ptr<XmdsFileDownloader> xmdsFileDownloader_;
 };

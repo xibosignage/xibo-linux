@@ -22,6 +22,7 @@ using SignalCollectionFinished = boost::signals2::signal<void(PlayerError)>;
 using SignalFilesDownloaded = boost::signals2::signal<void()>;
 class XmdsRequestSender;
 class StatsRecorder;
+class FileCache;
 
 struct CollectionSession
 {
@@ -33,7 +34,7 @@ using CollectionSessionPtr = std::shared_ptr<CollectionSession>;
 class CollectionInterval
 {
 public:
-    CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder);
+    CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder, FileCache& fileCache);
 
     void startRegularCollection();
     void stop();
@@ -65,6 +66,7 @@ private:
 private:
     XmdsRequestSender& xmdsSender_;
     StatsRecorder& statsRecorder_;
+    FileCache& fileCache_;
     std::unique_ptr<JoinableThread> workerThread_;
     std::unique_ptr<Timer> intervalTimer_;
     int collectInterval_;

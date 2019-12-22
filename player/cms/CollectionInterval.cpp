@@ -15,9 +15,12 @@
 const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
 
-CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder) :
+CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
+                                       StatsRecorder& statsRecorder,
+                                       FileCache& fileCache) :
     xmdsSender_{xmdsSender},
     statsRecorder_{statsRecorder},
+    fileCache_{fileCache},
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     started_{false},
@@ -186,7 +189,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     {
         Log::debug("[XMDS::RequiredFiles] Received");
 
-        RequiredFilesDownloader downloader{xmdsSender_};
+        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
 
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();

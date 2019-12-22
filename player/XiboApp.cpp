@@ -119,21 +119,6 @@ void XiboApp::setupXmrManager()
     });
 }
 
-FileCache& XiboApp::fileManager()
-{
-    return *fileCache_;
-}
-
-ScreenShoter& XiboApp::screenShoter()
-{
-    return *screenShoter_;
-}
-
-LocalWebServer& XiboApp::webserver()
-{
-    return *webserver_;
-}
-
 int XiboApp::run()
 {
     mainWindow_ = std::make_unique<ApplicationWindowGtk>();
@@ -212,7 +197,7 @@ GeneralInfo XiboApp::collectGeneralInfo()
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {
-    auto interval = std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_);
+    auto interval = std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_, *fileCache_);
 
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
     interval->settingsUpdated().connect(std::bind(&XiboApp::updateAndApplySettings, this, ph::_1));

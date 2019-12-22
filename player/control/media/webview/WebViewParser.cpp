@@ -44,8 +44,8 @@ Uri WebViewParser::uriFrom(const XmlNode& node)
 
     if (mode != NativeModeid)
     {
-        //        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
-        //        return Uri::fromString(Managers::webserver().address() + fileName);
+        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
+        return Uri::fromFile(fileName);  // FIXME while adding plugin init
     }
     else
     {
