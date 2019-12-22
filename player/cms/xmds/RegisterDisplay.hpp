@@ -4,7 +4,7 @@
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
-#include "common/Field.hpp"
+#include "common/SoapField.hpp"
 #include "config/PlayerSettings.hpp"
 
 namespace RegisterDisplay
@@ -31,15 +31,15 @@ namespace RegisterDisplay
 
     struct Request
     {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<std::string> displayName{"displayName"};
-        Field<std::string> clientType{"clientType"};
-        Field<std::string> clientVersion{"clientVersion"};
-        Field<std::string> clientCode{"clientCode"};
-        Field<std::string> macAddress{"macAddress"};
-        Field<std::string> xmrChannel{"xmrChannel"};
-        Field<std::string> xmrPubKey{"xmrPubKey"};
+        SoapField<std::string> serverKey{"serverKey"};
+        SoapField<std::string> hardwareKey{"hardwareKey"};
+        SoapField<std::string> displayName{"displayName"};
+        SoapField<std::string> clientType{"clientType"};
+        SoapField<std::string> clientVersion{"clientVersion"};
+        SoapField<std::string> clientCode{"clientCode"};
+        SoapField<std::string> macAddress{"macAddress"};
+        SoapField<std::string> xmrChannel{"xmrChannel"};
+        SoapField<std::string> xmrPubKey{"xmrPubKey"};
     };
 }
 

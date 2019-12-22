@@ -1,24 +1,21 @@
 #pragma once
 
-#include "common/Field.hpp"
 #include "cms/xmds/MediaInventoryItem.hpp"
+#include "common/SoapField.hpp"
 
 template <>
-class Field<MediaInventoryItems>
+class SoapField<MediaInventoryItems> : public NamedField<MediaInventoryItems>
 {
 public:
-    explicit Field(std::string_view name);
+    using NamedField<MediaInventoryItems>::NamedField;
+    using NamedField<MediaInventoryItems>::operator=;
 
-    Field& operator=(MediaInventoryItems&& items);
     std::string_view type() const;
-    std::string_view name() const;
-    void setValue(MediaInventoryItems&& items);
-    std::string_view value() const;
+    std::string value() const;
 
 private:
-    std::string toXmlString(MediaInventoryItems&& items);
+    std::string toXmlString(const MediaInventoryItems& items) const;
 
 private:
-    std::string fieldName_;
-    std::string xmlItems_;
+    MediaInventoryItems items_;
 };

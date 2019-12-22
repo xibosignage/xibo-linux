@@ -5,7 +5,7 @@
 #include "cms/xmds/MediaInventoryField.hpp"
 #include "cms/xmds/Soap.hpp"
 
-#include "common/Field.hpp"
+#include "common/SoapField.hpp"
 
 namespace MediaInventory
 {
@@ -16,9 +16,9 @@ namespace MediaInventory
 
     struct Request
     {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<MediaInventoryItems> inventory{"mediaInventory"};
+        SoapField<std::string> serverKey{"serverKey"};
+        SoapField<std::string> hardwareKey{"hardwareKey"};
+        SoapField<MediaInventoryItems> inventory{"mediaInventory"};
     };
 }
 

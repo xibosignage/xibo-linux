@@ -1,9 +1,10 @@
 #include "RegisterDisplay.hpp"
 
-#include "common/Utils.hpp"
 #include "cms/xmds/Resources.hpp"
+#include "common/Utils.hpp"
 
 namespace Resources = XmdsResources::RegisterDisplay;
+namespace Settings = XmdsResources::RegisterDisplay::Settings;
 
 template <>
 std::string Utils::toString(RegisterDisplay::Result::Status::Code val)

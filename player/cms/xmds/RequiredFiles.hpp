@@ -4,7 +4,7 @@
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
-#include "common/Field.hpp"
+#include "common/SoapField.hpp"
 #include "networking/RequiredItems.hpp"
 
 namespace RequiredFiles
@@ -24,8 +24,8 @@ namespace RequiredFiles
 
     struct Request
     {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
+        SoapField<std::string> serverKey{"serverKey"};
+        SoapField<std::string> hardwareKey{"hardwareKey"};
     };
 }
 

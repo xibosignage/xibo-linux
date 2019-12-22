@@ -4,7 +4,7 @@
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
-#include "common/Field.hpp"
+#include "common/SoapField.hpp"
 
 namespace SubmitLog
 {
@@ -15,9 +15,9 @@ namespace SubmitLog
 
     struct Request
     {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<std::string> logXml{"logXml"};
+        SoapField<std::string> serverKey{"serverKey"};
+        SoapField<std::string> hardwareKey{"hardwareKey"};
+        SoapField<std::string> logXml{"logXml"};
     };
 }
 

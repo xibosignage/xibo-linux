@@ -2,35 +2,17 @@
 
 #include "common/Parsing.hpp"
 
-Field<MediaInventoryItems>::Field(std::string_view name) : fieldName_(name) {}
-
-Field<MediaInventoryItems>& Field<MediaInventoryItems>::operator=(MediaInventoryItems&& items)
-{
-    setValue(std::move(items));
-    return *this;
-}
-
-std::string_view Field<MediaInventoryItems>::type() const
+std::string_view SoapField<MediaInventoryItems>::type() const
 {
     return "string";
 }
 
-std::string_view Field<MediaInventoryItems>::name() const
+std::string SoapField<MediaInventoryItems>::value() const
 {
-    return fieldName_;
+    return toXmlString(items_);
 }
 
-void Field<MediaInventoryItems>::setValue(MediaInventoryItems&& items)
-{
-    xmlItems_ = toXmlString(std::move(items));
-}
-
-std::string_view Field<MediaInventoryItems>::value() const
-{
-    return xmlItems_;
-}
-
-std::string Field<MediaInventoryItems>::toXmlString(MediaInventoryItems&& items)
+std::string SoapField<MediaInventoryItems>::toXmlString(const MediaInventoryItems& items) const
 {
     XmlNode root;
     auto&& filesNode = root.put_child("files", {});

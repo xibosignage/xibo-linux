@@ -4,7 +4,7 @@
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
-#include "common/Field.hpp"
+#include "common/SoapField.hpp"
 
 namespace GetResource
 {
@@ -15,11 +15,11 @@ namespace GetResource
 
     struct Request
     {
-        Field<std::string> serverKey{"serverKey"};
-        Field<std::string> hardwareKey{"hardwareKey"};
-        Field<int> layoutId{"layoutId"};
-        Field<std::string> regionId{"regionId"};
-        Field<std::string> mediaId{"mediaId"};
+        SoapField<std::string> serverKey{"serverKey"};
+        SoapField<std::string> hardwareKey{"hardwareKey"};
+        SoapField<int> layoutId{"layoutId"};
+        SoapField<std::string> regionId{"regionId"};
+        SoapField<std::string> mediaId{"mediaId"};
     };
 }
 
