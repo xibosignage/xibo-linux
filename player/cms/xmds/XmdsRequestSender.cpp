@@ -5,7 +5,7 @@
 
 #include "common/crypto/RsaManager.hpp"
 #include "common/system/System.hpp"
-#include "constants.hpp"
+#include "config/AppConfig.hpp"
 
 const std::string DefaultClientType = "linux";
 const std::string XmdsTarget = "/xmds.php?v=5";
@@ -30,7 +30,7 @@ FutureResponseResult<RegisterDisplay::Result> XmdsRequestSender::registerDisplay
     request.clientCode = clientCode;
     request.clientVersion = clientVersion;
     request.macAddress = static_cast<std::string>(System::macAddress());
-    request.xmrChannel = MainXmrChannel;
+    request.xmrChannel = AppConfig::mainXmrChannel();
     request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName;
 

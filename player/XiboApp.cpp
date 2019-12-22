@@ -1,10 +1,9 @@
 ﻿#include "XiboApp.hpp"
 #include "MainLoop.hpp"
 
+#include "config/AppConfig.hpp"
 #include "config/CmsSettings.hpp"
 #include "config/PlayerSettings.hpp"
-#include "config/Resources.hpp"
-#include "config/config.hpp"
 
 #include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
@@ -25,6 +24,7 @@
 #include "common/PlayerRuntimeError.hpp"
 #include "common/crypto/RsaManager.hpp"
 #include "common/fs/FileCacheImpl.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
 
@@ -41,7 +41,6 @@ XiboApp& XiboApp::create(const std::string& name)
 {
     Log::create();
     gst_init(nullptr, nullptr);
-    Resources::setDirectory(ProjectResources::defaultResourcesDir());
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *g_app;
@@ -56,18 +55,18 @@ XiboApp::XiboApp(const std::string& name) :
     webserver_(std::make_shared<LocalWebServer>()),
     layoutsManager_(std::make_unique<LayoutsManager>(*scheduler_, *statsRecorder_, *fileCache_))
 {
-    if (!FileSystem::exists(ProjectResources::cmsSettingsPath()))
+    if (!FileSystem::exists(AppConfig::cmsSettingsPath()))
         throw PlayerRuntimeError{"XiboApp", "Update CMS settings using player options app"};
 
     System::preventSleep();
 
-    cmsSettings().loadFrom(ProjectResources::cmsSettingsPath());
-    playerSettings().fromFile(ProjectResources::playerSettingsPath());
-    Resources::setDirectory(FilePath{cmsSettings().resourcesPath});
+    cmsSettings().loadFrom(AppConfig::cmsSettingsPath());
+    playerSettings().fromFile(AppConfig::playerSettingsPath());
+    AppConfig::resourceDirectory(FilePath{cmsSettings().resourcesPath});
 
-    fileCache_->loadFrom(ProjectResources::cachePath());
+    fileCache_->loadFrom(AppConfig::cachePath());
 
-    webserver_->setRootDirectory(Resources::directory());
+    webserver_->setRootDirectory(AppConfig::resourceDirectory());
     webserver_->run(playerSettings().embeddedServerPort);
 
     HttpClient::instance().setProxyServer(cmsSettings().proxy());
@@ -141,9 +140,9 @@ int XiboApp::run()
 
     applyPlayerSettings(playerSettings());
 
-    scheduler_->reloadSchedule(LayoutSchedule::fromFile(ProjectResources::schedulePath()));
+    scheduler_->reloadSchedule(LayoutSchedule::fromFile(AppConfig::schedulePath()));
     scheduler_->scheduleUpdated().connect(
-        [](const LayoutSchedule& schedule) { schedule.toFile(ProjectResources::schedulePath()); });
+        [](const LayoutSchedule& schedule) { schedule.toFile(AppConfig::schedulePath()); });
 
     collectionInterval_->startRegularCollection();
     mainWindow_->show();
@@ -185,8 +184,8 @@ GeneralInfo XiboApp::collectGeneralInfo()
     info.currentDateTime = DateTime::now();
     info.cmsAddress = cmsSettings().cmsAddress;
     info.resourcesPath = cmsSettings().resourcesPath;
-    info.codeVersion = ProjectResources::codeVersion();
-    info.projectVersion = ProjectResources::version();
+    info.codeVersion = AppConfig::codeVersion();
+    info.projectVersion = AppConfig::version();
     info.screenShotInterval = playerSettings().collectInterval;
     info.displayName = playerSettings().displayName;
     info.windowWidth = mainWindow_->width();
@@ -232,7 +231,7 @@ void XiboApp::updateAndApplySettings(const PlayerSettings& settings)
     applyPlayerSettings(settings);
 
     updatePlayerSettings(settings);
-    playerSettings().saveTo(ProjectResources::playerSettingsPath());
+    playerSettings().saveTo(AppConfig::playerSettingsPath());
 }
 
 void XiboApp::applyPlayerSettings(const PlayerSettings& settings)

@@ -27,6 +27,7 @@ private:
     void showSettingsSavedMessage();
     void onLaunchClientClicked();
     void onBrowseResourcesPathClicked();
+    std::string createDefaultResourceDir();
 
 private:
     Glib::RefPtr<Gtk::Builder> ui_;

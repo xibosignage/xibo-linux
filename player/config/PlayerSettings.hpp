@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Field.hpp"
+#include "common/NamedField.hpp"
 #include "common/Parsing.hpp"
 
 class FilePath;
@@ -11,28 +11,28 @@ struct PlayerSettings
     void fromNode(const XmlNode& node);
     void saveTo(const FilePath& file);
 
-    Field<int> collectInterval{"collectInterval", 900};
-    Field<std::string> downloadStartWindow{"downloadStartWindow", "00:00"};
-    Field<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
-    Field<bool> statsEnabled{"statsEnabled", false};
-    Field<std::string> aggregationLevel{"aggregationLevel", "Individual"};
-    Field<std::string> xmrNetworkAddress{"xmrNetworkAddress"};
-    Field<int> width{"sizeX", 0};
-    Field<int> height{"sizeY", 0};
-    Field<int> x{"offsetX", 0};
-    Field<int> y{"offsetY", 0};
-    Field<std::string> logLevel{"logLevel", "debug"};
-    Field<bool> shellCommandsEnabled{"shellCommandsEnabled", false};
-    Field<bool> modifiedLayoutsEnabled{"modifiedLayoutsEnabled", false};
-    Field<int> maxConcurrentDownloads{"maxConcurrentDownloads", 2};
-    Field<bool> statusLayoutUpdate{"statusLayoutUpdate", false};
-    Field<int> screenshotInterval{"screenshotInterval", 0};
-    Field<int> screenshotSize{"screenshotSize", 0};
-    Field<int> maxLogFilesUploads{"maxLogFilesUploads", 1};
-    Field<unsigned short> embeddedServerPort{"embeddedServerPort", 1234};
-    Field<bool> preventSleep{"preventSleep", false};
-    Field<std::string> displayName{"displayName"};
-    Field<bool> screenshotRequested{"screenshotRequested", false};
+    NamedField<int> collectInterval{"collectInterval", 900};
+    NamedField<std::string> downloadStartWindow{"downloadStartWindow", "00:00"};
+    NamedField<std::string> downloadEndWindow{"downloadEndWindow", "00:00"};
+    NamedField<bool> statsEnabled{"statsEnabled", false};
+    NamedField<std::string> aggregationLevel{"aggregationLevel", "Individual"};
+    NamedField<std::string> xmrNetworkAddress{"xmrNetworkAddress"};
+    NamedField<int> width{"sizeX", 0};
+    NamedField<int> height{"sizeY", 0};
+    NamedField<int> x{"offsetX", 0};
+    NamedField<int> y{"offsetY", 0};
+    NamedField<std::string> logLevel{"logLevel", "debug"};
+    NamedField<bool> shellCommandsEnabled{"shellCommandsEnabled", false};
+    NamedField<bool> modifiedLayoutsEnabled{"modifiedLayoutsEnabled", false};
+    NamedField<int> maxConcurrentDownloads{"maxConcurrentDownloads", 2};
+    NamedField<bool> statusLayoutUpdate{"statusLayoutUpdate", false};
+    NamedField<int> screenshotInterval{"screenshotInterval", 0};
+    NamedField<int> screenshotSize{"screenshotSize", 0};
+    NamedField<int> maxLogFilesUploads{"maxLogFilesUploads", 1};
+    NamedField<unsigned short> embeddedServerPort{"embeddedServerPort", 1234};
+    NamedField<bool> preventSleep{"preventSleep", false};
+    NamedField<std::string> displayName{"displayName"};
+    NamedField<bool> screenshotRequested{"screenshotRequested", false};
 };
 
 PlayerSettings& playerSettings();

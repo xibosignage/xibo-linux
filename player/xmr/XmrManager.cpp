@@ -1,19 +1,19 @@
 #include "XmrManager.hpp"
 
 #include "MainLoop.hpp"
-#include "constants.hpp"
 
 #include "common/Parsing.hpp"
 #include "common/crypto/RsaManager.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/logger/Logging.hpp"
+#include "config/AppConfig.hpp"
 
 const size_t CHANNEL_PART = 0;
 const size_t KEY_PART = 1;
 const size_t MESSAGE_PART = 2;
 
 const char* const HearbeatChannel = "H";
-const Zmq::Channels XmrChannels{MainXmrChannel, HearbeatChannel};
+const Zmq::Channels XmrChannels{AppConfig::mainXmrChannel(), HearbeatChannel};
 
 // TODO: strong type
 void XmrManager::connect(const std::string& host)
@@ -48,7 +48,7 @@ XmrStatus XmrManager::status()
 
 void XmrManager::processMultipartMessage(const Zmq::MultiPartMessage& multipart)
 {
-    if (multipart[CHANNEL_PART] == MainXmrChannel)
+    if (multipart[CHANNEL_PART] == AppConfig::mainXmrChannel())
     {
         try
         {

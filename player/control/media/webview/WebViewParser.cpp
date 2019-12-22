@@ -6,8 +6,7 @@
 #include "control/media/webview/WebViewResources.hpp"
 
 #include "common/fs/FileSystem.hpp"
-#include "config/PlayerSettings.hpp"
-#include "config/Resources.hpp"
+#include "common/fs/Resource.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>
@@ -44,7 +43,8 @@ Uri WebViewParser::uriFrom(const XmlNode& node)
 
     if (mode != NativeModeid)
     {
-        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
+        Resource fileName{std::to_string(idFrom(node)) + DefaultWebviewExtension};
+        //        return Uri::fromString(Managers::webserver().address() + fileName);
         return Uri::fromFile(fileName);  // FIXME while adding plugin init
     }
     else

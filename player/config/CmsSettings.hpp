@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Field.hpp"
+#include "common/NamedField.hpp"
 #include "common/types/Uri.hpp"
 
 #include <boost/optional/optional.hpp>
@@ -14,10 +14,10 @@ public:
     void saveTo(const FilePath& file);
     void updateProxy(const std::string& domain, const std::string& username, const std::string& password);
 
-    Field<std::string> cmsAddress{"cmsAddress", "http://localhost"};
-    Field<std::string> key{"key", "yourserverkey"};
-    Field<std::string> resourcesPath{"localLibrary"};
-    Field<std::string> displayId{"displayId"};
+    NamedField<std::string> cmsAddress{"cmsAddress", "http://localhost"};
+    NamedField<std::string> key{"key", "yourserverkey"};
+    NamedField<std::string> resourcesPath{"localLibrary"};
+    NamedField<std::string> displayId{"displayId"};
 
     std::string domain() const;
     std::string username() const;
@@ -27,9 +27,9 @@ public:
 private:
     friend class CmsSettingsSerializer;
 
-    Field<std::string> domain_{"domain"};
-    Field<std::string> username_{"username"};
-    Field<std::string> password_{"password"};
+    NamedField<std::string> domain_{"domain"};
+    NamedField<std::string> username_{"username"};
+    NamedField<std::string> password_{"password"};
     boost::optional<Uri> proxy_;
 };
 

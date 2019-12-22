@@ -3,8 +3,8 @@
 
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
+#include "config/AppConfig.hpp"
 #include "config/CmsSettings.hpp"
-#include "config/config.hpp"
 
 void setupNewConfigDir()
 {
@@ -42,11 +42,11 @@ int main()
 {
     setupNewConfigDir();
 
-    if (FileSystem::exists(ProjectResources::cmsSettingsPath()))
+    if (FileSystem::exists(AppConfig::cmsSettingsPath()))
     {
         while (true)
         {
-            boost::process::child playerBin{ProjectResources::playerBinary()};
+            boost::process::child playerBin{AppConfig::playerBinary()};
             playerBin.wait();
             std::cerr << "Player exited with code " << playerBin.exit_code() << std::endl;
             sleep(3);
@@ -54,7 +54,7 @@ int main()
     }
     else
     {
-        boost::process::child optionsBin{ProjectResources::optionsBinary()};
+        boost::process::child optionsBin{AppConfig::optionsBinary()};
         optionsBin.wait();
     }
     return 0;

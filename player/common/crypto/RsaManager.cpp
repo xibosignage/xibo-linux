@@ -2,7 +2,7 @@
 
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
-#include "config/config.hpp"
+#include "config/AppConfig.hpp"
 
 const unsigned int RsaKeyLength = 1024;
 
@@ -14,8 +14,8 @@ RsaManager& RsaManager::instance()
 
 void RsaManager::load()
 {
-    auto publicKeyPath = ProjectResources::publicKeyPath();
-    auto privateKeyPath = ProjectResources::privateKeyPath();
+    auto publicKeyPath = AppConfig::publicKeyPath();
+    auto privateKeyPath = AppConfig::privateKeyPath();
 
     if (!FileSystem::exists(publicKeyPath) || !FileSystem::exists(privateKeyPath))
     {

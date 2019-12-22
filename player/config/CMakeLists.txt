@@ -10,9 +10,8 @@ add_library(${PROJECT_NAME}
     CmsSettingsSerializer.cpp
     CmsSettingsSerializer.hpp
     SettingsSerializer.hpp
-    config.hpp
-    Resources.cpp
-    Resources.hpp
+    AppConfig.cpp
+    AppConfig.hpp
 )
 target_link_libraries(${PROJECT_NAME}
     common

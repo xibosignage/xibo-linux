@@ -7,7 +7,7 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
-#include "config/config.hpp"
+#include "config/AppConfig.hpp"
 
 const KeyboardKey StatusScreenKey{"i", 105};
 const int MinDisplayWidth = 160;
@@ -93,7 +93,7 @@ std::shared_ptr<Xibo::Image> ApplicationWindow<Window>::createSplashScreen()
 
     assert(spashImage);
 
-    spashImage->loadFrom(Uri::fromFile(ProjectResources::splashScreenPath()), Xibo::Image::PreserveRatio::False);
+    spashImage->loadFrom(Uri::fromFile(AppConfig::splashScreenPath()), Xibo::Image::PreserveRatio::False);
 
     return spashImage;
 }

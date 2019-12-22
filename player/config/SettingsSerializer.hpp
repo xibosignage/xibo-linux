@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Field.hpp"
+#include "common/NamedField.hpp"
 #include "common/Parsing.hpp"
 #include "common/PlayerRuntimeError.hpp"
 #include "common/fs/FilePath.hpp"
@@ -21,7 +21,7 @@ public:
 
 protected:
     template <typename... Args>
-    void loadFromImpl(const FilePath& file, Field<Args>&... fields)
+    void loadFromImpl(const FilePath& file, NamedField<Args>&... fields)
     {
         using namespace std::string_literals;
 
@@ -39,7 +39,7 @@ protected:
     }
 
     template <typename... Args>
-    void saveToImpl(const FilePath& file, Field<Args>... fields)
+    void saveToImpl(const FilePath& file, NamedField<Args>... fields)
     {
         using namespace std::string_literals;
 

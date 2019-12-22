@@ -1,12 +1,12 @@
 #include "CollectionInterval.hpp"
 
+#include "MainLoop.hpp"
+
 #include "common/dt/DateTime.hpp"
 #include "common/dt/Timer.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
-
-#include "MainLoop.hpp"
-#include "config/config.hpp"
+#include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/StatsFormatter.hpp"
@@ -65,7 +65,7 @@ void CollectionInterval::collect(CollectionResultCallback callback)
         session->callback = callback;
 
         auto registerDisplayResult =
-            xmdsSender_.registerDisplay(ProjectResources::codeVersion(), ProjectResources::version(), "Display").get();
+            xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display").get();
         onDisplayRegistered(registerDisplayResult, session);
     });
 }
