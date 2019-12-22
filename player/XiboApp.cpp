@@ -9,6 +9,7 @@
 #include "control/ApplicationWindow.hpp"
 #include "control/layout/LayoutsManager.hpp"
 #include "control/media/MediaParsersRepo.hpp"
+#include "control/media/webview/LocalWebServer.hpp"
 
 #include "schedule/Scheduler.hpp"
 #include "screenshot/ScreeShoterFactory.hpp"
@@ -20,7 +21,6 @@
 #include "cms/xmds/SoapRequestSender.hpp"
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "networking/HttpClient.hpp"
-#include "networking/LocalWebServer.hpp"
 
 #include "common/PlayerRuntimeError.hpp"
 #include "common/crypto/RsaManager.hpp"

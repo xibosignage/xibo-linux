@@ -10,8 +10,6 @@ add_library(${PROJECT_NAME}
     RequiredItems.cpp
     RequiredItems.hpp
     ResponseResult.hpp
-    LocalWebServer.cpp
-    LocalWebServer.hpp
 )
 target_link_libraries(${PROJECT_NAME}
     common
