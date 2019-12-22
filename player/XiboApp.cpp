@@ -28,8 +28,6 @@
 #include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
 
-#include <gst/gst.h>
-
 static std::unique_ptr<XiboApp> g_app;
 
 XiboApp& xiboApp()
@@ -40,7 +38,6 @@ XiboApp& xiboApp()
 XiboApp& XiboApp::create(const std::string& name)
 {
     Log::create();
-    gst_init(nullptr, nullptr);
 
     g_app = std::unique_ptr<XiboApp>(new XiboApp(name));
     return *g_app;
@@ -206,11 +203,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
         std::bind(&CollectionInterval::updateInterval, interval.get(), ph::_1));
 
     interval->collectionFinished().connect(std::bind(&XiboApp::onCollectionFinished, this, ph::_1));
-    interval->scheduleAvailable().connect([this](const Schedule::Result& result) {
-        CHECK_UI_THREAD();
-
-        scheduler_->reloadSchedule(LayoutSchedule::fromString(result.scheduleXml));
-    });
+    interval->scheduleAvailable().connect(std::bind(&Scheduler::reloadSchedule, scheduler_.get(), ph::_1));
     interval->filesDownloaded().connect(std::bind(&Scheduler::reloadQueue, scheduler_.get()));
     interval->settingsUpdated().connect([this](const PlayerSettings& settings) {
         CHECK_UI_THREAD();

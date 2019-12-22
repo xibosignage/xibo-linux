@@ -216,7 +216,9 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     if (!error)
     {
         Log::debug("[XMDS::Schedule] Received");
-        MainLoop::pushToUiThread([this, result = std::move(result)]() { scheduleAvailable_(result); });
+        MainLoop::pushToUiThread([this, result = std::move(result)]() {
+            scheduleAvailable_(LayoutSchedule::fromString(result.scheduleXml));
+        });
     }
     else
     {

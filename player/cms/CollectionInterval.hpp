@@ -9,6 +9,7 @@
 #include "cms/xmds/SubmitLog.hpp"
 #include "cms/xmds/SubmitStats.hpp"
 #include "networking/ResponseResult.hpp"
+#include "schedule/LayoutSchedule.hpp"
 
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
@@ -16,8 +17,8 @@
 #include <boost/signals2/signal.hpp>
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
-using SignalSettingsUpdated = boost::signals2::signal<void(PlayerSettings)>;
-using SignalScheduleAvailable = boost::signals2::signal<void(Schedule::Result)>;
+using SignalSettingsUpdated = boost::signals2::signal<void(const PlayerSettings&)>;
+using SignalScheduleAvailable = boost::signals2::signal<void(LayoutSchedule)>;
 using SignalCollectionFinished = boost::signals2::signal<void(PlayerError)>;
 using SignalFilesDownloaded = boost::signals2::signal<void()>;
 class XmdsRequestSender;
