@@ -18,7 +18,6 @@ class FileCache;
 class CollectionInterval;
 class ScreenShotInterval;
 class PlayerError;
-class ScreenShoter;
 class XmrManager;
 using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
 class LocalWebServer;
@@ -56,7 +55,6 @@ private:
     std::unique_ptr<Scheduler> scheduler_;
     std::unique_ptr<CollectionInterval> collectionInterval_;
     std::unique_ptr<ScreenShotInterval> screenShotInterval_;
-    std::unique_ptr<ScreenShoter> screenShoter_;
     std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<StatsRecorder> statsRecorder_;
     std::unique_ptr<XmrManager> xmrManager_;

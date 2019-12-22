@@ -103,21 +103,10 @@ std::unique_ptr<XmrManager> XiboApp::createXmrManager()
         CHECK_UI_THREAD();
         Log::info("[XMR] Taking unscheduled screenshot");
 
-        screenShoter_->takeBase64([this](const std::string& screenshot) {
-            xmdsManager_->submitScreenShot(screenshot).then([](auto future) {
-                auto [error, result] = future.get();
-                if (error)
-                {
-                    Log::error("[XMDS::SubmitScreenShot] {}", error);
-                }
-                else
-                {
-                    std::string message = result.success ? "Submitted" : "Not submitted";
-                    Log::debug("[XMDS::SubmitScreenShot] {}", message);
-                }
-            });
-        });
+        screenShotInterval_->takeScreenShot();
     });
+
+    return manager;
 }
 
 int XiboApp::run()
@@ -235,8 +224,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
 std::unique_ptr<ScreenShotInterval> XiboApp::createScreenshotInterval(XmdsRequestSender& xmdsManager,
                                                                       Xibo::Window& window)
 {
-    screenShoter_ = std::make_unique<X11ScreenShoter>(window);
-    auto interval = std::make_unique<ScreenShotInterval>(xmdsManager, *screenShoter_);
+    auto interval = std::make_unique<ScreenShotInterval>(xmdsManager, window);
 
     interval->updateInterval(playerSettings_.screenshotInterval());
     playerSettings_.screenshotInterval().valueChanged().connect(
