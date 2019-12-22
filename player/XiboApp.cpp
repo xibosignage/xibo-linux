@@ -128,15 +128,14 @@ int XiboApp::run()
 
 std::shared_ptr<ApplicationWindowGtk> XiboApp::createMainWindow()
 {
-    auto window = std::make_unique<ApplicationWindowGtk>(playerSettings_.size().width(),
-                                                         playerSettings_.size().height(),
-                                                         playerSettings_.position().x(),
-                                                         playerSettings_.position().y());
+    auto window = std::make_unique<ApplicationWindowGtk>();
 
     playerSettings_.size().valueChanged().connect(
         [window = window.get()](int width, int height) { window->setSize(width, height); });
     playerSettings_.position().valueChanged().connect([window = window.get()](int x, int y) { window->move(x, y); });
 
+    window->setSize(playerSettings_.size().width(), playerSettings_.size().height());
+    window->move(playerSettings_.position().x(), playerSettings_.position().y());
     window->statusScreenShown().connect([this, &window]() {
         CHECK_UI_THREAD();
         StatusInfo info{
