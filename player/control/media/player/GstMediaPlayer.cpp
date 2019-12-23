@@ -9,8 +9,7 @@
 
 GstMediaPlayer::GstMediaPlayer() :
     playbin_(gst_element_factory_make("playbin", "playbin")),
-    videoSink_(gst_element_factory_make("gtksink", "videosink")),
-    playbinBus_(nullptr)
+    videoSink_(gst_element_factory_make("gtksink", "videosink"))
 {
     if (!playbin_) throw Error{"GstMediaPlayer", "Unable to create player: playbin is missing."};
     if (!videoSink_) throw Error{"GstMediaPlayer", "Unable to create player: gtksink is missing."};
@@ -25,15 +24,16 @@ GstMediaPlayer::GstMediaPlayer() :
         outputWindow_ = std::make_shared<OutputWindowGtk>(Glib::wrap(videoSinkWidget));
     }
 
-    playbinBus_ = gst_element_get_bus(playbin_);
-    gst_bus_add_watch(playbinBus_, static_cast<GstBusFunc>(&GstMediaPlayer::busMessageWatch), this);
+    auto bus = gst_element_get_bus(playbin_);
+    busWatchId_ = gst_bus_add_watch(bus, static_cast<GstBusFunc>(&GstMediaPlayer::busMessageWatch), this);
+    gst_object_unref(bus);
 }
 
 GstMediaPlayer::~GstMediaPlayer()
 {
-    gst_object_unref(playbinBus_);
     gst_element_set_state(playbin_, GST_STATE_NULL);
     gst_object_unref(playbin_);  // videoSink_ should be unrefed as a child
+    g_source_remove(busWatchId_);
 }
 
 void GstMediaPlayer::load(const Uri& uri)
@@ -43,7 +43,7 @@ void GstMediaPlayer::load(const Uri& uri)
 
 void GstMediaPlayer::setVolume(int volume)
 {
-    checkVolume(volume);
+    check(volume);
     g_object_set(playbin_, "volume", volume / static_cast<double>(MaxVolume), nullptr);
 }
 
@@ -53,7 +53,7 @@ void GstMediaPlayer::setAspectRatio(MediaGeometry::ScaleType scaleType)
     g_object_set(playbin_, "force-aspect-ratio", aspectRatio, nullptr);
 }
 
-void GstMediaPlayer::checkVolume(int volume)
+void GstMediaPlayer::check(int volume)
 {
     if (volume < MinVolume || volume > MaxVolume) throw Error{"GstMediaPlayer", "Volume should be in [0-100] range"};
 }
@@ -96,6 +96,7 @@ const std::shared_ptr<Xibo::OutputWindow>& GstMediaPlayer::outputWindow() const
     return outputWindow_;
 }
 
+// we don't need to unref bus here
 gboolean GstMediaPlayer::busMessageWatch(GstBus* /*bus*/, GstMessage* msg, gpointer data)
 {
     switch (msg->type)
