@@ -25,7 +25,6 @@ private:
     std::string connectToCms(const std::string& cmsAddress, const std::string& key, const std::string& displayId);
     void updateSettings();
     void showSettingsSavedMessage();
-    void onLaunchClientClicked();
     void onBrowseResourcesPathClicked();
     std::string createDefaultResourceDir();
 
@@ -48,6 +47,5 @@ private:
 
     Gtk::Label* connectionStatus_;
     Gtk::Button* saveSettings_;
-    Gtk::Button* launchClient_;
     Gtk::Button* exit_;
 };

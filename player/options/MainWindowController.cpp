@@ -3,8 +3,6 @@
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/messagedialog.h>
 
-#include <boost/process/child.hpp>
-
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
@@ -38,7 +36,6 @@ void MainWindowController::initUi()
 
     ui_->get_widget(Resources::Ui::ConnectionStatusLabel, connectionStatus_);
     ui_->get_widget(Resources::Ui::SaveButton, saveSettings_);
-    ui_->get_widget(Resources::Ui::LaunchClientButton, launchClient_);
     ui_->get_widget(Resources::Ui::ExitButton, exit_);
 }
 
@@ -57,7 +54,6 @@ void MainWindowController::updateControls(const CmsSettings& settings)
 void MainWindowController::connectSignals()
 {
     saveSettings_->signal_clicked().connect(std::bind(&MainWindowController::onSaveSettingsClicked, this));
-    launchClient_->signal_clicked().connect(std::bind(&MainWindowController::onLaunchClientClicked, this));
     browseResourcesPath_->signal_clicked().connect(
         std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
     exit_->signal_clicked().connect(std::bind(&Gtk::Window::close, mainWindow_));
@@ -133,15 +129,6 @@ std::string MainWindowController::createDefaultResourceDir()
         }
     }
     return defaultDir.string();
-}
-
-void MainWindowController::onLaunchClientClicked()
-{
-    boost::process::child player{AppConfig::playerBinary()};
-
-    mainWindow_->close();
-
-    player.detach();
 }
 
 void MainWindowController::onBrowseResourcesPathClicked()
