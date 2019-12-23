@@ -28,8 +28,8 @@ private:
     Glib::RefPtr<const Gdk::Pixbuf> pixbuf() const;
     Glib::RefPtr<Gdk::Pixbuf> pixbuf();
 
-    void checkSize(int width, int height);
-    void checkUri(const Uri& uri);
+    void check(int width, int height);
+    void set(const Glib::RefPtr<Gdk::Pixbuf>& pixbuf);
 
 private:
     Gtk::Image handler_;

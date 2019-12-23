@@ -69,9 +69,16 @@ public:
     }
     void showSplashScreen()
     {
-        auto splashScreen = createSplashScreen();
-        setMainLayout(splashScreen);
-        splashScreen->show();
+        try
+        {
+            auto splashScreen = createSplashScreen();
+            setMainLayout(splashScreen);
+            splashScreen->show();
+        }
+        catch (std::exception& e)
+        {
+            Log::error("[SplashScreen] {}", e.what());
+        }
     }
 
     StatusScreenShown& statusScreenShown()
@@ -113,15 +120,10 @@ private:
         return width == 0 && height == 0;
     }
 
-    // HANDLE exception here
     std::shared_ptr<Xibo::Image> createSplashScreen()
     {
         auto spashImage = ImageWidgetFactory::create(Window::width(), Window::height());
-
-        assert(spashImage);
-
         spashImage->loadFrom(Uri::fromFile(AppConfig::splashScreenPath()), Xibo::Image::PreserveRatio::False);
-
         return spashImage;
     }
 
