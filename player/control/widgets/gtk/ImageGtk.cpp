@@ -4,12 +4,9 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/types/Uri.hpp"
 
-const int BitsPerSample = 8;
-
-ImageGtk::ImageGtk(int width, int height, bool useAlpha) : WidgetGtk(handler_)
+ImageGtk::ImageGtk() : WidgetGtk(handler_)
 {
-    check(width, height);
-    set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, useAlpha, BitsPerSample, width, height));
+    set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, DefaultUseAlpha, BitsPerSample, DefaultWidth, DefaultHegiht));
 }
 
 int ImageGtk::width() const
@@ -30,7 +27,7 @@ void ImageGtk::setSize(int width, int height)
     set(pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR));
 }
 
-void ImageGtk::setColor(const Color& color)
+void ImageGtk::fillColor(const Color& color)
 {
     assert(pixbuf());
     pixbuf()->fill(color.hex());

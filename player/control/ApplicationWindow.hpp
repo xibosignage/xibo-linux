@@ -1,22 +1,14 @@
 #pragma once
 
 #include "control/StatusInfo.hpp"
-#include "control/widgets/ImageWidgetFactory.hpp"
-#include "control/widgets/OverlayLayoutFactory.hpp"
+#include "control/widgets/Image.hpp"
+#include "control/widgets/OverlayContainer.hpp"
 #include "control/widgets/StatusScreenFactory.hpp"
 #include "control/widgets/Window.hpp"
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
 #include "config/AppConfig.hpp"
-
-const KeyboardKey StatusScreenKey{"i", 105};
-const int MinDisplayWidth = 160;
-const int MinDisplayHeight = 120;
-const int DefaultPos = 0;
-
-const double StatusScreenScaleX = 0.5;
-const double StatusScreenScaleY = 1;
 
 using MainLayoutWidget = std::shared_ptr<Xibo::Widget>;
 using OverlaysWidgets = std::vector<std::shared_ptr<Xibo::Widget>>;
@@ -25,25 +17,29 @@ using StatusScreenShown = boost::signals2::signal<void()>;
 template <typename Window>
 class ApplicationWindow : public Window
 {
-public:
-    ApplicationWindow() :
-        layout_(OverlayLayoutFactory::create(MinDisplayWidth, MinDisplayHeight)),
-        statusScreen_(StatusScreenFactory::create(static_cast<Window&>(*this), MinDisplayWidth, MinDisplayHeight))
-    {
-        assert(layout_);
-        assert(statusScreen_);
+    static constexpr const double StatusScreenScaleX = 0.5;
+    static constexpr const double StatusScreenScaleY = 1;
+    static constexpr const int MinStatusScreenWidth = 160;
+    static constexpr const int MinStatusScreenHeight = 120;
+    static constexpr const int DefaultPos = 0;
+    static inline const KeyboardKey StatusScreenKey{"i", 105};
 
-        Window::setChild(layout_);
-        Window::disableWindowDecoration();
-        Window::setCursorVisible(false);
-        Window::setBackgroundColor(Color::fromString("#000000"));
-        Window::keyPressed().connect([this](const KeyboardKey& key) {
-            if (key == StatusScreenKey)
-            {
-                statusScreenRequested_();
-                statusScreen_->show();
-            }
-        });
+public:
+    static std::unique_ptr<ApplicationWindow<Window>> create(int width, int height, int x, int y)
+    {
+        namespace ph = std::placeholders;
+
+        std::unique_ptr<ApplicationWindow<Window>> window(new ApplicationWindow<Window>());
+
+        window->setSize(width, height);
+        window->move(x, y);
+        window->setMainContainer(OverlayContainerFactory::create(window->width(), window->height()));
+        window->disableWindowDecoration();
+        window->setCursorVisible(false);
+        window->setBackgroundColor(Color::fromString("#000000"));
+        window->keyPressed().connect(std::bind(&ApplicationWindow::onKeyPressed, window.get(), ph::_1));
+
+        return window;
     }
 
     // TODO should we handle exception here?
@@ -51,22 +47,21 @@ public:
     {
         assert(child);
 
-        layout_->setMainChild(child);
-        scaleLayoutToWindowBounds(child);
+        container_->setMainChild(child);
     }
 
     // TODO should we handle exception here?
     void setOverlays(const OverlaysWidgets& children)
     {
-        layout_->removeChildren();
+        container_->removeOverlays();
 
         for (auto&& child : children)
         {
             // TODO: should be centered?
-            layout_->addChild(child, DefaultPos, DefaultPos, DefaultPos);
-            scaleLayoutToWindowBounds(child);
+            container_->add(child, DefaultPos, DefaultPos, DefaultPos);
         }
     }
+
     void showSplashScreen()
     {
         try
@@ -99,6 +94,10 @@ public:
         }
         else
         {
+            if (Window::isFullscreen())
+            {
+                Window::unfullscreen();
+            }
             Window::setSize(width, height);
         }
 
@@ -106,15 +105,31 @@ public:
                                static_cast<int>(this->height() * StatusScreenScaleY));
     }
 
-    void move(int x, int y) override
+private:
+    ApplicationWindow() :
+        statusScreen_(
+            StatusScreenFactory::create(static_cast<Window&>(*this), MinStatusScreenWidth, MinStatusScreenHeight))
     {
-        if (!Window::isFullscreen())
+        assert(statusScreen_);
+    }
+
+    void setMainContainer(const std::shared_ptr<Xibo::OverlayContainer>& widget)
+    {
+        assert(widget);
+
+        this->add(widget);
+        container_ = widget;
+    }
+
+    void onKeyPressed(const KeyboardKey& key)
+    {
+        if (key == StatusScreenKey)
         {
-            Window::move(x, y);
+            statusScreenRequested_();
+            statusScreen_->show();
         }
     }
 
-private:
     bool shouldBeFullscreen(int width, int height) const
     {
         return width == 0 && height == 0;
@@ -122,24 +137,14 @@ private:
 
     std::shared_ptr<Xibo::Image> createSplashScreen()
     {
-        auto spashImage = ImageWidgetFactory::create(Window::width(), Window::height());
-        spashImage->loadFrom(Uri::fromFile(AppConfig::splashScreenPath()), Xibo::Image::PreserveRatio::False);
-        return spashImage;
+        return ImageWidgetFactory::create(Uri::fromFile(AppConfig::splashScreenPath()),
+                                          this->width(),
+                                          this->height(),
+                                          Xibo::Image::PreserveRatio::False);
     }
 
-    void scaleLayoutToWindowBounds(const std::shared_ptr<Xibo::Widget>& layout)
-    {
-        assert(layout);
-
-        double scaleX = static_cast<double>(Window::width()) / layout->width();
-        double scaleY = static_cast<double>(Window::height()) / layout->height();
-        double scaleFactor = std::min(scaleX, scaleY);
-
-        layout->scale(scaleFactor, scaleFactor);
-    }
-
-protected:
-    std::shared_ptr<Xibo::OverlayLayout> layout_;
+private:
+    std::shared_ptr<Xibo::OverlayContainer> container_;
     std::shared_ptr<Xibo::StatusScreen> statusScreen_;
     StatusScreenShown statusScreenRequested_;
 };

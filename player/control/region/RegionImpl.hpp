@@ -3,12 +3,15 @@
 #include "control/media/Media.hpp"
 #include "control/region/Region.hpp"
 #include "control/region/RegionOptions.hpp"
-#include "control/widgets/FixedLayout.hpp"
+#include "control/widgets/FixedContainer.hpp"
 
 #include <boost/noncopyable.hpp>
 
 class RegionImpl : public Xibo::Region, private boost::noncopyable
 {
+    static constexpr const int MediaOrder = 0;
+    static constexpr const int FirstMediaIndex = 0;
+
 public:
     RegionImpl(const RegionOptions& options);
 
@@ -33,7 +36,7 @@ private:
 
 private:
     RegionOptions options_;
-    std::shared_ptr<Xibo::FixedLayout> view_;
+    std::shared_ptr<Xibo::FixedContainer> view_;
     MediaList mediaList_;
     size_t currentMediaIndex_;
     SignalRegionExpired regionExpired_;
