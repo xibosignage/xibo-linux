@@ -19,7 +19,7 @@ jobs:
       - name: Build
         run: |
           docker build -f Dockerfile -t xibo-linux .
-          echo '$SNAPCRAFT_LOGIN_FILE' >> snapcraft.login
+          echo ${{ secrets.SNAPCRAFT_TOKEN }} >> snapcraft.login
           docker build -f Dockerfile.snap -t xibo-linux-snap .
           rm snapcraft.login
 
