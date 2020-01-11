@@ -1,79 +1,54 @@
 #include "WindowGtk.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "constants.hpp"
-#include "control/widgets/OverlayLayoutFactory.hpp"
 
 #include <boost/format.hpp>
+#include <gdk/gdkx.h>
 #include <gtkmm/cssprovider.h>
 
-#include <gdk/gdkx.h>
-
-WindowGtk::WindowGtk() : WidgetGtk(handler_), cursorVisible_(true), fullscreen_(false)
+WindowGtk::WindowGtk() : SingleContainerGtk{handler_}, cursorVisible_(true), fullscreen_(false)
 {
-    handler_.signal_realize().connect(std::bind(&WindowGtk::onRealized, this));
+    handler_.signal_realize().connect(std::bind(&WindowGtk::onWindowRealized, this));
     handler_.add_events(Gdk::KEY_PRESS_MASK);
     handler_.signal_key_press_event().connect([this](GdkEventKey* event) {
         keyPressed_(KeyboardKey{event->string, event->keyval});
         return false;
     });
-}
-
-void WindowGtk::scale(double scaleX, double scaleY)
-{
-    WidgetGtk::scale(scaleX, scaleX);
-
-    if (child_)
-    {
-        child_->scale(scaleX, scaleY);
-    }
-}
-
-void WindowGtk::onRealized()
-{
-    if (!cursorVisible_)
-    {
-        auto window = handler_.get_window();
-        if (window)
+    handler_.signal_window_state_event().connect([this](GdkEventWindowState* event) {
+        if (event->changed_mask & GDK_WINDOW_STATE_FULLSCREEN)
         {
-            window->set_cursor(Gdk::Cursor::create(Gdk::BLANK_CURSOR));
+            bool fullscreen = event->new_window_state & GDK_WINDOW_STATE_FULLSCREEN;
+            if (!fullscreen)
+            {
+                // setSize right after unfullscreen() only change virtual size of the window but not
+                // physical because unfullscreen() is async operation and only after this execution we can restore
+                // previous physical window dimensions.
+                handler_.resize(this->width(), this->height());
+            }
         }
-        else
-        {
-            Log::error("[WindowGtk] Blank cursor hasn't been set");
-        }
-    }
+        return false;
+    });
 }
 
-int WindowGtk::width() const
+void WindowGtk::addToHandler(const std::shared_ptr<Xibo::Widget>& child)
 {
-    int width, _;
-    handler_.get_default_size(width, _);
-    return width;
+    handler_.add(handler(child));
 }
 
-int WindowGtk::height() const
+void WindowGtk::removeFromHandler(const std::shared_ptr<Xibo::Widget>& /*child*/)
 {
-    int _, height;
-    handler_.get_default_size(_, height);
-    return height;
+    handler_.remove();
 }
 
 void WindowGtk::setSize(int width, int height)
 {
-    if (width != this->width() || height != this->height())
-    {
-        checkSize(width, height);
+    resizeWindow(width, height);
+}
 
-        originalWidth_ = width;
-        originalHeight_ = height;
-
-        if (child_)
-        {
-            child_->setSize(width, height);
-        }
-        setWindowSize(width, height);
-    }
+void WindowGtk::resizeWindow(int width, int height)
+{
+    SingleContainerGtk::setSize(width, height);
+    handler_.resize(width, height);
 }
 
 int WindowGtk::x() const
@@ -92,28 +67,7 @@ int WindowGtk::y() const
 
 void WindowGtk::move(int x, int y)
 {
-    if (x != this->x() || y != this->y())
-    {
-        handler_.move(x, y);
-    }
-}
-
-void WindowGtk::show()
-{
-    WidgetGtk::show();
-
-    if (child_)
-    {
-        child_->show();
-    }
-}
-
-void WindowGtk::setChild(const std::shared_ptr<Xibo::Widget>& child)
-{
-    assert(child);
-
-    child_ = child;
-    handler_.add(getHandler(*child_));
+    handler_.move(x, y);
 }
 
 void WindowGtk::disableWindowResize()
@@ -133,52 +87,32 @@ SignalKeyPressed& WindowGtk::keyPressed()
 
 void WindowGtk::fullscreen()
 {
-    auto area = currentMonitorGeometry();
-
-    if (!area.has_zero_area())
+    auto monitorGeometry = currentMonitorGeometry();
+    if (!monitorGeometry.has_zero_area())
     {
+        // Fullscreen means that window will be shown on monitor dimensions withour borders but children are not
+        // automatically resized during this operation so we need to force them to update their sizes.
+        // Also, we need to save previous window dimensions to restore them later
+        resizeWindow(monitorGeometry.get_width(), monitorGeometry.get_height());
+
         fullscreen_ = true;
-        setWindowSize(area.get_width(), area.get_height());
-        handler_.fullscreen();
+        handler_.fullscreen();  // TODO: probably use fullscreen on specific monitor
     }
     else
     {
-        Log::error("[WindowGtk] Fullscreen mode hasn't been activated");
+        Log::error("[WindowGtk] Failed to get current monitor geometry");
     }
-}
-
-Gdk::Rectangle WindowGtk::currentMonitorGeometry() const
-{
-    Gdk::Rectangle area;
-    auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(handler_.get_screen());
-    if (screen)
-    {
-        auto activeWindow = screen->get_active_window();
-        if (activeWindow)
-        {
-            auto monitor = screen->get_monitor_at_window(activeWindow);
-
-            screen->get_monitor_geometry(monitor, area);
-        }
-    }
-    return area;
 }
 
 void WindowGtk::unfullscreen()
 {
-    fullscreen_ = false;
-    handler_.unfullscreen();
-    windowState_ = handler_.signal_window_state_event().connect([=](GdkEventWindowState* ev) {
-        if (ev->new_window_state != GDK_WINDOW_STATE_FULLSCREEN)
-        {
-            windowState_.disconnect();
-            setWindowSize(originalWidth_, originalHeight_);
-        }
-        return true;
-    });
+    if (isFullscreen())
+    {
+        fullscreen_ = false;
+        handler_.unfullscreen();
+    }
 }
 
-// TODO: use window_state
 bool WindowGtk::isFullscreen() const
 {
     return fullscreen_;
@@ -187,6 +121,34 @@ bool WindowGtk::isFullscreen() const
 void WindowGtk::setCursorVisible(bool cursorVisible)
 {
     cursorVisible_ = cursorVisible;
+}
+
+void WindowGtk::onWindowRealized()
+{
+    if (!cursorVisible_)
+    {
+        auto window = handler_.get_window();
+        if (window)
+        {
+            window->set_cursor(Gdk::Cursor::create(Gdk::BLANK_CURSOR));
+        }
+        else
+        {
+            Log::error("[WindowGtk] Failed to set blank cursor");
+        }
+    }
+}
+
+Gdk::Rectangle WindowGtk::currentMonitorGeometry()
+{
+    Gdk::Rectangle geometry;
+    auto screen = Glib::RefPtr<Gdk::Screen>::cast_const(handler_.get_screen());
+    if (screen)
+    {
+        int monitor = screen->get_monitor_at_point(x(), y());
+        screen->get_monitor_geometry(monitor, geometry);
+    }
+    return geometry;
 }
 
 void WindowGtk::setBackgroundColor(const Color& color)
@@ -204,7 +166,7 @@ void WindowGtk::setBackgroundColor(const Color& color)
     }
     else
     {
-        Log::error("[WindowGtk] Background color hasn't been set");
+        Log::error("[WindowGtk] Failed to set background color");
     }
 }
 
@@ -226,11 +188,4 @@ void WindowGtk::setKeepAbove(bool keep_above)
 Gtk::Window& WindowGtk::get()
 {
     return handler_;
-}
-
-void WindowGtk::setWindowSize(int width, int height)
-{
-    handler_.set_default_size(width, height);
-    handler_.resize(width, height);
-    resizeSignal_();
 }

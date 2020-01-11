@@ -34,6 +34,8 @@ public:
     static XiboApp& create(const std::string& name);
     int run();
 
+    static Uri localAddress();
+
 private:
     XiboApp(const std::string& name);
 

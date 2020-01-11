@@ -7,6 +7,7 @@
 
 #include "common/JoinableThread.hpp"
 #include "common/fs/FilePath.hpp"
+#include "common/types/Uri.hpp"
 
 namespace beast = boost::beast;
 namespace http = beast::http;
@@ -60,6 +61,7 @@ public:
     ~LocalWebServer();
 
     void run(unsigned short port);
+    Uri address() const;
     void setRootDirectory(const FilePath& rootDirectory);
 
 private:

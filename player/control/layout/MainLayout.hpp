@@ -20,7 +20,7 @@ namespace Xibo
         virtual ~MainLayout() = default;
 
         virtual void setBackground(std::shared_ptr<Image>&& background) = 0;
-        virtual void addRegion(std::unique_ptr<Region>&& region, int x, int y, int z) = 0;
+        virtual void addRegion(std::unique_ptr<Region>&& region, int left, int top, int zorder) = 0;
         virtual SignalLayoutExpired& expired() = 0;
         virtual SignalLayoutStatReady& statReady() = 0;
         virtual SignalLayoutMediaStatsReady& mediaStatsReady() = 0;

@@ -1,16 +1,16 @@
 #include "RegionImpl.hpp"
 
 #include "control/region/GetMediaPosition.hpp"
-#include "control/widgets/FixedLayoutFactory.hpp"
-
-const int FirstMediaIndex = 0;
+#include "control/widgets/FixedContainer.hpp"
 
 RegionImpl::RegionImpl(const RegionOptions& options) :
     options_(options),
-    view_(FixedLayoutFactory::create(options.width, options.height)),
+    view_(FixedContainerFactory::create(options.width, options.height)),
     currentMediaIndex_(FirstMediaIndex)
 {
     assert(view_);
+
+    view_->skipShowAll();
 }
 
 void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
@@ -24,7 +24,7 @@ void RegionImpl::addMedia(std::unique_ptr<Xibo::Media>&& media)
     if (mediaView)
     {
         auto [x, y] = calcMediaPosition(*media);
-        view_->addChild(mediaView, x, y);
+        view_->add(mediaView, x, y, MediaOrder);
     }
 
     mediaList_.emplace_back(std::move(media));

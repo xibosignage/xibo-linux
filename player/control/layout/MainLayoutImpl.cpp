@@ -1,8 +1,7 @@
 ﻿#include "MainLayoutImpl.hpp"
 
-#include "control/widgets/FixedLayout.hpp"
 #include "control/widgets/Image.hpp"
-#include "control/widgets/OverlayLayoutFactory.hpp"
+#include "control/widgets/OverlayContainer.hpp"
 
 #include "common/logger/Logging.hpp"
 
@@ -10,28 +9,25 @@ namespace ph = std::placeholders;
 
 MainLayoutImpl::MainLayoutImpl(const MainLayoutOptions& options) :
     options_(options),
-    view_(OverlayLayoutFactory::create(options.width, options.height))
+    view_(OverlayContainerFactory::create(options.width, options.height))
 {
     view_->shown().connect(std::bind(&MainLayoutImpl::startLayout, this));
 }
 
 void MainLayoutImpl::setBackground(std::shared_ptr<Xibo::Image>&& background)
 {
-    assert(view_);
-
     if (background)
     {
         view_->setMainChild(background);
     }
 }
 
-void MainLayoutImpl::addRegion(std::unique_ptr<Xibo::Region>&& region, int x, int y, int z)
+void MainLayoutImpl::addRegion(std::unique_ptr<Xibo::Region>&& region, int left, int top, int zorder)
 {
-    assert(view_);
     assert(region);
     assert(region->view());
 
-    view_->addChild(region->view(), x, y, z);
+    view_->add(region->view(), left, top, zorder);
     region->expired().connect(std::bind(&MainLayoutImpl::onRegionExpired, this, ph::_1));
     monitorMediaStats(*region);
 

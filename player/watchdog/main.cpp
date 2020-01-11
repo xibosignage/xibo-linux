@@ -11,23 +11,26 @@ void setupNewConfigDir()
 #ifdef SNAP_ENABLED
     try
     {
-        using namespace ProjectResources;
-
-        if (FileSystem::exists(oldConfigDirectory() / CmsSettingsFile))
+        const std::string CmsSettingsFile = "cmsSettings.xml";
+        const std::string PlayerSettingsFile = "playerSettings.xml";
+        const std::string PrivateKeyFile = "id_rsa";
+        const std::string PublicKeyFile = "id_rsa.pub";
+        const std::string ResourcesDir = "resources";
+        if (FileSystem::exists(AppConfig::oldConfigDirectory() / CmsSettingsFile))
         {
             CmsSettings settings;
-            settings.loadFrom(oldConfigDirectory() / CmsSettingsFile);
+            settings.fromFile(AppConfig::oldConfigDirectory() / CmsSettingsFile);
 
             std::vector<std::string> filesToMove{CmsSettingsFile, PlayerSettingsFile, PrivateKeyFile, PublicKeyFile};
             for (auto&& file : filesToMove)
             {
-                FileSystem::move(oldConfigDirectory() / file, configDirectory() / file);
+                FileSystem::move(AppConfig::oldConfigDirectory() / file, AppConfig::configDirectory() / file);
             }
 
-            if (settings.resourcesPath == oldConfigDirectory() / ResourcesDir)
+            if (settings.resourcesPath() == AppConfig::oldConfigDirectory() / ResourcesDir)
             {
-                settings.resourcesPath = defaultResourcesDir().string();
-                settings.saveTo(ProjectResources::cmsSettingsPath());
+                settings.resourcesPath().setValue(AppConfig::configDirectory() / ResourcesDir);
+                settings.saveTo(AppConfig::cmsSettingsPath());
             }
         }
     }

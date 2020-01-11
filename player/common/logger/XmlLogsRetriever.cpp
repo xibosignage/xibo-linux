@@ -4,7 +4,7 @@
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRepo.hpp"
 
-// FIXME: move to SubmitLogs request where it should format logs according to required CMS format
+// TODO: move to SubmitLogs request where it should format logs according to required CMS format
 
 std::string XmlLogsRetriever::retrieveLogs()
 {

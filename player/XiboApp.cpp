@@ -121,22 +121,28 @@ int XiboApp::run()
         [](const LayoutSchedule& schedule) { schedule.toFile(AppConfig::schedulePath()); });
 
     collectionInterval_->startRegularCollection();
-    mainWindow_->show();
+    mainWindow_->showAll();
 
     return mainLoop_->run(*mainWindow_);
 }
 
+// FIXME temporary workaround until plugin init
+Uri XiboApp::localAddress()
+{
+    return g_app->webserver_->address();
+}
+
 std::shared_ptr<ApplicationWindowGtk> XiboApp::createMainWindow()
 {
-    auto window = std::make_unique<ApplicationWindowGtk>();
+    std::shared_ptr<ApplicationWindowGtk> window = ApplicationWindowGtk::create(playerSettings_.size().width(),
+                                                                                playerSettings_.size().height(),
+                                                                                playerSettings_.position().x(),
+                                                                                playerSettings_.position().y());
 
-    playerSettings_.size().valueChanged().connect(
-        [window = window.get()](int width, int height) { window->setSize(width, height); });
-    playerSettings_.position().valueChanged().connect([window = window.get()](int x, int y) { window->move(x, y); });
+    playerSettings_.size().valueChanged().connect([window](int width, int height) { window->setSize(width, height); });
+    playerSettings_.position().valueChanged().connect([window](int x, int y) { window->move(x, y); });
 
-    window->setSize(playerSettings_.size().width(), playerSettings_.size().height());
-    window->move(playerSettings_.position().x(), playerSettings_.position().y());
-    window->statusScreenShown().connect([this, &window]() {
+    window->statusScreenShown().connect([this, window]() {
         CHECK_UI_THREAD();
         StatusInfo info{
             collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
@@ -156,7 +162,7 @@ std::unique_ptr<LayoutsManager> XiboApp::createLayoutManager()
         if (layout)
         {
             mainWindow_->setMainLayout(layout);
-            layout->show();
+            layout->showAll();
         }
         else
         {
@@ -169,7 +175,7 @@ std::unique_ptr<LayoutsManager> XiboApp::createLayoutManager()
         mainWindow_->setOverlays(overlays);
         for (auto&& layout : overlays)
         {
-            layout->show();
+            layout->showAll();
         }
     });
 

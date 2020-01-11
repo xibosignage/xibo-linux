@@ -1,28 +1,23 @@
 #pragma once
 
-#include "control/widgets/OverlayLayout.hpp"
+#include "control/widgets/SingleContainer.hpp"
 #include "control/widgets/Window.hpp"
 #include "control/widgets/gtk/WidgetGtk.hpp"
 
 #include <gtkmm/window.h>
 
-using SignalWindowRealized = boost::signals2::signal<void()>;
+using SingleContainerGtk = SingleContainer<WidgetGtk<Xibo::Window>>;
 
-class WindowGtk : public WidgetGtk<Xibo::Window>
+class WindowGtk : public SingleContainerGtk
 {
 public:
     WindowGtk();
 
-    void scale(double scaleX, double scaleY) override;
-    int width() const override;
-    int height() const override;
     void setSize(int width, int height) override;
     int x() const override;
     int y() const override;
     void move(int x, int y) override;
-    void show() override;
 
-    void setChild(const std::shared_ptr<Xibo::Widget>& child) override;
     void disableWindowResize() override;
     void disableWindowDecoration() override;
     void setKeepAbove(bool keepAbove) override;
@@ -37,17 +32,15 @@ public:
     NativeWindow nativeWindow() override;
 
 private:
-    void setWindowSize(int width, int height);
-    void onRealized();
-    Gdk::Rectangle currentMonitorGeometry() const;
+    void onWindowRealized();
+    void resizeWindow(int width, int height);
+    Gdk::Rectangle currentMonitorGeometry();
+    void addToHandler(const std::shared_ptr<Xibo::Widget>& child) override;
+    void removeFromHandler(const std::shared_ptr<Xibo::Widget>& child) override;
 
 private:
     Gtk::Window handler_;
-    std::shared_ptr<Xibo::Widget> child_;
-    SignalWindowRealized resizeSignal_;
     SignalKeyPressed keyPressed_;
-    sigc::connection windowState_;
-    int originalWidth_, originalHeight_;
     bool cursorVisible_;
     bool fullscreen_;
 };

@@ -4,6 +4,10 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 
+#include <filesystem>
+#include <linux/limits.h>
+#include <unistd.h>
+
 FilePath AppConfig::resourceDirectory_;
 
 std::string AppConfig::version()
@@ -48,7 +52,11 @@ FilePath AppConfig::buildDirectory()
 #ifdef SNAP_ENABLED
     return FilePath{getenv("SNAP")} / "bin";
 #else
-    return FileSystem::currentPath();
+    // workaround for those who starts the player out of snap
+    char result[PATH_MAX];
+    size_t count = static_cast<size_t>(readlink("/proc/self/exe", result, PATH_MAX));
+    assert(count != -1);
+    return FilePath{std::filesystem::path(std::string(result, count)).parent_path()};
 #endif
 }
 
@@ -57,7 +65,7 @@ FilePath AppConfig::configDirectory()
 #ifdef SNAP_ENABLED
     return FilePath{getenv("SNAP_USER_COMMON")};
 #else
-    return FileSystem::currentPath();
+    return buildDirectory();
 #endif
 }
 
@@ -103,10 +111,20 @@ FilePath AppConfig::cachePath()
 
 std::string AppConfig::playerBinary()
 {
-    return (buildDirectory() / "player").string();
+    auto path = buildDirectory() / "player";
+#ifdef SNAP_ENABLED
+    return "desktop-launch " + path.string();
+#else
+    return path.string();
+#endif
 }
 
 std::string AppConfig::optionsBinary()
 {
-    return (buildDirectory() / "options").string();
+    auto path = buildDirectory() / "options";
+#ifdef SNAP_ENABLED
+    return "desktop-launch " + path.string();
+#else
+    return path.string();
+#endif
 }

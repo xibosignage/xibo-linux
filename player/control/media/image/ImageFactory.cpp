@@ -1,7 +1,7 @@
 #include "ImageFactory.hpp"
 
 #include "control/media/MediaImpl.hpp"
-#include "control/widgets/ImageWidgetFactory.hpp"
+#include "control/widgets/Image.hpp"
 
 std::unique_ptr<Xibo::Media> ImageFactory::create(const MediaOptions& baseOptions, int width, int height)
 {
@@ -15,10 +15,6 @@ std::shared_ptr<Xibo::Image> ImageFactory::createWidget(const Uri& uri,
                                                         int height,
                                                         MediaGeometry::ScaleType scaleType)
 {
-    auto image = ImageWidgetFactory::create(width, height);
-
     bool isScaled = scaleType == MediaGeometry::ScaleType::Scaled ? true : false;
-    image->loadFrom(uri, static_cast<Xibo::Image::PreserveRatio>(isScaled));
-
-    return image;
+    return ImageWidgetFactory::create(uri, width, height, static_cast<Xibo::Image::PreserveRatio>(isScaled));
 }

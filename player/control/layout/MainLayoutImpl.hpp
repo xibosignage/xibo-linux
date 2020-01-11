@@ -3,7 +3,7 @@
 #include "control/layout/MainLayout.hpp"
 #include "control/layout/MainLayoutOptions.hpp"
 #include "control/region/Region.hpp"
-#include "control/widgets/OverlayLayout.hpp"
+#include "control/widgets/OverlayContainer.hpp"
 
 #include <boost/noncopyable.hpp>
 #include <set>
@@ -15,7 +15,7 @@ public:
     MainLayoutImpl(const MainLayoutOptions& options);
 
     void setBackground(std::shared_ptr<Xibo::Image>&& background) override;
-    void addRegion(std::unique_ptr<Xibo::Region>&& region, int x, int y, int z) override;
+    void addRegion(std::unique_ptr<Xibo::Region>&& region, int left, int top, int zorder) override;
     SignalLayoutExpired& expired() override;
     SignalLayoutStatReady& statReady() override;
     SignalLayoutMediaStatsReady& mediaStatsReady() override;
@@ -35,7 +35,7 @@ private:
 
 private:
     MainLayoutOptions options_;
-    std::shared_ptr<Xibo::OverlayLayout> view_;
+    std::shared_ptr<Xibo::OverlayContainer> view_;
 
     PlayingStat interval_;
     MediaPlayingStats mediaIntervals_;

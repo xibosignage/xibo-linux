@@ -14,11 +14,10 @@ public:
 
 template <typename Interface>
 class WidgetGtk : public Interface, public IWidgetGtk
-
 {
-public:
-    static_assert(std::is_base_of_v<Xibo::Widget, Interface>, "Should implement Widget");
+    static_assert(std::is_base_of_v<Xibo::Widget, Interface>, "Should implement Xibo::Widget");
 
+public:
     struct Error : PlayerRuntimeError
     {
         using PlayerRuntimeError::PlayerRuntimeError;
@@ -31,7 +30,7 @@ public:
         if (visible()) return;
 
         widget_.show();
-        signalShown_();
+        shown_();
     }
 
     void showAll() override
@@ -39,7 +38,7 @@ public:
         if (visible()) return;
 
         widget_.show_all();
-        signalShown_();
+        shown_();
     }
 
     void skipShowAll() override
@@ -67,6 +66,7 @@ public:
     {
         checkSize(width, height);
         widget_.set_size_request(width, height);
+        resized_();
     }
 
     int width() const override
@@ -96,13 +96,18 @@ public:
 
     SignalShown& shown() override
     {
-        return signalShown_;
+        return shown_;
+    }
+
+    SignalResized& resized() override
+    {
+        return resized_;
     }
 
 protected:
-    Gtk::Widget& getHandler(Xibo::Widget& widget)
+    Gtk::Widget& handler(const std::shared_ptr<Xibo::Widget>& widget)
     {
-        return dynamic_cast<IWidgetGtk&>(widget).get();
+        return dynamic_cast<IWidgetGtk&>(*widget).get();
     }
 
     void checkSize(int width, int height)
@@ -123,5 +128,6 @@ protected:
 
 private:
     Gtk::Widget& widget_;
-    SignalShown signalShown_;
+    SignalShown shown_;
+    SignalResized resized_;
 };

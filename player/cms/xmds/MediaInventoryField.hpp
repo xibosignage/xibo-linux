@@ -15,7 +15,4 @@ public:
 
 private:
     std::string toXmlString(const MediaInventoryItems& items) const;
-
-private:
-    MediaInventoryItems items_;
 };
