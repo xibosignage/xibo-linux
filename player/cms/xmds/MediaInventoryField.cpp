@@ -9,7 +9,7 @@ std::string_view SoapField<MediaInventoryItems>::type() const
 
 std::string SoapField<MediaInventoryItems>::value() const
 {
-    return toXmlString(items_);
+    return toXmlString(NamedField::value());
 }
 
 std::string SoapField<MediaInventoryItems>::toXmlString(const MediaInventoryItems& items) const

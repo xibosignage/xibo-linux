@@ -27,7 +27,7 @@ std::string StatusScreenFormatter::formatGeneralInfo(const GeneralInfo& info)
     out << "Display Name - " << info.displayName << std::endl;
     out << "Screen Size: - " << info.windowWidth << " x " << info.windowHeight << std::endl;
     //    info << "Memory Limit - " << "150 MB" << std::endl;
-    out << "ScreenShot Request Interval - " << info.screenShotInterval << " seconds" << std::endl;
+    out << "ScreenShot Request Interval - " << info.screenShotInterval << " minutes" << std::endl;
     //    out << "Number of Logs ready to send - " << info.numberOfLogsToSend << std::endl;
 
     return out.str();

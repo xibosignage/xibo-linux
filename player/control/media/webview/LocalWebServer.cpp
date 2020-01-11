@@ -181,6 +181,11 @@ void LocalWebServer::run(unsigned short port)
     }
 }
 
+Uri LocalWebServer::address() const
+{
+    return Uri::fromString("http://localhost:" + std::to_string(port_) + "/");
+}
+
 void LocalWebServer::setRootDirectory(const FilePath& rootDirectory)
 {
     rootDirectory_ = rootDirectory;

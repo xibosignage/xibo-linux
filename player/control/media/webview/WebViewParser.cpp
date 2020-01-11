@@ -1,5 +1,6 @@
 #include "WebViewParser.hpp"
 
+#include "XiboApp.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/MediaResources.hpp"
 #include "control/media/webview/WebViewFactory.hpp"
@@ -43,9 +44,8 @@ Uri WebViewParser::uriFrom(const XmlNode& node)
 
     if (mode != NativeModeid)
     {
-        Resource fileName{std::to_string(idFrom(node)) + DefaultWebviewExtension};
-        //        return Uri::fromString(Managers::webserver().address() + fileName);
-        return Uri::fromFile(fileName);  // FIXME while adding plugin init
+        std::string fileName{std::to_string(idFrom(node)) + DefaultWebviewExtension};
+        return Uri::fromString(XiboApp::localAddress().string() + fileName);
     }
     else
     {
