@@ -61,8 +61,6 @@ protected:
 
     void addToContainer(const std::shared_ptr<Xibo::Widget>& widget, const WidgetInfo& info)
     {
-        assert(widget->width() <= this->width() && widget->height() <= this->height());
-
         children_.emplace_back(WidgetWithInfo{widget, info});
     }
 

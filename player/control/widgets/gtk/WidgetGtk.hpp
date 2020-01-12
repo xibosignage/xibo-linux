@@ -59,7 +59,7 @@ public:
     void scale(double scaleX, double scaleY) override
     {
         checkScale(scaleX, scaleY);
-        setSize(static_cast<int>(width() * scaleX), static_cast<int>(height() * scaleY));
+        setSize(std::round(width() * scaleX), std::round(height() * scaleY));
     }
 
     void setSize(int width, int height) override
