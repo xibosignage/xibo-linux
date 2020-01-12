@@ -3,6 +3,7 @@
 #include "CmsStatus.hpp"
 #include "RequiredFilesDownloader.hpp"
 
+#include "cms/xmds/NotifyStatus.hpp"
 #include "cms/xmds/RegisterDisplay.hpp"
 #include "cms/xmds/RequiredFiles.hpp"
 #include "cms/xmds/Schedule.hpp"
@@ -53,7 +54,6 @@ private:
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles);
     void updateMediaInventory(const RequiredFiles::Result& requiredFilesResult);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule);
-    void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
     void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult);
     template <typename Result>
     void onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult);

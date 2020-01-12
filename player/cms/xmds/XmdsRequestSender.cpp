@@ -123,3 +123,13 @@ FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenSh
 
     return SoapRequestHelper::sendRequest<SubmitScreenShot::Result>(uri_, request);
 }
+
+FutureResponseResult<NotifyStatus::Result> XmdsRequestSender::notifyStatus(const std::string& status)
+{
+    NotifyStatus::Request request;
+    request.serverKey = serverKey_;
+    request.hardwareKey = hardwareKey_;
+    request.status = status;
+
+    return SoapRequestHelper::sendRequest<NotifyStatus::Result>(uri_, request);
+}

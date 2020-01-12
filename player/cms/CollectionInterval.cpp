@@ -100,6 +100,9 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
                 statsRecorder_.clear();
                 onSubmitted("SubmitStats", submitStatsResult);
             }
+
+            auto notifyStatusResult = xmdsSender_.notifyStatus("").get();
+            onSubmitted("NotifyStatus", notifyStatusResult);
         }
         sessionFinished(displayError);
     }
