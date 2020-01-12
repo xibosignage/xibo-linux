@@ -82,7 +82,7 @@ private:
     NamedField<std::string> logLevel_{"logLevel", "debug"};
     NamedField<int> screenshotInterval_{"screenshotInterval", 0};
     NamedField<unsigned short> embeddedServerPort_{"embeddedServerPort",
-                                                   1234};   // FIXME should listen to value changed and do reconfig
+                                                   9696};   // FIXME should listen to value changed and do reconfig
     NamedField<bool> preventSleep_{"preventSleep", false};  // FIXME should listen to value changed and do reconfig
     NamedField<std::string> displayName_{"displayName"};    // FIXME should listen to value
     SizeField size_{{"sizeX", 0}, {"sizeY", 0}};
