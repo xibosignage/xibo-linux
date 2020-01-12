@@ -47,6 +47,7 @@ public:
     {
         assert(child);
 
+        scaleLayout(child);
         container_->setMainChild(child);
     }
 
@@ -57,6 +58,7 @@ public:
 
         for (auto&& child : children)
         {
+            scaleLayout(child);
             // TODO: should be centered?
             container_->add(child, DefaultPos, DefaultPos, DefaultPos);
         }
@@ -119,6 +121,12 @@ private:
 
         this->add(widget);
         container_ = widget;
+    }
+
+    void scaleLayout(const std::shared_ptr<Xibo::Widget>& layout)
+    {
+        auto scaleFactor = this->calcScaleFactor(layout->width(), layout->height(), this->width(), this->height());
+        layout->scale(scaleFactor, scaleFactor);
     }
 
     void onKeyPressed(const KeyboardKey& key)

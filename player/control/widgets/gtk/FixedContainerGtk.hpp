@@ -13,8 +13,6 @@ public:
     {
         handler_.signal_get_child_position().connect(sigc::mem_fun(this, &BaseFixedContainerGtk::onGetChildPosition),
                                                      false);
-        handler_.property_halign().set_value(Gtk::ALIGN_CENTER);
-        handler_.property_valign().set_value(Gtk::ALIGN_CENTER);
     }
 
     Gtk::Overlay& get() override

@@ -61,13 +61,9 @@ protected:
 
     void addToContainer(const std::shared_ptr<Xibo::Widget>& widget, const WidgetInfo& info)
     {
-        children_.emplace_back(WidgetWithInfo{widget, info});
+        assert(widget->width() <= this->width() && widget->height() <= this->height());
 
-        if (widget->width() > this->width() || widget->height() > this->height())
-        {
-            auto scaleFactor = calcScaleFactor(widget->width(), widget->height(), this->width(), this->height());
-            scaleChild(widget, children_.back().info, scaleFactor);
-        }
+        children_.emplace_back(WidgetWithInfo{widget, info});
     }
 
     void scaleChildren(double scaleFactor)

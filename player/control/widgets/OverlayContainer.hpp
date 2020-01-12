@@ -24,27 +24,26 @@ template <typename Base>
 class OverlayContainer : public Base
 {
     static constexpr const int DefaultPos = 0;
-    static constexpr const int MainChildOrder = 0;
-    static constexpr const int OverlaysOrder = 1;
+    static constexpr const int OverlaysOrder = 0;
 
     static_assert(std::is_base_of_v<Xibo::OverlayContainer, Base>, "Should implement Xibo::OverlayContainer");
 
     friend std::unique_ptr<Xibo::OverlayContainer> OverlayContainerFactory::create(int width, int height);
 
 public:
-    void setMainChild(const std::shared_ptr<Xibo::Widget>& mainChild)
+    void setMainChild(const std::shared_ptr<Xibo::Widget>& mainChild) override
     {
         assert(mainChild);
 
         removePreviousMainChild();
 
-        Base::add(mainChild, DefaultPos, DefaultPos, MainChildOrder);
+        setMainChildImpl(mainChild);
         mainChild_ = mainChild;
     }
 
-    void removeMainChild()
+    void removeMainChild() override
     {
-        Base::remove(mainChild_);
+        removeMainChildImpl(mainChild_);
         mainChild_.reset();
     }
 
@@ -62,15 +61,20 @@ public:
         overlayContainer_->remove(child);
     }
 
-    void removeOverlays()
+    void removeOverlays() override
     {
         overlayContainer_->removeAll();
     }
+
+protected:
+    virtual void setMainChildImpl(const std::shared_ptr<Xibo::Widget>& mainChild) = 0;
+    virtual void removeMainChildImpl(const std::shared_ptr<Xibo::Widget>& mainChild) = 0;
 
 private:
     void setOverlayContainer(const std::shared_ptr<Xibo::FixedContainer>& container)
     {
         assert(container);
+        assert(this->width() == container->width() && this->height() == container->height());
 
         Base::add(container, DefaultPos, DefaultPos, OverlaysOrder);
         overlayContainer_ = container;
