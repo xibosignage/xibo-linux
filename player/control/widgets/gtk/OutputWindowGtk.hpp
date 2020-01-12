@@ -8,7 +8,7 @@ class OutputWindowGtk : public WidgetGtk<Xibo::OutputWindow>
 public:
     OutputWindowGtk(Gtk::Widget* handler);
 
-    Gtk::Widget& get() override;
+    Gtk::Widget& handler() override;
 
 private:
     Gtk::Widget* handler_ = nullptr;

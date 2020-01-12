@@ -17,7 +17,7 @@ std::thread::id MainLoop::uiThreadId()
 
 int MainLoop::run(WindowGtk& adaptor)
 {
-    auto&& windowHandler = adaptor.get();
+    auto&& windowHandler = adaptor.handler();
 
     parentApp_->signal_shutdown().connect([this]() {
         idleConnection_.disconnect();

@@ -45,7 +45,7 @@ void ImageGtk::loadFrom(const Uri& uri, PreserveRatio preserveRatio)
     }
 }
 
-Gtk::Image& ImageGtk::get()
+Gtk::Image& ImageGtk::handler()
 {
     return handler_;
 }

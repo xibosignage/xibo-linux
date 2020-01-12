@@ -27,7 +27,7 @@ public:
     void fillColor(const Color& color) override;
     void loadFrom(const Uri& uri, PreserveRatio preserveRatio) override;
 
-    Gtk::Image& get() override;
+    Gtk::Image& handler() override;
 
 private:
     Glib::RefPtr<const Gdk::Pixbuf> pixbuf() const;

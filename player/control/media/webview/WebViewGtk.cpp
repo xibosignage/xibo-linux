@@ -65,7 +65,7 @@ void WebViewGtk::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen)
     }
 }
 
-Gtk::ScrolledWindow& WebViewGtk::get()
+Gtk::ScrolledWindow& WebViewGtk::handler()
 {
     return handler_;
 }

@@ -15,7 +15,7 @@ public:
                                                      false);
     }
 
-    Gtk::Overlay& get() override
+    Gtk::Overlay& handler() override
     {
         return handler_;
     }
@@ -23,22 +23,23 @@ public:
 private:
     void addToHandler(const std::shared_ptr<Xibo::Widget>& child, int /*left*/, int /*top*/, int /*zorder*/) override
     {
-        handler_.add_overlay(this->handler(child));
+        handler_.add_overlay(this->handlerFor(child));
     }
 
     void removeFromHandler(const std::shared_ptr<Xibo::Widget>& child) override
     {
-        handler_.Gtk::Container::remove(this->handler(child));
+        handler_.Gtk::Container::remove(this->handlerFor(child));
     }
 
     void reorderInHandler(const std::shared_ptr<Xibo::Widget>& child, int zorder) override
     {
-        handler_.reorder_overlay(this->handler(child), zorder);
+        handler_.reorder_overlay(this->handlerFor(child), zorder);
     }
 
     bool onGetChildPosition(Gtk::Widget* widget, Gdk::Rectangle& alloc)
     {
-        auto it = this->findChild([this, widget](const auto& child) { return &this->handler(child.widget) == widget; });
+        auto it =
+            this->findChild([this, widget](const auto& child) { return &this->handlerFor(child.widget) == widget; });
         if (it != this->children().end())
         {
             auto&& [widget, info] = *it;

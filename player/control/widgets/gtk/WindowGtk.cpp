@@ -32,7 +32,7 @@ WindowGtk::WindowGtk() : SingleContainerGtk{handler_}, cursorVisible_(true), ful
 
 void WindowGtk::addToHandler(const std::shared_ptr<Xibo::Widget>& child)
 {
-    handler_.add(handler(child));
+    handler_.add(handlerFor(child));
 }
 
 void WindowGtk::removeFromHandler(const std::shared_ptr<Xibo::Widget>& /*child*/)
@@ -185,7 +185,7 @@ void WindowGtk::setKeepAbove(bool keep_above)
     handler_.set_keep_above(keep_above);
 }
 
-Gtk::Window& WindowGtk::get()
+Gtk::Window& WindowGtk::handler()
 {
     return handler_;
 }

@@ -37,6 +37,7 @@ public:
 
         removePreviousMainChild();
 
+        this->addToContainer(mainChild, {});
         setMainChildImpl(mainChild);
         mainChild_ = mainChild;
     }

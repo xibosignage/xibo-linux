@@ -6,14 +6,14 @@ class OverlayContainerGtk : public OverlayContainer<BaseFixedContainerGtk<Xibo::
 protected:
     void setMainChildImpl(const std::shared_ptr<Xibo::Widget>& mainChild) override
     {
-        auto& childHandler = handler(mainChild);
-        get().add(childHandler);
+        auto& childHandler = handlerFor(mainChild);
+        handler().add(childHandler);
         childHandler.set_valign(Gtk::ALIGN_CENTER);
         childHandler.set_halign(Gtk::ALIGN_CENTER);
     }
 
     void removeMainChildImpl(const std::shared_ptr<Xibo::Widget>& /*mainChild*/) override
     {
-        get().remove();
+        handler().remove();
     }
 };

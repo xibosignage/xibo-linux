@@ -5,7 +5,7 @@ const size_t FONT_SCALE_FACTOR = 17;
 
 StatusScreenGtk::StatusScreenGtk(WindowGtk& parentWindow, int width, int height) :
     WidgetGtk(dialog_),
-    dialog_{parentWindow.get(), ""}
+    dialog_{parentWindow.handler(), ""}
 {
     WidgetGtk::setSize(width, height);
 
@@ -25,7 +25,7 @@ void StatusScreenGtk::setText(const std::string& text)
     dialog_.set_message(pangoFormat(text), true);
 }
 
-Gtk::Widget& StatusScreenGtk::get()
+Gtk::Widget& StatusScreenGtk::handler()
 {
     return dialog_;
 }

@@ -13,7 +13,7 @@ public:
     void setSize(int width, int height) override;
     void setText(const std::string& text) override;
 
-    Gtk::Widget& get() override;
+    Gtk::Widget& handler() override;
 
 private:
     std::string pangoFormat(const std::string& text);

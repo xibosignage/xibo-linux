@@ -28,7 +28,7 @@ public:
     void setBackgroundColor(const Color& color) override;
 
     SignalKeyPressed& keyPressed() override;
-    Gtk::Window& get() override;
+    Gtk::Window& handler() override;
     NativeWindow nativeWindow() override;
 
 private:
