@@ -59,6 +59,13 @@ void XmrManager::processMultipartMessage(const Zmq::MultiPartMessage& multipart)
 
             info_.lastMessageDt = DateTime::now();
         }
+        catch (CryptoPP::Exception& e)
+        {
+            Log::error("[XMR::Crypto] {}. You need to reconfigure XMR for this display in the CMS and wait for the "
+                       "next collection "
+                       "interval so all keys will be updated.",
+                       e.what());
+        }
         catch (std::exception& e)
         {
             Log::error("[XMR] {}", e.what());
