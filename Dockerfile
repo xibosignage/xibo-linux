@@ -80,7 +80,8 @@ RUN curl -o /root/cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archi
 RUN mkdir -p /app
 
 VOLUME /build
-ADD player /app
+ADD ./player /app
+ADD ./snap /app/snap
 
 RUN cd /app && \
     cmake -DCMAKE_BUILD_TYPE=Release -DSNAP_BUILD=ON -H. -B_build && \
