@@ -8,4 +8,6 @@ namespace System
     MacAddress macAddress();
     HardwareKey hardwareKey();
     void preventSleep();
+    void terminateProccess(int processId);
+    int parentProcessId();
 }

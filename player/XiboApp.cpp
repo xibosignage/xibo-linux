@@ -150,6 +150,8 @@ std::shared_ptr<ApplicationWindowGtk> XiboApp::createMainWindow()
         window->updateStatusScreen(info);
     });
 
+    window->exitWithoutRestartRequested().connect([]() { System::terminateProccess(System::parentProcessId()); });
+
     return window;
 }
 

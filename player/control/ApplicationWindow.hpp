@@ -80,7 +80,12 @@ public:
 
     StatusScreenShown& statusScreenShown()
     {
-        return statusScreenRequested_;
+        return statusScreenShown_;
+    }
+
+    ExitWithoutRestartRequested& exitWithoutRestartRequested()
+    {
+        return statusScreen_->exitWithoutRestartRequested();
     }
 
     void updateStatusScreen(const StatusInfo& info)
@@ -133,7 +138,7 @@ private:
     {
         if (key == StatusScreenKey)
         {
-            statusScreenRequested_();
+            statusScreenShown_();
             statusScreen_->show();
         }
     }
@@ -154,5 +159,5 @@ private:
 private:
     std::shared_ptr<Xibo::OverlayContainer> container_;
     std::shared_ptr<Xibo::StatusScreen> statusScreen_;
-    StatusScreenShown statusScreenRequested_;
+    StatusScreenShown statusScreenShown_;
 };

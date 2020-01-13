@@ -1,10 +1,9 @@
-#include <boost/process/child.hpp>
-#include <iostream>
-
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "config/AppConfig.hpp"
 #include "config/CmsSettings.hpp"
+
+#include "ProcessWatcher.hpp"
 
 void setupNewConfigDir()
 {
@@ -47,13 +46,8 @@ int main()
 
     if (FileSystem::exists(AppConfig::cmsSettingsPath()))
     {
-        while (true)
-        {
-            boost::process::child playerBin{AppConfig::playerBinary()};
-            playerBin.wait();
-            std::cerr << "Player exited with code " << playerBin.exit_code() << std::endl;
-            sleep(3);
-        }
+        ProcessWatcher playerWatcher{AppConfig::playerBinary()};
+        playerWatcher.run();
     }
     else
     {
