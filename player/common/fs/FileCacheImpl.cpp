@@ -1,7 +1,7 @@
 #include "FileCacheImpl.hpp"
 
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
+#include "common/fs/Resource.hpp"
 #include "common/logger/Logging.hpp"
 
 static XmlNode::path_type attributePath(const std::string& path)
@@ -55,9 +55,9 @@ bool FileCacheImpl::cached(const std::string& filename, const Md5Hash& hash) con
 
 void FileCacheImpl::save(const std::string& fileName, const std::string& fileContent, const Md5Hash& hash)
 {
-    auto filePath = Resources::directory() / fileName;
+    Resource path{fileName};
 
-    FileSystem::writeToFile(filePath, fileContent);
+    FileSystem::writeToFile(path, fileContent);
 
     addToCache(fileName, Md5Hash::fromString(fileContent), hash);
 }

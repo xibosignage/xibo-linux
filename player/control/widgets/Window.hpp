@@ -3,7 +3,7 @@
 #include "common/types/Color.hpp"
 #include "control/widgets/KeyboardKey.hpp"
 #include "control/widgets/NativeWindow.hpp"
-#include "control/widgets/Widget.hpp"
+#include "control/widgets/SingleContainer.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -11,14 +11,13 @@ using SignalKeyPressed = boost::signals2::signal<void(const KeyboardKey&)>;
 
 namespace Xibo
 {
-    class Window : public Widget
+    class Window : public SingleContainer
     {
     public:
         virtual int x() const = 0;
         virtual int y() const = 0;
         virtual void move(int x, int y) = 0;
 
-        virtual void setChild(const std::shared_ptr<Widget>& child) = 0;
         virtual void disableWindowResize() = 0;
         virtual void disableWindowDecoration() = 0;
         virtual void setKeepAbove(bool keepAbove) = 0;

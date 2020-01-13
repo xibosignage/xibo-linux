@@ -6,9 +6,8 @@
 #include "control/media/MediaImpl.hpp"
 #include "control/media/MediaResources.hpp"
 
-#include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
+#include "common/fs/Resource.hpp"
 
 #include <regex>
 
@@ -45,7 +44,7 @@ std::shared_ptr<Xibo::WebView> WebViewFactory::createView(const Uri& uri,
 void WebViewFactory::updateViewPortWidth(const Uri& uri, int width)
 {
     auto filename = uri.path().substr(1);
-    auto path = Resources::directory() / filename;
+    Resource path{filename};
 
     auto originalContent = FileSystem::readFromFile(path);
     auto updatedContent = std::regex_replace(originalContent, ViewPortWidth, "$1 " + std::to_string(width) + "$3");

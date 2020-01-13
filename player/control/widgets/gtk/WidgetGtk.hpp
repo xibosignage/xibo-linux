@@ -9,100 +9,105 @@ class IWidgetGtk
 {
 public:
     virtual ~IWidgetGtk() = default;
-    virtual Gtk::Widget& get() = 0;
+    virtual Gtk::Widget& handler() = 0;
 };
 
 template <typename Interface>
 class WidgetGtk : public Interface, public IWidgetGtk
-
 {
-public:
-    static_assert(std::is_base_of_v<Xibo::Widget, Interface>, "Should implement Widget");
+    static_assert(std::is_base_of_v<Xibo::Widget, Interface>, "Should implement Xibo::Widget");
 
+public:
     struct Error : PlayerRuntimeError
     {
         using PlayerRuntimeError::PlayerRuntimeError;
     };
 
-    WidgetGtk(Gtk::Widget& widget) : widget_(widget) {}
+    WidgetGtk(Gtk::Widget& handler) : handler_(handler) {}
 
     void show() override
     {
         if (visible()) return;
 
-        widget_.show();
-        signalShown_();
+        handler_.show();
+        shown_();
     }
 
     void showAll() override
     {
         if (visible()) return;
 
-        widget_.show_all();
-        signalShown_();
+        handler_.show_all();
+        shown_();
     }
 
     void skipShowAll() override
     {
-        widget_.set_no_show_all();
+        handler_.set_no_show_all();
     }
 
     void hide() override
     {
-        widget_.hide();
+        handler_.hide();
     }
 
     bool visible() const override
     {
-        return widget_.is_visible();
+        return handler_.is_visible();
     }
 
     void scale(double scaleX, double scaleY) override
     {
         checkScale(scaleX, scaleY);
-        setSize(static_cast<int>(width() * scaleX), static_cast<int>(height() * scaleY));
+        setSize(std::round(width() * scaleX), std::round(height() * scaleY));
     }
 
     void setSize(int width, int height) override
     {
         checkSize(width, height);
-        widget_.set_size_request(width, height);
+        handler_.set_size_request(width, height);
+        resized_();
     }
 
     int width() const override
     {
         int width, _;
-        widget_.get_size_request(width, _);
+        handler_.get_size_request(width, _);
         return width;
     }
 
     int height() const override
     {
         int _, height;
-        widget_.get_size_request(_, height);
+        handler_.get_size_request(_, height);
         return height;
     }
 
     void setOpacity(double value) override
     {
         checkOpacity(value);
-        widget_.set_opacity(value);
+        handler_.set_opacity(value);
     }
 
     double opacity() const override
     {
-        return widget_.get_opacity();
+        return handler_.get_opacity();
     }
 
     SignalShown& shown() override
     {
-        return signalShown_;
+        return shown_;
+    }
+
+    SignalResized& resized() override
+    {
+        return resized_;
     }
 
 protected:
-    Gtk::Widget& getHandler(Xibo::Widget& widget)
+    Gtk::Widget& handlerFor(const std::shared_ptr<Xibo::Widget>& widget)
     {
-        return dynamic_cast<IWidgetGtk&>(widget).get();
+        return dynamic_cast<IWidgetGtk&>(*widget).handler();
     }
 
     void checkSize(int width, int height)
@@ -122,6 +127,7 @@ protected:
     }
 
 private:
-    Gtk::Widget& widget_;
-    SignalShown signalShown_;
+    Gtk::Widget& handler_;
+    SignalShown shown_;
+    SignalResized resized_;
 };

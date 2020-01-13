@@ -22,7 +22,7 @@ public:
     void load(const Uri& uri) override;
     void enableTransparency() override;
 
-    Gtk::ScrolledWindow& get() override;
+    Gtk::ScrolledWindow& handler() override;
 
 private:
     void screenChanged(const Glib::RefPtr<Gdk::Screen>& screen);

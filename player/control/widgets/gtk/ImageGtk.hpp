@@ -7,29 +7,34 @@
 
 class ImageGtk : public WidgetGtk<Xibo::Image>
 {
+    static constexpr const int BitsPerSample = 8;
+    static constexpr const int DefaultWidth = 8;
+    static constexpr const int DefaultHegiht = 8;
+    static constexpr const bool DefaultUseAlpha = true;
+
 public:
     struct Error : PlayerRuntimeError
     {
         using PlayerRuntimeError::PlayerRuntimeError;
     };
 
-    ImageGtk(int width, int height, bool useAlpha);
+    ImageGtk();
 
     int width() const override;
     int height() const override;
     void setSize(int width, int height) override;
 
-    void setColor(const Color& color) override;
+    void fillColor(const Color& color) override;
     void loadFrom(const Uri& uri, PreserveRatio preserveRatio) override;
 
-    Gtk::Image& get() override;
+    Gtk::Image& handler() override;
 
 private:
     Glib::RefPtr<const Gdk::Pixbuf> pixbuf() const;
     Glib::RefPtr<Gdk::Pixbuf> pixbuf();
 
-    void checkSize(int width, int height);
-    void checkUri(const Uri& uri);
+    void check(int width, int height);
+    void set(const Glib::RefPtr<Gdk::Pixbuf>& pixbuf);
 
 private:
     Gtk::Image handler_;

@@ -1,15 +1,13 @@
 #include "WebViewParser.hpp"
 
+#include "XiboApp.hpp"
+#include "control/media/Media.hpp"
+#include "control/media/MediaResources.hpp"
 #include "control/media/webview/WebViewFactory.hpp"
 #include "control/media/webview/WebViewResources.hpp"
 
-#include "control/media/Media.hpp"
-#include "control/media/MediaResources.hpp"
-
 #include "common/fs/FileSystem.hpp"
-#include "common/fs/Resources.hpp"
-#include "managers/Managers.hpp"  // TODO: remove dependency
-#include "networking/WebServer.hpp"
+#include "common/fs/Resource.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
 #include <regex>
@@ -46,8 +44,8 @@ Uri WebViewParser::uriFrom(const XmlNode& node)
 
     if (mode != NativeModeid)
     {
-        auto fileName = std::to_string(idFrom(node)) + DefaultWebviewExtension;
-        return Uri::fromString(Managers::webserver().address() + fileName);
+        std::string fileName{std::to_string(idFrom(node)) + DefaultWebviewExtension};
+        return Uri::fromString(XiboApp::localAddress().string() + fileName);
     }
     else
     {

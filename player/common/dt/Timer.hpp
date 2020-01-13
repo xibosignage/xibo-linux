@@ -1,8 +1,8 @@
 #pragma once
 
 #include <chrono>
-#include <glibmm/main.h>
-#include <sigc++/connection.h>
+#include <glibmm/main.h>        // TODO: remove dependency
+#include <sigc++/connection.h>  // TODO: remove dependency
 #include <type_traits>
 
 class Timer : public sigc::trackable

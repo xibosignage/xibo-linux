@@ -3,18 +3,17 @@
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/messagedialog.h>
 
-#include <boost/process/child.hpp>
-
+#include "cms/xmds/XmdsRequestSender.hpp"
+#include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
-#include "config.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
+#include "config/AppConfig.hpp"
 
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     ui_(ui),
     mainWindow_(window)
 {
-    settings_.loadFrom(ProjectResources::cmsSettingsPath());
+    settings_.fromFile(AppConfig::cmsSettingsPath());
 
     initUi();
     updateControls(settings_);
@@ -37,26 +36,24 @@ void MainWindowController::initUi()
 
     ui_->get_widget(Resources::Ui::ConnectionStatusLabel, connectionStatus_);
     ui_->get_widget(Resources::Ui::SaveButton, saveSettings_);
-    ui_->get_widget(Resources::Ui::LaunchClientButton, launchClient_);
     ui_->get_widget(Resources::Ui::ExitButton, exit_);
 }
 
 void MainWindowController::updateControls(const CmsSettings& settings)
 {
-    cmsAddressField_->set_text(Glib::ustring{settings.cmsAddress});
-    keyField_->set_text(Glib::ustring{settings.key});
-    resourcesPathField_->set_text(Glib::ustring{settings.resourcesPath});
-
+    cmsAddressField_->set_text(Glib::ustring{settings.address()});
+    keyField_->set_text(Glib::ustring{settings.key()});
+    FilePath path = settings.resourcesPath();
+    resourcesPathField_->set_text(Glib::ustring{path.string()});
     usernameField_->set_text(Glib::ustring{settings.username()});
     passwordField_->set_text(Glib::ustring{settings.password()});
     domainField_->set_text(Glib::ustring{settings.domain()});
-    displayIdField_->set_text(Glib::ustring{settings.displayId});
+    displayIdField_->set_text(Glib::ustring{settings.displayId()});
 }
 
 void MainWindowController::connectSignals()
 {
     saveSettings_->signal_clicked().connect(std::bind(&MainWindowController::onSaveSettingsClicked, this));
-    launchClient_->signal_clicked().connect(std::bind(&MainWindowController::onLaunchClientClicked, this));
     browseResourcesPath_->signal_clicked().connect(
         std::bind(&MainWindowController::onBrowseResourcesPathClicked, this));
     exit_->signal_clicked().connect(std::bind(&Gtk::Window::close, mainWindow_));
@@ -89,16 +86,15 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
-        auto connectionResult =
-            xmdsRequester.registerDisplay(ProjectResources::codeVersion(), ProjectResources::version(), "Display")
-                .then([](auto future) {
-                    auto [error, result] = future.get();
+        auto connectionResult = xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display")
+                                    .then([](auto future) {
+                                        auto [error, result] = future.get();
 
-                    if (!error)
-                        return result.status.message;
-                    else
-                        return error.message();
-                });
+                                        if (!error)
+                                            return result.status.message;
+                                        else
+                                            return error.message();
+                                    });
 
         return connectionResult.get();
     }
@@ -110,24 +106,29 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
 
 void MainWindowController::updateSettings()
 {
-    settings_.cmsAddress = cmsAddressField_->get_text();
-    settings_.key = keyField_->get_text();
+    settings_.address().setValue(cmsAddressField_->get_text());
+    settings_.key().setValue(keyField_->get_text());
     std::string path = resourcesPathField_->get_text();
-    settings_.resourcesPath = path.empty() ? ProjectResources::defaultResourcesDir().string() : path;
-    settings_.displayId = displayIdField_->get_text();
+    settings_.resourcesPath().setValue(path.empty() ? createDefaultResourceDir() : path);
+    settings_.displayId().setValue(displayIdField_->get_text());
 
     settings_.updateProxy(domainField_->get_text(), usernameField_->get_text(), passwordField_->get_text());
 
-    settings_.saveTo(ProjectResources::cmsSettingsPath());
+    settings_.saveTo(AppConfig::cmsSettingsPath());
 }
 
-void MainWindowController::onLaunchClientClicked()
+std::string MainWindowController::createDefaultResourceDir()
 {
-    boost::process::child player{ProjectResources::playerBinary()};
-
-    mainWindow_->close();
-
-    player.detach();
+    auto defaultDir = AppConfig::configDirectory() / "resources";
+    if (!FileSystem::exists(defaultDir))
+    {
+        bool result = FileSystem::createDirectory(defaultDir);
+        if (!result)
+        {
+            Log::error("Unable to create resources directory");
+        }
+    }
+    return defaultDir.string();
 }
 
 void MainWindowController::onBrowseResourcesPathClicked()

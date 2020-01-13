@@ -34,12 +34,12 @@ public:
 
 private:
     static gboolean busMessageWatch(GstBus* bus, GstMessage* msg, gpointer player);
-    void checkVolume(int volume);
+    void check(int volume);
 
 protected:
     GstElement* playbin_;
     GstElement* videoSink_;
-    GstBus* playbinBus_;
+    guint busWatchId_;
 
     std::shared_ptr<Xibo::OutputWindow> outputWindow_;
     SignalPlaybackFinished playbackFinished_;

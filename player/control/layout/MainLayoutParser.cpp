@@ -3,7 +3,7 @@
 #include "control/layout/MainLayoutImpl.hpp"
 #include "control/layout/MainLayoutResources.hpp"
 #include "control/region/RegionParser.hpp"
-#include "control/widgets/ImageWidgetFactory.hpp"
+#include "control/widgets/Image.hpp"
 
 #include "common/fs/FilePath.hpp"
 #include "common/fs/Resource.hpp"
@@ -72,14 +72,11 @@ Color MainLayoutParser::backgroundColorFrom(const XmlNode& node)
 
 std::shared_ptr<Xibo::Image> MainLayoutParser::createBackground(const MainLayoutOptions& options)
 {
-    auto background = ImageWidgetFactory::create(options.width, options.height);
-
     if (options.backgroundUri)
-        background->loadFrom(options.backgroundUri.value(), Xibo::Image::PreserveRatio::False);
+        return ImageWidgetFactory::create(
+            options.backgroundUri.value(), options.width, options.height, Xibo::Image::PreserveRatio::False);
     else
-        background->setColor(options.backgroundColor);
-
-    return background;
+        return ImageWidgetFactory::create(options.backgroundColor, options.width, options.height);
 }
 
 void MainLayoutParser::addRegions(Xibo::MainLayout& layout, const XmlNode& layoutNode)

@@ -3,6 +3,7 @@
 #include <boost/signals2/signal.hpp>
 
 using SignalShown = boost::signals2::signal<void()>;
+using SignalResized = boost::signals2::signal<void()>;
 
 namespace Xibo
 {
@@ -26,5 +27,6 @@ namespace Xibo
         virtual double opacity() const = 0;
 
         virtual SignalShown& shown() = 0;
+        virtual SignalResized& resized() = 0;
     };
 }

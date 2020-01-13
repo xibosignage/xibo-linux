@@ -4,12 +4,12 @@
 #include "MainWindowController.hpp"
 
 #include "common/logger/Logging.hpp"
-#include "config.hpp"
+#include "config/AppConfig.hpp"
 
 int main(int /*argc*/, char** /*argv*/)
 {
     auto app = Gtk::Application::create();
-    auto ui = Gtk::Builder::create_from_file(ProjectResources::uiFile().string());
+    auto ui = Gtk::Builder::create_from_file(AppConfig::uiFile().string());
 
     std::vector<spdlog::sink_ptr> sinks{std::make_shared<spdlog::sinks::stdout_sink_mt>()};
     Log::create(sinks);

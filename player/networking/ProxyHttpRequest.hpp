@@ -33,7 +33,8 @@ public:
         request.method(method_);
         request.target(target_.string());
         request.version(DefaultHttpVersion);
-        request.set(http::field::host, static_cast<std::string>(target_.authority().host()));
+        request.set(http::field::host,
+                    static_cast<std::string>(target_.authority().host()));  // TODO: check host with port
         if (proxyUserInfo_)
         {
             request.set(http::field::proxy_authorization,

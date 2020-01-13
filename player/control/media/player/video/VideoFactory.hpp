@@ -3,7 +3,6 @@
 #include "control/media/Media.hpp"
 #include "control/media/player/MediaPlayer.hpp"
 #include "control/media/player/MediaPlayerOptions.hpp"
-#include "control/widgets/render/OutputWindow.hpp"
 
 #include <memory>
 

@@ -32,6 +32,7 @@ parts:
     build-packages:
       - build-essential
       - libgtk-3-dev
+      - software-properties-common
     make-parameters:
       - FLAVOR=gtk3
     plugin: make
@@ -56,6 +57,24 @@ parts:
       - ibus-gtk3
       - libibus-1.0-5
       - fcitx-frontend-gtk3
+
+  zmq: # Ubuntu 18.04 has outdated ZMQ so we are pulling it from official stable repo
+    plugin: nil
+    override-pull: |
+      sudo sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
+      wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
+      sudo apt-key add - < Release.key
+      sudo apt-get update
+      sudo apt install -y libzmq5
+
+  boost: # Ubuntu 18.04 has outdated boost so we have to build it from source
+    source: https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz
+    plugin: nil
+    override-pull: |
+      sudo add-apt-repository ppa:mhier/libboost-latest
+      sudo apt-get update
+      sudo apt-get install -y libboost1.70
+      
   player-sources:
     source: build
     plugin: dump
@@ -64,6 +83,8 @@ parts:
       - usr/lib
       - lib
     stage-packages:
+      - libzmq5
+      - libboost1.70
       - libgstreamer1.0-0
       - gstreamer1.0-gtk3
       - gstreamer1.0-plugins-base
@@ -79,4 +100,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [desktop-gtk3] 
+    after: [zmq, boost, desktop-gtk3] 

@@ -1,33 +1,35 @@
-#include <boost/process/child.hpp>
-#include <iostream>
-
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "common/settings/CmsSettings.hpp"
-#include "config.hpp"
+#include "config/AppConfig.hpp"
+#include "config/CmsSettings.hpp"
+
+#include "ProcessWatcher.hpp"
 
 void setupNewConfigDir()
 {
 #ifdef SNAP_ENABLED
     try
     {
-        using namespace ProjectResources;
-
-        if (FileSystem::exists(oldConfigDirectory() / CmsSettingsFile))
+        const std::string CmsSettingsFile = "cmsSettings.xml";
+        const std::string PlayerSettingsFile = "playerSettings.xml";
+        const std::string PrivateKeyFile = "id_rsa";
+        const std::string PublicKeyFile = "id_rsa.pub";
+        const std::string ResourcesDir = "resources";
+        if (FileSystem::exists(AppConfig::oldConfigDirectory() / CmsSettingsFile))
         {
             CmsSettings settings;
-            settings.loadFrom(oldConfigDirectory() / CmsSettingsFile);
+            settings.fromFile(AppConfig::oldConfigDirectory() / CmsSettingsFile);
 
             std::vector<std::string> filesToMove{CmsSettingsFile, PlayerSettingsFile, PrivateKeyFile, PublicKeyFile};
             for (auto&& file : filesToMove)
             {
-                FileSystem::move(oldConfigDirectory() / file, configDirectory() / file);
+                FileSystem::move(AppConfig::oldConfigDirectory() / file, AppConfig::configDirectory() / file);
             }
 
-            if (settings.resourcesPath == oldConfigDirectory() / ResourcesDir)
+            if (settings.resourcesPath() == AppConfig::oldConfigDirectory() / ResourcesDir)
             {
-                settings.resourcesPath = defaultResourcesDir().string();
-                settings.saveTo(ProjectResources::cmsSettingsPath());
+                settings.resourcesPath().setValue(AppConfig::configDirectory() / ResourcesDir);
+                settings.saveTo(AppConfig::cmsSettingsPath());
             }
         }
     }
@@ -42,19 +44,14 @@ int main()
 {
     setupNewConfigDir();
 
-    if (FileSystem::exists(ProjectResources::cmsSettingsPath()))
+    if (FileSystem::exists(AppConfig::cmsSettingsPath()))
     {
-        while (true)
-        {
-            boost::process::child playerBin{ProjectResources::playerBinary()};
-            playerBin.wait();
-            std::cerr << "Player exited with code " << playerBin.exit_code() << std::endl;
-            sleep(3);
-        }
+        ProcessWatcher playerWatcher{AppConfig::playerBinary()};
+        playerWatcher.run();
     }
     else
     {
-        boost::process::child optionsBin{ProjectResources::optionsBinary()};
+        boost::process::child optionsBin{AppConfig::optionsBinary()};
         optionsBin.wait();
     }
     return 0;

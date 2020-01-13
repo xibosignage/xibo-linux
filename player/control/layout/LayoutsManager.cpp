@@ -9,7 +9,7 @@
 #include "schedule/Scheduler.hpp"
 #include "stat/StatsRecorder.hpp"
 
-#include "config.hpp"
+#include "config/AppConfig.hpp"
 
 LayoutsManager::LayoutsManager(Scheduler& scheduler, StatsRecorder& statsRecorder, FileCache& fileCache) :
     scheduler_(scheduler),

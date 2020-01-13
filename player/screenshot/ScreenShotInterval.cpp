@@ -1,14 +1,14 @@
 #include "ScreenShotInterval.hpp"
 
+#include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/logger/Logging.hpp"
-#include "networking/xmds/XmdsRequestSender.hpp"
-#include "screenshot/ScreenShoter.hpp"
+#include "screenshot/ScreeShoterFactory.hpp"
 
 const int DefaultInterval = 0;
 
-ScreenShotInterval::ScreenShotInterval(XmdsRequestSender& sender, ScreenShoter& screenShoter) :
+ScreenShotInterval::ScreenShotInterval(XmdsRequestSender& sender, Xibo::Window& window) :
     sender_(sender),
-    screenShoter_(screenShoter),
+    screenShoter_(ScreenShoterFactory::create(window)),
     interval_(DefaultInterval)
 {
 }
@@ -37,7 +37,7 @@ void ScreenShotInterval::restartTimer()
 
 void ScreenShotInterval::takeScreenShot()
 {
-    screenShoter_.takeBase64([this](const std::string& screenShot) {
+    screenShoter_->takeBase64([this](const std::string& screenShot) {
         if (!screenShot.empty())
         {
             submitScreenShot(screenShot);

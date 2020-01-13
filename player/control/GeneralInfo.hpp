@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/dt/DateTime.hpp"
+#include "common/fs/FilePath.hpp"
 
 struct GeneralInfo
 {
@@ -9,7 +10,7 @@ struct GeneralInfo
     std::string projectVersion;
     std::string codeVersion;
     std::string cmsAddress;
-    std::string resourcesPath;
+    FilePath resourcesPath;
     std::string displayName;
     int windowWidth;
     int windowHeight;

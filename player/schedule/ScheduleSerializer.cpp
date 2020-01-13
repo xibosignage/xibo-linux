@@ -1,11 +1,10 @@
 #include "ScheduleSerializer.hpp"
 
+#include "cms/xmds/Resources.hpp"  // TODO: remove dependency
 #include "common/Parsing.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
-#include "networking/xmds/Resources.hpp"  // TODO: remove dependency
 
-// TODO: remove dependency
 namespace Resources = XmdsResources::Schedule;
 
 void ScheduleSerializer::scheduleTo(const LayoutSchedule& schedule, const FilePath& path)

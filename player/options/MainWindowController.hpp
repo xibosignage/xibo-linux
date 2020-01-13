@@ -8,7 +8,7 @@
 #include <gtkmm/label.h>
 
 #include "Resources.hpp"
-#include "common/settings/CmsSettings.hpp"
+#include "config/CmsSettings.hpp"
 
 class MainWindowController
 {
@@ -25,8 +25,8 @@ private:
     std::string connectToCms(const std::string& cmsAddress, const std::string& key, const std::string& displayId);
     void updateSettings();
     void showSettingsSavedMessage();
-    void onLaunchClientClicked();
     void onBrowseResourcesPathClicked();
+    std::string createDefaultResourceDir();
 
 private:
     Glib::RefPtr<Gtk::Builder> ui_;
@@ -47,6 +47,5 @@ private:
 
     Gtk::Label* connectionStatus_;
     Gtk::Button* saveSettings_;
-    Gtk::Button* launchClient_;
     Gtk::Button* exit_;
 };

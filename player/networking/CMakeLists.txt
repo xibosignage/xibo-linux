@@ -1,11 +1,19 @@
 project(networking)
 
-pkg_check_modules(ZeroMQ REQUIRED libzmq>=4.3.0)
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.*pp)
-
-add_library(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} common ${ZeroMQ_LINK_LIBRARIES})
-
-copy_libs("${ZeroMQ_LINK_LIBRARIES}")
+add_library(${PROJECT_NAME}
+    HttpClient.cpp
+    HttpClient.hpp
+    HttpSession.cpp
+    HttpSession.hpp
+    HttpRequest.hpp
+    ProxyHttpRequest.hpp
+    RequiredItems.cpp
+    RequiredItems.hpp
+    ResponseResult.hpp
+)
+target_link_libraries(${PROJECT_NAME}
+    common
+)
+target_include_directories(${PROJECT_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)

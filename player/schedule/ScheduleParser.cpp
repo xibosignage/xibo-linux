@@ -1,10 +1,10 @@
 #include "ScheduleParser.hpp"
 
+#include "cms/xmds/Resources.hpp"
 #include "common/Parsing.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
 #include "common/fs/FileSystem.hpp"
-#include "networking/xmds/Resources.hpp"
 
 #include <boost/core/ignore_unused.hpp>
 

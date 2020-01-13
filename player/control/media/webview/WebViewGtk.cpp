@@ -6,19 +6,22 @@
 
 namespace ph = std::placeholders;
 
-WebViewGtk::WebViewGtk(int width, int height) : WidgetGtk(handler_)
+WebViewGtk::WebViewGtk(int width, int height) : WidgetGtk{handler_}
 {
+    WidgetGtk::setSize(width, height);
+
     webView_ = reinterpret_cast<WebKitWebView*>(webkit_web_view_new());
     auto widget = Gtk::manage(Glib::wrap(reinterpret_cast<GtkWidget*>(webView_)));
     handler_.add(*widget);
 
-    // TODO: check if we need this
-    sizeAllocateConnection_ = widget->signal_size_allocate().connect([this](Gtk::Allocation&) {
+    // GTK+ doesn't change the physical size of the widget immediately. Instead, we need to wait for size-allocate
+    // signal. However, it emits too often even if the widget hasn't been actually resized so we block it after handler
+    // execution and unblock during next setSize
+    // We need this because WebView doesn't reload its content even when the parent widget has been resized
+    sizeAllocateConnection_ = handler_.signal_size_allocate().connect([this](Gtk::Allocation&) {
         reload();
-        sizeAllocateConnection_.disconnect();
+        sizeAllocateConnection_.block();
     });
-
-    WidgetGtk::setSize(width, height);
 }
 
 void WebViewGtk::show()
@@ -28,8 +31,8 @@ void WebViewGtk::show()
 
 void WebViewGtk::setSize(int width, int height)
 {
-    handler_.set_size_request(width, height);
-    reload();
+    sizeAllocateConnection_.unblock();
+    WidgetGtk::setSize(width, height);
 }
 
 void WebViewGtk::reload()
@@ -62,7 +65,7 @@ void WebViewGtk::screenChanged(const Glib::RefPtr<Gdk::Screen>& screen)
     }
 }
 
-Gtk::ScrolledWindow& WebViewGtk::get()
+Gtk::ScrolledWindow& WebViewGtk::handler()
 {
     return handler_;
 }

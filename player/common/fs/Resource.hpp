@@ -1,9 +1,9 @@
 #pragma once
 
-#include "common/fs/Resources.hpp"
 #include "common/types/internal/WeakType.hpp"
+#include "config/AppConfig.hpp"
 
 struct Resource : WeakType<FilePath>
 {
-    Resource(const std::string& file) : WeakType(Resources::directory() / file) {}
+    Resource(const std::string& file) : WeakType(AppConfig::resourceDirectory() / file) {}
 };

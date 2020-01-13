@@ -4,12 +4,9 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/types/Uri.hpp"
 
-const int BitsPerSample = 8;
-
-ImageGtk::ImageGtk(int width, int height, bool useAlpha) : WidgetGtk(handler_)
+ImageGtk::ImageGtk() : WidgetGtk(handler_)
 {
-    checkSize(width, height);
-    handler_.set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, useAlpha, BitsPerSample, width, height));
+    set(Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, DefaultUseAlpha, BitsPerSample, DefaultWidth, DefaultHegiht));
 }
 
 int ImageGtk::width() const
@@ -26,12 +23,11 @@ int ImageGtk::height() const
 
 void ImageGtk::setSize(int width, int height)
 {
-    checkSize(width, height);
-    auto newPixbuf = pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR);
-    handler_.set(newPixbuf);
+    check(width, height);
+    set(pixbuf()->scale_simple(width, height, Gdk::InterpType::INTERP_BILINEAR));
 }
 
-void ImageGtk::setColor(const Color& color)
+void ImageGtk::fillColor(const Color& color)
 {
     assert(pixbuf());
     pixbuf()->fill(color.hex());
@@ -39,11 +35,17 @@ void ImageGtk::setColor(const Color& color)
 
 void ImageGtk::loadFrom(const Uri& uri, PreserveRatio preserveRatio)
 {
-    checkUri(uri);
-    handler_.set(Gdk::Pixbuf::create_from_file(uri.path(), width(), height(), static_cast<bool>(preserveRatio)));
+    try
+    {
+        set(Gdk::Pixbuf::create_from_file(uri.path(), width(), height(), static_cast<bool>(preserveRatio)));
+    }
+    catch (Glib::Error& e)
+    {
+        throw Error{"ImageGtk", static_cast<std::string>(e.what())};
+    }
 }
 
-Gtk::Image& ImageGtk::get()
+Gtk::Image& ImageGtk::handler()
 {
     return handler_;
 }
@@ -58,12 +60,13 @@ Glib::RefPtr<Gdk::Pixbuf> ImageGtk::pixbuf()
     return handler_.get_pixbuf();
 }
 
-void ImageGtk::checkSize(int width, int height)
+void ImageGtk::check(int width, int height)
 {
-    if (width < 0 || height < 0) throw ImageGtk::Error{"ImageGtk", "Size should be positive"};
+    if (width <= 0 || height <= 0) throw Error{"ImageGtk", "Size should be positive"};
 }
 
-void ImageGtk::checkUri(const Uri& uri)
+void ImageGtk::set(const Glib::RefPtr<Gdk::Pixbuf>& pixbuf)
 {
-    if (!FileSystem::exists(uri.path())) throw ImageGtk::Error{"ImageGtk", "Image " + uri.path() + " was not found"};
+    if (!pixbuf) throw Error{"ImageGtk", "Not enough memory to allocate image"};
+    handler_.set(pixbuf);
 }
