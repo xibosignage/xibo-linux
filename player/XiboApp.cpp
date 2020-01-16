@@ -93,7 +93,7 @@ std::unique_ptr<XmrManager> XiboApp::createXmrManager()
         CHECK_UI_THREAD();
         Log::info("[XMR] Start unscheduled collection");
 
-        collectionInterval_->collect([this](const PlayerError& error) { onCollectionFinished(error); });
+        collectionInterval_->collectNow();
     });
 
     manager->screenshot().connect([this]() {
@@ -120,8 +120,10 @@ int XiboApp::run()
     scheduler_->scheduleUpdated().connect(
         [](const LayoutSchedule& schedule) { schedule.toFile(AppConfig::schedulePath()); });
 
-    collectionInterval_->startRegularCollection();
-    mainWindow_->showAll();
+    mainLoop_->started().connect([this] {
+        collectionInterval_->collectNow();
+        mainWindow_->showAll();
+    });
 
     return mainLoop_->run(*mainWindow_);
 }
