@@ -27,7 +27,10 @@ int MainLoop::run(WindowGtk& adaptor)
         }
     });
 
-    parentApp_->signal_startup().connect([this, &windowHandler]() { parentApp_->add_window(windowHandler); });
+    parentApp_->signal_startup().connect([this, &windowHandler]() {
+        parentApp_->add_window(windowHandler);
+        started_();
+    });
 
     return parentApp_->run();
 }
@@ -35,6 +38,11 @@ int MainLoop::run(WindowGtk& adaptor)
 void MainLoop::quit()
 {
     parentApp_->quit();
+}
+
+SignalStarted& MainLoop::started()
+{
+    return started_;
 }
 
 void MainLoop::setShutdownAction(const ShutdownAction& action)

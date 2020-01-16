@@ -12,7 +12,6 @@
 #include "stat/StatsFormatter.hpp"
 #include "stat/StatsRecorder.hpp"
 
-const uint DefaultInterval = 900;
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
@@ -23,17 +22,15 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
     fileCache_{fileCache},
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
-    started_{false},
-    registered_{false},
-    requiredFiles_{0}
+    running_{false},
+    status_{}
 {
     assert(intervalTimer_);
 }
 
-void CollectionInterval::startRegularCollection()
+bool CollectionInterval::running() const
 {
-    started_ = true;
-    collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
+    return running_;
 }
 
 void CollectionInterval::stop()
@@ -43,87 +40,75 @@ void CollectionInterval::stop()
 
 void CollectionInterval::startTimer()
 {
-    intervalTimer_->startOnce(std::chrono::seconds(collectInterval_), [=]() {
-        collect(std::bind(&CollectionInterval::onRegularCollectionFinished, this, ph::_1));
-    });
+    intervalTimer_->startOnce(std::chrono::seconds(collectInterval_), [this]() { collectNow(); });
 }
 
-void CollectionInterval::onRegularCollectionFinished(const PlayerError& error)
+void CollectionInterval::collectNow()
 {
-    MainLoop::pushToUiThread([this, error]() { collectionFinished_(error); });
+    if (!running_)
+    {
+        running_ = true;
+        workerThread_ = std::make_unique<JoinableThread>([=]() {
+            Log::debug("[CollectionInterval] Started");
+
+            auto registerDisplayResult =
+                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display").get();
+            onDisplayRegistered(registerDisplayResult);
+        });
+    }
+}
+
+void CollectionInterval::sessionFinished(const PlayerError& error)
+{
+    running_ = false;
     startTimer();
-
     Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", collectInterval_);
+
+    MainLoop::pushToUiThread([this, error]() { collectionFinished_(error); });
 }
 
-void CollectionInterval::collect(CollectionResultCallback callback)
-{
-    workerThread_ = std::make_unique<JoinableThread>([=]() {
-        Log::debug("[CollectionInterval] Started");
-
-        auto session = std::make_shared<CollectionSession>();
-        session->callback = callback;
-
-        auto registerDisplayResult =
-            xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display").get();
-        onDisplayRegistered(registerDisplayResult, session);
-    });
-}
-
-void CollectionInterval::sessionFinished(CollectionSessionPtr session, PlayerError error)
-{
-    MainLoop::pushToUiThread([this, session, error]() {
-        if (started_)
-        {
-            startTimer();
-        }
-        session->callback(error);
-    });
-}
-
-void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay,
-                                             CollectionSessionPtr session)
+void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay)
 {
     auto [error, result] = registerDisplay;
     if (!error)
     {
-        auto displayError = getDisplayStatus(result.status);
+        auto displayError = displayStatus(result.status);
         if (!displayError)
         {
             Log::debug("[XMDS::RegisterDisplay] Success");
 
-            registered_ = true;
-            lastChecked_ = DateTime::now();
+            status_.registered = true;
+            status_.lastChecked = DateTime::now();
 
             MainLoop::pushToUiThread([this, result = std::move(result.playerSettings)]() { settingsUpdated_(result); });
 
             auto requiredFilesResult = xmdsSender_.requiredFiles().get();
             auto scheduleResult = xmdsSender_.schedule().get();
 
-            onSchedule(scheduleResult, session);
-            onRequiredFiles(requiredFilesResult, session);
+            onSchedule(scheduleResult);
+            onRequiredFiles(requiredFilesResult);
 
             XmlLogsRetriever logsRetriever;
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
-            onSubmitLog(submitLogsResult, session);
+            onSubmitted("SubmitLogs", submitLogsResult);
 
             if (!statsRecorder_.empty())
             {
                 StatsFormatter formatter;
                 auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
                 statsRecorder_.clear();
-                onSubmitStats(submitStatsResult, session);
+                onSubmitted("SubmitStats", submitStatsResult);
             }
         }
-        sessionFinished(session, displayError);
+        sessionFinished(displayError);
     }
     else
     {
-        sessionFinished(session, error);
+        sessionFinished(error);
     }
 }
 
-PlayerError CollectionInterval::getDisplayStatus(const RegisterDisplay::Result::Status& status)
+PlayerError CollectionInterval::displayStatus(const RegisterDisplay::Result::Status& status)
 {
     using DisplayCode = RegisterDisplay::Result::Status::Code;
 
@@ -145,20 +130,10 @@ void CollectionInterval::updateInterval(int collectInterval)
     }
 }
 
-void CollectionInterval::statsAggregation(const std::string& aggregationLevel)
+// TODO potential data race here
+CmsStatus CollectionInterval::status() const
 {
-    statsAggregation_ = aggregationLevel;
-}
-
-CmsStatus CollectionInterval::status()
-{
-    CmsStatus status;
-
-    status.registered = registered_;
-    status.lastChecked = lastChecked_;
-    status.requiredFiles = requiredFiles_;
-
-    return status;
+    return status_;
 }
 
 SignalSettingsUpdated& CollectionInterval::settingsUpdated()
@@ -181,8 +156,7 @@ SignalFilesDownloaded& CollectionInterval::filesDownloaded()
     return filesDownloaded_;
 }
 
-void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles,
-                                         CollectionSessionPtr session)
+void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles)
 {
     auto [error, result] = requiredFiles;
     if (!error)
@@ -194,7 +168,7 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         auto&& files = result.requiredFiles();
         auto&& resources = result.requiredResources();
 
-        requiredFiles_ = files.size() + resources.size();
+        status_.requiredFiles = files.size() + resources.size();
 
         auto resourcesResult = downloader.download(resources);
         auto filesResult = downloader.download(files);
@@ -206,11 +180,11 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     }
     else
     {
-        sessionFinished(session, error);
+        sessionFinished(error);
     }
 }
 
-void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& schedule, CollectionSessionPtr session)
+void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& schedule)
 {
     auto [error, result] = schedule;
     if (!error)
@@ -222,63 +196,32 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     }
     else
     {
-        sessionFinished(session, error);
+        sessionFinished(error);
     }
 }
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
 {
-    xmdsSender_.mediaInventory(std::move(items)).then([](auto future) {
-        auto [error, result] = future.get();
-        if (error)
-        {
-            Log::error("[XMDS::MediaInventory] {}", error);
-        }
-        else
-        {
-            std::string message = result.success ? "Updated" : "Not updated";
-            Log::debug("[XMDS::MediaInventory] {}", message);
-        }
-    });
+    onSubmitted("MediaInventory", xmdsSender_.mediaInventory(std::move(items)).get());
 }
 
-void CollectionInterval::onSubmitLog(const ResponseResult<SubmitLog::Result>& logResult, CollectionSessionPtr session)
+template <typename Result>
+void CollectionInterval::onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult)
 {
-    auto [error, result] = logResult;
+    auto [error, result] = submitResult;
     if (!error)
     {
         if (result.success)
         {
-            Log::debug("[XMDS::SubmitLogs] Submitted");
+            Log::debug("[XMDS::{}] Submitted", requestName);
         }
         else
         {
-            Log::error("[XMDS::SubmitLogs] Not submited due to unknown error");
+            Log::error("[XMDS::{}] Not submited due to unknown error", requestName);
         }
     }
     else
     {
-        sessionFinished(session, error);
-    }
-}
-
-void CollectionInterval::onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult,
-                                       CollectionSessionPtr session)
-{
-    auto [error, result] = statsResult;
-    if (!error)
-    {
-        if (result.success)
-        {
-            Log::debug("[XMDS::SubmitStats] Submitted");
-        }
-        else
-        {
-            Log::error("[XMDS::SubmitStats] Not submited due to unknown error");
-        }
-    }
-    else
-    {
-        sessionFinished(session, error);
+        sessionFinished(error);
     }
 }
