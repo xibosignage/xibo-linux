@@ -54,9 +54,9 @@ FilePath AppConfig::buildDirectory()
 #else
     // workaround for those who starts the player out of snap
     char result[PATH_MAX];
-    size_t count = static_cast<size_t>(readlink("/proc/self/exe", result, PATH_MAX));
+    ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     assert(count != -1);
-    return FilePath{std::filesystem::path(std::string(result, count)).parent_path()};
+    return FilePath{std::filesystem::path(std::string(result, static_cast<size_t>(count))).parent_path()};
 #endif
 }
 
