@@ -38,6 +38,7 @@ parts:
       - ca-certificates 
       - gnupg 
       - curl 
+      - wget
       - unzip
       - libgtkmm-3.0-dev 
       - libgstreamer1.0-dev
@@ -60,7 +61,8 @@ parts:
   cmake:
     plugin: nil
     override-pull: |
-      wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add -
+      wget -nv https://apt.kitware.com/keys/kitware-archive-latest.asc -O Release.key
+      sudo apt-key add - < Release.key
       sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
       sudo apt-get update
       sudo apt-get install -y cmake
