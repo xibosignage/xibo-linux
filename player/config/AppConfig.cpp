@@ -111,20 +111,10 @@ FilePath AppConfig::cachePath()
 
 std::string AppConfig::playerBinary()
 {
-    auto path = buildDirectory() / "player";
-#ifdef SNAP_ENABLED
-    return "desktop-launch " + path.string();
-#else
-    return path.string();
-#endif
+    return (buildDirectory() / "player").string();
 }
 
 std::string AppConfig::optionsBinary()
 {
-    auto path = buildDirectory() / "options";
-#ifdef SNAP_ENABLED
-    return "desktop-launch " + path.string();
-#else
-    return path.string();
-#endif
+    return (buildDirectory() / "options").string();
 }

@@ -1,6 +1,9 @@
 project(common)
 
 find_library(CRYPTOPP NAMES cryptopp) # find include directories
+find_package(spdlog 1.4.1 REQUIRED)
+find_package(Boost 1.70 EXACT REQUIRED filesystem system date_time thread)
+
 pkg_check_modules(DBUS REQUIRED dbus-1)
 pkg_check_modules(OPENSSL REQUIRED openssl)
 
@@ -25,6 +28,7 @@ target_link_libraries(${PROJECT_NAME}
     ${DBUS_LINK_LIBRARIES}
     ${GLIBMM_LINK_LIBRARIES}
     ${Boost_LIBRARIES}
+    spdlog::spdlog
 )
 target_include_directories(${PROJECT_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}

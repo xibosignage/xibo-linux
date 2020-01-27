@@ -6,13 +6,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PkgConfig REQUIRED)
-find_package(Boost 1.70 EXACT REQUIRED filesystem system date_time thread)
 
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
 pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
-pkg_check_modules(SPDLOG REQUIRED spdlog>=1.4.1)
 pkg_check_modules(X11 REQUIRED x11)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
@@ -78,6 +76,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
 configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
 
 enable_testing()
 

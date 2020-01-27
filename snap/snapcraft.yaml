@@ -14,49 +14,57 @@ slots:
 
 apps:
   xibo-player:
-    command: desktop-launch $SNAP/bin/watchdog
+    command: bin/watchdog
     plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
+    extensions: [gnome-3-28]
     environment:
-      LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
+      LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/
 
   options:
-    command: desktop-launch $SNAP/bin/options
-    plugs: [gsettings, network, home, unity7, x11, screen-inhibit-control, framebuffer, opengl]
+    command: bin/options
+    plugs: [gsettings, network, home, unity7, x11]
     slots: [dbus-daemon]
+    extensions: [gnome-3-28]
     environment:
-      LD_LIBRARY_PATH: $SNAP/bin/libs/:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/:$SNAP/usr/lib/x86_64-linux-gnu/mesa:$SNAP/usr/lib/x86_64-linux-gnu/mesa-egl
+      LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/
 
 parts:
-  desktop-gtk3:
+  base:
+    plugin: nil
     build-packages:
-      - build-essential
-      - libgtk-3-dev
       - software-properties-common
-    make-parameters:
-      - FLAVOR=gtk3
-    plugin: make
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-subdir: gtk
-    stage-packages:
-      - libxkbcommon0
-      - ttf-ubuntu-font-family
-      - dmz-cursor-theme
-      - light-themes
-      - adwaita-icon-theme
-      - gnome-themes-standard
-      - shared-mime-info
-      - libgtk-3-0
-      - libgdk-pixbuf2.0-0
-      - libglib2.0-bin
-      - libgtk-3-bin
-      - unity-gtk3-module
-      - libappindicator3-1
-      - locales-all
-      - xdg-user-dirs
-      - ibus-gtk3
-      - libibus-1.0-5
-      - fcitx-frontend-gtk3
+      - apt-transport-https
+      - ca-certificates 
+      - gnupg 
+      - curl 
+      - unzip
+      - libgtkmm-3.0-dev 
+      - libgstreamer1.0-dev
+      - libgstreamer-plugins-base1.0-dev
+      - libwebkitgtk-3.0-dev
+      - libxss-dev
+      - libglibmm-2.4-dev
+      - libssl-dev
+
+  g++-8: # Ubuntu 18.04 has outdated gcc so we have to install it from PPA
+    plugin: nil
+    override-pull: |
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt-get update
+      sudo apt-get install -y g++-8
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
+    after: [base]
+
+  cmake:
+    plugin: nil
+    override-pull: |
+      wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | apt-key add -
+      sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+      sudo apt-get update
+      sudo apt-get install -y cmake
+    after: [g++-8]
 
   zmq: # Ubuntu 18.04 has outdated ZMQ so we are pulling it from official stable repo
     plugin: nil
@@ -65,24 +73,49 @@ parts:
       wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
       sudo apt-key add - < Release.key
       sudo apt-get update
-      sudo apt install -y libzmq5
+      sudo apt-get install -y libzmq3-dev
 
-  boost: # Ubuntu 18.04 has outdated boost so we have to build it from source
-    source: https://dl.bintray.com/boostorg/release/1.70.0/source/boost_1_70_0.tar.gz
+  boost: # Ubuntu 18.04 has outdated boost so we have to install it from PPA
     plugin: nil
     override-pull: |
       sudo add-apt-repository ppa:mhier/libboost-latest
       sudo apt-get update
-      sudo apt-get install -y libboost1.70
-      
+      sudo apt-get install -y libboost1.70-dev
+    after: [base]
+
+  spdlog: 
+    source: https://github.com/gabime/spdlog/archive/v1.4.1.tar.gz
+    plugin: cmake
+    after: [cmake]
+
+  gtest: 
+    source: https://codeload.github.com/google/googletest/tar.gz/release-1.8.1
+    source-type: tar
+    plugin: cmake
+    after: [cmake]
+
+  cryptopp:
+    plugin: nil
+    override-pull: |
+      curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_8_1_0.tar.gz && \
+      curl -o cryptopp_pem.zip -SL https://github.com/noloader/cryptopp-pem/archive/095f08ff2ef9bca7b81036a59f2395e4f08ce2e8.zip && \
+      tar -zxvf cryptopp.tar.gz && \
+      unzip -a cryptopp_pem.zip && \
+      cp -r cryptopp-pem-095f08ff2ef9bca7b81036a59f2395e4f08ce2e8/. cryptopp-CRYPTOPP_8_1_0 && \
+      cd cryptopp-CRYPTOPP_8_1_0 && \
+      make -j4 && \
+      make install
+
   player-sources:
-    source: build
-    plugin: dump
-    prime:
-      - bin
-      - usr/lib
-      - lib
+    source: player
+    plugin: cmake
+    configflags:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DSNAP_BUILD=ON
+    disable-parallel: true
     stage-packages:
+      - libglu1-mesa
+      - freeglut3
       - libzmq5
       - libboost1.70
       - libgstreamer1.0-0
@@ -100,4 +133,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, desktop-gtk3] 
+    after: [zmq, boost, spdlog, gtest] 
