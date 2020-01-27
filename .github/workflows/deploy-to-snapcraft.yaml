@@ -16,11 +16,15 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+
       - name: Build
         run: |
-          docker build -f Dockerfile -t xibo-linux .
           echo ${{ secrets.SNAPCRAFT_TOKEN }} >> snapcraft.login
-          docker build -f Dockerfile.snap -t xibo-linux-snap .
+          snapcraft
+          snapcraft login --with snapcraft.login
+          snapcraft push *.snap
           rm snapcraft.login
 
   in_fork:
