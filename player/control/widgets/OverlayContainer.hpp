@@ -37,13 +37,14 @@ public:
 
         removePreviousMainChild();
 
-        this->addToContainer(mainChild, {});
+        Base::addToContainer(mainChild, {});
         setMainChildImpl(mainChild);
         mainChild_ = mainChild;
     }
 
     void removeMainChild() override
     {
+        Base::removeFromContainer(mainChild_);
         removeMainChildImpl(mainChild_);
         mainChild_.reset();
     }
