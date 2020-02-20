@@ -14,20 +14,16 @@ slots:
 
 apps:
   xibo-player:
-    command: bin/watchdog
-    plugs: [gsettings, network, home, unity7, x11, pulseaudio, alsa, screen-inhibit-control, framebuffer, opengl]
+    command: bin/snap_run.sh watchdog
+    plugs: [gsettings, network, home, unity7, x11, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
-    environment:
-      LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/
 
   options:
     command: bin/options
     plugs: [gsettings, network, home, unity7, x11]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
-    environment:
-      LD_LIBRARY_PATH: $SNAP/usr/lib/x86_64-linux-gnu:$SNAP/lib/x86_64-linux-gnu/
 
 parts:
   base:
@@ -41,8 +37,6 @@ parts:
       - wget
       - unzip
       - libgtkmm-3.0-dev 
-      - libgstreamer1.0-dev
-      - libgstreamer-plugins-base1.0-dev
       - libwebkitgtk-3.0-dev
       - libxss-dev
       - libglibmm-2.4-dev
@@ -108,7 +102,89 @@ parts:
       make -j4 && \
       make install
 
-  player-sources:
+  gstreamer:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gstreamer.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - bison
+      - flex
+      - liborc-0.4-dev
+      - libpulse-dev
+      - libxv-dev
+      - libtag1-dev
+      - libwavpack-dev
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - libglew-dev
+    stage-packages:
+      - liborc-0.4-dev
+      - libasound2-dev
+      - libjpeg-dev
+      - libvpx-dev
+      - libvorbis-dev
+      - libogg-dev
+      - libpulse-dev
+      - libpulse0
+      - libwavpack-dev
+      - libtag1v5
+      - libopus-dev
+      - libtheora-dev
+      - libxv-dev
+      - libxdamage-dev
+      - libcdparanoia-dev
+      - libgl1-mesa-glx
+      - libglu1-mesa
+      - libglew2.0
+    after: [g++-8]
+
+  gst-plugins-base:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-plugins-base.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - liborc-0.4-dev
+      - libfribidi-dev
+      - libpulse-dev
+    after: [gstreamer]
+
+  gst-libav:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-libav.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - yasm
+      - liborc-0.4-dev
+      - libpulse-dev
+      - libva-dev
+    stage-packages:
+      - libpulse0
+    after: [gst-plugins-base]
+
+  gst-plugins-good:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-plugins-good.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - liborc-0.4-dev
+      - libpulse-dev
+    stage-packages:
+      - libpulse0
+    after: [gst-libav]
+
+  player:
     source: player
     plugin: cmake
     configflags:
@@ -116,19 +192,9 @@ parts:
       - -DSNAP_BUILD=ON
     disable-parallel: true
     stage-packages:
-      - libglu1-mesa
       - freeglut3
       - libzmq5
       - libboost1.70
-      - libgstreamer1.0-0
-      - gstreamer1.0-gtk3
-      - gstreamer1.0-plugins-base
-      - gstreamer1.0-plugins-good
-      - gstreamer1.0-libav
-      - gstreamer1.0-alsa
-      - gstreamer1.0-gl
-      - gstreamer1.0-vaapi
-      - gstreamer1.0-pulseaudio
       - libgtkmm-3.0-1v5
       - libcanberra-gtk3-module
       - libwebkitgtk-3.0-0

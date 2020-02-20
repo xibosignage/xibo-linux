@@ -39,6 +39,7 @@ private:
 protected:
     GstElement* playbin_;
     GstElement* videoSink_;
+    GstElement* glSinkBin_;
     guint busWatchId_;
 
     std::shared_ptr<Xibo::OutputWindow> outputWindow_;
