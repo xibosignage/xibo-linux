@@ -7,7 +7,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(GSTREAMER REQUIRED gstreamer-pbutils-1.0 gstreamer-video-1.0>=1.14.0 gstreamer-plugins-base-1.0>=1.14.0)
+pkg_check_modules(GSTREAMER REQUIRED
+    gstreamer-1.0>=1.16.2
+    gstreamer-pbutils-1.0>=1.16.2
+    gstreamer-plugins-base-1.0>=1.16.2
+    gstreamer-video-1.0>=1.16.2)
 pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
@@ -76,6 +80,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 
 configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
 configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
+configure_file(snap_run.sh ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/snap_run.sh COPYONLY)
 install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
 
 enable_testing()

@@ -9,19 +9,23 @@
 
 GstMediaPlayer::GstMediaPlayer() :
     playbin_(gst_element_factory_make("playbin", "playbin")),
-    videoSink_(gst_element_factory_make("gtksink", "videosink"))
+    videoSink_(gst_element_factory_make("gtkglsink", "gtksink")),
+    glSinkBin_(gst_element_factory_make("glsinkbin", "glsinkbin"))
 {
     if (!playbin_) throw Error{"GstMediaPlayer", "Unable to create player: playbin is missing."};
-    if (!videoSink_) throw Error{"GstMediaPlayer", "Unable to create player: gtksink is missing."};
+    if (!videoSink_) throw Error{"GstMediaPlayer", "Unable to create player: gtkglsink is missing."};
+    if (!glSinkBin_) throw Error{"GstMediaPlayer", "Unable to create player: glsinkbin is missing."};
 
-    g_object_set(playbin_, "video-sink", videoSink_, nullptr);
+    g_object_set(glSinkBin_, "sink", videoSink_, nullptr);
+    g_object_set(playbin_, "video-sink", glSinkBin_, nullptr);
 
     GtkWidget* videoSinkWidget = nullptr;
-    g_object_get(videoSink_, "widget", &videoSinkWidget, nullptr);
+    g_object_get(videoSink_, "widget", &videoSinkWidget, nullptr);  // transfer ownership here, ref_count == 2
     if (videoSinkWidget)
     {
-        // take ownership and destroy in the container later
+        // take ownership and unref widget from sink
         outputWindow_ = std::make_shared<OutputWindowGtk>(Glib::wrap(videoSinkWidget));
+        g_object_unref(videoSinkWidget);
     }
 
     auto bus = gst_element_get_bus(playbin_);
@@ -34,6 +38,7 @@ GstMediaPlayer::~GstMediaPlayer()
     gst_element_set_state(playbin_, GST_STATE_NULL);
     gst_object_unref(playbin_);  // videoSink_ should be unrefed as a child
     g_source_remove(busWatchId_);
+    // check gst_bus_remove_watch
 }
 
 void GstMediaPlayer::load(const Uri& uri)
