@@ -15,13 +15,13 @@ slots:
 apps:
   xibo-player:
     command: bin/snap_run.sh watchdog
-    plugs: [gsettings, network, home, unity7, x11, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   options:
     command: bin/options
-    plugs: [gsettings, network, home, unity7, x11]
+    plugs: [gsettings, network, home]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 

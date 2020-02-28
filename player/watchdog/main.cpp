@@ -44,6 +44,22 @@ int main()
 {
     setupNewConfigDir();
 
+    auto var = getenv("GST_PLUGIN_PATH");
+    if (var)
+    {
+        std::cout << "GST_PLUGIN_PATH " << var << std::endl;
+    }
+    var = getenv("GST_PLUGIN_SYSTEM_PATH");
+    if (var)
+    {
+        std::cout << "GST_PLUGIN_SYSTEM_PATH " << var << std::endl;
+    }
+    var = getenv("GST_PLUGIN_SCANNER");
+    if (var)
+    {
+        std::cout << "GST_PLUGIN_SCANNER " << var << std::endl;
+    }
+
     if (FileSystem::exists(AppConfig::cmsSettingsPath()))
     {
         ProcessWatcher playerWatcher{AppConfig::playerBinary()};
