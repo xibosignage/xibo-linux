@@ -1,7 +1,15 @@
 #!/bin/sh
 # snap has wrapper file which is setting up all the variables (GST_PLGUIN_PATH, GST_PLUGIN_SCANNER etc.) which overrides parts environment
 # so this is a workaround to override GST_PLUGIN_PATH, GST_PLUGIN_SYSTEM_PATH and GST_PLUGIN_SCANNER
+echo "Before exporting..."
+echo "GST_PLUGIN_PATH $GST_PLUGIN_PATH"
+echo "GST_PLUGIN_SYSTEM_PATH $GST_PLUGIN_SYSTEM_PATH"
+echo "GST_PLUGIN_SCANNER $GST_PLUGIN_SCANNER"
 export GST_PLUGIN_PATH=$SNAP/usr/lib/gstreamer-1.0
 export GST_PLUGIN_SYSTEM_PATH=$SNAP/usr/lib/gstreamer-1.0
 export GST_PLUGIN_SCANNER=$SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
+echo "After exporting..."
+echo "GST_PLUGIN_PATH $GST_PLUGIN_PATH"
+echo "GST_PLUGIN_SYSTEM_PATH $GST_PLUGIN_SYSTEM_PATH"
+echo "GST_PLUGIN_SCANNER $GST_PLUGIN_SCANNER"
 exec "$@"
