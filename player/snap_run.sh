@@ -4,5 +4,5 @@
 export GST_PLUGIN_PATH=$SNAP/usr/lib/gstreamer-1.0
 export GST_PLUGIN_SYSTEM_PATH=$SNAP/usr/lib/gstreamer-1.0
 export GST_PLUGIN_SCANNER=$SNAP/usr/libexec/gstreamer-1.0/gst-plugin-scanner
-export LD_PRELOAD=$SNAP/usr/lib/libgstreamer-1.0.so:$LD_PRELOAD
+export LD_LIBRARY_PATH=$SNAP/usr/lib:$LD_LIBRARY_PATH
 exec "$@"
