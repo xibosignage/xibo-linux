@@ -23,5 +23,7 @@ It's desirable to show logs
 If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
-- Client: [e.g. Windows, Ubuntu, Android etc.]
-- Version: 
+- Linux Disto: [e.g. Mint, Ubuntu etc.]
+- Linux Desktop Environment: [e.g. GNOME, KDE etc.] 
+- How the player was launched: [snap / compiled binaries]
+- Player Version: [e.g. 1.8-R3]
