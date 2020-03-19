@@ -1,7 +1,7 @@
 #pragma once
 
 #include "control/ApplicationWindow.hpp"
-#include "control/GeneralInfo.hpp"
+#include "control/status/GeneralInfo.hpp"
 #include "control/widgets/gtk/WindowGtk.hpp"
 
 #include "config/CmsSettings.hpp"

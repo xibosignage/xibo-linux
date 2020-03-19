@@ -12,9 +12,14 @@ add_library(${PROJECT_NAME}
     CmsStatus.hpp
     ${XMDS_SOURCES}
 )
+
 target_link_libraries(${PROJECT_NAME}
     networking
+    stat
+    schedule
+    crypto
 )
+
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${GTKMM_INCLUDE_DIRS} # remove
+    ${GTKMM_INCLUDE_DIRS} # TODO remove
 )

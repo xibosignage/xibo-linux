@@ -1,9 +1,9 @@
 #pragma once
 
 #ifdef USE_GTK
-#include "screenshot/X11ScreenShoter.hpp"
+#include "control/screenshot/gtk/X11ScreenShoter.hpp"
 #endif
-#include "screenshot/ScreenShoter.hpp"
+#include "control/screenshot/ScreenShoter.hpp"
 
 namespace ScreenShoterFactory
 {

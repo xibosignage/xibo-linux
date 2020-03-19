@@ -1,6 +1,6 @@
 #include "AudioParser.hpp"
 
-#include "constants.hpp"
+#include "common/constants.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"
 #include "control/media/player/audio/AudioFactory.hpp"

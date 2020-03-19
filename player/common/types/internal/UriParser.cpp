@@ -1,7 +1,5 @@
 #include "UriParser.hpp"
 
-#include "common/logger/Logging.hpp"
-
 #include <boost/format.hpp>
 
 const std::regex UriRegex(

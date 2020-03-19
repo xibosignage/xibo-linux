@@ -1,6 +1,6 @@
 #include "VideoParser.hpp"
 
-#include "constants.hpp"
+#include "common/constants.hpp"
 #include "control/media/Media.hpp"
 #include "control/media/MediaResources.hpp"
 #include "control/media/player/MediaPlayerResources.hpp"

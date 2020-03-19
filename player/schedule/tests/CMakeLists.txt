@@ -21,13 +21,11 @@ add_executable(${PROJECT_NAME}
     SchedulerReloadTests.hpp
     ScheduleSerializerTests.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}
     schedule
     ${GMOCK}
-    ${GTEST_LIBRARIES}
-)
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${GTEST_INCLUDE_DIRS}
+    GTest::GTest
 )
 
 add_test(NAME SchedulerTests COMMAND ${PROJECT_NAME} WORKING_DIRECTORY ${CMAKE_TESTS_DIRECTORY})

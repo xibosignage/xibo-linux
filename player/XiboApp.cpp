@@ -9,10 +9,10 @@
 #include "control/layout/LayoutsManager.hpp"
 #include "control/media/MediaParsersRepo.hpp"
 #include "control/media/webview/LocalWebServer.hpp"
+#include "control/screenshot/ScreeShoterFactory.hpp"
+#include "control/screenshot/ScreenShotInterval.hpp"
 
 #include "schedule/Scheduler.hpp"
-#include "screenshot/ScreeShoterFactory.hpp"
-#include "screenshot/ScreenShotInterval.hpp"
 #include "stat/StatsRecorder.hpp"
 #include "xmr/XmrManager.hpp"
 

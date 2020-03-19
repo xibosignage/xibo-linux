@@ -4,7 +4,6 @@
 #include "common/logger/Logging.hpp"
 
 #include <cairomm/xlib_surface.h>
-#include <glibmm/main.h>
 
 X11ScreenShoter::X11ScreenShoter(Xibo::Window& window) : ScreenShoter(window) {}
 
