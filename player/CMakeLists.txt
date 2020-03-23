@@ -12,7 +12,7 @@ pkg_check_modules(GSTREAMER REQUIRED
     gstreamer-pbutils-1.0>=1.16.2
     gstreamer-plugins-base-1.0>=1.16.2
     gstreamer-video-1.0>=1.16.2)
-pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
+pkg_check_modules(WEBKITGTK REQUIRED webkit2gtk-4.0>=2.28.4)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
 pkg_check_modules(X11 REQUIRED x11)
