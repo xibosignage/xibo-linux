@@ -37,7 +37,7 @@ parts:
       - wget
       - unzip
       - libgtkmm-3.0-dev 
-      - libwebkitgtk-3.0-dev
+      - libwebkit2gtk-4.0-dev
       - libxss-dev
       - libglibmm-2.4-dev
       - libssl-dev
@@ -197,7 +197,7 @@ parts:
       - libboost1.70
       - libgtkmm-3.0-1v5
       - libcanberra-gtk3-module
-      - libwebkitgtk-3.0-0
+      - libwebkit2gtk-4.0-dev
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
     after: [zmq, boost, spdlog, gtest] 

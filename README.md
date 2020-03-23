@@ -16,7 +16,7 @@ NOTE: These libraries can require additional installations if you haven't such. 
 - `zeromq=4.3` distributed messaging
 - `spdlog=1.4.1` logging library
 - `gtest=1.8.1` for tests
-- `webkitgtk>=2.4.10` web content rendering
+- `webkit2gtk>=2.20.5` web content rendering
 - `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
 
 ### Building with Docker (only for Ubuntu 18.04)
