@@ -218,7 +218,8 @@ std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const XmlNode&
 {
     if (auto type = node.get_optional<Transition::Type>(MediaResources::Tranisiton::InType))
     {
-        auto direction = node.get<Transition::Direction>(MediaResources::Tranisiton::InDirection);
+        auto direction =
+            node.get<Transition::Direction>(MediaResources::Tranisiton::InDirection, Transition::Direction::N);
         int duration = node.get<int>(MediaResources::Tranisiton::InDuration);
 
         return createTransition<Transition::Heading::In>(type.value(), direction, duration, view);
@@ -232,7 +233,8 @@ std::unique_ptr<TransitionExecutor> MediaParser::outTransitionFrom(const XmlNode
 {
     if (auto type = node.get_optional<Transition::Type>(MediaResources::Tranisiton::OutType))
     {
-        auto direction = node.get<Transition::Direction>(MediaResources::Tranisiton::OutDirection);
+        auto direction =
+            node.get<Transition::Direction>(MediaResources::Tranisiton::OutDirection, Transition::Direction::N);
         int duration = node.get<int>(MediaResources::Tranisiton::OutDuration);
 
         return createTransition<Transition::Heading::Out>(type.value(), direction, duration, view);
