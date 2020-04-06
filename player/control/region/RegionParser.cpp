@@ -5,7 +5,7 @@
 
 #include "control/media/MediaParsersRepo.hpp"
 
-const int DefaultRegionZindex = 0;
+const int DefaultRegionZorder = 0;
 const bool DefaultRegionLoop = false;
 
 using namespace std::string_literals;
@@ -22,30 +22,27 @@ std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const XmlNode& node)
     }
     catch (PlayerRuntimeError& e)
     {
-        throw RegionParser::Error{"RegionParser - " + e.domain(), e.message()};
+        throw Error{"RegionParser - " + e.domain(), e.message()};
     }
     catch (std::exception& e)
     {
-        throw RegionParser::Error{"RegionParser", e.what()};
+        throw Error{"RegionParser", e.what()};
     }
 }
 
 RegionPosition RegionParser::positionFrom(const XmlNode& node)
 {
-    try
-    {
-        RegionPosition position;
+    RegionPosition position;
 
-        position.left = static_cast<int>(node.get<float>(XlfResources::Region::Left));
-        position.top = static_cast<int>(node.get<float>(XlfResources::Region::Top));
-        position.zorder = node.get<int>(XlfResources::Region::Zindex, DefaultRegionZindex);
-
-        return position;
-    }
-    catch (std::exception& e)
+    position.left = static_cast<int>(node.get<float>(XlfResources::Region::Left));
+    position.top = static_cast<int>(node.get<float>(XlfResources::Region::Top));
+    position.zorder = node.get<int>(XlfResources::Region::Zindex, DefaultRegionZorder);
+    if (position.zorder < 0)
     {
-        throw RegionParser::Error{"RegionParser", "Position is invalid. Reason: "s + e.what()};
+        position.zorder = DefaultRegionZorder;
     }
+
+    return position;
 }
 
 RegionOptions RegionParser::optionsFrom(const XmlNode& node)

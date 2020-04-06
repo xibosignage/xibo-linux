@@ -30,11 +30,6 @@ struct ChildInfo
 template <typename Base>
 class FixedContainer : public Container<Base, ChildInfo>
 {
-    struct Error : public PlayerRuntimeError
-    {
-        using PlayerRuntimeError::PlayerRuntimeError;
-    };
-
     friend std::unique_ptr<Xibo::FixedContainer> FixedContainerFactory::create(int width, int height);
 
 public:
@@ -50,8 +45,7 @@ public:
     void reorder(const std::shared_ptr<Xibo::Widget>& widget, int zorder) override
     {
         assert(widget);
-
-        check(zorder);
+        assert(zorder >= 0);
 
         reorderInHandler(widget, zorder);
     }
@@ -77,7 +71,7 @@ protected:
         {
             int zorder = static_cast<int>(i);
 
-            check(zorder);
+            assert(zorder >= 0);
             reorder(this->children()[i].widget, zorder);
         }
     }
@@ -87,10 +81,5 @@ protected:
         std::stable_sort(this->children().begin(), this->children().end(), [=](const auto& first, const auto& second) {
             return first.info.zorder < second.info.zorder;
         });
-    }
-
-    void check(int zorder)
-    {
-        if (zorder < 0) throw Error{"FixedContainer", "Zorder should be non-negative"};
     }
 };
