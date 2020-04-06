@@ -113,7 +113,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
     }
     catch (std::exception& e)
     {
-        Log::error("[LayoutsManager] {}", e.what());
+        Log::error(e.what());
         Log::info("[LayoutsManager] Check resource folder to find out what happened");
     }
 

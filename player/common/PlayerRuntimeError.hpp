@@ -6,7 +6,7 @@
 class PlayerRuntimeError : public std::exception
 {
 public:
-    PlayerRuntimeError(std::string_view domain, std::string_view message) :
+    PlayerRuntimeError(const std::string& domain, const std::string& message) :
         domain_(domain),
         message_(message),
         what_("[" + domain_ + "] " + message_)

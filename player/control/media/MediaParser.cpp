@@ -122,9 +122,13 @@ std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node, int par
 
         return media;
     }
+    catch (PlayerRuntimeError& e)
+    {
+        throw MediaParser::Error{"MediaParser - " + e.domain(), e.message()};
+    }
     catch (std::exception& e)
     {
-        throw MediaParser::Error{"MediaParser", "Media is invalid. Reason: "s + e.what()};
+        throw MediaParser::Error{"MediaParser", e.what()};
     }
 }
 

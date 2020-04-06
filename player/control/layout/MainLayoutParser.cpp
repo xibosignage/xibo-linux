@@ -11,7 +11,10 @@
 const std::string DefaultColor = "#000";
 const bool DefaultStatsEnabled = false;
 
-using namespace std::string_literals;
+MainLayoutParser::Error::Error(const std::string& domain, int layoutId, const std::string& reason) :
+    PlayerRuntimeError{domain, "Layout " + std::to_string(layoutId) + " is invalid or missing. Reason: " + reason}
+{
+}
 
 std::unique_ptr<Xibo::MainLayout> MainLayoutParser::parseBy(int layoutId)
 {
@@ -23,10 +26,13 @@ std::unique_ptr<Xibo::MainLayout> MainLayoutParser::parseBy(int layoutId)
         auto root = Parsing::xmlFrom(xlfFile);
         return layoutFrom(root.get_child(XlfResources::LayoutNode));
     }
+    catch (PlayerRuntimeError& e)
+    {
+        throw MainLayoutParser::Error{"LayoutParser - " + e.domain(), layoutId, e.message()};
+    }
     catch (std::exception& e)
     {
-        std::string message = "Layout " + std::to_string(layoutId) + " is invalid or missing. Reason: ";
-        throw MainLayoutParser::Error("MainLayoutParser", message + e.what());
+        throw MainLayoutParser::Error{"LayoutParser", layoutId, e.what()};
     }
 }
 

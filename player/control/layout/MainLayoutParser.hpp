@@ -14,7 +14,7 @@ public:
 
     struct Error : PlayerRuntimeError
     {
-        using PlayerRuntimeError::PlayerRuntimeError;
+        Error(const std::string& domain, int layoutId, const std::string& reason);
     };
 
     std::unique_ptr<Xibo::MainLayout> parseBy(int layoutId);

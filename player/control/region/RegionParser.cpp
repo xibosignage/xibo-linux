@@ -20,9 +20,13 @@ std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const XmlNode& node)
 
         return region;
     }
+    catch (PlayerRuntimeError& e)
+    {
+        throw RegionParser::Error{"RegionParser - " + e.domain(), e.message()};
+    }
     catch (std::exception& e)
     {
-        throw RegionParser::Error{"RegionParser", "Region is invalid. Reason: "s + e.what()};
+        throw RegionParser::Error{"RegionParser", e.what()};
     }
 }
 
