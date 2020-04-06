@@ -10,14 +10,16 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resource.hpp"
 
+namespace MediaResources = XlfResources::Media;
+
 std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType)
 {
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::Geometry::Scaled || temp == XlfResources::Media::Geometry::Aspect)
+    if (temp == MediaResources::Geometry::Scaled || temp == MediaResources::Geometry::Aspect)
         scaleType = MediaGeometry::ScaleType::Scaled;
-    else if (temp == XlfResources::Media::Geometry::Stretch)
+    else if (temp == MediaResources::Geometry::Stretch)
         scaleType = MediaGeometry::ScaleType::Stretch;
 
     return in;
@@ -28,11 +30,11 @@ std::istream& operator>>(std::istream& in, MediaGeometry::Align& align)
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::Geometry::LeftAlign)
+    if (temp == MediaResources::Geometry::LeftAlign)
         align = MediaGeometry::Align::Left;
-    else if (temp == XlfResources::Media::Geometry::CenterAlign)
+    else if (temp == MediaResources::Geometry::CenterAlign)
         align = MediaGeometry::Align::Center;
-    else if (temp == XlfResources::Media::Geometry::RightAlign)
+    else if (temp == MediaResources::Geometry::RightAlign)
         align = MediaGeometry::Align::Right;
 
     return in;
@@ -43,11 +45,11 @@ std::istream& operator>>(std::istream& in, MediaGeometry::Valign& valign)
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::Geometry::TopValign)
+    if (temp == MediaResources::Geometry::TopValign)
         valign = MediaGeometry::Valign::Top;
-    else if (temp == XlfResources::Media::Geometry::MiddleValign)
+    else if (temp == MediaResources::Geometry::MiddleValign)
         valign = MediaGeometry::Valign::Middle;
-    else if (temp == XlfResources::Media::Geometry::BottomValign)
+    else if (temp == MediaResources::Geometry::BottomValign)
         valign = MediaGeometry::Valign::Bottom;
 
     return in;
@@ -58,9 +60,9 @@ std::istream& operator>>(std::istream& in, Transition::Type& type)
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::Tranisiton::Fly)
+    if (temp == MediaResources::Tranisiton::Fly)
         type = Transition::Type::Fly;
-    else if (temp == XlfResources::Media::Tranisiton::FadeIn || temp == XlfResources::Media::Tranisiton::FadeOut)
+    else if (temp == MediaResources::Tranisiton::FadeIn || temp == MediaResources::Tranisiton::FadeOut)
         type = Transition::Type::Fade;
 
     return in;
@@ -71,21 +73,21 @@ std::istream& operator>>(std::istream& in, Transition::Direction& direction)
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::Tranisiton::N)
+    if (temp == MediaResources::Tranisiton::N)
         direction = Transition::Direction::N;
-    else if (temp == XlfResources::Media::Tranisiton::NE)
+    else if (temp == MediaResources::Tranisiton::NE)
         direction = Transition::Direction::NE;
-    else if (temp == XlfResources::Media::Tranisiton::E)
+    else if (temp == MediaResources::Tranisiton::E)
         direction = Transition::Direction::E;
-    else if (temp == XlfResources::Media::Tranisiton::SE)
+    else if (temp == MediaResources::Tranisiton::SE)
         direction = Transition::Direction::SE;
-    else if (temp == XlfResources::Media::Tranisiton::S)
+    else if (temp == MediaResources::Tranisiton::S)
         direction = Transition::Direction::S;
-    else if (temp == XlfResources::Media::Tranisiton::SW)
+    else if (temp == MediaResources::Tranisiton::SW)
         direction = Transition::Direction::SW;
-    else if (temp == XlfResources::Media::Tranisiton::W)
+    else if (temp == MediaResources::Tranisiton::W)
         direction = Transition::Direction::W;
-    else if (temp == XlfResources::Media::Tranisiton::NW)
+    else if (temp == MediaResources::Tranisiton::NW)
         direction = Transition::Direction::NW;
 
     return in;
@@ -96,11 +98,11 @@ std::istream& operator>>(std::istream& in, MediaOptions::StatPolicy& policy)
     std::string temp;
     in >> temp;
 
-    if (temp == XlfResources::Media::StatsPolicy::Off)
+    if (temp == MediaResources::StatsPolicy::Off)
         policy = MediaOptions::StatPolicy::Disable;
-    else if (temp == XlfResources::Media::StatsPolicy::On)
+    else if (temp == MediaResources::StatsPolicy::On)
         policy = MediaOptions::StatPolicy::Enable;
-    else if (temp == XlfResources::Media::StatsPolicy::Inherit)
+    else if (temp == MediaResources::StatsPolicy::Inherit)
         policy = MediaOptions::StatPolicy::Inherit;
 
     return in;
@@ -142,20 +144,20 @@ MediaOptions MediaParser::baseOptionsFrom(const XmlNode& node)
 
 MediaOptions::Type MediaParser::typeFrom(const XmlNode& node)
 {
-    auto type = node.get<std::string>(XlfResources::Media::Type);
-    auto render = node.get<std::string>(XlfResources::Media::Render);
+    auto type = node.get<std::string>(MediaResources::Type);
+    auto render = node.get<std::string>(MediaResources::Render);
 
     return {type, render};
 }
 
 int MediaParser::idFrom(const XmlNode& node)
 {
-    return node.get<int>(XlfResources::Media::Id);
+    return node.get<int>(MediaResources::Id);
 }
 
 Uri MediaParser::uriFrom(const XmlNode& node)
 {
-    auto uri = node.get_optional<std::string>(XlfResources::Media::Uri);
+    auto uri = node.get_optional<std::string>(MediaResources::Uri);
     if (uri)
     {
         Resource fullPath{uri.value()};
@@ -169,7 +171,7 @@ Uri MediaParser::uriFrom(const XmlNode& node)
 
 int MediaParser::durationFrom(const XmlNode& node)
 {
-    return node.get<int>(XlfResources::Media::Duration);
+    return node.get<int>(MediaResources::Duration);
 }
 
 MediaGeometry MediaParser::geometryFrom(const XmlNode& /*node*/)
@@ -179,14 +181,14 @@ MediaGeometry MediaParser::geometryFrom(const XmlNode& /*node*/)
 
 MediaOptions::StatPolicy MediaParser::statFrom(const XmlNode& node)
 {
-    return node.get<MediaOptions::StatPolicy>(XlfResources::Media::EnableStat, MediaOptions::StatPolicy::Inherit);
+    return node.get<MediaOptions::StatPolicy>(MediaResources::EnableStat, MediaOptions::StatPolicy::Inherit);
 }
 
 void MediaParser::attach(Xibo::Media& media, const XmlNode& node)
 {
     for (auto [nodeName, attachedNode] : node)
     {
-        MediaOptions::Type type{nodeName + "node", XlfResources::Media::NativeRender};
+        MediaOptions::Type type{nodeName + "node", MediaResources::NativeRender};
         auto parser = MediaParsersRepo::get(type);
 
         if (parser)
@@ -214,10 +216,10 @@ std::unique_ptr<TransitionExecutor> MediaParser::createTransition(Transition::Ty
 std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const XmlNode& node,
                                                                   const std::shared_ptr<Xibo::Widget>& view)
 {
-    if (auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::InType))
+    if (auto type = node.get_optional<Transition::Type>(MediaResources::Tranisiton::InType))
     {
-        auto direction = node.get<Transition::Direction>(XlfResources::Media::Tranisiton::InDirection);
-        int duration = node.get<int>(XlfResources::Media::Tranisiton::InDuration);
+        auto direction = node.get<Transition::Direction>(MediaResources::Tranisiton::InDirection);
+        int duration = node.get<int>(MediaResources::Tranisiton::InDuration);
 
         return createTransition<Transition::Heading::In>(type.value(), direction, duration, view);
     }
@@ -228,10 +230,10 @@ std::unique_ptr<TransitionExecutor> MediaParser::inTransitionFrom(const XmlNode&
 std::unique_ptr<TransitionExecutor> MediaParser::outTransitionFrom(const XmlNode& node,
                                                                    const std::shared_ptr<Xibo::Widget>& view)
 {
-    if (auto type = node.get_optional<Transition::Type>(XlfResources::Media::Tranisiton::OutType))
+    if (auto type = node.get_optional<Transition::Type>(MediaResources::Tranisiton::OutType))
     {
-        auto direction = node.get<Transition::Direction>(XlfResources::Media::Tranisiton::OutDirection);
-        int duration = node.get<int>(XlfResources::Media::Tranisiton::OutDuration);
+        auto direction = node.get<Transition::Direction>(MediaResources::Tranisiton::OutDirection);
+        int duration = node.get<int>(MediaResources::Tranisiton::OutDuration);
 
         return createTransition<Transition::Heading::Out>(type.value(), direction, duration, view);
     }
