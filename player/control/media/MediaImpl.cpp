@@ -1,5 +1,5 @@
 #include "control/media/MediaImpl.hpp"
-#include "constants.hpp"
+#include "common/constants.hpp"
 
 MediaImpl::MediaImpl(const MediaOptions& options) :
     options_(options),

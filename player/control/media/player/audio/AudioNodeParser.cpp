@@ -7,7 +7,7 @@
 
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resource.hpp"
-#include "constants.hpp"
+#include "common/constants.hpp"
 
 const bool DefaultAudioLooped = false;
 const int DefaultDuration = 0;

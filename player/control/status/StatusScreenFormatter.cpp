@@ -1,7 +1,7 @@
 #include "StatusScreenFormatter.hpp"
 
 #include "common/dt/DateTime.hpp"
-#include "control/StatusInfo.hpp"
+#include "control/status/StatusInfo.hpp"
 
 std::string StatusScreenFormatter::formatInfo(const StatusInfo& info)
 {

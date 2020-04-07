@@ -7,15 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(PkgConfig REQUIRED)
 
-pkg_check_modules(GSTREAMER REQUIRED
-    gstreamer-1.0>=1.16.2
-    gstreamer-pbutils-1.0>=1.16.2
-    gstreamer-plugins-base-1.0>=1.16.2
-    gstreamer-video-1.0>=1.16.2)
-pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
-pkg_check_modules(X11 REQUIRED x11)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
 set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
@@ -26,56 +19,34 @@ add_compile_options(
     "$<$<CONFIG:DEBUG>:-g;-O0>"
 )
 
-add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION USE_GTK)
+add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
 
 option(SNAP_BUILD "Use SNAP environment during build" OFF)
 if(SNAP_BUILD)
     add_compile_definitions(SNAP_ENABLED)
 endif(SNAP_BUILD)
 
-file(GLOB CONTROL_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/layout/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/region/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/image/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/audio/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/player/video/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/media/webview/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/transitions/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/control/widgets/gtk/*.*pp
-)
-file(GLOB OTHER_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/screenshot/*.*pp
-    ${CMAKE_CURRENT_SOURCE_DIR}/stat/*.*pp
-)
+option(GTK_UI "Use GTK library for UI" ON)
+if(GTK_UI)
+    add_compile_definitions(USE_GTK)
+endif(GTK_UI)
+
 add_executable(${PROJECT_NAME}
     main.cpp
     MainLoop.cpp
     MainLoop.hpp
     XiboApp.cpp
     XiboApp.hpp
-    ${OTHER_SOURCES}
-    ${CONTROL_SOURCES}
 )
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # remove this workaround
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # TODO remove this workaround
 target_link_libraries(${PROJECT_NAME}
     xmr
     cms
     networking
     schedule
     config
-    ${X11_LINK_LIBRARIES}
-    ${GTKMM_LINK_LIBRARIES}
-    ${GSTREAMER_LINK_LIBRARIES}
-    ${WEBKITGTK_LINK_LIBRARIES}
-)
-target_include_directories(${PROJECT_NAME} PRIVATE
-    ${GTKMM_INCLUDE_DIRS}
-    ${GSTREAMER_INCLUDE_DIRS}
-    ${WEBKITGTK_INCLUDE_DIRS}
+    control
+    system
 )
 
 configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
@@ -85,6 +56,8 @@ install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_P
 
 enable_testing()
 
+add_subdirectory(stat)
+add_subdirectory(control)
 add_subdirectory(cms)
 add_subdirectory(schedule)
 add_subdirectory(options)

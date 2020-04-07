@@ -1,8 +1,8 @@
 #pragma once
 
+#include "common/constants.hpp"
 #include "common/crypto/CryptoUtils.hpp"
 #include "common/types/Uri.hpp"
-#include "constants.hpp"
 
 #include <boost/beast/http/message.hpp>
 #include <boost/beast/http/string_body.hpp>

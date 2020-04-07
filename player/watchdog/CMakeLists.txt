@@ -5,6 +5,7 @@ add_executable(${PROJECT_NAME}
     ProcessWatcher.cpp
     ProcessWatcher.hpp
 )
+
 target_link_libraries(${PROJECT_NAME}
     config
 )

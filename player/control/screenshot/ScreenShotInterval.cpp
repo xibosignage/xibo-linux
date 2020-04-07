@@ -2,7 +2,7 @@
 
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/logger/Logging.hpp"
-#include "screenshot/ScreeShoterFactory.hpp"
+#include "control/screenshot/ScreeShoterFactory.hpp"
 
 const int DefaultInterval = 0;
 

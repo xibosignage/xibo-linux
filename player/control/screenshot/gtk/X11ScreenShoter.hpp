@@ -1,6 +1,6 @@
 #pragma once
 
-#include "screenshot/ScreenShoter.hpp"
+#include "control/screenshot/ScreenShoter.hpp"
 
 #include <cairomm/surface.h>
 

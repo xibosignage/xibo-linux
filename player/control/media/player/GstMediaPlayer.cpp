@@ -2,7 +2,7 @@
 
 #include "common/logger/Logging.hpp"
 #include "common/types/Uri.hpp"
-#include "constants.hpp"
+#include "common/constants.hpp"
 #include "control/widgets/gtk/OutputWindowGtk.hpp"
 
 #include <gst/gst.h>

@@ -1,6 +1,6 @@
 #include "VideoFactory.hpp"
 
-#include "constants.hpp"
+#include "common/constants.hpp"
 #include "control/media/player/GstMediaPlayer.hpp"
 #include "control/media/player/PlayableMedia.hpp"
 
