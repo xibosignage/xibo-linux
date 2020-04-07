@@ -72,6 +72,10 @@ public:
             setMainLayout(splashScreen);
             splashScreen->show();
         }
+        catch (PlayerRuntimeError& e)
+        {
+            Log::error("[SplashScreen] {}", e.message());
+        }
         catch (std::exception& e)
         {
             Log::error("[SplashScreen] {}", e.what());
@@ -95,7 +99,9 @@ public:
 
     void setSize(int width, int height) override
     {
-        if (shouldBeFullscreen(width, height))
+        auto [adjustedWidth, adjustedHeight] = adjustSize(width, height);
+
+        if (shouldBeFullscreen(adjustedWidth, adjustedHeight))
         {
             Window::fullscreen();
         }
@@ -105,7 +111,7 @@ public:
             {
                 Window::unfullscreen();
             }
-            Window::setSize(width, height);
+            Window::setSize(adjustedWidth, adjustedHeight);
         }
 
         statusScreen_->setSize(static_cast<int>(this->width() * StatusScreenScaleX),
@@ -118,6 +124,16 @@ private:
             StatusScreenFactory::create(static_cast<Window&>(*this), MinStatusScreenWidth, MinStatusScreenHeight))
     {
         assert(statusScreen_);
+    }
+
+    std::pair<int, int> adjustSize(int width, int height)
+    {
+        if (width < 0 || height < 0)
+        {
+            Log::error("[ApplicationWindow] Negative size is not allowed, falling back to fullscreen mode");
+            return {0, 0};
+        }
+        return {width, height};
     }
 
     void setMainContainer(const std::shared_ptr<Xibo::OverlayContainer>& widget)
