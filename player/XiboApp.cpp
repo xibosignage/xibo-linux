@@ -84,7 +84,8 @@ XiboApp::XiboApp(const std::string& name) :
 
 std::unique_ptr<XmrManager> XiboApp::createXmrManager()
 {
-    auto manager = std::make_unique<XmrManager>();
+    auto xmrChannel = XmrChannel::fromCmsSettings(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
+    auto manager = std::make_unique<XmrManager>(xmrChannel);
 
     manager->connect(playerSettings_.xmrNetworkAddress());
     playerSettings_.xmrNetworkAddress().valueChanged().connect(std::bind(&XmrManager::connect, manager.get(), ph::_1));

@@ -9,6 +9,8 @@
 #include "common/system/System.hpp"
 #include "config/AppConfig.hpp"
 
+const std::string DefaultDisplay = "Display";
+
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     ui_(ui),
     mainWindow_(window)
@@ -86,15 +88,16 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
-        auto connectionResult = xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display")
-                                    .then([](auto future) {
-                                        auto [error, result] = future.get();
+        auto connectionResult =
+            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), DefaultDisplay)
+                .then([](auto future) {
+                    auto [error, result] = future.get();
 
-                                        if (!error)
-                                            return result.status.message;
-                                        else
-                                            return error.message();
-                                    });
+                    if (!error)
+                        return result.status.message;
+                    else
+                        return error.message();
+                });
 
         return connectionResult.get();
     }

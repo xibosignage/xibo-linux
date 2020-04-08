@@ -18,6 +18,7 @@ target_link_libraries(${PROJECT_NAME}
     stat
     schedule
     crypto
+    xmr
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

@@ -2,7 +2,6 @@
 
 #include <boost/thread/future.hpp>
 
-#include "networking/ResponseResult.hpp"
 #include "cms/xmds/GetFile.hpp"
 #include "cms/xmds/GetResource.hpp"
 #include "cms/xmds/MediaInventory.hpp"
@@ -12,6 +11,7 @@
 #include "cms/xmds/SubmitLog.hpp"
 #include "cms/xmds/SubmitScreenShot.hpp"
 #include "cms/xmds/SubmitStats.hpp"
+#include "networking/ResponseResult.hpp"
 
 #include "common/types/Uri.hpp"
 
@@ -40,6 +40,7 @@ public:
 
 private:
     Uri uri_;
+    std::string host_;
     std::string serverKey_;
     std::string hardwareKey_;
 };

@@ -6,6 +6,8 @@ add_library(${PROJECT_NAME}
     XmrManager.cpp
     XmrManager.hpp
     XmrStatus.hpp
+    XmrChannel.hpp
+    XmrChannel.cpp
     zmq/Context.cpp
     zmq/Context.cpp
     zmq/Exception.cpp
