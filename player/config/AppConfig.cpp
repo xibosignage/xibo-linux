@@ -28,11 +28,6 @@ std::string AppConfig::codeVersion()
 #endif
 }
 
-std::string AppConfig::mainXmrChannel()
-{
-    return "playerLinux";
-}
-
 FilePath AppConfig::resourceDirectory()
 {
     return resourceDirectory_;

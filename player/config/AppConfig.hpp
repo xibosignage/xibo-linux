@@ -8,8 +8,6 @@ public:
     static std::string version();      // TODO: strong type
     static std::string codeVersion();  // TODO: strong type
 
-    static std::string mainXmrChannel();
-
     static FilePath resourceDirectory();
     static void resourceDirectory(const FilePath& directory);
     static FilePath buildDirectory();
