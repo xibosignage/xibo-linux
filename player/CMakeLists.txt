@@ -16,10 +16,15 @@ set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
 add_compile_options(
     -static-libstdc++ -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
     "$<$<CONFIG:RELEASE>:-O2>"
-    "$<$<CONFIG:DEBUG>:-g;-O0>"
+    "$<$<CONFIG:DEBUG>:-g3;-O0>"
 )
 
-add_compile_definitions(BOOST_THREAD_PROVIDES_FUTURE BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION)
+add_compile_definitions(
+    BOOST_THREAD_PROVIDES_FUTURE
+    BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
+    BOOST_STACKTRACE_USE_ADDR2LINE
+    BOOST_STACKTRACE_USE_BACKTRACE
+)
 
 option(SNAP_BUILD "Use SNAP environment during build" OFF)
 if(SNAP_BUILD)
@@ -47,6 +52,8 @@ target_link_libraries(${PROJECT_NAME}
     config
     control
     system
+    dl
+    backtrace
 )
 
 configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
