@@ -5,7 +5,6 @@
 #include "cms/xmds/GetFile.hpp"
 #include "cms/xmds/GetResource.hpp"
 #include "cms/xmds/MediaInventory.hpp"
-#include "cms/xmds/RegisterDisplay.hpp"
 #include "cms/xmds/RequiredFiles.hpp"
 #include "cms/xmds/Schedule.hpp"
 #include "cms/xmds/SubmitLog.hpp"
@@ -23,9 +22,6 @@ class XmdsRequestSender
 public:
     XmdsRequestSender(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    FutureResponseResult<RegisterDisplay::Result> registerDisplay(const std::string& clientCode,
-                                                                  const std::string& clientVersion,
-                                                                  const std::string& displayName);
     FutureResponseResult<RequiredFiles::Result> requiredFiles();
     FutureResponseResult<Schedule::Result> schedule();
     FutureResponseResult<GetResource::Result> getResource(int layoutId, int regionId, int mediaId);
@@ -37,6 +33,10 @@ public:
     FutureResponseResult<SubmitLog::Result> submitLogs(const std::string& logXml);
     FutureResponseResult<SubmitStats::Result> submitStats(const std::string& statXml);
     FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenShot);
+
+    std::string getHost() const;
+    std::string getServerKey() const;
+    std::string getHardwareKey() const;
 
 private:
     Uri uri_;

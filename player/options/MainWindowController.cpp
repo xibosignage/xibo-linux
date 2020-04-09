@@ -88,18 +88,18 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
-        auto connectionResult =
-            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), DefaultDisplay)
-                .then([](auto future) {
-                    auto [error, result] = future.get();
+        //        auto connectionResult =
+        //            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), DefaultDisplay)
+        //                .then([](auto future) {
+        //                    auto [error, result] = future.get();
 
-                    if (!error)
-                        return result.status.message;
-                    else
-                        return error.message();
-                });
+        //                    if (!error)
+        //                        return result.status.message;
+        //                    else
+        //                        return error.message();
+        //                });
 
-        return connectionResult.get();
+        //        return connectionResult.get();
     }
     catch (std::exception& e)
     {

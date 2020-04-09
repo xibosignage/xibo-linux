@@ -5,6 +5,9 @@ file(GLOB XMDS_SOURCES
 )
 
 add_library(${PROJECT_NAME}
+    XmdsCommand.hpp
+    RegisterDisplayCommand.cpp
+    RegisterDisplayCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp

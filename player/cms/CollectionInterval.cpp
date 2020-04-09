@@ -23,9 +23,25 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     running_{false},
-    status_{}
+    status_{},
+    registerDisplay_{xmdsSender_.getHost(),
+                     xmdsSender_.getServerKey(),
+                     xmdsSender_.getHardwareKey(),
+                     AppConfig::version(),
+                     AppConfig::codeVersion(),
+                     "Display"}
 {
     assert(intervalTimer_);
+
+    registerDisplay_.finished().connect([this]() {
+        status_.registered = true;
+        status_.lastChecked = DateTime::now();
+        onDisplayRegistered();
+    });
+    registerDisplay_.settingsUpdated().connect([this](auto settings) {
+        MainLoop::pushToUiThread([this, result = std::move(settings)]() { settingsUpdated_(result); });
+    });
+    registerDisplay_.error().connect([this](const auto& error) { sessionFinished(error); });
 }
 
 bool CollectionInterval::running() const
@@ -51,9 +67,7 @@ void CollectionInterval::collectNow()
         workerThread_ = std::make_unique<JoinableThread>([=]() {
             Log::debug("[CollectionInterval] Started");
 
-            auto registerDisplayResult =
-                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display").get();
-            onDisplayRegistered(registerDisplayResult);
+            registerDisplay_.execute();
         });
     }
 }
@@ -67,57 +81,26 @@ void CollectionInterval::sessionFinished(const PlayerError& error)
     MainLoop::pushToUiThread([this, error]() { collectionFinished_(error); });
 }
 
-void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay)
+void CollectionInterval::onDisplayRegistered()
 {
-    auto [error, result] = registerDisplay;
-    if (!error)
+    Log::debug("[XMDS::RegisterDisplay] Success");
+
+    auto requiredFilesResult = xmdsSender_.requiredFiles().get();
+    auto scheduleResult = xmdsSender_.schedule().get();
+
+    onSchedule(scheduleResult);
+    onRequiredFiles(requiredFilesResult);
+
+    XmlLogsRetriever logsRetriever;
+    auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
+    onSubmitted("SubmitLogs", submitLogsResult);
+
+    if (!statsRecorder_.empty())
     {
-        auto displayError = displayStatus(result.status);
-        if (!displayError)
-        {
-            Log::debug("[XMDS::RegisterDisplay] Success");
-
-            status_.registered = true;
-            status_.lastChecked = DateTime::now();
-
-            MainLoop::pushToUiThread([this, result = std::move(result.playerSettings)]() { settingsUpdated_(result); });
-
-            auto requiredFilesResult = xmdsSender_.requiredFiles().get();
-            auto scheduleResult = xmdsSender_.schedule().get();
-
-            onSchedule(scheduleResult);
-            onRequiredFiles(requiredFilesResult);
-
-            XmlLogsRetriever logsRetriever;
-            auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
-            onSubmitted("SubmitLogs", submitLogsResult);
-
-            if (!statsRecorder_.empty())
-            {
-                StatsFormatter formatter;
-                auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
-                statsRecorder_.clear();
-                onSubmitted("SubmitStats", submitStatsResult);
-            }
-        }
-        sessionFinished(displayError);
-    }
-    else
-    {
-        sessionFinished(error);
-    }
-}
-
-PlayerError CollectionInterval::displayStatus(const RegisterDisplay::Result::Status& status)
-{
-    using DisplayCode = RegisterDisplay::Result::Status::Code;
-
-    switch (status.code)
-    {
-        case DisplayCode::Ready: return {};
-        case DisplayCode::Added:
-        case DisplayCode::Waiting: return {"CMS", status.message};
-        default: return {"CMS", "Unknown error with RegisterDisplay"};
+        StatsFormatter formatter;
+        auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
+        statsRecorder_.clear();
+        onSubmitted("SubmitStats", submitStatsResult);
     }
 }
 

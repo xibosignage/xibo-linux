@@ -3,11 +3,6 @@
 #include "cms/xmds/Resources.hpp"
 #include "cms/xmds/SoapRequestSender.hpp"
 
-#include "common/crypto/RsaManager.hpp"
-#include "common/system/System.hpp"
-#include "xmr/XmrChannel.hpp"
-
-const std::string DefaultClientType = "linux";
 const std::string XmdsTarget = "/xmds.php?v=5";
 
 XmdsRequestSender::XmdsRequestSender(const std::string& host,
@@ -18,24 +13,6 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host,
     serverKey_(serverKey),
     hardwareKey_(hardwareKey)
 {
-}
-
-FutureResponseResult<RegisterDisplay::Result> XmdsRequestSender::registerDisplay(const std::string& clientCode,
-                                                                                 const std::string& clientVersion,
-                                                                                 const std::string& displayName)
-{
-    RegisterDisplay::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.clientType = DefaultClientType;
-    request.clientCode = clientCode;
-    request.clientVersion = clientVersion;
-    request.macAddress = static_cast<std::string>(System::macAddress());
-    request.xmrChannel = static_cast<std::string>(XmrChannel::fromCmsSettings(host_, serverKey_, hardwareKey_));
-    request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
-    request.displayName = displayName;
-
-    return SoapRequestHelper::sendRequest<RegisterDisplay::Result>(uri_, request);
 }
 
 FutureResponseResult<RequiredFiles::Result> XmdsRequestSender::requiredFiles()
@@ -122,4 +99,19 @@ FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenSh
     request.screenShot = screenShot;
 
     return SoapRequestHelper::sendRequest<SubmitScreenShot::Result>(uri_, request);
+}
+
+std::string XmdsRequestSender::getHost() const
+{
+    return host_;
+}
+
+std::string XmdsRequestSender::getServerKey() const
+{
+    return serverKey_;
+}
+
+std::string XmdsRequestSender::getHardwareKey() const
+{
+    return hardwareKey_;
 }

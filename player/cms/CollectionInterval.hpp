@@ -26,6 +26,8 @@ class XmdsRequestSender;
 class StatsRecorder;
 class FileCache;
 
+#include "RegisterDisplayCommand.hpp"
+
 class CollectionInterval
 {
     static constexpr const uint DefaultInterval = 900;
@@ -48,8 +50,7 @@ private:
     void startTimer();
     void sessionFinished(const PlayerError& = {});
 
-    void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay);
-    PlayerError displayStatus(const RegisterDisplay::Result::Status& status);
+    void onDisplayRegistered();
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule);
     void updateMediaInventory(MediaInventoryItems&& items);
@@ -71,4 +72,5 @@ private:
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;
     SignalFilesDownloaded filesDownloaded_;
+    RegisterDisplayCommand registerDisplay_;
 };
