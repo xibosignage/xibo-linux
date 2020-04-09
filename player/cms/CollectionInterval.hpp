@@ -27,6 +27,7 @@ class StatsRecorder;
 class FileCache;
 
 #include "RegisterDisplayCommand.hpp"
+#include "RequiredFilesCommand.hpp"
 
 class CollectionInterval
 {
@@ -51,7 +52,6 @@ private:
     void sessionFinished(const PlayerError& = {});
 
     void onDisplayRegistered();
-    void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule);
     void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
@@ -73,4 +73,5 @@ private:
     SignalCollectionFinished collectionFinished_;
     SignalFilesDownloaded filesDownloaded_;
     RegisterDisplayCommand registerDisplay_;
+    RequiredFilesCommand requiredFiles_;
 };

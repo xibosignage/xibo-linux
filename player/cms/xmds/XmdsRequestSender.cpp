@@ -15,15 +15,6 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host,
 {
 }
 
-FutureResponseResult<RequiredFiles::Result> XmdsRequestSender::requiredFiles()
-{
-    RequiredFiles::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-
-    return SoapRequestHelper::sendRequest<RequiredFiles::Result>(uri_, request);
-}
-
 FutureResponseResult<Schedule::Result> XmdsRequestSender::schedule()
 {
     Schedule::Request request;

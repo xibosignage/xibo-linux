@@ -8,6 +8,8 @@ add_library(${PROJECT_NAME}
     XmdsCommand.hpp
     RegisterDisplayCommand.cpp
     RegisterDisplayCommand.hpp
+    RequiredFilesCommand.cpp
+    RequiredFilesCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp

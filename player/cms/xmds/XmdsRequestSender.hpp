@@ -22,7 +22,6 @@ class XmdsRequestSender
 public:
     XmdsRequestSender(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    FutureResponseResult<RequiredFiles::Result> requiredFiles();
     FutureResponseResult<Schedule::Result> schedule();
     FutureResponseResult<GetResource::Result> getResource(int layoutId, int regionId, int mediaId);
     FutureResponseResult<GetFile::Result> getFile(int fileId,

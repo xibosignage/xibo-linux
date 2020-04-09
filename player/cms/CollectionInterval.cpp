@@ -29,7 +29,8 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
                      xmdsSender_.getHardwareKey(),
                      AppConfig::version(),
                      AppConfig::codeVersion(),
-                     "Display"}
+                     "Display"},
+    requiredFiles_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()}
 {
     assert(intervalTimer_);
 
@@ -42,6 +43,24 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
         MainLoop::pushToUiThread([this, result = std::move(settings)]() { settingsUpdated_(result); });
     });
     registerDisplay_.error().connect([this](const auto& error) { sessionFinished(error); });
+
+    //    requiredFiles_.finished().connect([this]() { onRequiredFiles(); });
+    requiredFiles_.error().connect([this](const auto& error) { sessionFinished(error); });
+    requiredFiles_.filesReady().connect([this](const auto& files, const auto& resources) {
+        Log::debug("[XMDS::RequiredFiles] Received");
+
+        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
+
+        status_.requiredFiles = files.size() + resources.size();
+
+        auto resourcesResult = downloader.download(resources);
+        auto filesResult = downloader.download(files);
+
+        updateMediaInventory(filesResult.get());
+        updateMediaInventory(resourcesResult.get());
+
+        MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
+    });
 }
 
 bool CollectionInterval::running() const
@@ -85,11 +104,10 @@ void CollectionInterval::onDisplayRegistered()
 {
     Log::debug("[XMDS::RegisterDisplay] Success");
 
-    auto requiredFilesResult = xmdsSender_.requiredFiles().get();
-    auto scheduleResult = xmdsSender_.schedule().get();
+    requiredFiles_.execute();
 
+    auto scheduleResult = xmdsSender_.schedule().get();
     onSchedule(scheduleResult);
-    onRequiredFiles(requiredFilesResult);
 
     XmlLogsRetriever logsRetriever;
     auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
@@ -137,34 +155,6 @@ SignalCollectionFinished& CollectionInterval::collectionFinished()
 SignalFilesDownloaded& CollectionInterval::filesDownloaded()
 {
     return filesDownloaded_;
-}
-
-void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles)
-{
-    auto [error, result] = requiredFiles;
-    if (!error)
-    {
-        Log::debug("[XMDS::RequiredFiles] Received");
-
-        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
-
-        auto&& files = result.requiredFiles();
-        auto&& resources = result.requiredResources();
-
-        status_.requiredFiles = files.size() + resources.size();
-
-        auto resourcesResult = downloader.download(resources);
-        auto filesResult = downloader.download(files);
-
-        updateMediaInventory(filesResult.get());
-        updateMediaInventory(resourcesResult.get());
-
-        MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
-    }
-    else
-    {
-        sessionFinished(error);
-    }
 }
 
 void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& schedule)
