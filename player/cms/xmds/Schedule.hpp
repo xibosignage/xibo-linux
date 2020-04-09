@@ -6,9 +6,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace Schedule
+struct Schedule
 {
-    struct Result
+    struct Response
     {
         std::string scheduleXml;
     };
@@ -18,7 +18,7 @@ namespace Schedule
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
@@ -29,11 +29,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<Schedule::Result> : public BaseResponseParser<Schedule::Result>
+class Soap::ResponseParser<Schedule::Response> : public BaseResponseParser<Schedule::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    Schedule::Result parseBody(const XmlNode& scheduleNode) override;
+    Schedule::Response parseBody(const XmlNode& scheduleNode) override;
 };

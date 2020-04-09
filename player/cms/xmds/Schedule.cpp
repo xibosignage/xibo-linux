@@ -14,14 +14,14 @@ std::string Soap::RequestSerializer<Schedule::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
 }
 
-Soap::ResponseParser<Schedule::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<Schedule::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-Schedule::Result Soap::ResponseParser<Schedule::Result>::parseBody(const XmlNode& scheduleNode)
+Schedule::Response Soap::ResponseParser<Schedule::Response>::parseBody(const XmlNode& scheduleNode)
 {
-    Schedule::Result result;
+    Schedule::Response result;
     result.scheduleXml = scheduleNode.get<std::string>(Resources::ScheduleXml);
     return result;
 }

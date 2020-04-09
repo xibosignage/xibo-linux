@@ -30,7 +30,8 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
                      AppConfig::version(),
                      AppConfig::codeVersion(),
                      "Display"},
-    requiredFiles_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()}
+    requiredFiles_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()},
+    schedule_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()}
 {
     assert(intervalTimer_);
 
@@ -40,7 +41,7 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
         onDisplayRegistered();
     });
     registerDisplay_.settingsUpdated().connect([this](auto settings) {
-        MainLoop::pushToUiThread([this, result = std::move(settings)]() { settingsUpdated_(result); });
+        MainLoop::pushToUiThread([this, settings = std::move(settings)]() { settingsUpdated_(settings); });
     });
     registerDisplay_.error().connect([this](const auto& error) { sessionFinished(error); });
 
@@ -60,6 +61,11 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
         updateMediaInventory(resourcesResult.get());
 
         MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
+    });
+
+    schedule_.error().connect([this](const auto& error) { sessionFinished(error); });
+    schedule_.scheduleReady().connect([this](auto schedule) {
+        MainLoop::pushToUiThread([this, schedule = std::move(schedule)]() { scheduleAvailable_(schedule); });
     });
 }
 
@@ -105,9 +111,7 @@ void CollectionInterval::onDisplayRegistered()
     Log::debug("[XMDS::RegisterDisplay] Success");
 
     requiredFiles_.execute();
-
-    auto scheduleResult = xmdsSender_.schedule().get();
-    onSchedule(scheduleResult);
+    schedule_.execute();
 
     XmlLogsRetriever logsRetriever;
     auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
@@ -155,22 +159,6 @@ SignalCollectionFinished& CollectionInterval::collectionFinished()
 SignalFilesDownloaded& CollectionInterval::filesDownloaded()
 {
     return filesDownloaded_;
-}
-
-void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& schedule)
-{
-    auto [error, result] = schedule;
-    if (!error)
-    {
-        Log::debug("[XMDS::Schedule] Received");
-        MainLoop::pushToUiThread([this, result = std::move(result)]() {
-            scheduleAvailable_(LayoutSchedule::fromString(result.scheduleXml));
-        });
-    }
-    else
-    {
-        sessionFinished(error);
-    }
 }
 
 void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)

@@ -26,6 +26,7 @@ class XmdsRequestSender;
 class StatsRecorder;
 class FileCache;
 
+#include "GetScheduleCommand.hpp"
 #include "RegisterDisplayCommand.hpp"
 #include "RequiredFilesCommand.hpp"
 
@@ -52,7 +53,6 @@ private:
     void sessionFinished(const PlayerError& = {});
 
     void onDisplayRegistered();
-    void onSchedule(const ResponseResult<Schedule::Result>& schedule);
     void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
     void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult);
@@ -74,4 +74,5 @@ private:
     SignalFilesDownloaded filesDownloaded_;
     RegisterDisplayCommand registerDisplay_;
     RequiredFilesCommand requiredFiles_;
+    GetScheduleCommand schedule_;
 };

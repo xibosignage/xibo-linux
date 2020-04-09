@@ -10,6 +10,8 @@ add_library(${PROJECT_NAME}
     RegisterDisplayCommand.hpp
     RequiredFilesCommand.cpp
     RequiredFilesCommand.hpp
+    GetScheduleCommand.cpp
+    GetScheduleCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp
