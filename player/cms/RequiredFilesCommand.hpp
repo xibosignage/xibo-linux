@@ -18,11 +18,8 @@ public:
 protected:
     RequiredFilesCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    RequiredFiles::Request prepareRequest() override;
-    void processResponse(const RequiredFiles::Response& response) override;
+    void process(const RequiredFiles::Response& response) override;
 
 private:
-    std::string serverKey_;
-    std::string hardwareKey_;
     SignalFilesReady filesReady_;
 };

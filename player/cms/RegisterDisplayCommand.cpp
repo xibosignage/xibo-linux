@@ -11,14 +11,12 @@ RegisterDisplayCommand::RegisterDisplayCommand(const std::string& host,
                                                const std::string& version,
                                                const std::string& codeVersion,
                                                const std::string& displayName) :
-    XmdsCommand(host),
-    host_(host),
-    serverKey_(serverKey),
-    hardwareKey_(hardwareKey),
+    XmdsCommand(host, serverKey, hardwareKey),
     version_(version),
     codeVersion_(codeVersion),
     displayName_(displayName)
 {
+    xmrChannel_ = static_cast<std::string>(XmrChannel::fromCmsSettings(host, serverKey, hardwareKey));
 }
 
 std::unique_ptr<RegisterDisplayCommand> RegisterDisplayCommand::create(const std::string& host,
@@ -37,22 +35,18 @@ RegisterDisplayCommand::SignalSettingsUpdated& RegisterDisplayCommand::settingsU
     return settingsUpdated_;
 }
 
-RegisterDisplay::Request RegisterDisplayCommand::prepareRequest()
+void RegisterDisplayCommand::prepare(RegisterDisplay::Request& request)
 {
-    RegisterDisplay::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
     request.clientType = DefaultClientType;
     request.clientCode = codeVersion_;
     request.clientVersion = version_;
     request.macAddress = static_cast<std::string>(System::macAddress());
-    request.xmrChannel = static_cast<std::string>(XmrChannel::fromCmsSettings(host_, serverKey_, hardwareKey_));
+    request.xmrChannel = xmrChannel_;
     request.xmrPubKey = CryptoUtils::keyToString(RsaManager::instance().publicKey());
     request.displayName = displayName_;
-    return request;
 }
 
-void RegisterDisplayCommand::processResponse(const RegisterDisplay::Response& response)
+void RegisterDisplayCommand::process(const RegisterDisplay::Response& response)
 {
     auto status = displayStatus(response.status);
     if (!status)

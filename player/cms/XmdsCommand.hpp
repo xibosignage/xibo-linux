@@ -29,13 +29,22 @@ public:
     using FutureResponseResult = boost::future<std::pair<PlayerError, Response>>;
 
 public:
-    XmdsCommand(const std::string& host) : uri_(Uri::fromString(host + XmdsTarget)) {}
+    XmdsCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey) :
+        uri_(Uri::fromString(host + XmdsTarget)),
+        serverKey_(serverKey),
+        hardwareKey_(hardwareKey)
+    {
+    }
 
     void execute() override
     {
         namespace ph = std::placeholders;
 
-        auto request = prepareRequest();
+        Request request;
+        request.serverKey = serverKey_;
+        request.hardwareKey = hardwareKey_;
+        prepare(request);
+
         SoapRequestHelper::sendRequest<Response>(uri_, request)
             .then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
     }
@@ -53,8 +62,8 @@ public:
 protected:
     ~XmdsCommand() = default;
 
-    virtual Request prepareRequest() = 0;
-    virtual void processResponse(const Response& response) = 0;
+    virtual void prepare(Request&) {}
+    virtual void process(const Response& response) = 0;
 
 private:
     void onResponseReceived(FutureResponseResult futureResult)
@@ -62,7 +71,7 @@ private:
         auto [error, response] = futureResult.get();
         if (!error)
         {
-            processResponse(response);
+            process(response);
         }
         else
         {
@@ -72,6 +81,8 @@ private:
 
 private:
     Uri uri_;
+    std::string serverKey_;
+    std::string hardwareKey_;
     SignalFinished finished_;
     SignalError error_;
 };

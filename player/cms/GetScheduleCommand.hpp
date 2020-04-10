@@ -16,14 +16,11 @@ public:
     SignalScheduleReady& scheduleReady();
 
 protected:
-    Schedule::Request prepareRequest() override;
-    void processResponse(const Schedule::Response& response) override;
+    void process(const Schedule::Response& response) override;
 
 private:
     GetScheduleCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
 private:
-    std::string serverKey_;
-    std::string hardwareKey_;
     SignalScheduleReady scheduleReady_;
 };

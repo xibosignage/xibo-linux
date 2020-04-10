@@ -20,8 +20,8 @@ public:
     SignalSettingsUpdated& settingsUpdated();
 
 protected:
-    RegisterDisplay::Request prepareRequest() override;
-    void processResponse(const RegisterDisplay::Response& response) override;
+    void prepare(RegisterDisplay::Request& request) override;
+    void process(const RegisterDisplay::Response& response) override;
 
 private:
     RegisterDisplayCommand(const std::string& host,
@@ -34,9 +34,7 @@ private:
     PlayerError displayStatus(const RegisterDisplay::Response::Status& status);
 
 private:
-    std::string host_;
-    std::string serverKey_;
-    std::string hardwareKey_;
+    std::string xmrChannel_;
     std::string version_;
     std::string codeVersion_;
     std::string displayName_;
