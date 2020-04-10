@@ -35,6 +35,11 @@ RegisterDisplayCommand::SignalSettingsUpdated& RegisterDisplayCommand::settingsU
     return settingsUpdated_;
 }
 
+RegisterDisplayCommand::SignalDisplayReady& RegisterDisplayCommand::displayReady()
+{
+    return displayReady_;
+}
+
 void RegisterDisplayCommand::prepare(RegisterDisplay::Request& request)
 {
     request.clientType = DefaultClientType;
@@ -52,7 +57,7 @@ void RegisterDisplayCommand::process(const RegisterDisplay::Response& response)
     if (!status)
     {
         settingsUpdated_(response.playerSettings);
-        finished()();
+        displayReady_();
     }
     else
     {

@@ -14,7 +14,6 @@ public:
     virtual ~IXmdsCommand() = default;
     virtual void execute() = 0;
     virtual SignalError& error() = 0;
-    virtual SignalFinished& finished() = 0;
 };
 
 template <typename Call>
@@ -49,11 +48,6 @@ public:
             .then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
     }
 
-    SignalFinished& finished() override
-    {
-        return finished_;
-    }
-
     SignalError& error() override
     {
         return error_;
@@ -83,6 +77,5 @@ private:
     Uri uri_;
     std::string serverKey_;
     std::string hardwareKey_;
-    SignalFinished finished_;
     SignalError error_;
 };

@@ -155,7 +155,7 @@ void CollectionInterval::onSubmitted(std::string_view requestName, const Respons
 template <>
 void CollectionInterval::setupCommandConnections(RegisterDisplayCommand& command)
 {
-    command.finished().connect([this]() {
+    command.displayReady().connect([this]() {
         status_.registered = true;
         status_.lastChecked = DateTime::now();
         onDisplayRegistered();
@@ -168,7 +168,6 @@ void CollectionInterval::setupCommandConnections(RegisterDisplayCommand& command
 template <>
 void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
 {
-    //        command.finished().connect([this]() { onRequiredFiles(); });
     command.filesReady().connect([this](const auto& files, const auto& resources) {
         Log::debug("[XMDS::RequiredFiles] Received");
 

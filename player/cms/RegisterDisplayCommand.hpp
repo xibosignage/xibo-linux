@@ -6,6 +6,7 @@
 class RegisterDisplayCommand : public XmdsCommand<RegisterDisplay>
 {
     using SignalSettingsUpdated = boost::signals2::signal<void(PlayerSettings)>;
+    using SignalDisplayReady = boost::signals2::signal<void()>;
 
     static const inline std::string DefaultClientType = "linux";
 
@@ -18,6 +19,7 @@ public:
                                                           const std::string& displayName);
 
     SignalSettingsUpdated& settingsUpdated();
+    SignalDisplayReady& displayReady();
 
 protected:
     void prepare(RegisterDisplay::Request& request) override;
@@ -39,4 +41,5 @@ private:
     std::string codeVersion_;
     std::string displayName_;
     SignalSettingsUpdated settingsUpdated_;
+    SignalDisplayReady displayReady_;
 };
