@@ -5,12 +5,21 @@
 
 #include "cms/xmds/SoapRequestSender.hpp"
 
-template <typename Call>
-class XmdsCommand
+class IXmdsCommand
 {
-    using SignalFinished = boost::signals2::signal<void()>;
+public:
     using SignalError = boost::signals2::signal<void(const PlayerError&)>;
+    using SignalFinished = boost::signals2::signal<void()>;
 
+    virtual ~IXmdsCommand() = default;
+    virtual void execute() = 0;
+    virtual SignalError& error() = 0;
+    virtual SignalFinished& finished() = 0;
+};
+
+template <typename Call>
+class XmdsCommand : public IXmdsCommand
+{
     using Request = typename Call::Request;
     using Response = typename Call::Response;
 
@@ -22,7 +31,7 @@ public:
 public:
     XmdsCommand(const std::string& host) : uri_(Uri::fromString(host + XmdsTarget)) {}
 
-    void execute()
+    void execute() override
     {
         namespace ph = std::placeholders;
 
@@ -31,12 +40,12 @@ public:
             .then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
     }
 
-    SignalFinished& finished()
+    SignalFinished& finished() override
     {
         return finished_;
     }
 
-    SignalError& error()
+    SignalError& error() override
     {
         return error_;
     }

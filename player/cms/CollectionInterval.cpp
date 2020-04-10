@@ -23,50 +23,9 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     running_{false},
-    status_{},
-    registerDisplay_{xmdsSender_.getHost(),
-                     xmdsSender_.getServerKey(),
-                     xmdsSender_.getHardwareKey(),
-                     AppConfig::version(),
-                     AppConfig::codeVersion(),
-                     "Display"},
-    requiredFiles_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()},
-    schedule_{xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey()}
+    status_{}
 {
     assert(intervalTimer_);
-
-    registerDisplay_.finished().connect([this]() {
-        status_.registered = true;
-        status_.lastChecked = DateTime::now();
-        onDisplayRegistered();
-    });
-    registerDisplay_.settingsUpdated().connect([this](auto settings) {
-        MainLoop::pushToUiThread([this, settings = std::move(settings)]() { settingsUpdated_(settings); });
-    });
-    registerDisplay_.error().connect([this](const auto& error) { sessionFinished(error); });
-
-    //    requiredFiles_.finished().connect([this]() { onRequiredFiles(); });
-    requiredFiles_.error().connect([this](const auto& error) { sessionFinished(error); });
-    requiredFiles_.filesReady().connect([this](const auto& files, const auto& resources) {
-        Log::debug("[XMDS::RequiredFiles] Received");
-
-        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
-
-        status_.requiredFiles = files.size() + resources.size();
-
-        auto resourcesResult = downloader.download(resources);
-        auto filesResult = downloader.download(files);
-
-        updateMediaInventory(filesResult.get());
-        updateMediaInventory(resourcesResult.get());
-
-        MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
-    });
-
-    schedule_.error().connect([this](const auto& error) { sessionFinished(error); });
-    schedule_.scheduleReady().connect([this](auto schedule) {
-        MainLoop::pushToUiThread([this, schedule = std::move(schedule)]() { scheduleAvailable_(schedule); });
-    });
 }
 
 bool CollectionInterval::running() const
@@ -92,7 +51,12 @@ void CollectionInterval::collectNow()
         workerThread_ = std::make_unique<JoinableThread>([=]() {
             Log::debug("[CollectionInterval] Started");
 
-            registerDisplay_.execute();
+            runCommand<RegisterDisplayCommand>(xmdsSender_.getHost(),
+                                               xmdsSender_.getServerKey(),
+                                               xmdsSender_.getHardwareKey(),
+                                               AppConfig::version(),
+                                               AppConfig::codeVersion(),
+                                               "Display");
         });
     }
 }
@@ -100,6 +64,7 @@ void CollectionInterval::collectNow()
 void CollectionInterval::sessionFinished(const PlayerError& error)
 {
     running_ = false;
+    commands_.clear();
     startTimer();
     Log::debug("[CollectionInterval] Finished. Next collection will start in {} seconds", collectInterval_);
 
@@ -110,8 +75,8 @@ void CollectionInterval::onDisplayRegistered()
 {
     Log::debug("[XMDS::RegisterDisplay] Success");
 
-    requiredFiles_.execute();
-    schedule_.execute();
+    runCommand<RequiredFilesCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
+    runCommand<GetScheduleCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
 
     XmlLogsRetriever logsRetriever;
     auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
@@ -185,4 +150,46 @@ void CollectionInterval::onSubmitted(std::string_view requestName, const Respons
     {
         sessionFinished(error);
     }
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(RegisterDisplayCommand& command)
+{
+    command.finished().connect([this]() {
+        status_.registered = true;
+        status_.lastChecked = DateTime::now();
+        onDisplayRegistered();
+    });
+    command.settingsUpdated().connect([this](auto settings) {
+        MainLoop::pushToUiThread([this, settings = std::move(settings)]() { settingsUpdated_(settings); });
+    });
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
+{
+    //        command.finished().connect([this]() { onRequiredFiles(); });
+    command.filesReady().connect([this](const auto& files, const auto& resources) {
+        Log::debug("[XMDS::RequiredFiles] Received");
+
+        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
+
+        status_.requiredFiles = files.size() + resources.size();
+
+        auto resourcesResult = downloader.download(resources);
+        auto filesResult = downloader.download(files);
+
+        updateMediaInventory(filesResult.get());
+        updateMediaInventory(resourcesResult.get());
+
+        MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
+    });
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(GetScheduleCommand& command)
+{
+    command.scheduleReady().connect([this](auto schedule) {
+        MainLoop::pushToUiThread([this, schedule = std::move(schedule)]() { scheduleAvailable_(schedule); });
+    });
 }

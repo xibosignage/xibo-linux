@@ -9,6 +9,13 @@ RequiredFilesCommand::RequiredFilesCommand(const std::string& host,
 {
 }
 
+std::unique_ptr<RequiredFilesCommand> RequiredFilesCommand::create(const std::string& host,
+                                                                   const std::string& serverKey,
+                                                                   const std::string& hardwareKey)
+{
+    return std::unique_ptr<RequiredFilesCommand>(new RequiredFilesCommand(host, serverKey, hardwareKey));
+}
+
 RequiredFilesCommand::SignalFilesReady& RequiredFilesCommand::filesReady()
 {
     return filesReady_;

@@ -9,11 +9,15 @@ class RequiredFilesCommand : public XmdsCommand<RequiredFiles>
         boost::signals2::signal<void(const FilesToDownload<RegularFile>&, const FilesToDownload<ResourceFile>&)>;
 
 public:
-    RequiredFilesCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
+    static std::unique_ptr<RequiredFilesCommand> create(const std::string& host,
+                                                        const std::string& serverKey,
+                                                        const std::string& hardwareKey);
 
     SignalFilesReady& filesReady();
 
 protected:
+    RequiredFilesCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
+
     RequiredFiles::Request prepareRequest() override;
     void processResponse(const RequiredFiles::Response& response) override;
 

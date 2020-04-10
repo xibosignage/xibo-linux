@@ -9,6 +9,13 @@ GetScheduleCommand::GetScheduleCommand(const std::string& host,
 {
 }
 
+std::unique_ptr<GetScheduleCommand> GetScheduleCommand::create(const std::string& host,
+                                                               const std::string& serverKey,
+                                                               const std::string& hardwareKey)
+{
+    return std::unique_ptr<GetScheduleCommand>(new GetScheduleCommand(host, serverKey, hardwareKey));
+}
+
 GetScheduleCommand::SignalScheduleReady& GetScheduleCommand::scheduleReady()
 {
     return scheduleReady_;

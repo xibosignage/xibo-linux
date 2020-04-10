@@ -21,6 +21,17 @@ RegisterDisplayCommand::RegisterDisplayCommand(const std::string& host,
 {
 }
 
+std::unique_ptr<RegisterDisplayCommand> RegisterDisplayCommand::create(const std::string& host,
+                                                                       const std::string& serverKey,
+                                                                       const std::string& hardwareKey,
+                                                                       const std::string& version,
+                                                                       const std::string& codeVersion,
+                                                                       const std::string& displayName)
+{
+    return std::unique_ptr<RegisterDisplayCommand>(
+        new RegisterDisplayCommand(host, serverKey, hardwareKey, version, codeVersion, displayName));
+}
+
 RegisterDisplayCommand::SignalSettingsUpdated& RegisterDisplayCommand::settingsUpdated()
 {
     return settingsUpdated_;

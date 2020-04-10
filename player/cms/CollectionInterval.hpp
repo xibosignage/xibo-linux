@@ -52,6 +52,23 @@ private:
     void startTimer();
     void sessionFinished(const PlayerError& = {});
 
+    template <typename Command, typename... Args>
+    void runCommand(Args&&... args)
+    {
+        auto command = Command::create(std::forward<Args>(args)...);
+
+        command->error().connect([this](const auto& error) { sessionFinished(error); });
+        setupCommandConnections(*command);
+
+        command->execute();
+        commands_.push_back(std::move(command));
+    }
+
+    template <typename Command>
+    void setupCommandConnections(Command& /*command*/)
+    {
+    }
+
     void onDisplayRegistered();
     void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
@@ -72,7 +89,5 @@ private:
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;
     SignalFilesDownloaded filesDownloaded_;
-    RegisterDisplayCommand registerDisplay_;
-    RequiredFilesCommand requiredFiles_;
-    GetScheduleCommand schedule_;
+    std::vector<std::unique_ptr<IXmdsCommand>> commands_;
 };
