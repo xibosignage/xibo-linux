@@ -8,13 +8,13 @@
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
-#include "stat/StatsFormatter.hpp"
 #include "stat/StatsRecorder.hpp"
 
 #include "GetScheduleCommand.hpp"
 #include "RegisterDisplayCommand.hpp"
 #include "RequiredFilesCommand.hpp"
 #include "SubmitLogsCommand.hpp"
+#include "SubmitStatsCommand.hpp"
 
 namespace ph = std::placeholders;
 
@@ -85,10 +85,9 @@ void CollectionInterval::onDisplayRegistered()
 
     if (!statsRecorder_.empty())
     {
-        StatsFormatter formatter;
-        auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
+        runCommand<SubmitStatsCommand>(
+            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), statsRecorder_);
         statsRecorder_.clear();
-        onSubmitted("SubmitStats", submitStatsResult);
     }
 }
 
@@ -200,4 +199,11 @@ void CollectionInterval::setupCommandConnections(SubmitLogsCommand& command)
 {
     command.success().connect([]() { Log::debug("[SubmitLog] Success"); });
     command.failed().connect([]() { Log::error("[SubmitLog] Failed"); });
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(SubmitStatsCommand& command)
+{
+    command.success().connect([]() { Log::debug("[SubmitStats] Success"); });
+    command.failed().connect([]() { Log::error("[SubmitStats] Failed"); });
 }

@@ -53,16 +53,6 @@ FutureResponseResult<MediaInventory::Result> XmdsRequestSender::mediaInventory(M
     return SoapRequestHelper::sendRequest<MediaInventory::Result>(uri_, request);
 }
 
-FutureResponseResult<SubmitStats::Result> XmdsRequestSender::submitStats(const std::string& statXml)
-{
-    SubmitStats::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.statXml = std::string("<![CDATA[") + statXml + "]]>";
-
-    return SoapRequestHelper::sendRequest<SubmitStats::Result>(uri_, request);
-}
-
 FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
 {
     SubmitScreenShot::Request request;

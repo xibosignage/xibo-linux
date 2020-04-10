@@ -28,7 +28,6 @@ public:
                                                   std::size_t chunkOffset,
                                                   std::size_t chunkSize);
     FutureResponseResult<MediaInventory::Result> mediaInventory(MediaInventoryItems&& items);
-    FutureResponseResult<SubmitStats::Result> submitStats(const std::string& statXml);
     FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenShot);
 
     std::string getHost() const;

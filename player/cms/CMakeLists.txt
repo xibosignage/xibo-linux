@@ -11,6 +11,8 @@ add_library(${PROJECT_NAME}
     SubmitLogsCommand.cpp
     SubmitLogsCommand.hpp
     SubmitXmdsCommand.hpp
+    SubmitStatsCommand.cpp
+    SubmitStatsCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp
