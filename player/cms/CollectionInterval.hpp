@@ -62,13 +62,7 @@ private:
 
     template <typename Command>
     void setupCommandConnections(Command&);
-
     void onDisplayRegistered();
-    void updateMediaInventory(MediaInventoryItems&& items);
-    void onSubmitted(const ResponseResult<SubmitLog::Response>& logResult);
-    void onSubmitStats(const ResponseResult<SubmitStats::Response>& statsResult);
-    template <typename Result>
-    void onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult);
 
 private:
     XmdsRequestSender& xmdsSender_;

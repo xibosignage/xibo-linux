@@ -11,6 +11,7 @@
 #include "stat/StatsRecorder.hpp"
 
 #include "GetScheduleCommand.hpp"
+#include "MediaInventoryCommand.hpp"
 #include "RegisterDisplayCommand.hpp"
 #include "RequiredFilesCommand.hpp"
 #include "SubmitLogsCommand.hpp"
@@ -45,6 +46,41 @@ void CollectionInterval::stop()
 void CollectionInterval::startTimer()
 {
     intervalTimer_->startOnce(std::chrono::seconds(collectInterval_), [this]() { collectNow(); });
+}
+
+void CollectionInterval::updateInterval(int collectInterval)
+{
+    if (collectInterval_ != collectInterval)
+    {
+        Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
+        collectInterval_ = collectInterval;
+    }
+}
+
+// TODO potential data race here
+CmsStatus CollectionInterval::status() const
+{
+    return status_;
+}
+
+SignalSettingsUpdated& CollectionInterval::settingsUpdated()
+{
+    return settingsUpdated_;
+}
+
+SignalScheduleAvailable& CollectionInterval::scheduleAvailable()
+{
+    return scheduleAvailable_;
+}
+
+SignalCollectionFinished& CollectionInterval::collectionFinished()
+{
+    return collectionFinished_;
+}
+
+SignalFilesDownloaded& CollectionInterval::filesDownloaded()
+{
+    return filesDownloaded_;
 }
 
 void CollectionInterval::collectNow()
@@ -91,67 +127,6 @@ void CollectionInterval::onDisplayRegistered()
     }
 }
 
-void CollectionInterval::updateInterval(int collectInterval)
-{
-    if (collectInterval_ != collectInterval)
-    {
-        Log::debug("[CollectionInterval] Interval updated to {} seconds", collectInterval);
-        collectInterval_ = collectInterval;
-    }
-}
-
-// TODO potential data race here
-CmsStatus CollectionInterval::status() const
-{
-    return status_;
-}
-
-SignalSettingsUpdated& CollectionInterval::settingsUpdated()
-{
-    return settingsUpdated_;
-}
-
-SignalScheduleAvailable& CollectionInterval::scheduleAvailable()
-{
-    return scheduleAvailable_;
-}
-
-SignalCollectionFinished& CollectionInterval::collectionFinished()
-{
-    return collectionFinished_;
-}
-
-SignalFilesDownloaded& CollectionInterval::filesDownloaded()
-{
-    return filesDownloaded_;
-}
-
-void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
-{
-    onSubmitted("MediaInventory", xmdsSender_.mediaInventory(std::move(items)).get());
-}
-
-template <typename Result>
-void CollectionInterval::onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult)
-{
-    auto [error, result] = submitResult;
-    if (!error)
-    {
-        if (result.success)
-        {
-            Log::debug("[XMDS::{}] Submitted", requestName);
-        }
-        else
-        {
-            Log::error("[XMDS::{}] Not submited due to unknown error", requestName);
-        }
-    }
-    else
-    {
-        sessionFinished(error);
-    }
-}
-
 template <>
 void CollectionInterval::setupCommandConnections(RegisterDisplayCommand& command)
 {
@@ -179,8 +154,10 @@ void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
         auto resourcesResult = downloader.download(resources);
         auto filesResult = downloader.download(files);
 
-        updateMediaInventory(filesResult.get());
-        updateMediaInventory(resourcesResult.get());
+        runCommand<MediaInventoryCommand>(
+            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), filesResult.get());
+        runCommand<MediaInventoryCommand>(
+            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), resourcesResult.get());
 
         MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
     });
@@ -206,4 +183,11 @@ void CollectionInterval::setupCommandConnections(SubmitStatsCommand& command)
 {
     command.success().connect([]() { Log::debug("[SubmitStats] Success"); });
     command.failed().connect([]() { Log::error("[SubmitStats] Failed"); });
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(MediaInventoryCommand& command)
+{
+    command.success().connect([]() { Log::debug("[MediaInventory] Success"); });
+    command.failed().connect([]() { Log::error("[MediaInventory] Failed"); });
 }

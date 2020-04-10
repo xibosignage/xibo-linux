@@ -13,6 +13,8 @@ add_library(${PROJECT_NAME}
     SubmitXmdsCommand.hpp
     SubmitStatsCommand.cpp
     SubmitStatsCommand.hpp
+    MediaInventoryCommand.cpp
+    MediaInventoryCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp

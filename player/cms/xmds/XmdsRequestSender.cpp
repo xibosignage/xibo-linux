@@ -43,16 +43,6 @@ FutureResponseResult<GetFile::Result> XmdsRequestSender::getFile(int fileId,
     return SoapRequestHelper::sendRequest<GetFile::Result>(uri_, request);
 }
 
-FutureResponseResult<MediaInventory::Result> XmdsRequestSender::mediaInventory(MediaInventoryItems&& inventory)
-{
-    MediaInventory::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.inventory = std::move(inventory);
-
-    return SoapRequestHelper::sendRequest<MediaInventory::Result>(uri_, request);
-}
-
 FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
 {
     SubmitScreenShot::Request request;

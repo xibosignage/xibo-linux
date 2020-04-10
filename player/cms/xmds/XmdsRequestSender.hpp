@@ -27,7 +27,6 @@ public:
                                                   const std::string& fileType,
                                                   std::size_t chunkOffset,
                                                   std::size_t chunkSize);
-    FutureResponseResult<MediaInventory::Result> mediaInventory(MediaInventoryItems&& items);
     FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenShot);
 
     std::string getHost() const;

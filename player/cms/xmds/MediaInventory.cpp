@@ -14,14 +14,14 @@ std::string Soap::RequestSerializer<MediaInventory::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().inventory);
 }
 
-Soap::ResponseParser<MediaInventory::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<MediaInventory::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-MediaInventory::Result Soap::ResponseParser<MediaInventory::Result>::parseBody(const XmlNode& node)
+MediaInventory::Response Soap::ResponseParser<MediaInventory::Response>::parseBody(const XmlNode& node)
 {
-    MediaInventory::Result result;
+    MediaInventory::Response result;
     result.success = node.get<bool>(Resources::Success);
     return result;
 }
