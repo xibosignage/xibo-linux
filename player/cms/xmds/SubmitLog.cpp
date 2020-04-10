@@ -14,14 +14,14 @@ std::string Soap::RequestSerializer<SubmitLog::Request>::string()
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().logXml);
 }
 
-Soap::ResponseParser<SubmitLog::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<SubmitLog::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-SubmitLog::Result Soap::ResponseParser<SubmitLog::Result>::parseBody(const XmlNode& node)
+SubmitLog::Response Soap::ResponseParser<SubmitLog::Response>::parseBody(const XmlNode& node)
 {
-    SubmitLog::Result result;
+    SubmitLog::Response result;
     result.success = node.get<bool>(Resources::Success);
     return result;
 }

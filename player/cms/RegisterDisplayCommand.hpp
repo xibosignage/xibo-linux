@@ -21,10 +21,6 @@ public:
     SignalSettingsUpdated& settingsUpdated();
     SignalDisplayReady& displayReady();
 
-protected:
-    void prepare(RegisterDisplay::Request& request) override;
-    void process(const RegisterDisplay::Response& response) override;
-
 private:
     RegisterDisplayCommand(const std::string& host,
                            const std::string& serverKey,
@@ -32,6 +28,9 @@ private:
                            const std::string& version,
                            const std::string& codeVersion,
                            const std::string& displayName);
+
+    void prepare(RegisterDisplay::Request& request) override;
+    void process(const RegisterDisplay::Response& response) override;
 
     PlayerError displayStatus(const RegisterDisplay::Response::Status& status);
 

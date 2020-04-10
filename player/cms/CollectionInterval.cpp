@@ -5,12 +5,16 @@
 #include "common/dt/DateTime.hpp"
 #include "common/dt/Timer.hpp"
 #include "common/logger/Logging.hpp"
-#include "common/logger/XmlLogsRetriever.hpp"
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/StatsFormatter.hpp"
 #include "stat/StatsRecorder.hpp"
+
+#include "GetScheduleCommand.hpp"
+#include "RegisterDisplayCommand.hpp"
+#include "RequiredFilesCommand.hpp"
+#include "SubmitLogsCommand.hpp"
 
 namespace ph = std::placeholders;
 
@@ -77,10 +81,7 @@ void CollectionInterval::onDisplayRegistered()
 
     runCommand<RequiredFilesCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
     runCommand<GetScheduleCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
-
-    XmlLogsRetriever logsRetriever;
-    auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
-    onSubmitted("SubmitLogs", submitLogsResult);
+    runCommand<SubmitLogsCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
 
     if (!statsRecorder_.empty())
     {
@@ -160,6 +161,7 @@ void CollectionInterval::setupCommandConnections(RegisterDisplayCommand& command
         status_.lastChecked = DateTime::now();
         onDisplayRegistered();
     });
+
     command.settingsUpdated().connect([this](auto settings) {
         MainLoop::pushToUiThread([this, settings = std::move(settings)]() { settingsUpdated_(settings); });
     });
@@ -191,4 +193,11 @@ void CollectionInterval::setupCommandConnections(GetScheduleCommand& command)
     command.scheduleReady().connect([this](auto schedule) {
         MainLoop::pushToUiThread([this, schedule = std::move(schedule)]() { scheduleAvailable_(schedule); });
     });
+}
+
+template <>
+void CollectionInterval::setupCommandConnections(SubmitLogsCommand& command)
+{
+    command.success().connect([]() { Log::debug("[SubmitLog] Success"); });
+    command.failed().connect([]() { Log::error("[SubmitLog] Failed"); });
 }

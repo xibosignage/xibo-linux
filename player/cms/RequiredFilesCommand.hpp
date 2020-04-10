@@ -15,7 +15,7 @@ public:
 
     SignalFilesReady& filesReady();
 
-protected:
+private:
     RequiredFilesCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
     void process(const RequiredFiles::Response& response) override;

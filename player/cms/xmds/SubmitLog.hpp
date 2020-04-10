@@ -6,9 +6,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace SubmitLog
+struct SubmitLog
 {
-    struct Result
+    struct Response
     {
         bool success;
     };
@@ -19,7 +19,7 @@ namespace SubmitLog
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> logXml{"logXml"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<SubmitLog::Request> : public BaseRequestSerializer<SubmitLog::Request>
@@ -30,11 +30,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<SubmitLog::Result> : public BaseResponseParser<SubmitLog::Result>
+class Soap::ResponseParser<SubmitLog::Response> : public BaseResponseParser<SubmitLog::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitLog::Result parseBody(const XmlNode& node) override;
+    SubmitLog::Response parseBody(const XmlNode& node) override;
 };

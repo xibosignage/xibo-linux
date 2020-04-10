@@ -14,7 +14,7 @@
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
 
-#include <boost/signals2/signal.hpp>
+#include "XmdsCommand.hpp"
 
 using CollectionResultCallback = std::function<void(const PlayerError&)>;
 using SignalSettingsUpdated = boost::signals2::signal<void(const PlayerSettings&)>;
@@ -25,10 +25,6 @@ using SignalFilesDownloaded = boost::signals2::signal<void()>;
 class XmdsRequestSender;
 class StatsRecorder;
 class FileCache;
-
-#include "GetScheduleCommand.hpp"
-#include "RegisterDisplayCommand.hpp"
-#include "RequiredFilesCommand.hpp"
 
 class CollectionInterval
 {
@@ -65,13 +61,11 @@ private:
     }
 
     template <typename Command>
-    void setupCommandConnections(Command& /*command*/)
-    {
-    }
+    void setupCommandConnections(Command&);
 
     void onDisplayRegistered();
     void updateMediaInventory(MediaInventoryItems&& items);
-    void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
+    void onSubmitted(const ResponseResult<SubmitLog::Response>& logResult);
     void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult);
     template <typename Result>
     void onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult);

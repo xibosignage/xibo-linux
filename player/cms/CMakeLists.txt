@@ -8,6 +8,9 @@ add_library(${PROJECT_NAME}
     RequiredFilesCommand.hpp
     GetScheduleCommand.cpp
     GetScheduleCommand.hpp
+    SubmitLogsCommand.cpp
+    SubmitLogsCommand.hpp
+    SubmitXmdsCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp
