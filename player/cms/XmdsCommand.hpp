@@ -48,6 +48,16 @@ public:
             .then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
     }
 
+    FutureResponseResult executeFuture()
+    {
+        Request request;
+        request.serverKey = serverKey_;
+        request.hardwareKey = hardwareKey_;
+        prepare(request);
+
+        return SoapRequestHelper::sendRequest<Response>(uri_, request);
+    }
+
     SignalError& error() override
     {
         return error_;

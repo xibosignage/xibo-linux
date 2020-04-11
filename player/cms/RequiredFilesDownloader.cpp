@@ -1,12 +1,15 @@
 #include "RequiredFilesDownloader.hpp"
 
-#include "cms/xmds/XmdsFileDownloader.hpp"
 #include "common/fs/FileCache.hpp"
 #include "networking/HttpClient.hpp"
 
-RequiredFilesDownloader::RequiredFilesDownloader(FileCache& fileCache) :
+#include "GetResourceCommand.hpp"
+#include "XmdsFileDownloader.hpp"
+
+RequiredFilesDownloader::RequiredFilesDownloader(const CmsSettings& settings, FileCache& fileCache) :
     fileCache_{fileCache},
-    xmdsFileDownloader_{std::make_unique<XmdsFileDownloader>()}
+    settings_{settings},
+    xmdsFileDownloader_{std::make_unique<XmdsFileDownloader>(settings)}
 {
 }
 
@@ -66,12 +69,15 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    //    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
-    //        auto fileName = std::to_string(res.mediaId) + ".html";
-    //        auto [error, result] = future.get();
+    auto getResource = GetResourceCommand::create(
+        settings_.address(), settings_.key(), settings_.displayId(), res.layoutId, res.regionId, res.mediaId);
 
-    //        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
-    //    });
+    return getResource->executeFuture().then([this, res](auto future) {
+        auto fileName = std::to_string(res.mediaId) + ".html";
+        auto [error, result] = future.get();
+
+        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
+    });
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)

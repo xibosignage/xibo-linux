@@ -26,8 +26,6 @@ add_library(${PROJECT_NAME}
     Resources.hpp
     Soap.hpp
     SoapRequestSender.hpp
-    XmdsFileDownloader.cpp
-    XmdsFileDownloader.hpp
     BaseRequestSerializer.hpp
     BaseResponseParser.hpp
 )

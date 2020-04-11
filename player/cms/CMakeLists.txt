@@ -25,6 +25,8 @@ add_library(${PROJECT_NAME}
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp
     RequiredFilesDownloader.hpp
+    XmdsFileDownloader.cpp
+    XmdsFileDownloader.hpp
     CmsStatus.hpp
 )
 

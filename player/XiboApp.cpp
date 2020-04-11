@@ -223,7 +223,7 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval()
 
 std::unique_ptr<ScreenShotInterval> XiboApp::createScreenshotInterval(Xibo::Window& window)
 {
-    auto interval = std::make_unique<ScreenShotInterval>(window);
+    auto interval = std::make_unique<ScreenShotInterval>(cmsSettings_, window);
 
     interval->updateInterval(playerSettings_.screenshotInterval());
     playerSettings_.screenshotInterval().valueChanged().connect(

@@ -2,6 +2,7 @@
 
 #include "common/crypto/Md5Hash.hpp"
 #include "common/logger/Logging.hpp"
+#include "config/CmsSettings.hpp"
 
 #include "cms/xmds/MediaInventoryItem.hpp"
 #include "networking/ResponseResult.hpp"
@@ -17,7 +18,7 @@ class FileCache;
 class RequiredFilesDownloader
 {
 public:
-    RequiredFilesDownloader(FileCache& fileCache);
+    RequiredFilesDownloader(const CmsSettings& settings, FileCache& fileCache);
     ~RequiredFilesDownloader();
 
     template <typename RequiredFileType>
@@ -99,5 +100,6 @@ private:
 
 private:
     FileCache& fileCache_;
+    CmsSettings settings_;
     std::unique_ptr<XmdsFileDownloader> xmdsFileDownloader_;
 };

@@ -146,7 +146,7 @@ void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
     command.filesReady().connect([this](const auto& files, const auto& resources) {
         Log::debug("[XMDS::RequiredFiles] Received");
 
-        RequiredFilesDownloader downloader{fileCache_};
+        RequiredFilesDownloader downloader{cmsSettings_, fileCache_};
 
         status_.requiredFiles = files.size() + resources.size();
 
