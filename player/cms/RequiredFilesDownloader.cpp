@@ -8,7 +8,7 @@
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender, FileCache& fileCache) :
     xmdsRequestSender_{xmdsRequestSender},
     fileCache_{fileCache},
-    xmdsFileDownloader_{std::make_unique<XmdsFileDownloader>(xmdsRequestSender)}
+    xmdsFileDownloader_{std::make_unique<XmdsFileDownloader>()}
 {
 }
 

@@ -27,22 +27,6 @@ FutureResponseResult<GetResource::Result> XmdsRequestSender::getResource(int lay
     return SoapRequestHelper::sendRequest<GetResource::Result>(uri_, request);
 }
 
-FutureResponseResult<GetFile::Result> XmdsRequestSender::getFile(int fileId,
-                                                                 const std::string& fileType,
-                                                                 std::size_t chunkOffset,
-                                                                 std::size_t chunkSize)
-{
-    GetFile::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.fileId = std::to_string(fileId);
-    request.fileType = fileType;
-    request.chunkOffset = chunkOffset;
-    request.chunkSize = chunkSize;
-
-    return SoapRequestHelper::sendRequest<GetFile::Result>(uri_, request);
-}
-
 FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
 {
     SubmitScreenShot::Request request;
