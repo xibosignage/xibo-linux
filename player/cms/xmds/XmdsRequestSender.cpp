@@ -15,18 +15,6 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host,
 {
 }
 
-FutureResponseResult<GetResource::Result> XmdsRequestSender::getResource(int layoutId, int regionId, int mediaId)
-{
-    GetResource::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.layoutId = layoutId;
-    request.regionId = std::to_string(regionId);
-    request.mediaId = std::to_string(mediaId);
-
-    return SoapRequestHelper::sendRequest<GetResource::Result>(uri_, request);
-}
-
 FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
 {
     SubmitScreenShot::Request request;

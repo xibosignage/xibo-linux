@@ -17,6 +17,8 @@ add_library(${PROJECT_NAME}
     MediaInventoryCommand.hpp
     GetFileCommand.cpp
     GetFileCommand.hpp
+    GetResourceCommand.cpp
+    GetResourceCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp

@@ -19,14 +19,14 @@ std::string Soap::RequestSerializer<GetResource::Request>::string()
                          request().mediaId);
 }
 
-Soap::ResponseParser<GetResource::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<GetResource::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-GetResource::Result Soap::ResponseParser<GetResource::Result>::parseBody(const XmlNode& node)
+GetResource::Response Soap::ResponseParser<GetResource::Response>::parseBody(const XmlNode& node)
 {
-    GetResource::Result result;
+    GetResource::Response result;
     result.resource = node.get<std::string>(Resources::Resource);
     return result;
 }

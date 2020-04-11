@@ -6,9 +6,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace GetResource
+struct GetResource
 {
-    struct Result
+    struct Response
     {
         std::string resource;
     };
@@ -21,7 +21,7 @@ namespace GetResource
         SoapField<std::string> regionId{"regionId"};
         SoapField<std::string> mediaId{"mediaId"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<GetResource::Request> : public BaseRequestSerializer<GetResource::Request>
@@ -32,11 +32,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<GetResource::Result> : public BaseResponseParser<GetResource::Result>
+class Soap::ResponseParser<GetResource::Response> : public BaseResponseParser<GetResource::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetResource::Result parseBody(const XmlNode& node) override;
+    GetResource::Response parseBody(const XmlNode& node) override;
 };

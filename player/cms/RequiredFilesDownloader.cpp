@@ -68,12 +68,12 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
-        auto fileName = std::to_string(res.mediaId) + ".html";
-        auto [error, result] = future.get();
+    //    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
+    //        auto fileName = std::to_string(res.mediaId) + ".html";
+    //        auto [error, result] = future.get();
 
-        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
-    });
+    //        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
+    //    });
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
