@@ -1,12 +1,10 @@
 #include "RequiredFilesDownloader.hpp"
 
 #include "cms/xmds/XmdsFileDownloader.hpp"
-#include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/fs/FileCache.hpp"
 #include "networking/HttpClient.hpp"
 
-RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender, FileCache& fileCache) :
-    xmdsRequestSender_{xmdsRequestSender},
+RequiredFilesDownloader::RequiredFilesDownloader(FileCache& fileCache) :
     fileCache_{fileCache},
     xmdsFileDownloader_{std::make_unique<XmdsFileDownloader>()}
 {

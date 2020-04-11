@@ -28,8 +28,6 @@ add_library(${PROJECT_NAME}
     SoapRequestSender.hpp
     XmdsFileDownloader.cpp
     XmdsFileDownloader.hpp
-    XmdsRequestSender.cpp
-    XmdsRequestSender.hpp
     BaseRequestSerializer.hpp
     BaseResponseParser.hpp
 )

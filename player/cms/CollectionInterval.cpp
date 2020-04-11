@@ -7,7 +7,6 @@
 #include "common/logger/Logging.hpp"
 #include "config/AppConfig.hpp"
 
-#include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/StatsRecorder.hpp"
 
 #include "GetScheduleCommand.hpp"
@@ -19,10 +18,10 @@
 
 namespace ph = std::placeholders;
 
-CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
+CollectionInterval::CollectionInterval(const CmsSettings& cmsSettings,
                                        StatsRecorder& statsRecorder,
                                        FileCache& fileCache) :
-    xmdsSender_{xmdsSender},
+    cmsSettings_{cmsSettings},
     statsRecorder_{statsRecorder},
     fileCache_{fileCache},
     intervalTimer_{std::make_unique<Timer>()},
@@ -91,9 +90,9 @@ void CollectionInterval::collectNow()
         workerThread_ = std::make_unique<JoinableThread>([=]() {
             Log::debug("[CollectionInterval] Started");
 
-            runCommand<RegisterDisplayCommand>(xmdsSender_.getHost(),
-                                               xmdsSender_.getServerKey(),
-                                               xmdsSender_.getHardwareKey(),
+            runCommand<RegisterDisplayCommand>(cmsSettings_.address(),
+                                               cmsSettings_.key(),
+                                               cmsSettings_.displayId(),
                                                AppConfig::version(),
                                                AppConfig::codeVersion(),
                                                "Display");
@@ -115,14 +114,14 @@ void CollectionInterval::onDisplayRegistered()
 {
     Log::debug("[XMDS::RegisterDisplay] Success");
 
-    runCommand<RequiredFilesCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
-    runCommand<GetScheduleCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
-    runCommand<SubmitLogsCommand>(xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey());
+    runCommand<RequiredFilesCommand>(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
+    runCommand<GetScheduleCommand>(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
+    runCommand<SubmitLogsCommand>(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
 
     if (!statsRecorder_.empty())
     {
         runCommand<SubmitStatsCommand>(
-            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), statsRecorder_);
+            cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId(), statsRecorder_);
         statsRecorder_.clear();
     }
 }
@@ -147,7 +146,7 @@ void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
     command.filesReady().connect([this](const auto& files, const auto& resources) {
         Log::debug("[XMDS::RequiredFiles] Received");
 
-        RequiredFilesDownloader downloader{xmdsSender_, fileCache_};
+        RequiredFilesDownloader downloader{fileCache_};
 
         status_.requiredFiles = files.size() + resources.size();
 
@@ -155,9 +154,9 @@ void CollectionInterval::setupCommandConnections(RequiredFilesCommand& command)
         auto filesResult = downloader.download(files);
 
         runCommand<MediaInventoryCommand>(
-            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), filesResult.get());
+            cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId(), filesResult.get());
         runCommand<MediaInventoryCommand>(
-            xmdsSender_.getHost(), xmdsSender_.getServerKey(), xmdsSender_.getHardwareKey(), resourcesResult.get());
+            cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId(), resourcesResult.get());
 
         MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
     });

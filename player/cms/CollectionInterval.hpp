@@ -8,6 +8,7 @@
 #include "cms/xmds/Schedule.hpp"
 #include "cms/xmds/SubmitLog.hpp"
 #include "cms/xmds/SubmitStats.hpp"
+#include "config/CmsSettings.hpp"
 #include "networking/ResponseResult.hpp"
 #include "schedule/LayoutSchedule.hpp"
 
@@ -22,7 +23,6 @@ using SignalScheduleAvailable = boost::signals2::signal<void(LayoutSchedule)>;
 using SignalCollectionFinished = boost::signals2::signal<void(const PlayerError&)>;
 using SignalFilesDownloaded = boost::signals2::signal<void()>;
 
-class XmdsRequestSender;
 class StatsRecorder;
 class FileCache;
 
@@ -31,7 +31,7 @@ class CollectionInterval
     static constexpr const uint DefaultInterval = 900;
 
 public:
-    CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder, FileCache& fileCache);
+    CollectionInterval(const CmsSettings& cmsSettings, StatsRecorder& statsRecorder, FileCache& fileCache);
 
     bool running() const;
     void stop();
@@ -65,7 +65,7 @@ private:
     void onDisplayRegistered();
 
 private:
-    XmdsRequestSender& xmdsSender_;
+    CmsSettings cmsSettings_;
     StatsRecorder& statsRecorder_;
     FileCache& fileCache_;
     std::unique_ptr<JoinableThread> workerThread_;

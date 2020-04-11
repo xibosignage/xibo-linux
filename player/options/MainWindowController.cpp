@@ -3,7 +3,6 @@
 #include <gtkmm/filechooserdialog.h>
 #include <gtkmm/messagedialog.h>
 
-#include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/system/System.hpp"
@@ -86,8 +85,6 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
 {
     try
     {
-        XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
-
         //        auto connectionResult =
         //            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), DefaultDisplay)
         //                .then([](auto future) {

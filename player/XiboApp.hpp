@@ -11,7 +11,6 @@
 #include <memory>
 
 class MainLoop;
-class XmdsRequestSender;
 class HttpClient;
 class Scheduler;
 class FileCache;
@@ -42,8 +41,8 @@ private:
     std::unique_ptr<XmrManager> createXmrManager();
     std::shared_ptr<ApplicationWindowGtk> createMainWindow();
     std::unique_ptr<LayoutsManager> createLayoutManager();
-    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
-    std::unique_ptr<ScreenShotInterval> createScreenshotInterval(XmdsRequestSender& xmdsManager, Xibo::Window& window);
+    std::unique_ptr<CollectionInterval> createCollectionInterval();
+    std::unique_ptr<ScreenShotInterval> createScreenshotInterval(Xibo::Window& window);
 
     void onCollectionFinished(const PlayerError& error);
     GeneralInfo collectGeneralInfo();
@@ -57,7 +56,6 @@ private:
     std::unique_ptr<Scheduler> scheduler_;
     std::unique_ptr<CollectionInterval> collectionInterval_;
     std::unique_ptr<ScreenShotInterval> screenShotInterval_;
-    std::unique_ptr<XmdsRequestSender> xmdsManager_;
     std::unique_ptr<StatsRecorder> statsRecorder_;
     std::unique_ptr<XmrManager> xmrManager_;
     std::shared_ptr<ApplicationWindowGtk> mainWindow_;
