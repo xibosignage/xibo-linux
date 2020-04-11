@@ -15,16 +15,6 @@ XmdsRequestSender::XmdsRequestSender(const std::string& host,
 {
 }
 
-FutureResponseResult<SubmitScreenShot::Result> XmdsRequestSender::submitScreenShot(const std::string& screenShot)
-{
-    SubmitScreenShot::Request request;
-    request.serverKey = serverKey_;
-    request.hardwareKey = hardwareKey_;
-    request.screenShot = screenShot;
-
-    return SoapRequestHelper::sendRequest<SubmitScreenShot::Result>(uri_, request);
-}
-
 std::string XmdsRequestSender::getHost() const
 {
     return host_;

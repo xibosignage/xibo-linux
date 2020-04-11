@@ -19,6 +19,8 @@ add_library(${PROJECT_NAME}
     GetFileCommand.hpp
     GetResourceCommand.cpp
     GetResourceCommand.hpp
+    SubmitScreenshotCommand.cpp
+    SubmitScreenshotCommand.hpp
     CollectionInterval.cpp
     CollectionInterval.hpp
     RequiredFilesDownloader.cpp

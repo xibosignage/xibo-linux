@@ -6,9 +6,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace SubmitScreenShot
+struct SubmitScreenshot
 {
-    struct Result
+    struct Response
     {
         bool success;
     };
@@ -19,22 +19,22 @@ namespace SubmitScreenShot
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> screenShot{"screenShot"};
     };
-}
+};
 
 template <>
-class Soap::RequestSerializer<SubmitScreenShot::Request> : public BaseRequestSerializer<SubmitScreenShot::Request>
+class Soap::RequestSerializer<SubmitScreenshot::Request> : public BaseRequestSerializer<SubmitScreenshot::Request>
 {
 public:
-    RequestSerializer(const SubmitScreenShot::Request& request);
+    RequestSerializer(const SubmitScreenshot::Request& request);
     std::string string();
 };
 
 template <>
-class Soap::ResponseParser<SubmitScreenShot::Result> : public BaseResponseParser<SubmitScreenShot::Result>
+class Soap::ResponseParser<SubmitScreenshot::Response> : public BaseResponseParser<SubmitScreenshot::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    SubmitScreenShot::Result parseBody(const XmlNode& node) override;
+    SubmitScreenshot::Response parseBody(const XmlNode& node) override;
 };

@@ -22,8 +22,6 @@ class XmdsRequestSender
 public:
     XmdsRequestSender(const std::string& host, const std::string& serverKey, const std::string& hardwareKey);
 
-    FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenShot);
-
     std::string getHost() const;
     std::string getServerKey() const;
     std::string getHardwareKey() const;

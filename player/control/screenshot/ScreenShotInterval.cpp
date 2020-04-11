@@ -1,13 +1,11 @@
 #include "ScreenShotInterval.hpp"
 
-#include "cms/xmds/XmdsRequestSender.hpp"
 #include "common/logger/Logging.hpp"
 #include "control/screenshot/ScreeShoterFactory.hpp"
 
 const int DefaultInterval = 0;
 
-ScreenShotInterval::ScreenShotInterval(XmdsRequestSender& sender, Xibo::Window& window) :
-    sender_(sender),
+ScreenShotInterval::ScreenShotInterval(Xibo::Window& window) :
     screenShoter_(ScreenShoterFactory::create(window)),
     interval_(DefaultInterval)
 {
@@ -47,16 +45,16 @@ void ScreenShotInterval::takeScreenShot()
 
 void ScreenShotInterval::submitScreenShot(const std::string& screenShot)
 {
-    sender_.submitScreenShot(screenShot).then([](auto future) {
-        auto [error, result] = future.get();
-        if (error)
-        {
-            Log::error("[XMDS::SubmitScreenShot] {}", error);
-        }
-        else
-        {
-            std::string message = result.success ? "Submitted" : "Not submitted";
-            Log::debug("[XMDS::SubmitScreenShot] {}", message);
-        }
-    });
+    //    sender_.submitScreenShot(screenShot).then([](auto future) {
+    //        auto [error, result] = future.get();
+    //        if (error)
+    //        {
+    //            Log::error("[XMDS::SubmitScreenShot] {}", error);
+    //        }
+    //        else
+    //        {
+    //            std::string message = result.success ? "Submitted" : "Not submitted";
+    //            Log::debug("[XMDS::SubmitScreenShot] {}", message);
+    //        }
+    //    });
 }

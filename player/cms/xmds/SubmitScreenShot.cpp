@@ -4,24 +4,24 @@
 
 namespace Resources = XmdsResources::SubmitScreenShot;
 
-Soap::RequestSerializer<SubmitScreenShot::Request>::RequestSerializer(const SubmitScreenShot::Request& request) :
+Soap::RequestSerializer<SubmitScreenshot::Request>::RequestSerializer(const SubmitScreenshot::Request& request) :
     BaseRequestSerializer(request)
 {
 }
 
-std::string Soap::RequestSerializer<SubmitScreenShot::Request>::string()
+std::string Soap::RequestSerializer<SubmitScreenshot::Request>::string()
 {
     return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().screenShot);
 }
 
-Soap::ResponseParser<SubmitScreenShot::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<SubmitScreenshot::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-SubmitScreenShot::Result Soap::ResponseParser<SubmitScreenShot::Result>::parseBody(const XmlNode& node)
+SubmitScreenshot::Response Soap::ResponseParser<SubmitScreenshot::Response>::parseBody(const XmlNode& node)
 {
-    SubmitScreenShot::Result result;
+    SubmitScreenshot::Response result;
     result.success = node.get<bool>(Resources::Success);
     return result;
 }
