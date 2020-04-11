@@ -18,7 +18,6 @@
 
 #include "cms/CollectionInterval.hpp"
 #include "cms/xmds/SoapRequestSender.hpp"
-#include "cms/xmds/XmdsRequestSender.hpp"
 #include "networking/HttpClient.hpp"
 
 #include "common/PlayerRuntimeError.hpp"
@@ -112,10 +111,8 @@ int XiboApp::run()
     mainWindow_ = createMainWindow();
     layoutManager_ = createLayoutManager();
 
-    xmdsManager_ =
-        std::make_unique<XmdsRequestSender>(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
-    screenShotInterval_ = createScreenshotInterval(*xmdsManager_, *mainWindow_);
-    collectionInterval_ = createCollectionInterval(*xmdsManager_);
+    screenShotInterval_ = createScreenshotInterval(*mainWindow_);
+    collectionInterval_ = createCollectionInterval();
 
     scheduler_->reloadSchedule(LayoutSchedule::fromFile(AppConfig::schedulePath()));
     scheduler_->scheduleUpdated().connect(
@@ -204,9 +201,9 @@ GeneralInfo XiboApp::collectGeneralInfo()
     return info;
 }
 
-std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
+std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval()
 {
-    auto interval = std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_, *fileCache_);
+    auto interval = std::make_unique<CollectionInterval>(cmsSettings_, *statsRecorder_, *fileCache_);
 
     interval->updateInterval(playerSettings_.collectInterval());
     playerSettings_.collectInterval().valueChanged().connect(
@@ -224,10 +221,9 @@ std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsReques
     return interval;
 }
 
-std::unique_ptr<ScreenShotInterval> XiboApp::createScreenshotInterval(XmdsRequestSender& xmdsManager,
-                                                                      Xibo::Window& window)
+std::unique_ptr<ScreenShotInterval> XiboApp::createScreenshotInterval(Xibo::Window& window)
 {
-    auto interval = std::make_unique<ScreenShotInterval>(xmdsManager, window);
+    auto interval = std::make_unique<ScreenShotInterval>(cmsSettings_, window);
 
     interval->updateInterval(playerSettings_.screenshotInterval());
     playerSettings_.screenshotInterval().valueChanged().connect(

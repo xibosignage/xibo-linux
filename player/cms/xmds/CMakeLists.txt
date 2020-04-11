@@ -1,0 +1,31 @@
+project(xmds)
+
+add_library(${PROJECT_NAME}
+    RegisterDisplay.cpp
+    RegisterDisplay.hpp
+    RequiredFiles.cpp
+    RequiredFiles.hpp
+    Schedule.cpp
+    Schedule.hpp
+    GetFile.cpp
+    GetFile.hpp
+    GetResource.cpp
+    GetResource.hpp
+    SubmitLog.cpp
+    SubmitLog.hpp
+    SubmitScreenShot.cpp
+    SubmitScreenShot.hpp
+    SubmitStats.cpp
+    SubmitStats.hpp
+    MediaInventory.cpp
+    MediaInventory.hpp
+    MediaInventoryField.cpp
+    MediaInventoryField.hpp
+    MediaInventoryItem.cpp
+    MediaInventoryItem.hpp
+    Resources.hpp
+    Soap.hpp
+    SoapRequestSender.hpp
+    BaseRequestSerializer.hpp
+    BaseResponseParser.hpp
+)

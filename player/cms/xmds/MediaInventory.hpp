@@ -7,9 +7,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace MediaInventory
+struct MediaInventory
 {
-    struct Result
+    struct Response
     {
         bool success;
     };
@@ -20,7 +20,7 @@ namespace MediaInventory
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<MediaInventoryItems> inventory{"mediaInventory"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
@@ -31,11 +31,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<MediaInventory::Result> : public BaseResponseParser<MediaInventory::Result>
+class Soap::ResponseParser<MediaInventory::Response> : public BaseResponseParser<MediaInventory::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    MediaInventory::Result parseBody(const XmlNode& node) override;
+    MediaInventory::Response parseBody(const XmlNode& node) override;
 };

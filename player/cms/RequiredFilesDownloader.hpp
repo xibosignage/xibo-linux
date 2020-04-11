@@ -2,6 +2,7 @@
 
 #include "common/crypto/Md5Hash.hpp"
 #include "common/logger/Logging.hpp"
+#include "config/CmsSettings.hpp"
 
 #include "cms/xmds/MediaInventoryItem.hpp"
 #include "networking/ResponseResult.hpp"
@@ -12,13 +13,12 @@ using DownloadResult = boost::future<bool>;
 using DownloadResults = std::vector<DownloadResult>;
 using ResponseContentResult = ResponseResult<std::string>;
 class XmdsFileDownloader;
-class XmdsRequestSender;
 class FileCache;
 
 class RequiredFilesDownloader
 {
 public:
-    RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender, FileCache& fileCache);
+    RequiredFilesDownloader(const CmsSettings& settings, FileCache& fileCache);
     ~RequiredFilesDownloader();
 
     template <typename RequiredFileType>
@@ -99,7 +99,7 @@ private:
     DownloadResult downloadXmdsFile(const RegularFile& file);
 
 private:
-    XmdsRequestSender& xmdsRequestSender_;
     FileCache& fileCache_;
+    CmsSettings settings_;
     std::unique_ptr<XmdsFileDownloader> xmdsFileDownloader_;
 };

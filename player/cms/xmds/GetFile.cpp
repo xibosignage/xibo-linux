@@ -20,14 +20,14 @@ std::string Soap::RequestSerializer<GetFile::Request>::string()
                          request().chunkSize);
 }
 
-Soap::ResponseParser<GetFile::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<GetFile::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-GetFile::Result Soap::ResponseParser<GetFile::Result>::parseBody(const XmlNode& node)
+GetFile::Response Soap::ResponseParser<GetFile::Response>::parseBody(const XmlNode& node)
 {
-    GetFile::Result result;
+    GetFile::Response result;
     result.base64chunk = node.get<std::string>(Resources::FileChunk);
     return result;
 }

@@ -7,9 +7,9 @@
 #include "common/SoapField.hpp"
 #include "config/PlayerSettings.hpp"
 
-namespace RegisterDisplay
+struct RegisterDisplay
 {
-    struct Result
+    struct Response
     {
         struct Status
         {
@@ -41,7 +41,7 @@ namespace RegisterDisplay
         SoapField<std::string> xmrChannel{"xmrChannel"};
         SoapField<std::string> xmrPubKey{"xmrPubKey"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
@@ -52,11 +52,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<RegisterDisplay::Result> : public BaseResponseParser<RegisterDisplay::Result>
+class Soap::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser<RegisterDisplay::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RegisterDisplay::Result parseBody(const XmlNode& node) override;
+    RegisterDisplay::Response parseBody(const XmlNode& node) override;
 };

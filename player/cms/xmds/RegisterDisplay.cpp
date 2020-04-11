@@ -7,14 +7,14 @@ namespace Resources = XmdsResources::RegisterDisplay;
 namespace Settings = XmdsResources::RegisterDisplay::Settings;
 
 template <>
-std::string Utils::toString(RegisterDisplay::Result::Status::Code val)
+std::string Utils::toString(RegisterDisplay::Response::Status::Code val)
 {
     switch (val)
     {
-        case RegisterDisplay::Result::Status::Code::Ready: return "Ready";
-        case RegisterDisplay::Result::Status::Code::Added: return "Added";
-        case RegisterDisplay::Result::Status::Code::Waiting: return "Waiting";
-        case RegisterDisplay::Result::Status::Code::Invalid: return "Invalid";
+        case RegisterDisplay::Response::Status::Code::Ready: return "Ready";
+        case RegisterDisplay::Response::Status::Code::Added: return "Added";
+        case RegisterDisplay::Response::Status::Code::Waiting: return "Waiting";
+        case RegisterDisplay::Response::Status::Code::Invalid: return "Invalid";
     }
 
     return "unknown";
@@ -39,21 +39,21 @@ std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
                          request().hardwareKey);
 }
 
-Soap::ResponseParser<RegisterDisplay::Result>::ResponseParser(const std::string& soapResponse) :
+Soap::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
 }
 
-RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody(const XmlNode& node)
+RegisterDisplay::Response Soap::ResponseParser<RegisterDisplay::Response>::parseBody(const XmlNode& node)
 {
     auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
     auto displayNode = Parsing::xmlFrom(activationMessage).get_child(Resources::Display);
     auto attrs = displayNode.get_child(Resources::DisplayAttrs);
 
-    RegisterDisplay::Result result;
-    result.status.code = static_cast<RegisterDisplay::Result::Status::Code>(attrs.get<int>(Resources::Status));
+    RegisterDisplay::Response result;
+    result.status.code = static_cast<RegisterDisplay::Response::Status::Code>(attrs.get<int>(Resources::Status));
     result.status.message = attrs.get<std::string>(Resources::StatusMessage);
-    if (result.status.code == RegisterDisplay::Result::Status::Code::Ready)
+    if (result.status.code == RegisterDisplay::Response::Status::Code::Ready)
     {
         result.playerSettings.collectInterval().setValue(displayNode.get<int>(Settings::CollectInterval));
         result.playerSettings.statsEnabled().setValue(displayNode.get<bool>(Settings::StatsEnabled));

@@ -7,9 +7,9 @@
 #include "common/SoapField.hpp"
 #include "networking/RequiredItems.hpp"
 
-namespace RequiredFiles
+struct RequiredFiles
 {
-    struct Result
+    struct Response
     {
         const FilesToDownload<RegularFile>& requiredFiles() const;
         const FilesToDownload<ResourceFile>& requiredResources() const;
@@ -27,7 +27,7 @@ namespace RequiredFiles
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<RequiredFiles::Request> : public BaseRequestSerializer<RequiredFiles::Request>
@@ -38,13 +38,13 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<RequiredFiles::Result> : public BaseResponseParser<RequiredFiles::Result>
+class Soap::ResponseParser<RequiredFiles::Response> : public BaseResponseParser<RequiredFiles::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    RequiredFiles::Result parseBody(const XmlNode& node) override;
+    RequiredFiles::Response parseBody(const XmlNode& node) override;
 
 private:
     RegularFile parseRegularFile(const XmlNode& attrs);

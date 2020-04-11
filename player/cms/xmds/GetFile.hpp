@@ -6,9 +6,9 @@
 
 #include "common/SoapField.hpp"
 
-namespace GetFile
+struct GetFile
 {
-    struct Result
+    struct Response
     {
         std::string base64chunk;
     };
@@ -22,7 +22,7 @@ namespace GetFile
         SoapField<std::size_t> chunkOffset{"chunkOffset"};
         SoapField<std::size_t> chunkSize{"chuckSize"};
     };
-}
+};
 
 template <>
 class Soap::RequestSerializer<GetFile::Request> : public BaseRequestSerializer<GetFile::Request>
@@ -33,11 +33,11 @@ public:
 };
 
 template <>
-class Soap::ResponseParser<GetFile::Result> : public BaseResponseParser<GetFile::Result>
+class Soap::ResponseParser<GetFile::Response> : public BaseResponseParser<GetFile::Response>
 {
 public:
     ResponseParser(const std::string& soapResponse);
 
 protected:
-    GetFile::Result parseBody(const XmlNode& node) override;
+    GetFile::Response parseBody(const XmlNode& node) override;
 };
