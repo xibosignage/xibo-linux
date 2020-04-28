@@ -24,16 +24,6 @@ void RequiredFiles::Response::addResource(ResourceFile&& resource)
     m_requiredResources.emplace_back(std::move(resource));
 }
 
-Soap::RequestSerializer<RequiredFiles::Request>::RequestSerializer(const RequiredFiles::Request& request) :
-    BaseRequestSerializer(request)
-{
-}
-
-std::string Soap::RequestSerializer<RequiredFiles::Request>::string()
-{
-    return createRequest(Resources::Name, request().serverKey, request().hardwareKey);
-}
-
 Soap::ResponseParser<RequiredFiles::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
@@ -137,4 +127,9 @@ std::pair<std::string, std::string> Soap::ResponseParser<RequiredFiles::Response
     }
 
     return std::pair{path, name};
+}
+
+std::string RequiredFiles::Request::string() const
+{
+    return toSoapString(Resources::Name, serverKey, hardwareKey);
 }

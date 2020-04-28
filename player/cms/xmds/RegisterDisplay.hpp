@@ -1,8 +1,8 @@
 #pragma once
 
-#include "cms/xmds/BaseRequestSerializer.hpp"
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
+#include "cms/xmds/SoapRequest.hpp"
 
 #include "common/SoapField.hpp"
 #include "config/PlayerSettings.hpp"
@@ -29,8 +29,10 @@ struct RegisterDisplay
         PlayerSettings playerSettings;
     };
 
-    struct Request
+    struct Request : SoapRequest
     {
+        std::string string() const override;
+
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> displayName{"displayName"};
@@ -41,14 +43,6 @@ struct RegisterDisplay
         SoapField<std::string> xmrChannel{"xmrChannel"};
         SoapField<std::string> xmrPubKey{"xmrPubKey"};
     };
-};
-
-template <>
-class Soap::RequestSerializer<RegisterDisplay::Request> : public BaseRequestSerializer<RegisterDisplay::Request>
-{
-public:
-    RequestSerializer(const RegisterDisplay::Request& request);
-    std::string string();
 };
 
 template <>

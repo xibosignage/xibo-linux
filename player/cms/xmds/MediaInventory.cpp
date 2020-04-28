@@ -4,16 +4,6 @@
 
 namespace Resources = XmdsResources::MediaInventory;
 
-Soap::RequestSerializer<MediaInventory::Request>::RequestSerializer(const MediaInventory::Request& request) :
-    BaseRequestSerializer(request)
-{
-}
-
-std::string Soap::RequestSerializer<MediaInventory::Request>::string()
-{
-    return createRequest(Resources::Name, request().serverKey, request().hardwareKey, request().inventory);
-}
-
 Soap::ResponseParser<MediaInventory::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
@@ -24,4 +14,9 @@ MediaInventory::Response Soap::ResponseParser<MediaInventory::Response>::parseBo
     MediaInventory::Response result;
     result.success = node.get<bool>(Resources::Success);
     return result;
+}
+
+std::string MediaInventory::Request::string() const
+{
+    return toSoapString(Resources::Name, serverKey, hardwareKey, inventory);
 }

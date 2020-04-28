@@ -26,6 +26,6 @@ add_library(${PROJECT_NAME}
     Resources.hpp
     Soap.hpp
     SoapRequestSender.hpp
-    BaseRequestSerializer.hpp
+    SoapRequest.hpp
     BaseResponseParser.hpp
 )

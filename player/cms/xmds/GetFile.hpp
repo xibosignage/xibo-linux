@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cms/xmds/BaseRequestSerializer.hpp"
+#include "cms/xmds/SoapRequest.hpp"
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
@@ -13,8 +13,10 @@ struct GetFile
         std::string base64chunk;
     };
 
-    struct Request
+    struct Request : SoapRequest
     {
+        std::string string() const override;
+
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> fileId{"fileId"};
@@ -22,14 +24,6 @@ struct GetFile
         SoapField<std::size_t> chunkOffset{"chunkOffset"};
         SoapField<std::size_t> chunkSize{"chuckSize"};
     };
-};
-
-template <>
-class Soap::RequestSerializer<GetFile::Request> : public BaseRequestSerializer<GetFile::Request>
-{
-public:
-    RequestSerializer(const GetFile::Request& request);
-    std::string string();
 };
 
 template <>

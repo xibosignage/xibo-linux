@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cms/xmds/BaseRequestSerializer.hpp"
+#include "cms/xmds/SoapRequest.hpp"
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
@@ -13,20 +13,14 @@ struct SubmitScreenshot
         bool success;
     };
 
-    struct Request
+    struct Request : SoapRequest
     {
+        std::string string() const override;
+
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> screenShot{"screenShot"};
     };
-};
-
-template <>
-class Soap::RequestSerializer<SubmitScreenshot::Request> : public BaseRequestSerializer<SubmitScreenshot::Request>
-{
-public:
-    RequestSerializer(const SubmitScreenshot::Request& request);
-    std::string string();
 };
 
 template <>

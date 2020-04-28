@@ -1,8 +1,8 @@
 #pragma once
 
+#include "cms/xmds/Soap.hpp"
 #include "networking/HttpClient.hpp"
 #include "networking/ResponseResult.hpp"
-#include "cms/xmds/Soap.hpp"
 
 namespace SoapRequestHelper
 {
@@ -21,10 +21,8 @@ namespace SoapRequestHelper
     {
         static_assert(std::is_copy_assignable_v<Request> && std::is_copy_constructible_v<Request>);
 
-        Soap::RequestSerializer<Request> serializer{soapRequest};
-
-        return HttpClient::instance().post(uri, serializer.string()).then([](boost::future<HttpResponseResult> future) {
-            return onResponseReceived<Result>(future.get());
-        });
+        return HttpClient::instance()
+            .post(uri, soapRequest.string())
+            .then([](boost::future<HttpResponseResult> future) { return onResponseReceived<Result>(future.get()); });
     }
 }

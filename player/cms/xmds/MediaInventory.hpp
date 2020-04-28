@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cms/xmds/BaseRequestSerializer.hpp"
+#include "cms/xmds/SoapRequest.hpp"
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/MediaInventoryField.hpp"
 #include "cms/xmds/Soap.hpp"
@@ -14,20 +14,14 @@ struct MediaInventory
         bool success;
     };
 
-    struct Request
+    struct Request : SoapRequest
     {
+        std::string string() const override;
+
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<MediaInventoryItems> inventory{"mediaInventory"};
     };
-};
-
-template <>
-class Soap::RequestSerializer<MediaInventory::Request> : public BaseRequestSerializer<MediaInventory::Request>
-{
-public:
-    RequestSerializer(const MediaInventory::Request& request);
-    std::string string();
 };
 
 template <>

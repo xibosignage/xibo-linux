@@ -20,25 +20,6 @@ std::string Utils::toString(RegisterDisplay::Response::Status::Code val)
     return "unknown";
 }
 
-Soap::RequestSerializer<RegisterDisplay::Request>::RequestSerializer(const RegisterDisplay::Request& request) :
-    BaseRequestSerializer(request)
-{
-}
-
-std::string Soap::RequestSerializer<RegisterDisplay::Request>::string()
-{
-    return createRequest(Resources::Name,
-                         request().clientCode,
-                         request().clientType,
-                         request().clientVersion,
-                         request().displayName,
-                         request().macAddress,
-                         request().xmrChannel,
-                         request().xmrPubKey,
-                         request().serverKey,
-                         request().hardwareKey);
-}
-
 Soap::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::string& soapResponse) :
     BaseResponseParser(soapResponse)
 {
@@ -73,4 +54,18 @@ RegisterDisplay::Response Soap::ResponseParser<RegisterDisplay::Response>::parse
     }
 
     return result;
+}
+
+std::string RegisterDisplay::Request::string() const
+{
+    return toSoapString(Resources::Name,
+                        clientCode,
+                        clientType,
+                        clientVersion,
+                        displayName,
+                        macAddress,
+                        xmrChannel,
+                        xmrPubKey,
+                        serverKey,
+                        hardwareKey);
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cms/xmds/BaseRequestSerializer.hpp"
+#include "cms/xmds/SoapRequest.hpp"
 #include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 
@@ -13,19 +13,13 @@ struct Schedule
         std::string scheduleXml;
     };
 
-    struct Request
+    struct Request : SoapRequest
     {
+        std::string string() const override;
+
         SoapField<std::string> serverKey{"serverKey"};
         SoapField<std::string> hardwareKey{"hardwareKey"};
     };
-};
-
-template <>
-class Soap::RequestSerializer<Schedule::Request> : public BaseRequestSerializer<Schedule::Request>
-{
-public:
-    RequestSerializer(const Schedule::Request& request);
-    std::string string();
 };
 
 template <>
