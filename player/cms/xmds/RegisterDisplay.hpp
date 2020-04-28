@@ -1,16 +1,17 @@
 #pragma once
 
-#include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
 #include "cms/xmds/SoapRequest.hpp"
+#include "cms/xmds/SoapResponse.hpp"
 
 #include "common/SoapField.hpp"
 #include "config/PlayerSettings.hpp"
 
 struct RegisterDisplay
 {
-    struct Response
+    class Response : public SoapResponse<Response>
     {
+    public:
         struct Status
         {
             enum class Code
@@ -27,9 +28,12 @@ struct RegisterDisplay
 
         Status status;
         PlayerSettings playerSettings;
+
+    protected:
+        void parseBody(const XmlNode& node) override;
     };
 
-    struct Request : SoapRequest
+    struct Request : SoapRequest<Request>
     {
         std::string string() const override;
 
@@ -43,14 +47,4 @@ struct RegisterDisplay
         SoapField<std::string> xmrChannel{"xmrChannel"};
         SoapField<std::string> xmrPubKey{"xmrPubKey"};
     };
-};
-
-template <>
-class Soap::ResponseParser<RegisterDisplay::Response> : public BaseResponseParser<RegisterDisplay::Response>
-{
-public:
-    ResponseParser(const std::string& soapResponse);
-
-protected:
-    RegisterDisplay::Response parseBody(const XmlNode& node) override;
 };

@@ -1,19 +1,23 @@
 #pragma once
 
-#include "cms/xmds/SoapRequest.hpp"
-#include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
+#include "cms/xmds/SoapRequest.hpp"
+#include "cms/xmds/SoapResponse.hpp"
 
 #include "common/SoapField.hpp"
 
 struct GetFile
 {
-    struct Response
+    class Response : public SoapResponse<Response>
     {
+    public:
         std::string base64chunk;
+
+    protected:
+        void parseBody(const XmlNode& node) override;
     };
 
-    struct Request : SoapRequest
+    struct Request : SoapRequest<Request>
     {
         std::string string() const override;
 
@@ -24,14 +28,4 @@ struct GetFile
         SoapField<std::size_t> chunkOffset{"chunkOffset"};
         SoapField<std::size_t> chunkSize{"chuckSize"};
     };
-};
-
-template <>
-class Soap::ResponseParser<GetFile::Response> : public BaseResponseParser<GetFile::Response>
-{
-public:
-    ResponseParser(const std::string& soapResponse);
-
-protected:
-    GetFile::Response parseBody(const XmlNode& node) override;
 };

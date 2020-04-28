@@ -1,9 +1,9 @@
 #pragma once
 
 #include <boost/signals2/signal.hpp>
-#include <boost/thread/future.hpp>
 
-#include "cms/xmds/SoapRequestSender.hpp"
+#include "common/types/Uri.hpp"
+#include "networking/ResponseResult.hpp"
 
 class IXmdsCommand
 {
@@ -25,9 +25,6 @@ class XmdsCommand : public IXmdsCommand
     static const inline std::string XmdsTarget = "/xmds.php?v=5";
 
 public:
-    using FutureResponseResult = boost::future<std::pair<PlayerError, Response>>;
-
-public:
     XmdsCommand(const std::string& host, const std::string& serverKey, const std::string& hardwareKey) :
         uri_(Uri::fromString(host + XmdsTarget)),
         serverKey_(serverKey),
@@ -44,18 +41,17 @@ public:
         request.hardwareKey = hardwareKey_;
         prepare(request);
 
-        SoapRequestHelper::sendRequest<Response>(uri_, request)
-            .then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
+        request.template send<Response>(uri_).then(std::bind(&XmdsCommand::onResponseReceived, this, ph::_1));
     }
 
-    FutureResponseResult executeFuture()
+    FutureResponseResult<Response> executeFuture()
     {
         Request request;
         request.serverKey = serverKey_;
         request.hardwareKey = hardwareKey_;
         prepare(request);
 
-        return SoapRequestHelper::sendRequest<Response>(uri_, request);
+        return request.template send<Response>(uri_);
     }
 
     SignalError& error() override
@@ -70,7 +66,7 @@ protected:
     virtual void process(const Response& response) = 0;
 
 private:
-    void onResponseReceived(FutureResponseResult futureResult)
+    void onResponseReceived(FutureResponseResult<Response> futureResult)
     {
         auto [error, response] = futureResult.get();
         if (!error)

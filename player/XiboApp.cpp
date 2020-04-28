@@ -17,7 +17,6 @@
 #include "xmr/XmrManager.hpp"
 
 #include "cms/CollectionInterval.hpp"
-#include "cms/xmds/SoapRequestSender.hpp"
 #include "networking/HttpClient.hpp"
 
 #include "common/PlayerRuntimeError.hpp"

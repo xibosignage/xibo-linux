@@ -20,42 +20,6 @@ std::string Utils::toString(RegisterDisplay::Response::Status::Code val)
     return "unknown";
 }
 
-Soap::ResponseParser<RegisterDisplay::Response>::ResponseParser(const std::string& soapResponse) :
-    BaseResponseParser(soapResponse)
-{
-}
-
-RegisterDisplay::Response Soap::ResponseParser<RegisterDisplay::Response>::parseBody(const XmlNode& node)
-{
-    auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
-    auto displayNode = Parsing::xmlFrom(activationMessage).get_child(Resources::Display);
-    auto attrs = displayNode.get_child(Resources::DisplayAttrs);
-
-    RegisterDisplay::Response result;
-    result.status.code = static_cast<RegisterDisplay::Response::Status::Code>(attrs.get<int>(Resources::Status));
-    result.status.message = attrs.get<std::string>(Resources::StatusMessage);
-    if (result.status.code == RegisterDisplay::Response::Status::Code::Ready)
-    {
-        result.playerSettings.collectInterval().setValue(displayNode.get<int>(Settings::CollectInterval));
-        result.playerSettings.statsEnabled().setValue(displayNode.get<bool>(Settings::StatsEnabled));
-        result.playerSettings.xmrNetworkAddress().setValue(displayNode.get<std::string>(Settings::XmrNetworkAddress));
-        int width = static_cast<int>(displayNode.get<double>(Settings::Width));
-        int height = static_cast<int>(displayNode.get<double>(Settings::Height));
-        result.playerSettings.size().setValue(width, height);
-        int x = static_cast<int>(displayNode.get<double>(Settings::XPos));
-        int y = static_cast<int>(displayNode.get<double>(Settings::YPos));
-        result.playerSettings.position().setValue(x, y);
-        result.playerSettings.logLevel().setValue(displayNode.get<std::string>(Settings::LogLevel));
-        result.playerSettings.screenshotInterval().setValue(displayNode.get<int>(Settings::ScreenShotRequestInterval));
-        result.playerSettings.embeddedServerPort().setValue(
-            displayNode.get<unsigned short>(Settings::EmbeddedServerPort));
-        result.playerSettings.preventSleep().setValue(displayNode.get<bool>(Settings::PreventSleep));
-        result.playerSettings.displayName().setValue(displayNode.get<std::string>(Settings::DisplayName));
-    }
-
-    return result;
-}
-
 std::string RegisterDisplay::Request::string() const
 {
     return toSoapString(Resources::Name,
@@ -68,4 +32,31 @@ std::string RegisterDisplay::Request::string() const
                         xmrPubKey,
                         serverKey,
                         hardwareKey);
+}
+
+void RegisterDisplay::Response::parseBody(const XmlNode& node)
+{
+    auto activationMessage = node.get<std::string>(Resources::ActivationMessage);
+    auto displayNode = Parsing::xmlFrom(activationMessage).get_child(Resources::Display);
+    auto attrs = displayNode.get_child(Resources::DisplayAttrs);
+
+    status.code = static_cast<RegisterDisplay::Response::Status::Code>(attrs.get<int>(Resources::Status));
+    status.message = attrs.get<std::string>(Resources::StatusMessage);
+    if (status.code == RegisterDisplay::Response::Status::Code::Ready)
+    {
+        playerSettings.collectInterval().setValue(displayNode.get<int>(Settings::CollectInterval));
+        playerSettings.statsEnabled().setValue(displayNode.get<bool>(Settings::StatsEnabled));
+        playerSettings.xmrNetworkAddress().setValue(displayNode.get<std::string>(Settings::XmrNetworkAddress));
+        int width = static_cast<int>(displayNode.get<double>(Settings::Width));
+        int height = static_cast<int>(displayNode.get<double>(Settings::Height));
+        playerSettings.size().setValue(width, height);
+        int x = static_cast<int>(displayNode.get<double>(Settings::XPos));
+        int y = static_cast<int>(displayNode.get<double>(Settings::YPos));
+        playerSettings.position().setValue(x, y);
+        playerSettings.logLevel().setValue(displayNode.get<std::string>(Settings::LogLevel));
+        playerSettings.screenshotInterval().setValue(displayNode.get<int>(Settings::ScreenShotRequestInterval));
+        playerSettings.embeddedServerPort().setValue(displayNode.get<unsigned short>(Settings::EmbeddedServerPort));
+        playerSettings.preventSleep().setValue(displayNode.get<bool>(Settings::PreventSleep));
+        playerSettings.displayName().setValue(displayNode.get<std::string>(Settings::DisplayName));
+    }
 }

@@ -1,19 +1,23 @@
 #pragma once
 
-#include "cms/xmds/SoapRequest.hpp"
-#include "cms/xmds/BaseResponseParser.hpp"
 #include "cms/xmds/Soap.hpp"
+#include "cms/xmds/SoapRequest.hpp"
+#include "cms/xmds/SoapResponse.hpp"
 
 #include "common/SoapField.hpp"
 
 struct SubmitScreenshot
 {
-    struct Response
+    class Response : public SoapResponse<Response>
     {
+    public:
         bool success;
+
+    protected:
+        void parseBody(const XmlNode& node) override;
     };
 
-    struct Request : SoapRequest
+    struct Request : SoapRequest<Request>
     {
         std::string string() const override;
 
@@ -21,14 +25,4 @@ struct SubmitScreenshot
         SoapField<std::string> hardwareKey{"hardwareKey"};
         SoapField<std::string> screenShot{"screenShot"};
     };
-};
-
-template <>
-class Soap::ResponseParser<SubmitScreenshot::Response> : public BaseResponseParser<SubmitScreenshot::Response>
-{
-public:
-    ResponseParser(const std::string& soapResponse);
-
-protected:
-    SubmitScreenshot::Response parseBody(const XmlNode& node) override;
 };

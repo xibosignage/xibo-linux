@@ -3,6 +3,8 @@
 #include <exception>
 #include <string>
 
+#include "common/PlayerError.hpp"
+
 class PlayerRuntimeError : public std::exception
 {
 public:
@@ -13,9 +15,16 @@ public:
     {
     }
 
+    PlayerRuntimeError(const PlayerError& player) : PlayerRuntimeError{player.domain(), player.message()} {}
+
     const char* what() const noexcept override
     {
         return what_.data();
+    }
+
+    PlayerError error() const
+    {
+        return PlayerError{domain_, message_};
     }
 
     const std::string& domain() const

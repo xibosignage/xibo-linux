@@ -25,7 +25,6 @@ add_library(${PROJECT_NAME}
     MediaInventoryItem.hpp
     Resources.hpp
     Soap.hpp
-    SoapRequestSender.hpp
     SoapRequest.hpp
-    BaseResponseParser.hpp
+    SoapResponse.hpp
 )

@@ -3,9 +3,18 @@
 #include <sstream>
 #include <string_view>
 
+#include "cms/xmds/Soap.hpp"
+
+template <typename Request>
 class SoapRequest
 {
 public:
+    template <typename Response>
+    FutureResponseResult<Response> send(const Uri& uri)
+    {
+        return Soap::sendRequest<Response>(uri, static_cast<Request&>(*this));
+    }
+
     virtual std::string string() const = 0;
 
 protected:
