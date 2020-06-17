@@ -19,9 +19,7 @@ NOTE: These libraries can require additional installations if you haven't such. 
 - `webkitgtk>=2.4.10` web content rendering
 - `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
 
-### Building with Docker (only for Ubuntu 18.04)
-- Install Docker
+### Building with Snapcraft
+- Install snapcraft
 - Clone this repository
-- Run `sudo docker build -t xibo-linux .` in the root of the repository
-- `docker run -v /path/to/local/clone/build:/build xibo-linux`
-- The Player binaries will be built and output in to your `build` directory
+- Run `snapcraft` in the root of the repository
