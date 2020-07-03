@@ -13,6 +13,15 @@
       "contributions": [
         "business"
       ]
+    },
+    {
+      "login": "alexharrington",
+      "name": "Alex Harrington",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/10450518?v=4",
+      "profile": "http://springsignage.com",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
