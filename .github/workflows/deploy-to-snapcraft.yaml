@@ -3,7 +3,7 @@ name: Deploy to SnapCraft
 on:
   push:
     branches:
-     - develop
+     - master
 
 jobs:
   build:
