@@ -5,10 +5,6 @@
 
 [![xibo-player](https://snapcraft.io/xibo-player/badge.svg)](https://snapcraft.io/xibo-player)
 
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-13-orange.svg?style=flat-square)](#contributors)
-<!-- ALL-CONTRIBUTORS-BADGE:END --> 
-
 Xibo for Linux is a Digital Signage Player for [Xibo](https://xibo.org.uk).
 
 It is in its early stages of development and supports a subset of Xibo's overall features. It can be used in production, but should be thoroughly tested with the intended content. It is not recommended to assume that any of Xibo's features will function. Please test yourself to confirm.
@@ -31,6 +27,7 @@ Please check that you're happy for your work to be available under the project l
 
 Let us know you'd like to contribute by [joining our community](https://community.xibo.org.uk/c/support/linux-player).
 
+## Contributors ✨
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
@@ -80,16 +77,3 @@ NOTE: These libraries can require additional installations if you haven't such. 
 - Install snapcraft
 - Clone this repository
 - Run `snapcraft` in the root of the repository
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
