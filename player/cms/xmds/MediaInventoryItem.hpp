@@ -1,6 +1,6 @@
 #pragma once
 
-#include "networking/RequiredItems.hpp"
+#include "common/storage/RequiredItems.hpp"
 
 class MediaInventoryItem
 {

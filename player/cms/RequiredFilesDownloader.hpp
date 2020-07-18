@@ -11,6 +11,7 @@
 using DownloadResult = boost::future<bool>;
 using DownloadResults = std::vector<DownloadResult>;
 using ResponseContentResult = ResponseResult<std::string>;
+
 class XmdsFileDownloader;
 class XmdsRequestSender;
 class FileCache;

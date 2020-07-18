@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/crypto/Md5Hash.hpp"
+#include "common/dt/DateTime.hpp"
 
 #include <istream>
 #include <string>
@@ -29,6 +30,7 @@ struct ResourceFile
     int layoutId;
     int regionId;
     int mediaId;
+    DateTime lastUpdate;
 };
 
 std::ostream& operator<<(std::ostream& out, const RegularFile& file);

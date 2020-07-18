@@ -4,7 +4,7 @@
 #include "control/layout/OverlayLayoutParser.hpp"
 #include "control/widgets/Widget.hpp"
 
-#include "common/fs/FileCache.hpp"
+#include "common/storage/FileCache.hpp"
 #include "common/logger/Logging.hpp"
 #include "schedule/Scheduler.hpp"
 #include "stat/StatsRecorder.hpp"

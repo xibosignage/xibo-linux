@@ -2,7 +2,7 @@
 
 #include <gmock/gmock.h>
 
-#include "common/fs/FileCache.hpp"
+#include "common/storage/FileCache.hpp"
 
 class FakeFileCache : public FileCache
 {

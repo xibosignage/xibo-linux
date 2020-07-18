@@ -103,6 +103,7 @@ namespace XmdsResources
             const std::string LayoutId = "layoutid";
             const std::string RegionId = "regionid";
             const std::string MediaId = "mediaid";
+            const std::string LastUpdate = "updated";
         }
     }
 

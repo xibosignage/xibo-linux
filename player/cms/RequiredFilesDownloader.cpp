@@ -2,7 +2,7 @@
 
 #include "cms/xmds/XmdsFileDownloader.hpp"
 #include "cms/xmds/XmdsRequestSender.hpp"
-#include "common/fs/FileCache.hpp"
+#include "common/storage/FileCache.hpp"
 #include "networking/HttpClient.hpp"
 
 RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestSender, FileCache& fileCache) :

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/Parsing.hpp"
-#include "common/fs/FileCache.hpp"
+#include "common/storage/FileCache.hpp"
 
 #include <boost/noncopyable.hpp>
 

@@ -23,9 +23,9 @@
 
 #include "common/PlayerRuntimeError.hpp"
 #include "common/crypto/RsaManager.hpp"
-#include "common/fs/FileCacheImpl.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/storage/FileCacheImpl.hpp"
 #include "common/system/System.hpp"
 
 static std::unique_ptr<XiboApp> g_app;

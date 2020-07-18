@@ -83,8 +83,9 @@ ResourceFile Soap::ResponseParser<RequiredFiles::Result>::parseResourceFile(cons
     auto layoutId = attrs.get<int>(Resources::ResourceFile::MediaId);
     auto regionId = attrs.get<int>(Resources::ResourceFile::RegionId);
     auto mediaId = attrs.get<int>(Resources::ResourceFile::MediaId);
+    auto lastUpdate = DateTime::utcFromTimestamp(attrs.get<int>(Resources::ResourceFile::LastUpdate));
 
-    return ResourceFile{layoutId, regionId, mediaId};
+    return ResourceFile{layoutId, regionId, mediaId, lastUpdate};
 }
 
 bool Soap::ResponseParser<RequiredFiles::Result>::isLayout(std::string_view type) const
