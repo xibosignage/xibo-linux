@@ -11,7 +11,7 @@ public:
     const std::string& type() const;
     int id() const;
     bool downloadComplete() const;
-    const std::string& md5() const;
+    const Md5Hash& md5() const;
     const std::string& lastChecked() const;
 
 private:
@@ -20,7 +20,7 @@ private:
     std::string type_;
     int id_;
     bool downloadComplete_;
-    std::string md5_;
+    Md5Hash md5_;
     std::string lastChecked_;
 };
 

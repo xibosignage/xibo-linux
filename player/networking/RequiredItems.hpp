@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/crypto/Md5Hash.hpp"
+
 #include <istream>
 #include <string>
 #include <vector>
@@ -15,7 +17,7 @@ struct RegularFile
 
     int id;
     size_t size;
-    std::string hash;
+    Md5Hash hash;
     std::string url;
     std::string name;
     std::string type;

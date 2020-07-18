@@ -82,21 +82,21 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
     {
         auto uri = Uri::fromString(file.url);
         return HttpClient::instance().get(uri).then([this, file](boost::future<HttpResponseResult> future) {
-            return onRegularFileDownloaded(future.get(), file.name, Md5Hash{file.hash});
+            return onRegularFileDownloaded(future.get(), file.name, file.hash);
         });
     }
     else
     {
         return xmdsFileDownloader_->download(file.id, file.type, file.size)
             .then([this, file](boost::future<XmdsResponseResult> future) {
-                return onRegularFileDownloaded(future.get(), file.name, Md5Hash{file.hash});
+                return onRegularFileDownloaded(future.get(), file.name, file.hash);
             });
     }
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !fileCache_.valid(file.name) || !fileCache_.cached(file.name, Md5Hash{file.hash});
+    return !fileCache_.valid(file.name) || !fileCache_.cached(file.name, file.hash);
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const

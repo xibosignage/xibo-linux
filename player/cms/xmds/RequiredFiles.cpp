@@ -71,7 +71,7 @@ RegularFile Soap::ResponseParser<RequiredFiles::Result>::parseRegularFile(const 
     auto fileType = attrs.get<std::string>(Resources::FileType);
     auto id = attrs.get<int>(Resources::RegularFile::Id);
     auto size = attrs.get<size_t>(Resources::RegularFile::Size);
-    auto md5 = attrs.get<std::string>(Resources::RegularFile::MD5);
+    auto md5 = Md5Hash{attrs.get<std::string>(Resources::RegularFile::MD5)};
     auto downloadType = toDownloadType(attrs.get<std::string>(Resources::RegularFile::DownloadType));
     auto [path, name] = parseFileNameAndPath(downloadType, fileType, attrs);
 
