@@ -24,6 +24,7 @@ public:
 
     std::string string(const char* format) const;
     std::string string() const;
+    std::time_t timestamp() const;
     bool valid() const;
 
 private:

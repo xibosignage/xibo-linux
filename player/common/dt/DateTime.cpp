@@ -49,6 +49,11 @@ std::string DateTime::string() const
     return boost::posix_time::to_simple_string(ptime_);
 }
 
+time_t DateTime::timestamp() const
+{
+    return boost::posix_time::to_time_t(ptime_);
+}
+
 DateTime DateTime::fromString(const std::string& str)
 {
     return DateTime{boost::posix_time::time_from_string(str)};
