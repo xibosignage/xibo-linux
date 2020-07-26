@@ -68,35 +68,34 @@ bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResu
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
 {
-    return xmdsRequestSender_.getResource(res.layoutId, res.regionId, res.mediaId).then([this, res](auto future) {
-        auto fileName = std::to_string(res.mediaId) + ".html";
+    return xmdsRequestSender_.getResource(res.layoutId(), res.regionId(), res.mediaId()).then([this, res](auto future) {
         auto [error, result] = future.get();
 
-        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, fileName);
+        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, res.name());
     });
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
 {
-    if (file.downloadType == RegularFile::DownloadType::HTTP)
+    if (file.downloadType() == RegularFile::DownloadType::HTTP)
     {
-        auto uri = Uri::fromString(file.url);
+        auto uri = Uri::fromString(file.url());
         return HttpClient::instance().get(uri).then([this, file](boost::future<HttpResponseResult> future) {
-            return onRegularFileDownloaded(future.get(), file.name, file.hash);
+            return onRegularFileDownloaded(future.get(), file.name(), file.hash());
         });
     }
     else
     {
-        return xmdsFileDownloader_->download(file.id, file.type, file.size)
+        return xmdsFileDownloader_->download(file.id(), file.type(), file.size())
             .then([this, file](boost::future<XmdsResponseResult> future) {
-                return onRegularFileDownloaded(future.get(), file.name, file.hash);
+                return onRegularFileDownloaded(future.get(), file.name(), file.hash());
             });
     }
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !fileCache_.valid(file.name) || !fileCache_.cached(file.name, file.hash);
+    return !fileCache_.valid(file.name()) || !fileCache_.cached(file.name(), file.hash());
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
