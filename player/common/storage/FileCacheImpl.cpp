@@ -53,6 +53,16 @@ bool FileCacheImpl::cached(const std::string& filename, const Md5Hash& hash) con
     return false;
 }
 
+std::vector<std::string> FileCacheImpl::cachedFiles() const
+{
+    std::vector<std::string> files;
+    for (auto&& [name, node] : fileCache_)
+    {
+        files.push_back(name);
+    }
+    return files;
+}
+
 void FileCacheImpl::save(const std::string& fileName, const std::string& fileContent, const Md5Hash& hash)
 {
     Resource path{fileName};

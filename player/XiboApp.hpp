@@ -47,6 +47,7 @@ private:
 
     void onCollectionFinished(const PlayerError& error);
     GeneralInfo collectGeneralInfo();
+    void checkResourceDirectory();
 
 private:
     PlayerSettings playerSettings_;

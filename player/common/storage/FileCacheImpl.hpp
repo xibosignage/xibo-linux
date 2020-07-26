@@ -11,6 +11,7 @@ public:
     void loadFrom(const FilePath& cacheFile) override;
     bool valid(const std::string& filename) const override;
     bool cached(const std::string& filename, const Md5Hash& hash) const override;
+    std::vector<std::string> cachedFiles() const override;
     void save(const std::string& filename, const std::string& content, const Md5Hash& hash) override;
     void markAsInvalid(const std::string& filename) override;
 
