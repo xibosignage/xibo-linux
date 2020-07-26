@@ -2,8 +2,8 @@
 
 #include "common/crypto/Md5Hash.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/storage/RequiredItems.hpp"
 
-#include "cms/xmds/MediaInventoryItem.hpp"
 #include "networking/ResponseResult.hpp"
 
 #include <boost/thread/future.hpp>
@@ -23,11 +23,15 @@ public:
     ~RequiredFilesDownloader();
 
     template <typename RequiredFileType>
-    boost::future<MediaInventoryItems> download(const FilesToDownload<RequiredFileType>& files)
+    boost::future<DownloadResults> download(const RequiredFilesSet<RequiredFileType>& files)
     {
         return boost::async(boost::launch::async, [this, files = std::move(files)]() {
-            auto downloadResults = downloadAll(files);
-            return retrieveDownloadResults(files, std::move(downloadResults));
+            auto results = downloadAll(files);
+            for (auto&& result : results)
+            {
+                result.wait();
+            }
+            return results;
         });
     }
 
@@ -41,19 +45,19 @@ private:
         }
         catch (std::exception& e)
         {
-            Log::error("[RequiredFile] {}", e.what());
+            Log::error("[RequiredFilesDownloader] {}", e.what());
         }
         return {};
     }
 
     template <typename RequiredFileType>
-    DownloadResults downloadAll(const FilesToDownload<RequiredFileType>& requiredFiles)
+    DownloadResults downloadAll(const RequiredFilesSet<RequiredFileType>& requiredFiles)
     {
         DownloadResults results;
 
         for (auto&& file : requiredFiles)
         {
-            Log::trace("[RequiredFile] {}", file);
+            Log::trace("[RequiredFilesDownloader] {}", file);
 
             if (shouldBeDownloaded(file))
             {
@@ -66,23 +70,6 @@ private:
         }
 
         return results;
-    }
-
-    template <typename RequiredFileType>
-    MediaInventoryItems retrieveDownloadResults(const FilesToDownload<RequiredFileType>& files,
-                                                DownloadResults&& results)
-    {
-        MediaInventoryItems items;
-
-        for (std::size_t i = 0; i != results.size(); ++i)
-        {
-            bool downloadComplete = results[i].get();
-            auto&& downloadedFile = files[i];
-
-            items.emplace_back(downloadedFile, downloadComplete);
-        }
-
-        return items;
     }
 
     void saveRegularFile(const std::string& filename, const std::string& content, const Md5Hash& hash);

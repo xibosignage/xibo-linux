@@ -80,6 +80,19 @@ int RegularFile::id() const
     return id_;
 }
 
+ResourceFile::ResourceFile(int layoutId, int regionId, int mediaId, const DateTime& lastUpdate) :
+    layoutId_{layoutId},
+    regionId_{regionId},
+    mediaId_{mediaId},
+    lastUpdate_{lastUpdate}
+{
+}
+
+int ResourceFile::layoutId() const
+{
+    return layoutId_;
+}
+
 int ResourceFile::regionId() const
 {
     return regionId_;
@@ -98,17 +111,4 @@ DateTime ResourceFile::lastUpdate() const
 std::string ResourceFile::name() const
 {
     return std::to_string(mediaId_) + ".html";
-}
-
-ResourceFile::ResourceFile(int layoutId, int regionId, int mediaId, const DateTime& lastUpdate) :
-    layoutId_{layoutId},
-    regionId_{regionId},
-    mediaId_{mediaId},
-    lastUpdate_{lastUpdate}
-{
-}
-
-int ResourceFile::layoutId() const
-{
-    return layoutId_;
 }

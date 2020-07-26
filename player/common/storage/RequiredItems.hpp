@@ -71,4 +71,4 @@ std::ostream& operator<<(std::ostream& out, const RegularFile& file);
 std::ostream& operator<<(std::ostream& out, const ResourceFile& res);
 
 template <typename RequriedFile>
-using FilesToDownload = std::vector<RequriedFile>;
+using RequiredFilesSet = std::vector<RequriedFile>;

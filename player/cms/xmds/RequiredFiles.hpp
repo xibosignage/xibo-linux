@@ -11,15 +11,15 @@ namespace RequiredFiles
 {
     struct Result
     {
-        const FilesToDownload<RegularFile>& requiredFiles() const;
-        const FilesToDownload<ResourceFile>& requiredResources() const;
+        const RequiredFilesSet<RegularFile>& requiredFiles() const;
+        const RequiredFilesSet<ResourceFile>& requiredResources() const;
 
         void addFile(RegularFile&& file);
         void addResource(ResourceFile&& resource);
 
     private:
-        FilesToDownload<RegularFile> m_requiredFiles;
-        FilesToDownload<ResourceFile> m_requiredResources;
+        RequiredFilesSet<RegularFile> m_requiredFiles;
+        RequiredFilesSet<ResourceFile> m_requiredResources;
     };
 
     struct Request

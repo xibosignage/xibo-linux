@@ -51,8 +51,8 @@ private:
     void onDisplayRegistered(const ResponseResult<RegisterDisplay::Result>& registerDisplay);
     PlayerError displayStatus(const RegisterDisplay::Result::Status& status);
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles);
+    void updateMediaInventory(const RequiredFiles::Result& requiredFilesResult);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule);
-    void updateMediaInventory(MediaInventoryItems&& items);
     void onSubmitted(const ResponseResult<SubmitLog::Result>& logResult);
     void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult);
     template <typename Result>
