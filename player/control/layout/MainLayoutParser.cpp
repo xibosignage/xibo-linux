@@ -9,7 +9,7 @@
 #include "common/fs/Resource.hpp"
 
 const std::string DefaultColor = "#000";
-const bool DefaultStatsEnabled = false;
+const bool DefaultStatsEnabled = true;
 
 MainLayoutParser::Error::Error(const std::string& domain, int layoutId, const std::string& reason) :
     PlayerRuntimeError{domain, "Layout " + std::to_string(layoutId) + " is invalid or missing. Reason: " + reason}
@@ -94,7 +94,7 @@ void MainLayoutParser::addRegions(Xibo::MainLayout& layout, const XmlNode& layou
     {
         if (nodeName != XlfResources::RegionNode) continue;
 
-        RegionParser parser;
+        RegionParser parser{globalStatsEnabled_};
         auto position = parser.positionFrom(node);
         layout.addRegion(parser.regionFrom(node), position.left, position.top, position.zorder);
     }

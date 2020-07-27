@@ -12,7 +12,7 @@ namespace XlfResources::Media
     const std::string Height = Parsing::xmlAttr("height");
     const std::string Uri = Parsing::xmlOption("uri");
     const std::string Duration = Parsing::xmlAttr("duration");
-    const std::string EnableStat = Parsing::xmlOption("enableStat");
+    const std::string EnableStat = Parsing::xmlAttr("enableStat");
 
     const std::string AudioType = "audio";
     const std::string AudioNodeType = "audionode";
