@@ -73,4 +73,3 @@ add_subdirectory(config)
 add_subdirectory(networking)
 add_subdirectory(watchdog)
 add_subdirectory(xmr)
-

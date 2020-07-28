@@ -23,8 +23,8 @@ target_link_libraries(${PROJECT_NAME}
     dt
     fs
     logger
-    crypto
     common
+    storage
 )
 
 add_subdirectory(tests)

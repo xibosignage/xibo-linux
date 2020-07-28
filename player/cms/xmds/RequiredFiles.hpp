@@ -5,7 +5,7 @@
 #include "cms/xmds/Soap.hpp"
 
 #include "common/SoapField.hpp"
-#include "networking/RequiredItems.hpp"
+#include "common/storage/RequiredItems.hpp"
 
 namespace RequiredFiles
 {

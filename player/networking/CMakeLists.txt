@@ -7,8 +7,6 @@ add_library(${PROJECT_NAME}
     HttpSession.hpp
     HttpRequest.hpp
     ProxyHttpRequest.hpp
-    RequiredItems.cpp
-    RequiredItems.hpp
     ResponseResult.hpp
 )
 

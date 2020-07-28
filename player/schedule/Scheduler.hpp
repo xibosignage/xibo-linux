@@ -6,7 +6,7 @@
 #include "schedule/SchedulerStatus.hpp"
 
 #include "common/dt/Timer.hpp"
-#include "common/fs/FileCache.hpp"
+#include "common/storage/FileCache.hpp"
 
 #include <boost/signals2/signal.hpp>
 

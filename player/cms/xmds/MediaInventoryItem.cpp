@@ -44,7 +44,7 @@ bool MediaInventoryItem::downloadComplete() const
     return downloadComplete_;
 }
 
-const std::string& MediaInventoryItem::md5() const
+const Md5Hash& MediaInventoryItem::md5() const
 {
     return md5_;
 }
