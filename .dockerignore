@@ -1,4 +1,0 @@
-Dockerfile
-
-# We must not push this file into the container, because its extension interferes with snapcraft push command
-Dockerfile.snap

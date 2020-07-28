@@ -16,12 +16,16 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Install Snapcraft
+        uses: samuelmeuli/action-snapcraft@v1
+        with:
+          snapcraft_token: ${{ secrets.SNAPCRAFT_TOKEN }}
+
       - name: Build
-        run: |
-          docker build -f Dockerfile.snapcraft -t docker-snapcraft .
-          echo ${{ secrets.SNAPCRAFT_TOKEN }} >> snapcraft.login
-          docker build -f Dockerfile -t xibo-linux-snap .
-          rm snapcraft.login
+        run: snapcraft
+
+      - name: Push
+        run: snapcraft push *.snap
 
   in_fork:
     name: Skip in a fork
