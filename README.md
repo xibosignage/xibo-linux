@@ -51,9 +51,15 @@ Contributions of any kind are welcome!
 
 If you would like to work on the Player you can build it locally using the instructions below.
 
+### Building with Snapcraft
 
+- Install snapcraft `sudo snap install snapcraft --classic`
+- Clone this repository
+- Run `snapcraft` in the root of the repository
+- A `.snap` file will be created which you can use to install from
 
 ## Building from sources
+We're unable to provide any support for building outside of the snapcraft build system. These notes are provided for your information.
 
 ### Building manually
 
@@ -69,12 +75,4 @@ NOTE: These libraries can require additional installations if you haven't such. 
 - `spdlog=1.4.1` logging library
 - `gtest=1.8.1` for tests
 - `webkitgtk>=2.4.10` web content rendering
-- `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
-
-
-
-### Building with Snapcraft
-
-- Install snapcraft
-- Clone this repository
-- Run `snapcraft` in the root of the repository
+- `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70`
