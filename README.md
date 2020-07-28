@@ -1,6 +1,6 @@
 # Xibo for Linux
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![xibo-player](https://snapcraft.io/xibo-player/badge.svg)](https://snapcraft.io/xibo-player)
@@ -38,6 +38,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://xibo.org.uk"><img src="https://avatars0.githubusercontent.com/u/10400067?v=4" width="100px;" alt=""/><br /><sub><b>Dan Garner</b></sub></a><br /><a href="#business-dasgarner" title="Business development">💼</a></td>
     <td align="center"><a href="http://springsignage.com"><img src="https://avatars1.githubusercontent.com/u/10450518?v=4" width="100px;" alt=""/><br /><sub><b>Alex Harrington</b></sub></a><br /><a href="#infra-alexharrington" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     <td align="center"><a href="https://github.com/DanielBW1"><img src="https://avatars2.githubusercontent.com/u/40995523?v=4" width="100px;" alt=""/><br /><sub><b>DanielBW1</b></sub></a><br /><a href="https://github.com/xibosignage/xibo-linux/issues?q=author%3ADanielBW1" title="Bug reports">🐛</a></td>
+    <td align="center"><a href="https://github.com/Stivius"><img src="https://avatars0.githubusercontent.com/u/8138923?v=4" width="100px;" alt=""/><br /><sub><b>Maxim Ivanov</b></sub></a><br /><a href="https://github.com/xibosignage/xibo-linux/commits?author=Stivius" title="Code">💻</a></td>
   </tr>
 </table>
 
