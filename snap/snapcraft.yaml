@@ -112,6 +112,7 @@ parts:
     build-packages:
       - bison
       - flex
+      - gettext
       - liborc-0.4-dev
       - libpulse-dev
       - libxv-dev
