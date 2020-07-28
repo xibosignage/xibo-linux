@@ -4,12 +4,12 @@
 
 namespace Resources = XmdsResources::RequiredFiles;
 
-const FilesToDownload<RegularFile>& RequiredFiles::Result::requiredFiles() const
+const RequiredFilesSet<RegularFile>& RequiredFiles::Result::requiredFiles() const
 {
     return m_requiredFiles;
 }
 
-const FilesToDownload<ResourceFile>& RequiredFiles::Result::requiredResources() const
+const RequiredFilesSet<ResourceFile>& RequiredFiles::Result::requiredResources() const
 {
     return m_requiredResources;
 }

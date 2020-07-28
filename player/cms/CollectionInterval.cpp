@@ -6,6 +6,7 @@
 #include "common/dt/Timer.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
+#include "common/storage/FileCache.hpp"
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
@@ -173,8 +174,10 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
         auto resourcesResult = downloader.download(resources);
         auto filesResult = downloader.download(files);
 
-        updateMediaInventory(filesResult.get());
-        updateMediaInventory(resourcesResult.get());
+        resourcesResult.wait();
+        filesResult.wait();
+
+        updateMediaInventory(result);
 
         MainLoop::pushToUiThread([this]() { filesDownloaded_(); });
     }
@@ -182,6 +185,20 @@ void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Res
     {
         sessionFinished(error);
     }
+}
+
+void CollectionInterval::updateMediaInventory(const RequiredFiles::Result& result)
+{
+    MediaInventoryItems items;
+    for (auto&& file : result.requiredFiles())
+    {
+        items.emplace_back(file, fileCache_.valid(file.name()));
+    }
+    for (auto&& file : result.requiredResources())
+    {
+        items.emplace_back(file, fileCache_.valid(file.name()));
+    }
+    onSubmitted("MediaInventory", xmdsSender_.mediaInventory(std::move(items)).get());
 }
 
 void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& schedule)
@@ -198,11 +215,6 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     {
         sessionFinished(error);
     }
-}
-
-void CollectionInterval::updateMediaInventory(MediaInventoryItems&& items)
-{
-    onSubmitted("MediaInventory", xmdsSender_.mediaInventory(std::move(items)).get());
 }
 
 template <typename Result>

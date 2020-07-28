@@ -5,21 +5,21 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <chrono>
 
-const std::string DEFAULT_RESOURCE_TYPE = "resource";
+const std::string ResourceType = "resource";
 
 MediaInventoryItem::MediaInventoryItem(const RegularFile& file, bool downloadComplete) :
     MediaInventoryItem(downloadComplete)
 {
-    type_ = file.type;
-    id_ = file.id;
-    md5_ = file.hash;
+    type_ = file.type();
+    id_ = file.id();
+    md5_ = file.hash();
 }
 
 MediaInventoryItem::MediaInventoryItem(const ResourceFile& file, bool downloadComplete) :
     MediaInventoryItem(downloadComplete)
 {
-    type_ = DEFAULT_RESOURCE_TYPE;
-    id_ = file.mediaId;
+    type_ = ResourceType;
+    id_ = file.mediaId();
 }
 
 MediaInventoryItem::MediaInventoryItem(bool downloadComplete) : downloadComplete_(downloadComplete)
