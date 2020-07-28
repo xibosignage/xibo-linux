@@ -54,8 +54,18 @@ If you would like to work on the Player you can build it locally using the instr
 
 
 ## Building from sources
+We recommend you use snapcraft to build Xibo.
+
+### Building with Snapcraft
+
+- Install snapcraft, making sure you have version 4 or later (`snap install snapcraft --classic`)
+- Clone this repository
+- Run `snapcraft` in the root of the repository
+- A `.snap` file will be created which you can use to install from
 
 ### Building manually
+
+We're unable to provide any support for building outside of the snapcraft build system. These notes are provided for your information.
 
 NOTE: These libraries can require additional installations if you haven't such. We have tested only with listed libraries versions, however, it can be possible to build with newer or older versions as well.
 - `cmake>=3.14` cross-platform software for managing the build process
@@ -72,9 +82,3 @@ NOTE: These libraries can require additional installations if you haven't such. 
 - `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
 
 
-
-### Building with Snapcraft
-
-- Install snapcraft
-- Clone this repository
-- Run `snapcraft` in the root of the repository
