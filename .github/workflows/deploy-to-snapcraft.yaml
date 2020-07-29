@@ -19,6 +19,7 @@ jobs:
       - name: Install Snapcraft
         uses: samuelmeuli/action-snapcraft@v1
         with:
+          use_lxd: true
           snapcraft_token: ${{ secrets.SNAPCRAFT_TOKEN }}
 
       - name: Build
