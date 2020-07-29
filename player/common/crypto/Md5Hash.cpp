@@ -23,7 +23,7 @@ Md5Hash Md5Hash::fromFile(const FilePath& path)
 {
     auto fileContent = FileSystem::readFromFile(path);
 
-    return Md5Hash::fromString(fileContent.data());
+    return Md5Hash::fromString(fileContent);
 }
 
 bool operator==(const Md5Hash& first, const Md5Hash& second)

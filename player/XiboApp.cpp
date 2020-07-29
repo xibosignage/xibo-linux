@@ -61,6 +61,7 @@ XiboApp::XiboApp(const std::string& name) :
 
     System::preventSleep();
     AppConfig::resourceDirectory(cmsSettings_.resourcesPath());
+    checkResourceDirectory();
 
     webserver_->setRootDirectory(cmsSettings_.resourcesPath());
     webserver_->run(playerSettings_.embeddedServerPort());
@@ -202,6 +203,21 @@ GeneralInfo XiboApp::collectGeneralInfo()
     info.windowHeight = mainWindow_->height();
 
     return info;
+}
+
+void XiboApp::checkResourceDirectory()
+{
+    for (auto&& file : fileCache_->cachedFiles())
+    {
+        if (!fileCache_->valid(file)) continue;
+
+        auto fullPath = cmsSettings_.resourcesPath() / file;
+        if (!FileSystem::exists(fullPath) || !fileCache_->cached(file, Md5Hash::fromFile(fullPath)))
+        {
+            Log::trace("[{}] Missing/corrupted in resource directory", file);
+            fileCache_->markAsInvalid(file);
+        }
+    }
 }
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
