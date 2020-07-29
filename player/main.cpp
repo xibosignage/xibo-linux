@@ -1,8 +1,38 @@
 #include "XiboApp.hpp"
+#include "common/logger/Logging.hpp"
 
-int main(int argc, char** argv)
+#include <boost/stacktrace.hpp>
+#include <iostream>
+#include <signal.h>
+
+/* DISCLAIMER
+ * Boost provide boost::stacktrace::stacktrace::safe_dump_to which statisfies the signal-safety
+ * requirements, however, it gives very unuseful stacktrace without function names/lines. So we
+ * decide to go with unsafe stacktrace taking into account we call it in SIGSEGV and SIGABRT
+ * signal handlers which are already the indicators of fatal error
+ */
+void signalStacktraceHandler(int signum)
 {
-    auto&& app = XiboApp::create("org.gtkmm.xibo");
+    signal(signum, SIG_DFL);
+    std::cout << boost::stacktrace::stacktrace() << std::endl;
+    raise(signum);
+}
 
-    return app.run(argc, argv);
+int main(int /*argc*/, char** /*argv*/)
+{
+    signal(SIGSEGV, &signalStacktraceHandler);
+    signal(SIGABRT, &signalStacktraceHandler);
+
+    try
+    {
+        auto&& app = XiboApp::create("org.gtkmm.xibo");
+
+        return app.run();
+    }
+    catch (std::exception& e)
+    {
+        Log::error("[Main] {}", e.what());
+    }
+
+    return 0;
 }

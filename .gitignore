@@ -1,5 +1,12 @@
 *.autosave
 *.txt.user
-build-*
-XiboExamples
-Makefile
+xibo-*.snap*
+snap
+gcov
+build*
+WORK
+pch.py
+*.json
+commits_config
+third_party
+snapcraft.login

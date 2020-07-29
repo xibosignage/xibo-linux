@@ -1,41 +1,75 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.14.1)
 
-project(Player)
+project(player)
 
-pkg_check_modules(GStreamer REQUIRED gstreamer-1.0>=1.8.0 gstreamer-video-1.0>=1.8.0 gstreamer-plugins-base-1.0>=1.8.0)
-pkg_check_modules(WebKit REQUIRED webkitgtk-3.0>=2.4.10)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${WebKit_INCLUDE_DIRS} ${GStreamer_INCLUDE_DIRS})
-include_directories(${Gtkmm_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
+find_package(PkgConfig REQUIRED)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -static-libstdc++ -O0 -pthread -Wall -W -Wshadow -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath,libs/")
+pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
+pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
 
-set(CONTROL_SOURCES control/MainLayout.cpp control/Region.cpp control/LayoutOverlay.cpp)
-set(MEDIA_SOURCES media/Media.cpp media/Image.cpp media/Video.cpp media/Audio.cpp media/WebView.cpp media/XiboVideoSink.cpp)
-set(UTILS_SOURCES utils/utilities.cpp)
-set(PARSER_SOURCES parsers/CommandLineParser.cpp parsers/LayoutParser.cpp parsers/RegionParser.cpp parsers/MediaParser.cpp)
-set(CREATORS_SOURCES creators/LayoutBuilder.cpp creators/RegionBuilder.cpp creators/MediaFactory.cpp)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
+set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
 
-set(SOURCE_FILES main.cpp XiboApp.cpp ${CONTROL_SOURCES} ${MEDIA_SOURCES} ${UTILS_SOURCES} ${PARSER_SOURCES} ${CREATORS_SOURCES})
+add_compile_options(
+    -static-libstdc++ -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
+    "$<$<CONFIG:RELEASE>:-O2>"
+    "$<$<CONFIG:DEBUG>:-g3;-O0>"
+)
 
-find_link_libs("${GStreamer_LIBRARIES}" GStreamer_LINK_LIBRARIES)
-find_link_libs("${WebKit_LIBRARIES}" WebKit_LINK_LIBRARIES)
+add_compile_definitions(
+    BOOST_THREAD_PROVIDES_FUTURE
+    BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
+    BOOST_STACKTRACE_USE_ADDR2LINE
+    BOOST_STACKTRACE_USE_BACKTRACE
+)
 
-find_soname_libs("${Gtkmm_LINK_LIBRARIES}" Gtkmm_SONAME_LIBRARIES)
-find_soname_libs("${GStreamer_LINK_LIBRARIES}" GStreamer_SONAME_LIBRARIES)
-find_soname_libs("${WebKit_LINK_LIBRARIES}" WebKit_SONAME_LIBRARIES)
-find_soname_libs("${Boost_LIBRARIES}" Boost_SONAME_LIBRARIES)
+option(SNAP_BUILD "Use SNAP environment during build" OFF)
+if(SNAP_BUILD)
+    add_compile_definitions(SNAP_ENABLED)
+endif(SNAP_BUILD)
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} gcov ${Gtkmm_LINK_LIBRARIES} ${GStreamer_LINK_LIBRARIES} ${WebKit_LINK_LIBRARIES} ${Boost_LIBRARIES})
+option(GTK_UI "Use GTK library for UI" ON)
+if(GTK_UI)
+    add_compile_definitions(USE_GTK)
+endif(GTK_UI)
 
-# install
-install(DIRECTORY DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/libs/)
-copy_libs("${Gtkmm_SONAME_LIBRARIES}")
-copy_libs("${GStreamer_SONAME_LIBRARIES}")
-copy_libs("${WebKit_SONAME_LIBRARIES}")
-copy_libs("${Boost_SONAME_LIBRARIES}")
+add_executable(${PROJECT_NAME}
+    main.cpp
+    MainLoop.cpp
+    MainLoop.hpp
+    XiboApp.cpp
+    XiboApp.hpp
+)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}) # TODO remove this workaround
+target_link_libraries(${PROJECT_NAME}
+    xmr
+    cms
+    networking
+    schedule
+    config
+    control
+    system
+    dl
+    backtrace
+)
 
-# Tests
-include(PlayerTests)
+configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
+configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
+configure_file(snap_run.sh ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/snap_run.sh COPYONLY)
+install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
+
+enable_testing()
+
+add_subdirectory(stat)
+add_subdirectory(control)
+add_subdirectory(cms)
+add_subdirectory(schedule)
+add_subdirectory(options)
+add_subdirectory(common)
+add_subdirectory(config)
+add_subdirectory(networking)
+add_subdirectory(watchdog)
+add_subdirectory(xmr)

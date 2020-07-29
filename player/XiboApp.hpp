@@ -1,34 +1,67 @@
 #pragma once
 
-#include <gtkmm/application.h>
-#include <spdlog/spdlog.h>
+#include "control/ApplicationWindow.hpp"
+#include "control/status/GeneralInfo.hpp"
+#include "control/widgets/gtk/WindowGtk.hpp"
 
-#include "parsers/CommandLineParser.hpp"
+#include "config/CmsSettings.hpp"
+#include "config/PlayerSettings.hpp"
 
-class XiboApp : public Gtk::Application
+#include <boost/noncopyable.hpp>
+#include <memory>
+
+class MainLoop;
+class XmdsRequestSender;
+class HttpClient;
+class Scheduler;
+class FileCache;
+class CollectionInterval;
+class ScreenShotInterval;
+class PlayerError;
+class XmrManager;
+using ApplicationWindowGtk = ApplicationWindow<WindowGtk>;
+class LocalWebServer;
+class StatsRecorder;
+class LayoutsManager;
+class XiboApp;
+struct PlayerSettings;
+
+XiboApp& xiboApp();
+
+class XiboApp : boost::noncopyable
 {
 public:
-    XiboApp(const XiboApp& other) = delete;
-    XiboApp& operator=(const XiboApp& other) = delete;
-
     static XiboApp& create(const std::string& name);
-    static const XiboApp& app();
+    int run();
 
-    const CommandLineParser& command_line_parser() const;
-
-    int run(int argc, char** argv);
+    static Uri localAddress();
 
 private:
-    XiboApp();
+    XiboApp(const std::string& name);
 
-    void init();
-    void parse_command_line(int argc, char** argv);
-    std::string get_xlf_file();
+    std::unique_ptr<XmrManager> createXmrManager();
+    std::shared_ptr<ApplicationWindowGtk> createMainWindow();
+    std::unique_ptr<LayoutsManager> createLayoutManager();
+    std::unique_ptr<CollectionInterval> createCollectionInterval(XmdsRequestSender& xmdsManager);
+    std::unique_ptr<ScreenShotInterval> createScreenshotInterval(XmdsRequestSender& xmdsManager, Xibo::Window& window);
+
+    void onCollectionFinished(const PlayerError& error);
+    GeneralInfo collectGeneralInfo();
+    void checkResourceDirectory();
 
 private:
-    Glib::RefPtr<Gtk::Application> m_parent_app;
-    std::shared_ptr<spdlog::logger> m_logger;
-    CommandLineParser m_options;
+    PlayerSettings playerSettings_;
+    CmsSettings cmsSettings_;
 
-    static std::unique_ptr<XiboApp> m_app;
+    std::unique_ptr<MainLoop> mainLoop_;
+    std::unique_ptr<FileCache> fileCache_;
+    std::unique_ptr<Scheduler> scheduler_;
+    std::unique_ptr<CollectionInterval> collectionInterval_;
+    std::unique_ptr<ScreenShotInterval> screenShotInterval_;
+    std::unique_ptr<XmdsRequestSender> xmdsManager_;
+    std::unique_ptr<StatsRecorder> statsRecorder_;
+    std::unique_ptr<XmrManager> xmrManager_;
+    std::shared_ptr<ApplicationWindowGtk> mainWindow_;
+    std::shared_ptr<LocalWebServer> webserver_;
+    std::unique_ptr<LayoutsManager> layoutManager_;
 };

@@ -1,0 +1,204 @@
+name: xibo-player
+base: core18
+version: 1.8-R5
+summary: Xibo Linux Player
+description: Xibo for Linux Digital Signage Player
+grade: stable
+confinement: strict
+
+slots:
+  dbus-daemon: # name this whatever you want
+    interface: dbus
+    bus: session
+    name: org.gtkmm.xibo # adjust accordingly
+
+apps:
+  xibo-player:
+    command: bin/snap_run.sh watchdog
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    slots: [dbus-daemon]
+    extensions: [gnome-3-28]
+
+  options:
+    command: bin/options
+    plugs: [gsettings, network, home]
+    slots: [dbus-daemon]
+    extensions: [gnome-3-28]
+
+parts:
+  base:
+    plugin: nil
+    build-packages:
+      - software-properties-common
+      - apt-transport-https
+      - ca-certificates 
+      - gnupg 
+      - curl 
+      - wget
+      - unzip
+      - libgtkmm-3.0-dev 
+      - libwebkitgtk-3.0-dev
+      - libxss-dev
+      - libglibmm-2.4-dev
+      - libssl-dev
+
+  g++-8: # Ubuntu 18.04 has outdated gcc so we have to install it from PPA
+    plugin: nil
+    override-pull: |
+      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+      sudo apt-get update
+      sudo apt-get install -y g++-8
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
+    after: [base]
+
+  cmake:
+    plugin: nil
+    override-pull: |
+      wget -nv https://apt.kitware.com/keys/kitware-archive-latest.asc -O Release.key
+      sudo apt-key add - < Release.key
+      sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+      sudo apt-get update
+      sudo apt-get install -y cmake
+    after: [g++-8]
+
+  zmq: # Ubuntu 18.04 has outdated ZMQ so we are pulling it from official stable repo
+    plugin: nil
+    override-pull: |
+      sudo sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
+      wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
+      sudo apt-key add - < Release.key
+      sudo apt-get update
+      sudo apt-get install -y libzmq3-dev
+
+  boost: # Ubuntu 18.04 has outdated boost so we have to install it from PPA
+    plugin: nil
+    override-pull: |
+      sudo add-apt-repository ppa:mhier/libboost-latest
+      sudo apt-get update
+      sudo apt-get install -y libboost1.70-dev
+    after: [base]
+
+  spdlog: 
+    source: https://github.com/gabime/spdlog/archive/v1.4.1.tar.gz
+    plugin: cmake
+    after: [cmake]
+
+  gtest: 
+    source: https://codeload.github.com/google/googletest/tar.gz/release-1.8.1
+    source-type: tar
+    plugin: cmake
+    after: [cmake]
+
+  cryptopp:
+    plugin: nil
+    override-pull: |
+      curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_8_1_0.tar.gz && \
+      curl -o cryptopp_pem.zip -SL https://github.com/noloader/cryptopp-pem/archive/095f08ff2ef9bca7b81036a59f2395e4f08ce2e8.zip && \
+      tar -zxvf cryptopp.tar.gz && \
+      unzip -a cryptopp_pem.zip && \
+      cp -r cryptopp-pem-095f08ff2ef9bca7b81036a59f2395e4f08ce2e8/. cryptopp-CRYPTOPP_8_1_0 && \
+      cd cryptopp-CRYPTOPP_8_1_0 && \
+      make -j4 && \
+      make install
+
+  gstreamer:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gstreamer.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - bison
+      - flex
+      - gettext
+      - liborc-0.4-dev
+      - libpulse-dev
+      - libxv-dev
+      - libtag1-dev
+      - libwavpack-dev
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - libglew-dev
+    stage-packages:
+      - liborc-0.4-dev
+      - libasound2-dev
+      - libjpeg-dev
+      - libvpx-dev
+      - libvorbis-dev
+      - libogg-dev
+      - libpulse-dev
+      - libpulse0
+      - libwavpack-dev
+      - libtag1v5
+      - libopus-dev
+      - libtheora-dev
+      - libxv-dev
+      - libxdamage-dev
+      - libcdparanoia-dev
+      - libgl1-mesa-glx
+      - libglu1-mesa
+      - libglew2.0
+    after: [g++-8]
+
+  gst-plugins-base:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-plugins-base.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - liborc-0.4-dev
+      - libfribidi-dev
+      - libpulse-dev
+    after: [gstreamer]
+
+  gst-libav:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-libav.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - yasm
+      - liborc-0.4-dev
+      - libpulse-dev
+      - libva-dev
+    stage-packages:
+      - libpulse0
+    after: [gst-plugins-base]
+
+  gst-plugins-good:
+    override-pull: |
+      snapcraftctl pull
+      git checkout 1.16.2
+    source: https://github.com/GStreamer/gst-plugins-good.git
+    plugin: autotools
+    configflags: ['--prefix=/usr', '--disable-gtk-doc']
+    build-packages:
+      - liborc-0.4-dev
+      - libpulse-dev
+    stage-packages:
+      - libpulse0
+    after: [gst-libav]
+
+  player:
+    source: player
+    plugin: cmake
+    configflags:
+      - -DCMAKE_BUILD_TYPE=Release
+      - -DSNAP_BUILD=ON
+    disable-parallel: true
+    stage-packages:
+      - freeglut3
+      - libzmq5
+      - libboost1.70
+      - libgtkmm-3.0-1v5
+      - libcanberra-gtk3-module
+      - libwebkitgtk-3.0-0
+      - libgpm2 # gstreamer warning
+      - libslang2 # gstreamer warning
+    after: [zmq, boost, spdlog, gtest] 
