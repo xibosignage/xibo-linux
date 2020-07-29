@@ -11,6 +11,7 @@ static XmlNode::path_type attributePath(const std::string& path)
 
 const XmlNode::path_type ValidAttr{attributePath("valid")};
 const XmlNode::path_type Md5Attr{attributePath("md5")};
+const XmlNode::path_type LastUpdateAttr{attributePath("updated")};
 
 void FileCacheImpl::loadFrom(const FilePath& cacheFile)
 {
@@ -38,6 +39,28 @@ bool FileCacheImpl::valid(const std::string& filename) const
     auto node = fileCache_.get_child_optional(attributePath(filename));
 
     return node.has_value() && node->get<bool>(ValidAttr);
+}
+
+bool FileCacheImpl::cached(const RegularFile& file) const
+{
+    return cached(file.name(), file.hash());
+}
+
+bool FileCacheImpl::cached(const ResourceFile& file) const
+{
+    auto node = fileCache_.get_child_optional(attributePath(file.name()));
+
+    if (node)
+    {
+        auto lastUpdate = node->get_optional<int>(LastUpdateAttr);
+        if (lastUpdate)
+        {
+            auto savedLastUpdated = DateTime::utcFromTimestamp(*lastUpdate);
+            return savedLastUpdated >= file.lastUpdate();
+        }
+    }
+
+    return false;
 }
 
 bool FileCacheImpl::cached(const std::string& filename, const Md5Hash& hash) const
@@ -72,6 +95,15 @@ void FileCacheImpl::save(const std::string& fileName, const std::string& fileCon
     addToCache(fileName, Md5Hash::fromString(fileContent), hash);
 }
 
+void FileCacheImpl::save(const std::string& fileName, const std::string& fileContent, const DateTime& lastUpdate)
+{
+    Resource path{fileName};
+
+    FileSystem::writeToFile(path, fileContent);
+
+    addToCache(fileName, Md5Hash::fromString(fileContent), lastUpdate);
+}
+
 void FileCacheImpl::markAsInvalid(const std::string& filename)
 {
     auto node = fileCache_.get_child_optional(attributePath(filename));
@@ -87,6 +119,18 @@ void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash,
     XmlNode node;
     node.put(Md5Attr, hash);
     node.put(ValidAttr, hash == target);
+
+    fileCache_.put_child(attributePath(filename), node);
+
+    saveFileHashes(cacheFile_);
+}
+
+void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash, const DateTime& lastUpdate)
+{
+    XmlNode node;
+    node.put(Md5Attr, hash);
+    node.put(LastUpdateAttr, lastUpdate.timestamp());
+    node.put(ValidAttr, true);
 
     fileCache_.put_child(attributePath(filename), node);
 

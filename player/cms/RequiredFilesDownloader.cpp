@@ -14,65 +14,48 @@ RequiredFilesDownloader::RequiredFilesDownloader(XmdsRequestSender& xmdsRequestS
 
 RequiredFilesDownloader::~RequiredFilesDownloader() {}
 
-void RequiredFilesDownloader::saveRegularFile(const std::string& filename,
-                                              const std::string& content,
-                                              const Md5Hash& hash)
-{
-    fileCache_.save(filename, content, hash);
-}
-
-void RequiredFilesDownloader::saveResourceFile(const std::string& filename, const std::string& content)
-{
-    auto hash = Md5Hash::fromString(content);
-    if (!fileCache_.cached(filename, hash))
-    {
-        fileCache_.save(filename, content, hash);
-    }
-}
-
-bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result,
-                                                      const std::string& filename,
-                                                      const Md5Hash& hash)
+bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResult& result, const RegularFile& file)
 {
     auto [error, fileContent] = result;
     if (!error)
     {
-        saveRegularFile(filename, fileContent, hash);
+        fileCache_.save(file.name(), fileContent, file.hash());
 
-        Log::debug("[{}] Downloaded", filename);
+        Log::debug("[{}] Downloaded", file.name());
         return true;
     }
     else
     {
-        Log::error("[{}] Download error: {}", filename, error);
+        Log::error("[{}] Download error: {}", file.name());
         return false;
     }
 }
 
-bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResult& result, const std::string& filename)
+bool RequiredFilesDownloader::onResourceFileDownloaded(const ResponseContentResult& result, const ResourceFile& file)
 {
     auto [error, fileContent] = result;
     if (!error)
     {
-        saveResourceFile(filename, fileContent);
+        fileCache_.save(file.name(), fileContent, file.lastUpdate());
 
-        Log::debug("[{}] Downloaded", filename);
+        Log::debug("[{}] Downloaded", file.name());
         return true;
     }
     else
     {
-        Log::error("[{}] Download error: {}", filename, error);
+        Log::error("[{}] Download error: {}", file.name(), error);
         return false;
     }
 }
 
-DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& res)
+DownloadResult RequiredFilesDownloader::downloadRequiredFile(const ResourceFile& file)
 {
-    return xmdsRequestSender_.getResource(res.layoutId(), res.regionId(), res.mediaId()).then([this, res](auto future) {
-        auto [error, result] = future.get();
+    return xmdsRequestSender_.getResource(file.layoutId(), file.regionId(), file.mediaId())
+        .then([this, file](auto future) {
+            auto [error, result] = future.get();
 
-        return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, res.name());
-    });
+            return onResourceFileDownloaded(ResponseContentResult{error, result.resource}, file);
+        });
 }
 
 DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& file)
@@ -81,24 +64,24 @@ DownloadResult RequiredFilesDownloader::downloadRequiredFile(const RegularFile& 
     {
         auto uri = Uri::fromString(file.url());
         return HttpClient::instance().get(uri).then([this, file](boost::future<HttpResponseResult> future) {
-            return onRegularFileDownloaded(future.get(), file.name(), file.hash());
+            return onRegularFileDownloaded(future.get(), file);
         });
     }
     else
     {
         return xmdsFileDownloader_->download(file.id(), file.type(), file.size())
             .then([this, file](boost::future<XmdsResponseResult> future) {
-                return onRegularFileDownloaded(future.get(), file.name(), file.hash());
+                return onRegularFileDownloaded(future.get(), file);
             });
     }
 }
 
 bool RequiredFilesDownloader::shouldBeDownloaded(const RegularFile& file) const
 {
-    return !fileCache_.valid(file.name()) || !fileCache_.cached(file.name(), file.hash());
+    return !fileCache_.valid(file.name()) || !fileCache_.cached(file);
 }
 
-bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile&) const
+bool RequiredFilesDownloader::shouldBeDownloaded(const ResourceFile& file) const
 {
-    return true;
+    return !fileCache_.valid(file.name()) || !fileCache_.cached(file);
 }
