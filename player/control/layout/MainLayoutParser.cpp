@@ -9,12 +9,14 @@
 #include "common/fs/Resource.hpp"
 
 const std::string DefaultColor = "#000";
-const bool DefaultStatsEnabled = false;
+const bool DefaultStatsEnabled = true;
 
 MainLayoutParser::Error::Error(const std::string& domain, int layoutId, const std::string& reason) :
     PlayerRuntimeError{domain, "Layout " + std::to_string(layoutId) + " is invalid or missing. Reason: " + reason}
 {
 }
+
+MainLayoutParser::MainLayoutParser(bool globalStatsEnabled) : globalStatsEnabled_{globalStatsEnabled} {}
 
 std::unique_ptr<Xibo::MainLayout> MainLayoutParser::parseBy(int layoutId)
 {
@@ -51,7 +53,8 @@ MainLayoutOptions MainLayoutParser::optionsFrom(const XmlNode& node)
 {
     auto width = node.get<int>(XlfResources::MainLayout::Width);
     auto height = node.get<int>(XlfResources::MainLayout::Height);
-    auto statsEnabled = node.get<bool>(XlfResources::MainLayout::StatsEnabled, DefaultStatsEnabled);
+    auto statsEnabled =
+        globalStatsEnabled_ && node.get<bool>(XlfResources::MainLayout::StatsEnabled, DefaultStatsEnabled);
 
     auto backgroundUri = backgroundUriFrom(node);
     auto backgroundColor = backgroundColorFrom(node);
@@ -91,7 +94,7 @@ void MainLayoutParser::addRegions(Xibo::MainLayout& layout, const XmlNode& layou
     {
         if (nodeName != XlfResources::RegionNode) continue;
 
-        RegionParser parser;
+        RegionParser parser{globalStatsEnabled_};
         auto position = parser.positionFrom(node);
         layout.addRegion(parser.regionFrom(node), position.left, position.top, position.zorder);
     }

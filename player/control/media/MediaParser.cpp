@@ -12,6 +12,8 @@
 
 namespace MediaResources = XlfResources::Media;
 
+const bool DefaultEnableStat = true;
+
 std::istream& operator>>(std::istream& in, MediaGeometry::ScaleType& scaleType)
 {
     std::string temp;
@@ -93,27 +95,17 @@ std::istream& operator>>(std::istream& in, Transition::Direction& direction)
     return in;
 }
 
-std::istream& operator>>(std::istream& in, MediaOptions::StatPolicy& policy)
-{
-    std::string temp;
-    in >> temp;
-
-    if (temp == MediaResources::StatsPolicy::Off)
-        policy = MediaOptions::StatPolicy::Disable;
-    else if (temp == MediaResources::StatsPolicy::On)
-        policy = MediaOptions::StatPolicy::Enable;
-    else if (temp == MediaResources::StatsPolicy::Inherit)
-        policy = MediaOptions::StatPolicy::Inherit;
-
-    return in;
-}
-
-std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node, int parentWidth, int parentHeight)
+std::unique_ptr<Xibo::Media> MediaParser::mediaFrom(const XmlNode& node,
+                                                    int parentWidth,
+                                                    int parentHeight,
+                                                    bool globalStatEnabled)
 {
     using namespace std::string_literals;
 
     try
     {
+        globalStatEnabled_ = globalStatEnabled;
+
         auto baseOptions = baseOptionsFrom(node);
         auto media = createMedia(baseOptions, node, parentWidth, parentHeight);
 
@@ -140,7 +132,7 @@ MediaOptions MediaParser::baseOptionsFrom(const XmlNode& node)
     auto id = idFrom(node);
     auto uri = uriFrom(node);
     auto duration = durationFrom(node);
-    auto stat = statFrom(node);
+    auto stat = globalStatEnabled_ && statFrom(node);
     auto geometry = geometryFrom(node);
 
     return MediaOptions{type, id, uri, duration, stat, geometry};
@@ -183,9 +175,9 @@ MediaGeometry MediaParser::geometryFrom(const XmlNode& /*node*/)
     return MediaGeometry{MediaGeometry::ScaleType::Scaled, MediaGeometry::Align::Left, MediaGeometry::Valign::Top};
 }
 
-MediaOptions::StatPolicy MediaParser::statFrom(const XmlNode& node)
+bool MediaParser::statFrom(const XmlNode& node)
 {
-    return node.get<MediaOptions::StatPolicy>(MediaResources::EnableStat, MediaOptions::StatPolicy::Inherit);
+    return node.get<bool>(MediaResources::EnableStat, DefaultEnableStat);
 }
 
 void MediaParser::attach(Xibo::Media& media, const XmlNode& node)
@@ -197,7 +189,7 @@ void MediaParser::attach(Xibo::Media& media, const XmlNode& node)
 
         if (parser)
         {
-            media.attach(parser->mediaFrom(attachedNode, 0, 0));  // TODO: remove 0, 0
+            media.attach(parser->mediaFrom(attachedNode, 0, 0, globalStatEnabled_));  // TODO: remove 0, 0
         }
     }
 }

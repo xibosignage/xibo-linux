@@ -38,12 +38,8 @@ void MainLayoutImpl::monitorMediaStats(Xibo::Region& region)
 {
     for (auto&& media : region.mediaList())
     {
-        media->statEnabled(options_.statEnabled);
-        if (media->statEnabled())
-        {
-            media->statReady().connect(
-                [id = media->id(), this](const PlayingStat& interval) { mediaIntervals_.emplace(id, interval); });
-        }
+        media->statReady().connect(
+            [id = media->id(), this](const PlayingStat& interval) { mediaIntervals_.emplace(id, interval); });
     }
 }
 

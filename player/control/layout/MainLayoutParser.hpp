@@ -10,6 +10,7 @@ class FilePath;
 class MainLayoutParser
 {
 public:
+    MainLayoutParser(bool globalStatsEnabled);
     virtual ~MainLayoutParser() = default;
 
     struct Error : PlayerRuntimeError
@@ -29,5 +30,6 @@ protected:
     void addRegions(Xibo::MainLayout& layout, const XmlNode& node);
 
 private:
+    bool globalStatsEnabled_;
     int layoutId_;
 };

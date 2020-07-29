@@ -10,6 +10,8 @@ const bool DefaultRegionLoop = false;
 
 using namespace std::string_literals;
 
+RegionParser::RegionParser(bool globalStatEnabled) : globalStatEnabled_{globalStatEnabled} {}
+
 std::unique_ptr<Xibo::Region> RegionParser::regionFrom(const XmlNode& node)
 {
     try
@@ -70,7 +72,7 @@ void RegionParser::addMedia(Xibo::Region& region, const XmlNode& regionNode)
             int width = region.view()->width();
             int height = region.view()->height();
 
-            region.addMedia(parser->mediaFrom(node, width, height));
+            region.addMedia(parser->mediaFrom(node, width, height, globalStatEnabled_));
         }
     }
 }

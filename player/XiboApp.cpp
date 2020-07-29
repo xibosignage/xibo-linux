@@ -113,6 +113,9 @@ int XiboApp::run()
     mainWindow_ = createMainWindow();
     layoutManager_ = createLayoutManager();
 
+    playerSettings_.statsEnabled().valueChanged().connect(
+        [this](bool statsEnabled) { layoutManager_->statsEnabled(statsEnabled); });
+
     xmdsManager_ =
         std::make_unique<XmdsRequestSender>(cmsSettings_.address(), cmsSettings_.key(), cmsSettings_.displayId());
     screenShotInterval_ = createScreenshotInterval(*xmdsManager_, *mainWindow_);
@@ -161,7 +164,8 @@ std::shared_ptr<ApplicationWindowGtk> XiboApp::createMainWindow()
 
 std::unique_ptr<LayoutsManager> XiboApp::createLayoutManager()
 {
-    auto manager = std::make_unique<LayoutsManager>(*scheduler_, *statsRecorder_, *fileCache_);
+    auto manager =
+        std::make_unique<LayoutsManager>(*scheduler_, *statsRecorder_, *fileCache_, playerSettings_.statsEnabled());
 
     manager->mainLayoutFetched().connect([this](const MainLayoutWidget& layout) {
         CHECK_UI_THREAD();

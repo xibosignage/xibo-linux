@@ -24,9 +24,7 @@ namespace Xibo
         virtual void start() = 0;
         virtual void stop() = 0;
 
-        virtual void statEnabled(bool enable) = 0;
         virtual bool statEnabled() const = 0;
-        virtual MediaOptions::StatPolicy statPolicy() const = 0;
         virtual int id() const = 0;
 
         virtual void inTransition(std::unique_ptr<TransitionExecutor>&& transition) = 0;

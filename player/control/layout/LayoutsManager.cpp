@@ -4,17 +4,21 @@
 #include "control/layout/OverlayLayoutParser.hpp"
 #include "control/widgets/Widget.hpp"
 
-#include "common/storage/FileCache.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/storage/FileCache.hpp"
 #include "schedule/Scheduler.hpp"
 #include "stat/StatsRecorder.hpp"
 
 #include "config/AppConfig.hpp"
 
-LayoutsManager::LayoutsManager(Scheduler& scheduler, StatsRecorder& statsRecorder, FileCache& fileCache) :
+LayoutsManager::LayoutsManager(Scheduler& scheduler,
+                               StatsRecorder& statsRecorder,
+                               FileCache& fileCache,
+                               bool statsEnabled) :
     scheduler_(scheduler),
     statsRecorder_(statsRecorder),
-    fileCache_(fileCache)
+    fileCache_(fileCache),
+    statsEnabled_{statsEnabled}
 {
     scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
     scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
@@ -78,12 +82,17 @@ void LayoutsManager::fetchOverlays()
     overlaysFetched_(overlays);
 }
 
+void LayoutsManager::statsEnabled(bool enable)
+{
+    statsEnabled_ = enable;
+}
+
 template <typename LayoutParser>
 std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
 {
     try
     {
-        LayoutParser parser;
+        LayoutParser parser{statsEnabled_};
         auto layout = parser.parseBy(layoutId);
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 

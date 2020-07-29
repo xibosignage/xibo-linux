@@ -21,6 +21,8 @@ public:
         using PlayerRuntimeError::PlayerRuntimeError;
     };
 
+    RegionParser(bool globalStatEnabled);
+
     std::unique_ptr<Xibo::Region> regionFrom(const XmlNode& node);
     RegionPosition positionFrom(const XmlNode& node);
 
@@ -28,4 +30,7 @@ private:
     RegionOptions optionsFrom(const XmlNode& node);
     void addMedia(Xibo::Region& region, const XmlNode& node);
     MediaOptions::Type mediaTypeFrom(const XmlNode& node);
+
+private:
+    bool globalStatEnabled_;
 };
