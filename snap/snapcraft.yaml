@@ -48,39 +48,40 @@ parts:
   g++-8: # Ubuntu 18.04 has outdated gcc so we have to install it from PPA
     plugin: nil
     override-pull: |
-      sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt-get update
-      sudo apt-get install -y g++-8
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
-      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
+      add-apt-repository ppa:ubuntu-toolchain-r/test
+      apt-get update
+      apt-get install -y g++-8
+      update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
+      update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
     after: [base]
 
   cmake:
     plugin: nil
     override-pull: |
       wget -nv https://apt.kitware.com/keys/kitware-archive-latest.asc -O Release.key
-      sudo apt-key add - < Release.key
-      sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-      sudo apt-get update
-      sudo apt-get install -y cmake
+      apt-key add - < Release.key
+      apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+      apt-get update
+      apt-get install -y cmake
     after: [g++-8]
 
   zmq: # Ubuntu 18.04 has outdated ZMQ so we are pulling it from official stable repo
     plugin: nil
     override-pull: |
-      sudo sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
+      sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
       wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
-      sudo apt-key add - < Release.key
-      sudo apt-get update
-      sudo apt-get install -y libzmq3-dev
+      apt-key add - < Release.key
+      apt-get update
+      apt-get install -y libzmq3-dev
+    after: [cmake]
 
   boost: # Ubuntu 18.04 has outdated boost so we have to install it from PPA
     plugin: nil
     override-pull: |
-      sudo add-apt-repository ppa:mhier/libboost-latest
-      sudo apt-get update
-      sudo apt-get install -y libboost1.70-dev
-    after: [base]
+      add-apt-repository ppa:mhier/libboost-latest
+      apt-get update
+      apt-get install -y libboost1.70-dev
+    after: [zmq]
 
   spdlog: 
     source: https://github.com/gabime/spdlog/archive/v1.4.1.tar.gz
@@ -143,6 +144,9 @@ parts:
       - libgl1-mesa-glx
       - libglu1-mesa
       - libglew2.0
+    stage:
+      - -usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
+      - -usr/share/doc/libllvm10/changelog.Debian.gz
     after: [g++-8]
 
   gst-plugins-base:
@@ -204,4 +208,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, spdlog, gtest] 
+    after: [zmq, boost, spdlog, gtest, gstreamer] 
