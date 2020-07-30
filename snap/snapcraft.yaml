@@ -144,6 +144,9 @@ parts:
       - libgl1-mesa-glx
       - libglu1-mesa
       - libglew2.0
+    stage:
+      - -usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
+      - -usr/share/doc/libllvm10/changelog.Debian.gz
     after: [g++-8]
 
   gst-plugins-base:
@@ -205,4 +208,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, spdlog, gtest] 
+    after: [zmq, boost, spdlog, gtest, gstreamer] 
