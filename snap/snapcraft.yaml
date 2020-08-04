@@ -22,6 +22,12 @@ apps:
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
+  disabled-watchdog:
+    command: bin/snap_run.sh watchdog --disable-restart
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    slots: [dbus-daemon]
+    extensions: [gnome-3-28]
+
   options:
     command: bin/options
     plugs: [gsettings, network, home]
