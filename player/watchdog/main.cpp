@@ -5,6 +5,8 @@
 
 #include "ProcessWatcher.hpp"
 
+#include <boost/program_options.hpp>
+
 void setupNewConfigDir()
 {
 #ifdef SNAP_ENABLED
@@ -40,13 +42,19 @@ void setupNewConfigDir()
 #endif
 }
 
-int main()
+int main(int argc, char** argv)
 {
     setupNewConfigDir();
 
+    boost::program_options::options_description desc{"Options"};
+    desc.add_options()("disable-restart", "Don't restart player (disable watchdog)");
+
+    boost::program_options::variables_map vm;
+    store(parse_command_line(argc, argv, desc), vm);
+
     if (FileSystem::exists(AppConfig::cmsSettingsPath()))
     {
-        ProcessWatcher playerWatcher{AppConfig::playerBinary()};
+        ProcessWatcher playerWatcher{AppConfig::playerBinary(), vm.count("disable-restart") > 0};
         playerWatcher.run();
     }
     else
