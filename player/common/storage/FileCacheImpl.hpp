@@ -14,6 +14,7 @@ public:
     bool cached(const ResourceFile& file) const override;
     bool cached(const std::string& filename, const Md5Hash& hash) const override;
     std::vector<std::string> cachedFiles() const override;
+    std::vector<std::string> invalidFiles() const override;
     void save(const std::string& filename, const std::string& content, const Md5Hash& hash) override;
     void save(const std::string& filename, const std::string& content, const DateTime& lastUpdate) override;
     void markAsInvalid(const std::string& filename) override;

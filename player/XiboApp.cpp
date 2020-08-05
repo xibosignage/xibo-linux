@@ -154,7 +154,7 @@ std::shared_ptr<ApplicationWindowGtk> XiboApp::createMainWindow()
         StatusInfo info{
             collectGeneralInfo(), collectionInterval_->status(), scheduler_->status(), xmrManager_->status()};
 
-        window->updateStatusScreen(info);
+        window->updateStatusScreen(info, fileCache_->invalidFiles());
     });
 
     window->exitWithoutRestartRequested().connect([]() { System::terminateProccess(System::parentProcessId()); });

@@ -12,7 +12,8 @@ namespace Xibo
     class StatusScreen : public Widget
     {
     public:
-        virtual void setText(const std::string& text) = 0;
+        virtual void setMainInfo(const std::string& text) = 0;
+        virtual void setInvalidFiles(const std::vector<std::string>& files) = 0;
         virtual ExitWithoutRestartRequested& exitWithoutRestartRequested() = 0;
     };
 }
