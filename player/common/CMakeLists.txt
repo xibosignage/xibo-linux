@@ -1,6 +1,6 @@
 project(common)
 
-find_package(Boost 1.70 REQUIRED system thread filesystem date_time)
+find_package(Boost 1.70 EXACT REQUIRED system thread filesystem date_time)
 
 # TODO move to utils
 add_library(${PROJECT_NAME}

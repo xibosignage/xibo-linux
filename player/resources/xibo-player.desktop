@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Xibo Player
+Comment=Xibo Player
+Icon=xibo-player
+Exec=xibo-watchdog
+Terminal=false
+Categories=AudioVideo;
+Version=1.0

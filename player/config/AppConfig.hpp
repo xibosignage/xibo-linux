@@ -10,7 +10,8 @@ public:
 
     static FilePath resourceDirectory();
     static void resourceDirectory(const FilePath& directory);
-    static FilePath buildDirectory();
+    static FilePath execDirectory();
+    static FilePath additionalResourcesDirectory();
     static FilePath configDirectory();
 
 #ifdef SNAP_ENABLED

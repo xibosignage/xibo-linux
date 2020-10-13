@@ -17,7 +17,7 @@ target_link_libraries(${PROJECT_NAME}
     config
     fs
     logger
-    Boost::headers
+    Boost::boost
     ${CRYPTOPP}
     ${OPENSSL_LINK_LIBRARIES}
 )

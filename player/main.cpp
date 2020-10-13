@@ -1,6 +1,7 @@
 #include "XiboApp.hpp"
 #include "common/logger/Logging.hpp"
 
+#include <X11/Xlib.h>
 #include <boost/stacktrace.hpp>
 #include <iostream>
 #include <signal.h>
@@ -20,6 +21,7 @@ void signalStacktraceHandler(int signum)
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    XInitThreads();
     signal(SIGSEGV, &signalStacktraceHandler);
     signal(SIGABRT, &signalStacktraceHandler);
 
