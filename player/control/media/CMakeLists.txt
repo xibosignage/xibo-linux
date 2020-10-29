@@ -1,10 +1,12 @@
 project(media)
 pkg_check_modules(GSTREAMER REQUIRED
-    gstreamer-1.0>=1.14.5
-    gstreamer-pbutils-1.0>=1.14.5
-    gstreamer-plugins-base-1.0>=1.14.5
-    gstreamer-plugins-good-1.0>=1.14.5
-    gstreamer-video-1.0>=1.14.5)
+    gstreamer-1.0>=1.16.2
+    gstreamer-base-1.0>=1.16.2
+    gstreamer-plugins-base-1.0>=1.16.2
+    gstreamer-pbutils-1.0>=1.16.2
+    gstreamer-video-1.0>=1.16.2
+    gstreamer-gl-1.0>=1.16.2
+    gstreamer-app-1.0>=1.16.2)
 pkg_check_modules(WEBKITGTK REQUIRED webkitgtk-3.0>=2.4.10)
 
 # TODO split into dirs

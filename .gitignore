@@ -9,5 +9,4 @@ root
 pch.py
 *.json
 commits_config
-third_party
 snapcraft.login
