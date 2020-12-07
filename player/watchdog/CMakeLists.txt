@@ -1,5 +1,7 @@
 project(watchdog)
 
+find_package(Boost 1.70 REQUIRED program_options)
+
 add_executable(${PROJECT_NAME}
     main.cpp
     ProcessWatcher.cpp
@@ -8,4 +10,5 @@ add_executable(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     config
+    Boost::program_options
 )

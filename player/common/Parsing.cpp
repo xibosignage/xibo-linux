@@ -6,6 +6,8 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
+const auto XmlFormatSettings = boost::property_tree::xml_writer_make_settings<std::string>(' ', 4);
+
 XmlNode Parsing::xmlFrom(const FilePath& xlfPath)
 {
     XmlNode tree;
@@ -33,13 +35,13 @@ JsonNode Parsing::jsonFromString(const std::string& json)
 
 void Parsing::xmlTreeToFile(const FilePath& path, const XmlNode& node)
 {
-    boost::property_tree::write_xml(path.string(), node);
+    boost::property_tree::write_xml(path.string(), node, std::locale{}, XmlFormatSettings);
 }
 
 std::string Parsing::xmlTreeToString(const XmlNode& node)
 {
     std::stringstream sstream;
-    boost::property_tree::write_xml(sstream, node);
+    boost::property_tree::write_xml(sstream, node, XmlFormatSettings);
     return sstream.str();
 }
 

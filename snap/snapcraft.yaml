@@ -1,6 +1,6 @@
 name: xibo-player
 base: core18
-version: 1.8-R5
+version: 1.8-R6
 summary: Xibo Linux Player
 description: Xibo for Linux Digital Signage Player
 grade: stable
@@ -18,6 +18,12 @@ slots:
 apps:
   xibo-player:
     command: bin/snap_run.sh watchdog
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    slots: [dbus-daemon]
+    extensions: [gnome-3-28]
+
+  disabled-watchdog:
+    command: bin/snap_run.sh watchdog --disable-restart
     plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]

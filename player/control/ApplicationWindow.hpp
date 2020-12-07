@@ -18,7 +18,7 @@ template <typename Window>
 class ApplicationWindow : public Window
 {
     static constexpr const double StatusScreenScaleX = 0.5;
-    static constexpr const double StatusScreenScaleY = 1;
+    static constexpr const double StatusScreenScaleY = 0.9;
     static constexpr const int MinStatusScreenWidth = 160;
     static constexpr const int MinStatusScreenHeight = 120;
     static constexpr const int DefaultPos = 0;
@@ -92,9 +92,10 @@ public:
         return statusScreen_->exitWithoutRestartRequested();
     }
 
-    void updateStatusScreen(const StatusInfo& info)
+    void updateStatusScreen(const StatusInfo& info, const std::vector<std::string>& files)
     {
-        statusScreen_->setText(info.toString());
+        statusScreen_->setMainInfo(info.toString());
+        statusScreen_->setInvalidFiles(files);
     }
 
     void setSize(int width, int height) override
@@ -155,7 +156,7 @@ private:
         if (key == StatusScreenKey)
         {
             statusScreenShown_();
-            statusScreen_->show();
+            statusScreen_->showAll();
         }
     }
 
