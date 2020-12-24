@@ -59,7 +59,14 @@ XiboApp::XiboApp(const std::string& name) :
     playerSettings_.fromFile(AppConfig::playerSettingsPath());
     fileCache_->loadFrom(AppConfig::cachePath());
 
-    System::preventSleep();
+    if (playerSettings_.preventSleep())
+    {
+        System::preventSleep();
+    }
+    else
+    {
+        Log::info("Prevent sleep disabled");
+    }
     AppConfig::resourceDirectory(cmsSettings_.resourcesPath());
     checkResourceDirectory();
 

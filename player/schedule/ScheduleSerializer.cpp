@@ -1,7 +1,7 @@
 #include "ScheduleSerializer.hpp"
 
 #include "cms/xmds/Resources.hpp"  // TODO: remove dependency
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
 

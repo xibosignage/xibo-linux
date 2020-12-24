@@ -8,11 +8,15 @@ void CmsSettings::fromFile(const FilePath& settingsFile)
     try
     {
         CmsSettingsSerializer serializer;
-        serializer.loadFrom(settingsFile, *this);
+        serializer.loadSettingsFrom(settingsFile, *this);
+    }
+    catch (PlayerRuntimeError& e)
+    {
+        Log::error("[CmsSettings] Load error: {}", e.message());
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[CmsSettings] Load error: {}", e.what());
     }
 }
 
@@ -21,11 +25,15 @@ void CmsSettings::saveTo(const FilePath& settingsFile)
     try
     {
         CmsSettingsSerializer serializer;
-        serializer.saveTo(settingsFile, *this);
+        serializer.saveSettingsTo(settingsFile, *this);
+    }
+    catch (PlayerRuntimeError& e)
+    {
+        Log::error("[CmsSettings] Load error: {}", e.message());
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[CmsSettings] Load error: {}", e.what());
     }
 }
 

@@ -2,9 +2,11 @@
 
 #include "common/logger/Logging.hpp"
 
-void CmsSettingsSerializer::loadFrom(const FilePath& file, CmsSettings& settings)
+const std::string DocumentVersion{"2"};
+
+void CmsSettingsSerializer::loadSettingsFrom(const FilePath& file, CmsSettings& settings)
 {
-    loadFromImpl(file,
+    loadFromImpl(loadXmlFrom(file),
                  settings.address_,
                  settings.key_,
                  settings.resourcesPath_,
@@ -16,16 +18,16 @@ void CmsSettingsSerializer::loadFrom(const FilePath& file, CmsSettings& settings
     settings.proxy_ = proxyFrom(settings.domain_, settings.username_, settings.password_);
 }
 
-void CmsSettingsSerializer::saveTo(const FilePath& file, const CmsSettings& settings)
+void CmsSettingsSerializer::saveSettingsTo(const FilePath& file, const CmsSettings& settings)
 {
-    saveToImpl(file,
-               settings.address_,
-               settings.key_,
-               settings.resourcesPath_,
-               settings.username_,
-               settings.password_,
-               settings.domain_,
-               settings.displayId_);
+    auto tree = saveToImpl(settings.address_,
+                           settings.key_,
+                           settings.resourcesPath_,
+                           settings.username_,
+                           settings.password_,
+                           settings.domain_,
+                           settings.displayId_);
+    saveXmlTo(file, tree);
 }
 
 boost::optional<Uri> CmsSettingsSerializer::proxyFrom(const std::string& domain,
@@ -54,4 +56,9 @@ boost::optional<Uri> CmsSettingsSerializer::proxyFrom(const std::string& domain,
     }
 
     return {};
+}
+
+XmlDefaultFileLoader::DocVersionType CmsSettingsSerializer::currentVersion() const
+{
+    return DocumentVersion;
 }

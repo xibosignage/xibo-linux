@@ -1,6 +1,6 @@
 #include "XmlLogsRetriever.hpp"
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRepo.hpp"
 

@@ -14,4 +14,5 @@ target_link_libraries(${PROJECT_NAME}
     logger
     crypto
     common
+    parsing
 )

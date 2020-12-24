@@ -1,8 +1,10 @@
 #include "PlayerSettingsSerializer.hpp"
 
-void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& settings)
+const std::string DocumentVersion{"2"};
+
+void PlayerSettingsSerializer::loadSettingsFrom(const FilePath& file, PlayerSettings& settings)
 {
-    loadFromImpl(file,
+    loadFromImpl(loadXmlFrom(file),
                  settings.size_,
                  settings.position_,
                  settings.logLevel_,
@@ -15,17 +17,22 @@ void PlayerSettingsSerializer::loadFrom(const FilePath& file, PlayerSettings& se
                  settings.screenshotInterval_);
 }
 
-void PlayerSettingsSerializer::saveTo(const FilePath& file, const PlayerSettings& settings)
+void PlayerSettingsSerializer::saveSettingsTo(const FilePath& file, const PlayerSettings& settings)
 {
-    saveToImpl(file,
-               settings.size_,
-               settings.position_,
-               settings.logLevel_,
-               settings.displayName_,
-               settings.preventSleep_,
-               settings.statsEnabled_,
-               settings.collectInterval_,
-               settings.xmrNetworkAddress_,
-               settings.embeddedServerPort_,
-               settings.screenshotInterval_);
+    auto tree = saveToImpl(settings.size_,
+                           settings.position_,
+                           settings.logLevel_,
+                           settings.displayName_,
+                           settings.preventSleep_,
+                           settings.statsEnabled_,
+                           settings.collectInterval_,
+                           settings.xmrNetworkAddress_,
+                           settings.embeddedServerPort_,
+                           settings.screenshotInterval_);
+    saveXmlTo(file, tree);
+}
+
+XmlDefaultFileLoader::DocVersionType PlayerSettingsSerializer::currentVersion() const
+{
+    return DocumentVersion;
 }

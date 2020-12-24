@@ -4,39 +4,29 @@
 #include "common/fs/Resource.hpp"
 #include "common/logger/Logging.hpp"
 
-static XmlNode::path_type attributePath(const std::string& path)
-{
-    return XmlNode::path_type(path, '|');
-}
+const char DefaultSeparator{'|'};
+const NodePath ValidAttr{"valid", DefaultSeparator};
+const NodePath Md5Attr{"md5", DefaultSeparator};
+const NodePath LastUpdateAttr{"updated", DefaultSeparator};
+const NodePath VersionAttr{"<xmlattr>|version", DefaultSeparator};
+const NodePath RootNode{"cache", DefaultSeparator};
+const NodePath FilesNode{"files", DefaultSeparator};
+const std::string DocumentVersion{"2"};
 
-const XmlNode::path_type ValidAttr{attributePath("valid")};
-const XmlNode::path_type Md5Attr{attributePath("md5")};
-const XmlNode::path_type LastUpdateAttr{attributePath("updated")};
+static NodePath fullPath(const std::string& path)
+{
+    return RootNode / FilesNode / NodePath{path, DefaultSeparator};
+}
 
 void FileCacheImpl::loadFrom(const FilePath& cacheFile)
 {
     cacheFile_ = cacheFile;
-    loadFileHashes(cacheFile);
-}
-
-void FileCacheImpl::loadFileHashes(const FilePath& path)
-{
-    if (FileSystem::exists(path))
-    {
-        try
-        {
-            fileCache_ = Parsing::xmlFrom(path);
-        }
-        catch (std::exception&)
-        {
-            Log::error("Error while loading file cache");
-        }
-    }
+    loadFileHashes(cacheFile_);
 }
 
 bool FileCacheImpl::valid(const std::string& filename) const
 {
-    auto node = fileCache_.get_child_optional(attributePath(filename));
+    auto node = fileCache_.get_child_optional(fullPath(filename));
 
     return node.has_value() && node->get<bool>(ValidAttr);
 }
@@ -48,7 +38,7 @@ bool FileCacheImpl::cached(const RegularFile& file) const
 
 bool FileCacheImpl::cached(const ResourceFile& file) const
 {
-    auto node = fileCache_.get_child_optional(attributePath(file.name()));
+    auto node = fileCache_.get_child_optional(fullPath(file.name()));
 
     if (node)
     {
@@ -65,7 +55,7 @@ bool FileCacheImpl::cached(const ResourceFile& file) const
 
 bool FileCacheImpl::cached(const std::string& filename, const Md5Hash& hash) const
 {
-    auto node = fileCache_.get_child_optional(attributePath(filename));
+    auto node = fileCache_.get_child_optional(fullPath(filename));
 
     if (node)
     {
@@ -79,9 +69,12 @@ bool FileCacheImpl::cached(const std::string& filename, const Md5Hash& hash) con
 std::vector<std::string> FileCacheImpl::cachedFiles() const
 {
     std::vector<std::string> files;
-    for (auto&& [name, node] : fileCache_)
+    if (auto root = fileCache_.get_child_optional(RootNode / FilesNode))
     {
-        files.push_back(name);
+        for (auto&& [name, node] : root.value())
+        {
+            files.push_back(name);
+        }
     }
     return files;
 }
@@ -89,11 +82,14 @@ std::vector<std::string> FileCacheImpl::cachedFiles() const
 std::vector<std::string> FileCacheImpl::invalidFiles() const
 {
     std::vector<std::string> files;
-    for (auto&& [name, node] : fileCache_)
+    if (auto root = fileCache_.get_child_optional(RootNode / FilesNode))
     {
-        if (!valid(name))
+        for (auto&& [name, node] : root.value())
         {
-            files.push_back(name);
+            if (!valid(name))
+            {
+                files.push_back(name);
+            }
         }
     }
     return files;
@@ -119,12 +115,27 @@ void FileCacheImpl::save(const std::string& fileName, const std::string& fileCon
 
 void FileCacheImpl::markAsInvalid(const std::string& filename)
 {
-    auto node = fileCache_.get_child_optional(attributePath(filename));
+    auto node = fileCache_.get_child_optional(fullPath(filename));
 
     if (node)
     {
         node->put(ValidAttr, false);
     }
+}
+
+XmlDefaultFileLoader::DocVersionType FileCacheImpl::currentVersion() const
+{
+    return DocumentVersion;
+}
+
+boost::optional<XmlDefaultFileLoader::DocVersionType> FileCacheImpl::documentVersion(const XmlNode& tree) const
+{
+    return tree.get_optional<DocVersionType>(RootNode / VersionAttr);
+}
+
+std::unique_ptr<XmlFileLoader> FileCacheImpl::backwardCompatibleLoader(const DocVersionType& version) const
+{
+    return nullptr;
 }
 
 void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash, const Md5Hash& target)
@@ -133,7 +144,7 @@ void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash,
     node.put(Md5Attr, hash);
     node.put(ValidAttr, hash == target);
 
-    fileCache_.put_child(attributePath(filename), node);
+    fileCache_.put_child(fullPath(filename), node);
 
     saveFileHashes(cacheFile_);
 }
@@ -145,19 +156,41 @@ void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash,
     node.put(LastUpdateAttr, lastUpdate.timestamp());
     node.put(ValidAttr, true);
 
-    fileCache_.put_child(attributePath(filename), node);
+    fileCache_.put_child(fullPath(filename), node);
 
     saveFileHashes(cacheFile_);
+}
+
+void FileCacheImpl::loadFileHashes(const FilePath& path)
+{
+    try
+    {
+        fileCache_ = loadXmlFrom(path);
+    }
+    catch (PlayerRuntimeError& e)
+    {
+        Log::error("[FileCache] Load error: {}", e.message());
+    }
+    catch (std::exception& e)
+    {
+        Log::error("[FileCache] Load error: {}", e.what());
+    }
 }
 
 void FileCacheImpl::saveFileHashes(const FilePath& path)
 {
     try
     {
-        Parsing::xmlTreeToFile(path, fileCache_);
+        fileCache_.put(RootNode / VersionAttr, currentVersion());
+
+        saveXmlTo(path, fileCache_);
     }
-    catch (std::exception&)
+    catch (PlayerRuntimeError& e)
     {
-        Log::error("[FileCache] Error while updating file cache");
+        Log::error("[FileCache] Save error: {}", e.message());
+    }
+    catch (std::exception& e)
+    {
+        Log::error("[FileCache] Save error: {}", e.what());
     }
 }
