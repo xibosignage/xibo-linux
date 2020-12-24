@@ -128,9 +128,9 @@ XmlDocVersion FileCacheImpl::currentVersion() const
     return XmlDocVersion{"2"};
 }
 
-boost::optional<XmlDocVersion> FileCacheImpl::documentVersion(const XmlNode& tree) const
+NodePath FileCacheImpl::versionAttributePath() const
 {
-    return tree.get_optional<XmlDocVersion>(RootNode / VersionAttr);
+    return RootNode / VersionAttr;
 }
 
 std::unique_ptr<XmlFileLoader> FileCacheImpl::backwardCompatibleLoader(const XmlDocVersion& version) const
@@ -182,8 +182,6 @@ void FileCacheImpl::saveFileHashes(const FilePath& path)
 {
     try
     {
-        fileCache_.put(RootNode / VersionAttr, currentVersion());
-
         saveXmlTo(path, fileCache_);
     }
     catch (PlayerRuntimeError& e)

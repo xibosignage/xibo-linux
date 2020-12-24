@@ -56,8 +56,6 @@ protected:
         XmlNode tree;
 
         auto& root = tree.add_child(RootNode, {});
-        root.put(VersionAttr, currentVersion());
-
         (saveField(root, fields, std::make_index_sequence<fields.size()>{}), ...);
 
         return tree;
@@ -76,9 +74,9 @@ protected:
         }
     }
 
-    boost::optional<XmlDocVersion> documentVersion(const XmlNode& tree) const override
+    NodePath versionAttributePath() const override
     {
-        return tree.get_optional<XmlDocVersion>(RootNode / VersionAttr);
+        return RootNode / VersionAttr;
     }
 
     std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const XmlDocVersion& version) const override

@@ -8,19 +8,21 @@ const XmlDocVersion DefaultVersion{"1"};
 XmlNode XmlDefaultFileHandler::loadXmlFrom(const FilePath& file)
 {
     auto tree = parseXml(file);
-    auto version = documentVersion(tree).value_or(DefaultVersion);
+    auto version = documentVersion(tree);
     if (version != currentVersion())
     {
-        auto filename = file.filename().string();
         auto loader = backwardCompatibleLoader(version);
         if (loader)
         {
-            Log::debug("[XmlLoader] Using backward compatible loader (v:{}) for {}", version, filename);
+            Log::debug("[XmlDefaultFileHandler] Using backward compatible loader (v{}) for {}", version, file);
 
-            return loader->loadXmlFrom(file);
+            auto tree = loader->loadXmlFrom(file);
+            saveXmlTo(file, tree);
+            return tree;
         }
 
-        throw Error{"Can't find loader for " + filename + ": no backward compatible loaders found"};
+        throw Error{"Can't find backward compatible loader for " + file.string() + " (v" +
+                    static_cast<std::string>(version) + "): data won't be loaded"};
     }
     return tree;
 }
@@ -29,12 +31,21 @@ void XmlDefaultFileHandler::saveXmlTo(const FilePath& file, const XmlNode& tree)
 {
     try
     {
-        Parsing::xmlTreeToFile(file, tree);
+        XmlNode treeWithVersion = tree;
+
+        treeWithVersion.put(versionAttributePath(), currentVersion());
+
+        Parsing::xmlTreeToFile(file, treeWithVersion);
     }
     catch (std::exception& e)
     {
         throw Error{e.what()};
     }
+}
+
+XmlDocVersion XmlDefaultFileHandler::documentVersion(const XmlNode& tree) const
+{
+    return tree.get<XmlDocVersion>(versionAttributePath(), DefaultVersion);
 }
 
 XmlNode XmlDefaultFileHandler::parseXml(const FilePath& file)

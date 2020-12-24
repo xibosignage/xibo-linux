@@ -21,7 +21,7 @@ public:
 
 protected:
     XmlDocVersion currentVersion() const override;
-    boost::optional<XmlDocVersion> documentVersion(const XmlNode& tree) const override;
+    NodePath versionAttributePath() const override;
     std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const XmlDocVersion& version) const override;
 
 private:
