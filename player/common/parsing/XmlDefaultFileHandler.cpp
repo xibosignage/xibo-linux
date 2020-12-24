@@ -1,11 +1,11 @@
-#include "XmlFileLoaderSaver.hpp"
+#include "XmlDefaultFileHandler.hpp"
 
 #include "common/fs/FilePath.hpp"
 #include "common/logger/Logging.hpp"
 
-const std::string DefaultVersion{"1"};
+const XmlDocVersion DefaultVersion{"1"};
 
-XmlNode XmlDefaultFileLoader::loadXmlFrom(const FilePath& file)
+XmlNode XmlDefaultFileHandler::loadXmlFrom(const FilePath& file)
 {
     auto tree = parseXml(file);
     auto version = documentVersion(tree).value_or(DefaultVersion);
@@ -25,7 +25,7 @@ XmlNode XmlDefaultFileLoader::loadXmlFrom(const FilePath& file)
     return tree;
 }
 
-void XmlDefaultFileLoader::saveXmlTo(const FilePath& file, const XmlNode& tree)
+void XmlDefaultFileHandler::saveXmlTo(const FilePath& file, const XmlNode& tree)
 {
     try
     {
@@ -37,7 +37,7 @@ void XmlDefaultFileLoader::saveXmlTo(const FilePath& file, const XmlNode& tree)
     }
 }
 
-XmlNode XmlDefaultFileLoader::parseXml(const FilePath& file)
+XmlNode XmlDefaultFileHandler::parseXml(const FilePath& file)
 {
     try
     {

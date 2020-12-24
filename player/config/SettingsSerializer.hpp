@@ -2,11 +2,11 @@
 
 #include "common/NamedField.hpp"
 #include "common/PlayerRuntimeError.hpp"
+#include "common/parsing/XmlDefaultFileHandler.hpp"
 #include "common/parsing/XmlFileLoaderMissingRoot.hpp"
-#include "common/parsing/XmlFileLoaderSaver.hpp"
 
 template <typename Settings>
-class SettingsSerializer : public XmlDefaultFileLoader
+class SettingsSerializer : public XmlDefaultFileHandler
 {
     static inline const NodePath RootNode{"settings"};
     static inline const NodePath VersionAttr = Parsing::xmlAttr("version");
@@ -76,14 +76,14 @@ protected:
         }
     }
 
-    boost::optional<DocVersionType> documentVersion(const XmlNode& tree) const override
+    boost::optional<XmlDocVersion> documentVersion(const XmlNode& tree) const override
     {
-        return tree.get_optional<DocVersionType>(RootNode / VersionAttr);
+        return tree.get_optional<XmlDocVersion>(RootNode / VersionAttr);
     }
 
-    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const DocVersionType& version) const override
+    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const XmlDocVersion& version) const override
     {
-        if (version == "1") return std::make_unique<XmlFileLoaderMissingRoot>(RootNode);
+        if (version == XmlDocVersion{"1"}) return std::make_unique<XmlFileLoaderMissingRoot>(RootNode);
         return nullptr;
     }
 };

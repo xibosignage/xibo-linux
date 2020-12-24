@@ -2,8 +2,6 @@
 
 #include "common/logger/Logging.hpp"
 
-const std::string DocumentVersion{"2"};
-
 void CmsSettingsSerializer::loadSettingsFrom(const FilePath& file, CmsSettings& settings)
 {
     loadFromImpl(loadXmlFrom(file),
@@ -58,7 +56,7 @@ boost::optional<Uri> CmsSettingsSerializer::proxyFrom(const std::string& domain,
     return {};
 }
 
-XmlDefaultFileLoader::DocVersionType CmsSettingsSerializer::currentVersion() const
+XmlDocVersion CmsSettingsSerializer::currentVersion() const
 {
-    return DocumentVersion;
+    return XmlDocVersion{"2"};
 }

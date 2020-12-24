@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common/parsing/XmlFileLoaderSaver.hpp"
+#include "common/parsing/XmlDefaultFileHandler.hpp"
 #include "common/storage/FileCache.hpp"
 
 #include <boost/noncopyable.hpp>
 
-class FileCacheImpl : public FileCache, public XmlDefaultFileLoader, private boost::noncopyable
+class FileCacheImpl : public FileCache, public XmlDefaultFileHandler, private boost::noncopyable
 {
 public:
     void loadFrom(const FilePath& cacheFile) override;
@@ -20,9 +20,9 @@ public:
     void markAsInvalid(const std::string& filename) override;
 
 protected:
-    DocVersionType currentVersion() const override;
-    boost::optional<DocVersionType> documentVersion(const XmlNode& tree) const override;
-    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const DocVersionType& version) const override;
+    XmlDocVersion currentVersion() const override;
+    boost::optional<XmlDocVersion> documentVersion(const XmlNode& tree) const override;
+    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const XmlDocVersion& version) const override;
 
 private:
     void addToCache(const std::string& filename, const Md5Hash& hash, const Md5Hash& target);

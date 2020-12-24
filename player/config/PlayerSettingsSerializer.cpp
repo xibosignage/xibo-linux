@@ -1,7 +1,5 @@
 #include "PlayerSettingsSerializer.hpp"
 
-const std::string DocumentVersion{"2"};
-
 void PlayerSettingsSerializer::loadSettingsFrom(const FilePath& file, PlayerSettings& settings)
 {
     loadFromImpl(loadXmlFrom(file),
@@ -32,7 +30,7 @@ void PlayerSettingsSerializer::saveSettingsTo(const FilePath& file, const Player
     saveXmlTo(file, tree);
 }
 
-XmlDefaultFileLoader::DocVersionType PlayerSettingsSerializer::currentVersion() const
+XmlDocVersion PlayerSettingsSerializer::currentVersion() const
 {
-    return DocumentVersion;
+    return XmlDocVersion{"2"};
 }

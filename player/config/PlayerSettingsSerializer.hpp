@@ -10,5 +10,5 @@ public:
     void saveSettingsTo(const FilePath& file, const PlayerSettings& settings) override;
 
 protected:
-    DocVersionType currentVersion() const override;
+    XmlDocVersion currentVersion() const override;
 };

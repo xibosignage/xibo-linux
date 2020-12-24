@@ -12,7 +12,6 @@ const NodePath LastUpdateAttr{"updated", DefaultSeparator};
 const NodePath VersionAttr{"<xmlattr>|version", DefaultSeparator};
 const NodePath RootNode{"cache", DefaultSeparator};
 const NodePath FilesNode{"files", DefaultSeparator};
-const std::string DocumentVersion{"2"};
 
 static NodePath fullPath(const std::string& path)
 {
@@ -124,19 +123,19 @@ void FileCacheImpl::markAsInvalid(const std::string& filename)
     }
 }
 
-XmlDefaultFileLoader::DocVersionType FileCacheImpl::currentVersion() const
+XmlDocVersion FileCacheImpl::currentVersion() const
 {
-    return DocumentVersion;
+    return XmlDocVersion{"2"};
 }
 
-boost::optional<XmlDefaultFileLoader::DocVersionType> FileCacheImpl::documentVersion(const XmlNode& tree) const
+boost::optional<XmlDocVersion> FileCacheImpl::documentVersion(const XmlNode& tree) const
 {
-    return tree.get_optional<DocVersionType>(RootNode / VersionAttr);
+    return tree.get_optional<XmlDocVersion>(RootNode / VersionAttr);
 }
 
-std::unique_ptr<XmlFileLoader> FileCacheImpl::backwardCompatibleLoader(const DocVersionType& version) const
+std::unique_ptr<XmlFileLoader> FileCacheImpl::backwardCompatibleLoader(const XmlDocVersion& version) const
 {
-    if (version == "1") return std::make_unique<XmlFileLoaderMissingRoot>(RootNode / FilesNode);
+    if (version == XmlDocVersion{"1"}) return std::make_unique<XmlFileLoaderMissingRoot>(RootNode / FilesNode);
     return nullptr;
 }
 

@@ -12,5 +12,5 @@ public:
     boost::optional<Uri> proxyFrom(const std::string& domain, const std::string& username, const std::string& password);
 
 protected:
-    DocVersionType currentVersion() const override;
+    XmlDocVersion currentVersion() const override;
 };
