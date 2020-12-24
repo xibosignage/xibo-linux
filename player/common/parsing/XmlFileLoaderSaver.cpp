@@ -12,11 +12,11 @@ XmlNode XmlDefaultFileLoader::loadXmlFrom(const FilePath& file)
     if (version != currentVersion())
     {
         auto filename = file.filename().string();
-        Log::debug("[XmlLoader] Trying to use backward compatible loader for {}", filename);
-
         auto loader = backwardCompatibleLoader(version);
         if (loader)
         {
+            Log::debug("[XmlLoader] Using backward compatible loader (v:{}) for {}", version, filename);
+
             return loader->loadXmlFrom(file);
         }
 

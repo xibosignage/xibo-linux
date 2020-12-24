@@ -3,6 +3,7 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/fs/Resource.hpp"
 #include "common/logger/Logging.hpp"
+#include "common/parsing/XmlFileLoaderMissingRoot.hpp"
 
 const char DefaultSeparator{'|'};
 const NodePath ValidAttr{"valid", DefaultSeparator};
@@ -135,6 +136,7 @@ boost::optional<XmlDefaultFileLoader::DocVersionType> FileCacheImpl::documentVer
 
 std::unique_ptr<XmlFileLoader> FileCacheImpl::backwardCompatibleLoader(const DocVersionType& version) const
 {
+    if (version == "1") return std::make_unique<XmlFileLoaderMissingRoot>(RootNode / FilesNode);
     return nullptr;
 }
 

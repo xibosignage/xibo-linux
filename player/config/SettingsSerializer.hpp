@@ -2,6 +2,7 @@
 
 #include "common/NamedField.hpp"
 #include "common/PlayerRuntimeError.hpp"
+#include "common/parsing/XmlFileLoaderMissingRoot.hpp"
 #include "common/parsing/XmlFileLoaderSaver.hpp"
 
 template <typename Settings>
@@ -80,8 +81,9 @@ protected:
         return tree.get_optional<DocVersionType>(RootNode / VersionAttr);
     }
 
-    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const DocVersionType&) const override
+    std::unique_ptr<XmlFileLoader> backwardCompatibleLoader(const DocVersionType& version) const override
     {
+        if (version == "1") return std::make_unique<XmlFileLoaderMissingRoot>(RootNode);
         return nullptr;
     }
 };

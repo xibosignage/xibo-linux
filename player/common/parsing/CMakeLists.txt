@@ -7,6 +7,8 @@ add_library(${PROJECT_NAME}
     XmlFileLoaderSaver.hpp
     XmlFileLoader.hpp
     XmlFileSaver.hpp
+    XmlFileLoaderMissingRoot.cpp
+    XmlFileLoaderMissingRoot.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}
