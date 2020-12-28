@@ -95,8 +95,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             if (!statsRecorder_.empty())
             {
-                StatsFormatter formatter;
-                auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
+                auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.records().string()).get();
                 statsRecorder_.clear();
                 onSubmitted("SubmitStats", submitStatsResult);
             }

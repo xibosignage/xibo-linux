@@ -26,7 +26,25 @@ public:
         int count;
     };
 
-    using Records = std::vector<Record>;
+    class Records
+    {
+    public:
+        using iterator = std::vector<Record>::iterator;
+        using const_iterator = std::vector<Record>::const_iterator;
+
+        void add(Record&& record);
+        void clear();
+        bool empty() const;
+        std::string string() const;
+
+        iterator begin();
+        iterator end();
+        const_iterator begin() const;
+        const_iterator end() const;
+
+    private:
+        std::vector<Record> records_;
+    };
 
     void addLayoutStat(int layoutId, int scheduleId, const PlayingStat& interval);
     void addMediaStat(int scheduleId, int layoutId, int mediaId, const PlayingStat& interval);
