@@ -19,4 +19,5 @@ target_link_libraries(${PROJECT_NAME}
     logger
     types
     common
+    parsing
 )

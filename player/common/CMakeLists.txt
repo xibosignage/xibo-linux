@@ -8,8 +8,6 @@ add_library(${PROJECT_NAME}
     Field.hpp
     JoinableThread.hpp
     NamedField.hpp
-    Parsing.cpp
-    Parsing.hpp
     PlayerError.cpp
     PlayerError.hpp
     PlayerRuntimeError.hpp
@@ -26,6 +24,7 @@ target_link_libraries(${PROJECT_NAME}
 
 add_subdirectory(fs)
 add_subdirectory(dt)
+add_subdirectory(parsing)
 add_subdirectory(crypto)
 add_subdirectory(logger)
 add_subdirectory(system)

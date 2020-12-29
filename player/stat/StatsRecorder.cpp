@@ -1,6 +1,6 @@
 #include "StatsRecorder.hpp"
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 
 void StatsRecorder::addLayoutStat(int scheduleId, int layoutId, const PlayingStat& interval)
 {
