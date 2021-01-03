@@ -33,9 +33,3 @@ int System::parentProcessId()
 {
     return getppid();
 }
-
-System::DiskInfo System::diskInfo()
-{
-    auto spaceInfo = boost::filesystem::space("/");
-    return DiskInfo{spaceInfo.capacity, spaceInfo.available};
-}

@@ -2,8 +2,11 @@
 
 #include "MainLoop.hpp"
 
+#include "NotifyStatusInfo.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/dt/Timer.hpp"
+#include "common/fs/FileSystem.hpp"
+#include "common/fs/StorageUsageInfo.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "common/storage/FileCache.hpp"
@@ -100,6 +103,13 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
                 onSubmitted("SubmitStats", submitStatsResult);
             }
 
+            NotifyStatusInfo notifyInfo;
+            // store it in collection interval until XMDS refactoring
+            //            notifyInfo.currentLayoutId = // scheduler
+            //            notifyInfo.deviceName = // player settings
+            notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor("/");
+            //            notifyInfo.timezone = // dt
+            Log::debug("notify status {}", notifyInfo.string());
             auto notifyStatusResult = xmdsSender_.notifyStatus("").get();
             onSubmitted("NotifyStatus", notifyStatusResult);
         }

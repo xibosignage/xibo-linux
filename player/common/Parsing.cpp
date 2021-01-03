@@ -33,6 +33,13 @@ JsonNode Parsing::jsonFromString(const std::string& json)
     return tree;
 }
 
+std::string Parsing::jsonToString(const JsonNode& tree)
+{
+    std::stringstream sstream;
+    boost::property_tree::write_json(sstream, tree);
+    return sstream.str();
+}
+
 void Parsing::xmlTreeToFile(const FilePath& path, const XmlNode& node)
 {
     boost::property_tree::write_xml(path.string(), node, std::locale{}, XmlFormatSettings);

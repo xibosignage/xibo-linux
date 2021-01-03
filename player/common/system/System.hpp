@@ -5,16 +5,9 @@
 
 namespace System
 {
-    struct DiskInfo
-    {
-        std::uintmax_t total;
-        std::uintmax_t available;
-    };
-
     MacAddress macAddress();
     HardwareKey hardwareKey();
     void preventSleep();
     void terminateProccess(int processId);
     int parentProcessId();
-    DiskInfo diskInfo();
 }
