@@ -90,7 +90,7 @@ FilePath AppConfig::cachePath()
 FilePath AppConfig::additionalResourcesDirectory()
 {
 #if defined(SNAP_ENABLED)
-    return FilePath{getenv("SNAP")} / "bin";
+    return FilePath{getenv("SNAP")} / "share" / "xibo-player";
 #elif defined(APPIMAGE_ENABLED)
     return FilePath{getenv("APPDIR")} / "usr" / "share" / "xibo-player";
 #else

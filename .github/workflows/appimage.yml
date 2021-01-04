@@ -110,7 +110,7 @@ jobs:
           ldd /usr/local/lib/gstreamer-1.0/libgstopengl.so
       - name: Building player
         run: |
-          CXX=g++-8 CC=gcc-8 cmake player -Bbuild -DAPPIMAGE_BUILD=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          CXX=g++-8 CC=gcc-8 cmake player -Bbuild -DAPP_ENV=AppImage -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
           cd build
           make -j4
           make install DESTDIR=AppDir

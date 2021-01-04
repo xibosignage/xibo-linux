@@ -27,16 +27,17 @@ add_compile_definitions(
     BOOST_STACKTRACE_USE_BACKTRACE
 )
 
-option(SNAP_BUILD "Use SNAP environment during build" OFF)
-if(SNAP_BUILD)
-    message("Build will be done for SNAP")
+set(APP_ENV "" CACHE STRING "Player environment (SNAP/AppImage)")
+if("${APP_ENV}" STREQUAL "SNAP")
+    message("Build will be done for SNAP environment")
+    set(SNAP_BUILD ON)
     add_compile_definitions(SNAP_ENABLED)
-endif(SNAP_BUILD)
-
-option(APPIMAGE_BUILD "Use AppImage environment during build" OFF)
-if(APPIMAGE_BUILD AND NOT SNAP_BUILD)
-    message("Build will be done for AppImage")
+elseif("${APP_ENV}" STREQUAL "AppImage")
+    message("Build will be done for AppImage environment")
+    set(APPIMAGE_BUILD ON)
     add_compile_definitions(APPIMAGE_ENABLED)
+else()
+    message("Build will be done for custom environment")
 endif()
 
 option(GTK_UI "Use GTK library for UI" ON)
@@ -65,9 +66,18 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+if(SNAP_BUILD)
+    install(
+        FILES snap_run.sh
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION bin
+    )
+endif()
 install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
-install(FILES resources/xibo-player.desktop DESTINATION share/applications)
-install(FILES resources/xibo-player.png DESTINATION share/icons/hicolor/512x512/apps)
+if(APPIMAGE_BUILD)
+    install(FILES resources/xibo-player.desktop DESTINATION share/applications)
+    install(FILES resources/xibo-player.png DESTINATION share/icons/hicolor/512x512/apps)
+endif()
 
 enable_testing()
 
