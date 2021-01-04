@@ -15,7 +15,7 @@ std::string AppConfig::version()
 #if defined(SNAP_ENABLED)
     return getenv("SNAP_VERSION");
 #elif defined(APPIMAGE_ENABLED)
-    return std::string{"appimage-version"};
+    return std::string{"1.8-R6"};
 #else
     return std::string{"dev-version"};
 #endif
