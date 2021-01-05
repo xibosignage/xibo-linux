@@ -118,7 +118,7 @@ jobs:
         run: |
           wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
           chmod +x linuxdeploy-x86_64.AppImage
-          git clone https://github.com/linuxdeploy/linuxdeploy-plugin-gstreamer
+          git clone https://github.com/Stivius/linuxdeploy-plugin-gstreamer
           cp linuxdeploy-plugin-gstreamer/linuxdeploy-plugin-gstreamer.sh .
           ./linuxdeploy-x86_64.AppImage --list-plugins
       - name: Running linuxdeploy
