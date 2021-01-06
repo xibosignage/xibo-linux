@@ -2,9 +2,11 @@ name: AppImage packaging
 
 on:
   push:
-    tags:
-      - v*
-      - edge
+    branches:
+      - master
+  release:
+    types:
+      - published
 
 jobs:
   test:
@@ -129,23 +131,46 @@ jobs:
         run: |
           ./linuxdeploy-x86_64.AppImage --appdir build/AppDir --plugin gstreamer --output appimage
           tar czvf xibo_player.tar.gz Xibo_Player-1_8-x86_64.AppImage
-      - name: Create Release
-        id: create_release
+      - name: Getting short SHA commit
+        id: short-sha
+        if: github.event_name == 'push'
+        uses: benjlevesque/short-sha@v1.2
+        with:
+          length: 7
+      - name: Create Pre-Release
+        if: github.event_name == 'push'
+        id: create_prerelease
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: edge-${{ steps.short-sha.outputs.sha }}
+          release_name: edge-${{ steps.short-sha.outputs.sha }}
           draft: false
           prerelease: true
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Pre-Release Asset
+        if: github.event_name == 'push'
         uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create_prerelease.outputs.upload_url }}
+          asset_path: ./xibo_player.tar.gz
+          asset_name: xibo_player.tar.gz
+          asset_content_type: application/gzip
+      - name: Get Release URL
+        if: github.event_name == 'release'
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload Release Asset
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: ./xibo_player.tar.gz
           asset_name: xibo_player.tar.gz
           asset_content_type: application/gzip
