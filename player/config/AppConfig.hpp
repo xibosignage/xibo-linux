@@ -5,7 +5,8 @@
 class AppConfig
 {
 public:
-    static std::string version();      // TODO: strong type
+    static std::string version();
+    static std::string releaseVersion();      // TODO: strong type
     static std::string codeVersion();  // TODO: strong type
 
     static FilePath resourceDirectory();

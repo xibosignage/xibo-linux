@@ -8,7 +8,9 @@ add_executable(${PROJECT_NAME}
     ProcessWatcher.hpp
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+if (SNAP_BUILD OR APPIMAGE_BUILD)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+endif()
 
 target_link_libraries(${PROJECT_NAME}
     config

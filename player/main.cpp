@@ -21,6 +21,8 @@ void signalStacktraceHandler(int signum)
 
 int main(int /*argc*/, char** /*argv*/)
 {
+    std::cout << AppConfig::version() << std::endl;
+
     XInitThreads();
     signal(SIGSEGV, &signalStacktraceHandler);
     signal(SIGABRT, &signalStacktraceHandler);

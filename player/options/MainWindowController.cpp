@@ -89,7 +89,7 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
         auto connectionResult =
-            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), DefaultDisplay)
+            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), DefaultDisplay)
                 .then([](auto future) {
                     auto [error, result] = future.get();
 

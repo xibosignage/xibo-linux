@@ -4,6 +4,10 @@
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
 
+#if !defined(SNAP_ENABLED)
+#include "GitHash.hpp"
+#endif
+
 #include <filesystem>
 #include <linux/limits.h>
 #include <unistd.h>
@@ -12,12 +16,17 @@ FilePath AppConfig::resourceDirectory_;
 
 std::string AppConfig::version()
 {
+    return releaseVersion() + "-" + codeVersion();
+}
+
+std::string AppConfig::releaseVersion()
+{
 #if defined(SNAP_ENABLED)
     return getenv("SNAP_VERSION");
 #elif defined(APPIMAGE_ENABLED)
-    return std::string{"1.8-R6"};
+    return "1.8-R6";
 #else
-    return std::string{"dev-version"};
+    return "dev";
 #endif
 }
 
@@ -25,10 +34,8 @@ std::string AppConfig::codeVersion()
 {
 #if defined(SNAP_ENABLED)
     return getenv("SNAP_REVISION");
-#elif defined(APPIMAGE_ENABLED)
-    return std::string{"appimage-revision"};
 #else
-    return std::string{"dev-revision"};
+    return GIT_HASH;
 #endif
 }
 

@@ -10,9 +10,6 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
-set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
-
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 add_compile_options(
     -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
@@ -45,6 +42,11 @@ if(GTK_UI)
     add_compile_definitions(USE_GTK)
 endif(GTK_UI)
 
+if (NOT SNAP_BUILD AND NOT APPIMAGE_BUILD)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+endif()
+set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
+
 add_executable(${PROJECT_NAME}
     main.cpp
     MainLoop.cpp
@@ -65,18 +67,21 @@ target_link_libraries(${PROJECT_NAME}
     backtrace
 )
 
-install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 if(SNAP_BUILD)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
     install(
         FILES snap_run.sh
         PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
         DESTINATION bin
     )
-endif()
-install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
-if(APPIMAGE_BUILD)
+elseif(APPIMAGE_BUILD)
+    install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
     install(FILES resources/xibo-player.desktop DESTINATION share/applications)
     install(FILES resources/xibo-player.png DESTINATION share/icons/hicolor/512x512/apps)
+else()
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
 enable_testing()
