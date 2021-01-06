@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14.1)
 
-project(player)
+project(xibo-player)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -11,10 +11,11 @@ pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)
 pkg_check_modules(GLIBMM REQUIRED glibmm-2.4>=2.56.0)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin/)
-set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/bin/tests/)
+set(CMAKE_TESTS_DIRECTORY ${CMAKE_BINARY_DIR}/tests)
 
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++")
 add_compile_options(
-    -static-libstdc++ -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
+    -pthread -Wall -Wno-parentheses -Wno-cast-function-type -W -Wunused-variable -Wunused-parameter -Wunused-function -Wunused -Wno-system-headers -Wno-deprecated -Woverloaded-virtual -Wwrite-strings
     "$<$<CONFIG:RELEASE>:-O2>"
     "$<$<CONFIG:DEBUG>:-g3;-O0>"
 )
@@ -26,10 +27,18 @@ add_compile_definitions(
     BOOST_STACKTRACE_USE_BACKTRACE
 )
 
-option(SNAP_BUILD "Use SNAP environment during build" OFF)
-if(SNAP_BUILD)
+set(APP_ENV "" CACHE STRING "Player environment (SNAP/AppImage)")
+if("${APP_ENV}" STREQUAL "SNAP")
+    message("Build will be done for SNAP environment")
+    set(SNAP_BUILD ON)
     add_compile_definitions(SNAP_ENABLED)
-endif(SNAP_BUILD)
+elseif("${APP_ENV}" STREQUAL "AppImage")
+    message("Build will be done for AppImage environment")
+    set(APPIMAGE_BUILD ON)
+    add_compile_definitions(APPIMAGE_ENABLED)
+else()
+    message("Build will be done for custom environment")
+endif()
 
 option(GTK_UI "Use GTK library for UI" ON)
 if(GTK_UI)
@@ -56,10 +65,22 @@ target_link_libraries(${PROJECT_NAME}
     backtrace
 )
 
-configure_file(ui.glade ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ui.glade COPYONLY)
-configure_file(splash.jpg ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/splash.jpg COPYONLY)
-configure_file(snap_run.sh ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/snap_run.sh COPYONLY)
-install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
+if(SNAP_BUILD)
+    install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
+    install(
+        FILES snap_run.sh
+        PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+        DESTINATION bin
+    )
+elseif(APPIMAGE_BUILD)
+    install(DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} DESTINATION bin USE_SOURCE_PERMISSIONS)
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION share/xibo-player)
+    install(FILES resources/xibo-player.desktop DESTINATION share/applications)
+    install(FILES resources/xibo-player.png DESTINATION share/icons/hicolor/512x512/apps)
+else()
+    install(FILES resources/ui.glade resources/splash.jpg DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
 
 enable_testing()
 

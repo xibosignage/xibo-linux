@@ -1,6 +1,6 @@
-project(watchdog)
+project(xibo-watchdog)
 
-find_package(Boost 1.70 REQUIRED program_options)
+find_package(Boost 1.70 EXACT REQUIRED program_options)
 
 add_executable(${PROJECT_NAME}
     main.cpp

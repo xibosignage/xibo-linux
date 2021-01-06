@@ -17,19 +17,19 @@ slots:
 
 apps:
   xibo-player:
-    command: bin/snap_run.sh watchdog
+    command: bin/snap_run.sh xibo-watchdog
     plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   disabled-watchdog:
-    command: bin/snap_run.sh watchdog --disable-restart
+    command: bin/snap_run.sh xibo-watchdog --disable-restart
     plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   options:
-    command: bin/options
+    command: bin/xibo-options
     plugs: [gsettings, network, home]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
@@ -203,7 +203,7 @@ parts:
     plugin: cmake
     configflags:
       - -DCMAKE_BUILD_TYPE=Release
-      - -DSNAP_BUILD=ON
+      - -DAPP_ENV=SNAP
     disable-parallel: true
     stage-packages:
       - freeglut3

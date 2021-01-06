@@ -17,7 +17,7 @@ add_library(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     crypto
-    Boost::headers
+    Boost::boost
     ${DBUS_LINK_LIBRARIES}
 )
 

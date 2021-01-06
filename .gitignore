@@ -1,12 +1,12 @@
 *.autosave
 *.txt.user
 xibo-*.snap*
+*.AppImage*
 snap
 gcov
 build*
-WORK
+root
 pch.py
 *.json
 commits_config
-third_party
 snapcraft.login

@@ -1,4 +1,4 @@
-project(options)
+project(xibo-options)
 
 add_executable(${PROJECT_NAME}
     main.cpp

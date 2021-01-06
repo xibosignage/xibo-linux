@@ -200,7 +200,7 @@ GeneralInfo XiboApp::collectGeneralInfo()
     info.cmsAddress = cmsSettings_.address();
     info.resourcesPath = cmsSettings_.resourcesPath();
     info.codeVersion = AppConfig::codeVersion();
-    info.projectVersion = AppConfig::version();
+    info.projectVersion = AppConfig::releaseVersion();
     info.screenShotInterval = playerSettings_.screenshotInterval();
     info.displayName = playerSettings_.displayName();
     info.windowWidth = mainWindow_->width();
