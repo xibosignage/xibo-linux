@@ -121,6 +121,9 @@ int XiboApp::run()
     screenShotInterval_ = createScreenshotInterval(*xmdsManager_, *mainWindow_);
     collectionInterval_ = createCollectionInterval(*xmdsManager_);
 
+    scheduler_->layoutUpdated().connect(
+        [this]() { collectionInterval_->setCurrentLayoutId(scheduler_->currentLayoutId()); });
+
     scheduler_->reloadSchedule(LayoutSchedule::fromFile(AppConfig::schedulePath()));
     scheduler_->scheduleUpdated().connect(
         [](const LayoutSchedule& schedule) { schedule.toFile(AppConfig::schedulePath()); });

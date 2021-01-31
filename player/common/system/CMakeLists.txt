@@ -11,6 +11,7 @@ add_library(${PROJECT_NAME}
     MacAddress.hpp
     MacAddressFetcher.cpp
     MacAddressFetcher.hpp
+    Hostname.hpp
     System.cpp
     System.hpp
 )

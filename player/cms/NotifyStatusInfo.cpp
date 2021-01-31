@@ -1,6 +1,6 @@
 #include "NotifyStatusInfo.hpp"
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 
 std::string NotifyStatusInfo::string() const
 {
@@ -9,7 +9,7 @@ std::string NotifyStatusInfo::string() const
     tree.put("availableSpace", spaceUsageInfo.available);
     tree.put("totalSpace", spaceUsageInfo.total);
     //    tree.put("lastCommandSuccess", ""); TODO: implement when commands will be available
-    tree.put("deviceName", deviceName);
+    tree.put("deviceName", static_cast<std::string>(deviceName));
     tree.put("timeZone", timezone);
     return Parsing::jsonToString(tree);
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/fs/StorageUsageInfo.hpp"
+#include "common/system/Hostname.hpp"
 #include "schedule/ScheduleItem.hpp"
 
 struct NotifyStatusInfo
@@ -9,6 +10,6 @@ struct NotifyStatusInfo
 
     LayoutId currentLayoutId;
     StorageUsageInfo spaceUsageInfo;
-    std::string deviceName;
+    Hostname deviceName;
     std::string timezone;
 };

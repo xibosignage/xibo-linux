@@ -45,6 +45,8 @@ public:
     SignalCollectionFinished& collectionFinished();
     SignalFilesDownloaded& filesDownloaded();
 
+    void setCurrentLayoutId(const LayoutId& currentLayoutId);
+
 private:
     void startTimer();
     void sessionFinished(const PlayerError& = {});
@@ -67,6 +69,7 @@ private:
     std::atomic_int collectInterval_;
     std::atomic_bool running_;
     CmsStatus status_;
+    LayoutId currentLayoutId_;
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;

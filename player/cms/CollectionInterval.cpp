@@ -10,6 +10,7 @@
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "common/storage/FileCache.hpp"
+#include "common/system/System.hpp"
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
@@ -27,7 +28,8 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     running_{false},
-    status_{}
+    status_{},
+    currentLayoutId_{EmptyLayoutId}
 {
     assert(intervalTimer_);
 }
@@ -104,13 +106,13 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             }
 
             NotifyStatusInfo notifyInfo;
-            // store it in collection interval until XMDS refactoring
-            //            notifyInfo.currentLayoutId = // scheduler
-            //            notifyInfo.deviceName = // player settings
+            // FIXME: store it in collection interval until XMDS refactoring
+            notifyInfo.currentLayoutId = currentLayoutId_;
+            notifyInfo.deviceName = System::hostname();
             notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor("/");
             //            notifyInfo.timezone = // dt
             Log::debug("notify status {}", notifyInfo.string());
-            auto notifyStatusResult = xmdsSender_.notifyStatus("").get();
+            auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
             onSubmitted("NotifyStatus", notifyStatusResult);
         }
         sessionFinished(displayError);
@@ -119,6 +121,11 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
     {
         sessionFinished(error);
     }
+}
+
+void CollectionInterval::setCurrentLayoutId(const LayoutId& currentLayoutId)
+{
+    currentLayoutId_ = currentLayoutId;
 }
 
 PlayerError CollectionInterval::displayStatus(const RegisterDisplay::Result::Status& status)
