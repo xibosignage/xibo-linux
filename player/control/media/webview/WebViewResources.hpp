@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "control/XlfResources.hpp"
 
 namespace XlfResources::WebView

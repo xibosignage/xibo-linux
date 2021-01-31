@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "common/PlayerRuntimeError.hpp"
 #include "control/media/Media.hpp"
 #include "control/transitions/Transition.hpp"

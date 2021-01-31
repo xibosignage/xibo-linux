@@ -1,0 +1,176 @@
+name: AppImage packaging
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - name: Installing main dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install software-properties-common apt-transport-https ca-certificates libglibmm-2.4-dev libssl-dev
+          sudo apt-get -y install gnupg curl wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
+          sudo apt-get -y install gnupg curl wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
+      - name: Installing newer boost
+        run: |
+          sudo add-apt-repository ppa:mhier/libboost-latest
+          sudo apt-get update
+          sudo apt-get install -y libboost1.70-dev
+      - name: Installing newer zmq
+        run: |
+          sudo sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
+          wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
+          sudo apt-key add - < Release.key
+          sudo apt-get update
+          sudo apt-get install -y libzmq3-dev
+      - name: Installing newer gcc-8
+        run: |
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt-get update
+          sudo apt-get install -y g++-8
+      - name: Installing newer cmake
+        run: |
+          wget -nv https://apt.kitware.com/keys/kitware-archive-latest.asc -O Release.key
+          sudo apt-key add - < Release.key
+          sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
+          sudo apt-get update
+          sudo apt-get install -y cmake
+      - name: Installing cryptopp
+        run: |
+          curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRYPTOPP_8_1_0.tar.gz
+          curl -o cryptopp_pem.zip -SL https://github.com/noloader/cryptopp-pem/archive/095f08ff2ef9bca7b81036a59f2395e4f08ce2e8.zip
+          tar -zxvf cryptopp.tar.gz
+          unzip -a cryptopp_pem.zip
+          cp -r cryptopp-pem-095f08ff2ef9bca7b81036a59f2395e4f08ce2e8/. cryptopp-CRYPTOPP_8_1_0
+          cd cryptopp-CRYPTOPP_8_1_0
+          make -j4
+          sudo make install
+      - name: Installing spdlog
+        run: |
+          curl -o spdlog.tar.gz -SL https://github.com/gabime/spdlog/archive/v1.4.1.tar.gz
+          tar -zxvf spdlog.tar.gz
+          cd spdlog-1.4.1
+          cmake . -DCMAKE_BUILD_TYPE=Release
+          make -j4
+          sudo make install
+      - name: Installing gtest
+        run: |
+          curl -o spdlog.tar.gz -SL https://codeload.github.com/google/googletest/tar.gz/release-1.8.1
+          tar -zxvf spdlog.tar.gz
+          cd googletest-release-1.8.1
+          cmake . -DCMAKE_BUILD_TYPE=Release
+          make -j4
+          sudo make install
+      - name: Installing gstreamer dependencies
+        run: |
+          sudo apt install -y autopoint bison yasm flex gettext liborc-0.4-dev libpulse-dev libva-dev libfribidi-dev libxv-dev
+          sudo apt install -y libtag1-dev libwavpack-dev libgl1-mesa-dev libglu1-mesa-dev libglew-dev
+      - name: Installing gstreamer
+        run: |
+          git clone https://github.com/GStreamer/gstreamer.git
+          cd gstreamer
+          git checkout 1.16.2
+          ./autogen.sh --disable-gtk-doc
+          make -j4
+          sudo make install
+      - name: Installing gst-plugins-base
+        run: |
+          git clone https://github.com/GStreamer/gst-plugins-base.git
+          cd gst-plugins-base
+          git checkout 1.16.2
+          ./autogen.sh --disable-gtk-doc
+          make -j4
+          sudo make install
+      - name: Installing gst-libav
+        run: |
+          git clone https://github.com/GStreamer/gst-libav.git
+          cd gst-libav
+          git checkout 1.16.2
+          ./autogen.sh --disable-gtk-doc
+          make -j4
+          sudo make install
+      - name: Installing gst-plugins-good
+        run: |
+          git clone https://github.com/GStreamer/gst-plugins-good.git
+          cd gst-plugins-good
+          git checkout 1.16.2
+          ./autogen.sh --disable-gtk-doc
+          make -j4
+          sudo make install
+      - name: Update ldconfig cache
+        run: |
+          ldd /usr/local/lib/gstreamer-1.0/libgstopengl.so
+          sudo ldconfig
+          ldd /usr/local/lib/gstreamer-1.0/libgstopengl.so
+      - name: Building player
+        run: |
+          CXX=g++-8 CC=gcc-8 cmake player -Bbuild -DAPP_ENV=AppImage -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+          cd build
+          make -j4
+          make install DESTDIR=AppDir
+      - name: Installing linuxdeploy and linuxdeploy-plugin-gstreamer
+        run: |
+          wget -c https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          git clone https://github.com/Stivius/linuxdeploy-plugin-gstreamer
+          cp linuxdeploy-plugin-gstreamer/linuxdeploy-plugin-gstreamer.sh .
+          ./linuxdeploy-x86_64.AppImage --list-plugins
+      - name: Running linuxdeploy
+        env:
+          VERSION: 1_8
+          GSTREAMER_PLUGINS_DIR: /usr/local/lib/gstreamer-1.0
+          GSTREAMER_HELPERS_DIR: /usr/local/libexec/gstreamer-1.0
+        run: |
+          ./linuxdeploy-x86_64.AppImage --appdir build/AppDir --plugin gstreamer --output appimage
+          tar czvf xibo_player.tar.gz Xibo_Player-1_8-x86_64.AppImage
+      - name: Getting short SHA commit
+        id: short-sha
+        if: github.event_name == 'push'
+        uses: benjlevesque/short-sha@v1.2
+        with:
+          length: 7
+      - name: Create Pre-Release
+        if: github.event_name == 'push'
+        id: create_prerelease
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: edge-${{ steps.short-sha.outputs.sha }}
+          release_name: edge-${{ steps.short-sha.outputs.sha }}
+          draft: false
+          prerelease: true
+      - name: Upload Pre-Release Asset
+        if: github.event_name == 'push'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_prerelease.outputs.upload_url }}
+          asset_path: ./xibo_player.tar.gz
+          asset_name: xibo_player.tar.gz
+          asset_content_type: application/gzip
+      - name: Get Release URL
+        if: github.event_name == 'release'
+        id: get_release
+        uses: bruceadams/get-release@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload Release Asset
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./xibo_player.tar.gz
+          asset_name: xibo_player.tar.gz
+          asset_content_type: application/gzip

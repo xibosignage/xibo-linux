@@ -3,7 +3,7 @@
 #include <string>
 #include <string_view>
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 
 namespace XmdsResources
 {

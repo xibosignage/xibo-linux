@@ -5,6 +5,7 @@
 class FilePath;
 using XmlNode = boost::property_tree::ptree;
 using JsonNode = boost::property_tree::ptree;
+using NodePath = boost::property_tree::path;
 
 namespace Parsing
 {

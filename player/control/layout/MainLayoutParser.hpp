@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "control/layout/MainLayout.hpp"
 #include "control/layout/MainLayoutOptions.hpp"
 #include "control/widgets/Image.hpp"

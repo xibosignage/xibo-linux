@@ -2,7 +2,7 @@
 
 #include <boost/core/ignore_unused.hpp>
 
-#include "common/Parsing.hpp"
+#include "common/parsing/Parsing.hpp"
 #include "networking/ResponseResult.hpp"
 
 namespace Soap

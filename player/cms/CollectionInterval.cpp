@@ -56,7 +56,7 @@ void CollectionInterval::collectNow()
             Log::debug("[CollectionInterval] Started");
 
             auto registerDisplayResult =
-                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::version(), "Display").get();
+                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), "Display").get();
             onDisplayRegistered(registerDisplayResult);
         });
     }
