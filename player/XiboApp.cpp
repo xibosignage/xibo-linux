@@ -121,6 +121,8 @@ int XiboApp::run()
     screenShotInterval_ = createScreenshotInterval(*xmdsManager_, *mainWindow_);
     collectionInterval_ = createCollectionInterval(*xmdsManager_);
 
+    collectionInterval_->setCurrentLayoutId(scheduler_->currentLayoutId());
+
     scheduler_->layoutUpdated().connect(
         [this]() { collectionInterval_->setCurrentLayoutId(scheduler_->currentLayoutId()); });
 
@@ -229,7 +231,8 @@ void XiboApp::checkResourceDirectory()
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {
-    auto interval = std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_, *fileCache_);
+    auto interval =
+        std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_, *fileCache_, cmsSettings_.resourcesPath());
 
     interval->updateInterval(playerSettings_.collectInterval());
     playerSettings_.collectInterval().valueChanged().connect(

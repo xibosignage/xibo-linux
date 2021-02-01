@@ -14,6 +14,7 @@
 
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
+#include "common/fs/FilePath.hpp"
 
 #include <boost/signals2/signal.hpp>
 
@@ -32,7 +33,10 @@ class CollectionInterval
     static constexpr const uint DefaultInterval = 900;
 
 public:
-    CollectionInterval(XmdsRequestSender& xmdsSender, StatsRecorder& statsRecorder, FileCache& fileCache);
+    CollectionInterval(XmdsRequestSender& xmdsSender,
+                       StatsRecorder& statsRecorder,
+                       FileCache& fileCache,
+                       const FilePath& resourceDirectory);
 
     bool running() const;
     void stop();
@@ -70,6 +74,7 @@ private:
     std::atomic_bool running_;
     CmsStatus status_;
     LayoutId currentLayoutId_;
+    FilePath resourceDirectory_;
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;

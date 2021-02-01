@@ -21,7 +21,8 @@ namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
                                        StatsRecorder& statsRecorder,
-                                       FileCache& fileCache) :
+                                       FileCache& fileCache,
+                                       const FilePath& resourceDirectory) :
     xmdsSender_{xmdsSender},
     statsRecorder_{statsRecorder},
     fileCache_{fileCache},
@@ -29,7 +30,8 @@ CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
     collectInterval_{DefaultInterval},
     running_{false},
     status_{},
-    currentLayoutId_{EmptyLayoutId}
+    currentLayoutId_{EmptyLayoutId},
+    resourceDirectory_{resourceDirectory}
 {
     assert(intervalTimer_);
 }
@@ -109,7 +111,7 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             // FIXME: store it in collection interval until XMDS refactoring
             notifyInfo.currentLayoutId = currentLayoutId_;
             notifyInfo.deviceName = System::hostname();
-            notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor("/");
+            notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor(resourceDirectory_);
             notifyInfo.timezone = DateTime::currentTimezone();
             Log::debug("notify status {}", notifyInfo.string());
             auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
