@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install software-properties-common apt-transport-https ca-certificates libglibmm-2.4-dev libssl-dev
-          sudo apt-get -y install gnupg curl libcurl4-gnutls-devg wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
+          sudo apt-get -y install gnupg curl libcurl4-gnutls-dev wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
       - name: Installing newer boost
         run: |
           sudo add-apt-repository ppa:mhier/libboost-latest
@@ -106,7 +106,7 @@ jobs:
           sudo make install
       - name: Installing date-tz
         run: |
-          curl -o date-tz.tar.gz -SL https://github.com/HowardHinnant/date/archive/v3.0.0.zip
+          curl -o date-tz.tar.gz -SL https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
           tar -zxvf date-tz.tar.gz
           cd date-3.0.0
           cmake . -DBUILD_TZ_LIB=ON -DBUILD_SHARED_LIBS=ON

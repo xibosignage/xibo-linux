@@ -199,8 +199,7 @@ parts:
     after: [gst-libav]
 
   date-tz:
-    source: https://github.com/HowardHinnant/date/archive/v3.0.0.zip
-    source-subdir: date-3.0.0
+    source: https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
     plugin: cmake
     build-packages:
       - libcurl4-gnutls-dev
