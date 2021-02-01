@@ -109,7 +109,7 @@ jobs:
           curl -o date-tz.tar.gz -SL https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
           tar -zxvf date-tz.tar.gz
           cd date-3.0.0
-          cmake . -DBUILD_TZ_LIB=ON -DBUILD_SHARED_LIBS=ON
+          cmake . -DBUILD_TZ_LIB=ON -DBUILD_SHARED_LIBS=ON -DUSE_SYSTEM_TZ_DB=ON
           make -j4
           sudo make install
       - name: Update ldconfig cache

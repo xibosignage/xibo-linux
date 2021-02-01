@@ -206,6 +206,7 @@ parts:
     configflags:
       - -DBUILD_TZ_LIB=ON
       - -DBUILD_SHARED_LIBS=ON
+      - -DUSE_SYSTEM_TZ_DB=ON
     after: [cmake]
 
   player:
