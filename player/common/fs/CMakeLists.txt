@@ -5,6 +5,7 @@ add_library(${PROJECT_NAME}
     FileSystem.cpp
     FileSystem.hpp
     Resource.hpp
+    StorageUsageInfo.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

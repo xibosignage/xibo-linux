@@ -7,11 +7,19 @@ add_library(${PROJECT_NAME}
     Timer.hpp
 )
 
+find_library(DATE_TZ_LINK_LIBRARY NAMES date-tz)
+find_path(DATE_TZ_INCLUDE_DIR NAMES date)
+
+message("DATE_TZ_LINK_LIBRARY ${DATE_TZ_LINK_LIBRARY}")
+message("DATE_TZ_INCLUDE_DIR ${DATE_INCLUDE_DIR}")
+
 target_link_libraries(${PROJECT_NAME}
     Boost::date_time
     ${GLIBMM_LINK_LIBRARIES}
+    ${DATE_TZ_LINK_LIBRARY}
 )
 
 target_include_directories(${PROJECT_NAME}
     PUBLIC ${GLIBMM_INCLUDE_DIRS} # TODO remove with workaround
+    PRIVATE ${DATE_TZ_INCLUDE_DIR}
 )

@@ -17,8 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get -y install software-properties-common apt-transport-https ca-certificates libglibmm-2.4-dev libssl-dev
-          sudo apt-get -y install gnupg curl wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
-          sudo apt-get -y install gnupg curl wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
+          sudo apt-get -y install gnupg curl libcurl4-gnutls-dev wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
       - name: Installing newer boost
         run: |
           sudo add-apt-repository ppa:mhier/libboost-latest
@@ -105,11 +104,17 @@ jobs:
           ./autogen.sh --disable-gtk-doc
           make -j4
           sudo make install
+      - name: Installing date-tz
+        run: |
+          curl -o date-tz.tar.gz -SL https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
+          tar -zxvf date-tz.tar.gz
+          cd date-3.0.0
+          cmake . -DBUILD_TZ_LIB=ON -DBUILD_SHARED_LIBS=ON -DUSE_SYSTEM_TZ_DB=ON
+          make -j4
+          sudo make install
       - name: Update ldconfig cache
         run: |
-          ldd /usr/local/lib/gstreamer-1.0/libgstopengl.so
           sudo ldconfig
-          ldd /usr/local/lib/gstreamer-1.0/libgstopengl.so
       - name: Building player
         run: |
           CXX=g++-8 CC=gcc-8 cmake player -Bbuild -DAPP_ENV=AppImage -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr

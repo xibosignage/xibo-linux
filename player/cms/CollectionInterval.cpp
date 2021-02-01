@@ -2,11 +2,15 @@
 
 #include "MainLoop.hpp"
 
+#include "NotifyStatusInfo.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/dt/Timer.hpp"
+#include "common/fs/FileSystem.hpp"
+#include "common/fs/StorageUsageInfo.hpp"
 #include "common/logger/Logging.hpp"
 #include "common/logger/XmlLogsRetriever.hpp"
 #include "common/storage/FileCache.hpp"
+#include "common/system/System.hpp"
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
@@ -17,14 +21,17 @@ namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
                                        StatsRecorder& statsRecorder,
-                                       FileCache& fileCache) :
+                                       FileCache& fileCache,
+                                       const FilePath& resourceDirectory) :
     xmdsSender_{xmdsSender},
     statsRecorder_{statsRecorder},
     fileCache_{fileCache},
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     running_{false},
-    status_{}
+    status_{},
+    currentLayoutId_{EmptyLayoutId},
+    resourceDirectory_{resourceDirectory}
 {
     assert(intervalTimer_);
 }
@@ -95,11 +102,19 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
 
             if (!statsRecorder_.empty())
             {
-                StatsFormatter formatter;
-                auto submitStatsResult = xmdsSender_.submitStats(formatter.toXml(statsRecorder_.records())).get();
+                auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.records().string()).get();
                 statsRecorder_.clear();
                 onSubmitted("SubmitStats", submitStatsResult);
             }
+
+            NotifyStatusInfo notifyInfo;
+            // FIXME: store it in collection interval until XMDS refactoring
+            notifyInfo.currentLayoutId = currentLayoutId_;
+            notifyInfo.deviceName = System::hostname();
+            notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor(resourceDirectory_);
+            notifyInfo.timezone = DateTime::currentTimezone();
+            auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
+            onSubmitted("NotifyStatus", notifyStatusResult);
         }
         sessionFinished(displayError);
     }
@@ -107,6 +122,11 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
     {
         sessionFinished(error);
     }
+}
+
+void CollectionInterval::setCurrentLayoutId(const LayoutId& currentLayoutId)
+{
+    currentLayoutId_ = currentLayoutId;
 }
 
 PlayerError CollectionInterval::displayStatus(const RegisterDisplay::Result::Status& status)

@@ -198,6 +198,17 @@ parts:
       - libpulse0
     after: [gst-libav]
 
+  date-tz:
+    source: https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
+    plugin: cmake
+    build-packages:
+      - libcurl4-gnutls-dev
+    configflags:
+      - -DBUILD_TZ_LIB=ON
+      - -DBUILD_SHARED_LIBS=ON
+      - -DUSE_SYSTEM_TZ_DB=ON
+    after: [cmake]
+
   player:
     source: player
     plugin: cmake
@@ -214,4 +225,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, spdlog, gtest, gstreamer] 
+    after: [zmq, boost, spdlog, gtest, gstreamer, date-tz] 

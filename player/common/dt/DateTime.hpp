@@ -22,6 +22,8 @@ public:
     static DateTime fromString(const std::string& str);
     static DateTime fromIsoExtendedString(const std::string& str);
 
+    static std::string currentTimezone();
+
     std::string string(const char* format) const;
     std::string string() const;
     std::time_t timestamp() const;

@@ -131,6 +131,12 @@ namespace XmdsResources
         const std::string Success = "success";
     }
 
+    namespace NotifyStatus
+    {
+        const std::string_view Name = "NotifyStatus";
+        const std::string Success = "success";
+    }
+
     namespace SubmitScreenShot
     {
         const std::string_view Name = "SubmitScreenShot";

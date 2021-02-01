@@ -10,6 +10,8 @@ add_library(${PROJECT_NAME}
     RequiredFilesDownloader.cpp
     RequiredFilesDownloader.hpp
     CmsStatus.hpp
+    NotifyStatusInfo.cpp
+    NotifyStatusInfo.hpp
     ${XMDS_SOURCES}
 )
 

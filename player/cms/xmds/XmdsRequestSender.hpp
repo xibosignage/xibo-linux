@@ -5,6 +5,7 @@
 #include "cms/xmds/GetFile.hpp"
 #include "cms/xmds/GetResource.hpp"
 #include "cms/xmds/MediaInventory.hpp"
+#include "cms/xmds/NotifyStatus.hpp"
 #include "cms/xmds/RegisterDisplay.hpp"
 #include "cms/xmds/RequiredFiles.hpp"
 #include "cms/xmds/Schedule.hpp"
@@ -36,7 +37,8 @@ public:
     FutureResponseResult<MediaInventory::Result> mediaInventory(MediaInventoryItems&& items);
     FutureResponseResult<SubmitLog::Result> submitLogs(const std::string& logXml);
     FutureResponseResult<SubmitStats::Result> submitStats(const std::string& statXml);
-    FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenShot);
+    FutureResponseResult<SubmitScreenShot::Result> submitScreenShot(const std::string& screenshot);
+    FutureResponseResult<NotifyStatus::Result> notifyStatus(const std::string& status);
 
 private:
     Uri uri_;

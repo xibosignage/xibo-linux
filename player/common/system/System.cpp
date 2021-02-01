@@ -4,6 +4,7 @@
 #include "common/system/HardwareKeyGenerator.hpp"
 #include "common/system/MacAddressFetcher.hpp"
 
+#include <limits.h>
 #include <signal.h>
 
 MacAddress System::macAddress()
@@ -32,4 +33,11 @@ void System::terminateProccess(int processId)
 int System::parentProcessId()
 {
     return getppid();
+}
+
+Hostname System::hostname()
+{
+    char buffer[HOST_NAME_MAX];
+    gethostname(buffer, sizeof(buffer));
+    return Hostname{buffer};
 }
