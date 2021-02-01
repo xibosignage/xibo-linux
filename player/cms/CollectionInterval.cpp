@@ -113,7 +113,6 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             notifyInfo.deviceName = System::hostname();
             notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor(resourceDirectory_);
             notifyInfo.timezone = DateTime::currentTimezone();
-            Log::debug("notify status {}", notifyInfo.string());
             auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
             onSubmitted("NotifyStatus", notifyStatusResult);
         }
