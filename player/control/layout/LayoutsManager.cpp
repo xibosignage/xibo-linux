@@ -7,18 +7,15 @@
 #include "common/logger/Logging.hpp"
 #include "common/storage/FileCache.hpp"
 #include "schedule/Scheduler.hpp"
-#include "stat/StatsRecorder.hpp"
+#include "stat/Recorder.hpp"
 
 #include "config/AppConfig.hpp"
 
 LayoutsManager::LayoutsManager(Scheduler& scheduler,
-                               StatsRecorder& statsRecorder,
+                               Stats::Recorder& statsRecorder,
                                FileCache& fileCache,
                                bool statsEnabled) :
-    scheduler_(scheduler),
-    statsRecorder_(statsRecorder),
-    fileCache_(fileCache),
-    statsEnabled_{statsEnabled}
+    scheduler_(scheduler), statsRecorder_(statsRecorder), fileCache_(fileCache), statsEnabled_{statsEnabled}
 {
     scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
     scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
@@ -96,13 +93,16 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto layout = parser.parseBy(layoutId);
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 
-        layout->statReady().connect(
-            [=](const PlayingStat& stat) { statsRecorder_.addLayoutStat(scheduleId, layoutId, stat); });
-        layout->mediaStatsReady().connect([=](const MediaPlayingStats& stats) {
-            for (auto&& [mediaId, interval] : stats)
+        layout->statReady().connect([this, layoutId, scheduleId](const Stats::PlayingTime& interval) {
+            statsRecorder_.addLayoutRecord(Stats::LayoutPlayingRecord::create(scheduleId, layoutId, interval));
+        });
+        layout->mediaStatsReady().connect([this, layoutId, scheduleId](const MediaPlayingTime& intervals) {
+            Stats::MediaPlayingRecords records;
+            for (auto&& [mediaId, interval] : intervals)
             {
-                statsRecorder_.addMediaStat(scheduleId, layoutId, mediaId, interval);
+                records.add(Stats::MediaPlayingRecord::create(scheduleId, layoutId, mediaId, interval));
             }
+            statsRecorder_.addMediaRecords(std::move(records));
         });
 
         layout->expired().connect([this, layoutId]() {

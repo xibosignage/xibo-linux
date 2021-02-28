@@ -8,8 +8,7 @@
 namespace ph = std::placeholders;
 
 MainLayoutImpl::MainLayoutImpl(const MainLayoutOptions& options) :
-    options_(options),
-    view_(OverlayContainerFactory::create(options.width, options.height))
+    options_(options), view_(OverlayContainerFactory::create(options.width, options.height))
 {
     view_->shown().connect(std::bind(&MainLayoutImpl::startLayout, this));
 }
@@ -39,7 +38,7 @@ void MainLayoutImpl::monitorMediaStats(Xibo::Region& region)
     for (auto&& media : region.mediaList())
     {
         media->statReady().connect(
-            [id = media->id(), this](const PlayingStat& interval) { mediaIntervals_.emplace(id, interval); });
+            [id = media->id(), this](const Stats::PlayingTime& interval) { mediaIntervals_.emplace(id, interval); });
     }
 }
 

@@ -13,7 +13,7 @@
 #include "control/screenshot/ScreenShotInterval.hpp"
 
 #include "schedule/Scheduler.hpp"
-#include "stat/StatsRecorder.hpp"
+#include "stat/Recorder.hpp"
 #include "xmr/XmrManager.hpp"
 
 #include "cms/CollectionInterval.hpp"
@@ -47,7 +47,7 @@ XiboApp::XiboApp(const std::string& name) :
     mainLoop_(std::make_unique<MainLoop>(name)),
     fileCache_(std::make_unique<FileCacheImpl>()),
     scheduler_(std::make_unique<Scheduler>(*fileCache_)),
-    statsRecorder_(std::make_unique<StatsRecorder>()),
+    statsRecorder_(std::make_unique<Stats::Recorder>()),
     webserver_(std::make_shared<LocalWebServer>())
 {
     if (!FileSystem::exists(AppConfig::cmsSettingsPath()))

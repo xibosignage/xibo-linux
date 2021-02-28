@@ -14,13 +14,13 @@
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
-#include "stat/StatsFormatter.hpp"
-#include "stat/StatsRecorder.hpp"
+#include "stat/Recorder.hpp"
+#include "stat/XmlFormatter.hpp"
 
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
-                                       StatsRecorder& statsRecorder,
+                                       Stats::Recorder& statsRecorder,
                                        FileCache& fileCache,
                                        const FilePath& resourceDirectory) :
     xmdsSender_{xmdsSender},
@@ -100,10 +100,20 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
             onSubmitted("SubmitLogs", submitLogsResult);
 
-            if (!statsRecorder_.empty())
+            const auto recordsCount = statsRecorder_.recordsCount();
+            if (recordsCount > 0)
             {
-                auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.records().string()).get();
-                statsRecorder_.clear();
+                const auto RecordsToSend = [recordsCount]() -> size_t {
+                    if (recordsCount > 500)
+                        return 300;
+                    else
+                        return recordsCount > 50 ? 50 : recordsCount;
+                }();
+
+                Log::debug("CollectionInterval: Total records: {} Records to send {}", recordsCount, RecordsToSend);
+                auto records = statsRecorder_.records(RecordsToSend);
+                auto submitStatsResult = xmdsSender_.submitStats(Stats::XmlFormatter{}.format(records)).get();
+                statsRecorder_.removeFromQueue(RecordsToSend);
                 onSubmitted("SubmitStats", submitStatsResult);
             }
 

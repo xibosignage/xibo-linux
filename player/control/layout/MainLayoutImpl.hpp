@@ -37,8 +37,8 @@ private:
     MainLayoutOptions options_;
     std::shared_ptr<Xibo::OverlayContainer> view_;
 
-    PlayingStat interval_;
-    MediaPlayingStats mediaIntervals_;
+    Stats::PlayingTime interval_;
+    MediaPlayingTime mediaIntervals_;
     SignalLayoutStatReady statsReady_;
     SignalLayoutMediaStatsReady mediaStatsReady_;
 

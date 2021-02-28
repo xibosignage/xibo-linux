@@ -8,7 +8,10 @@
 
 class Scheduler;
 class FileCache;
-class StatsRecorder;
+namespace Stats
+{
+    class Recorder;
+}
 
 using MainLayoutLoaded = boost::signals2::signal<void(const std::shared_ptr<Xibo::Widget>&)>;
 using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::shared_ptr<Xibo::Widget>>&)>;
@@ -16,7 +19,7 @@ using OverlaysLoaded = boost::signals2::signal<void(const std::vector<std::share
 class LayoutsManager
 {
 public:
-    LayoutsManager(Scheduler& scheduler, StatsRecorder& statsRecorder, FileCache& fileCache, bool statsEnabled);
+    LayoutsManager(Scheduler& scheduler, Stats::Recorder& statsRecorder, FileCache& fileCache, bool statsEnabled);
 
     void fetchMainLayout();
     void fetchOverlays();
@@ -31,7 +34,7 @@ private:
 
 private:
     Scheduler& scheduler_;
-    StatsRecorder& statsRecorder_;
+    Stats::Recorder& statsRecorder_;
     FileCache& fileCache_;
     bool statsEnabled_;
 

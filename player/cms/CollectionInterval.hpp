@@ -25,7 +25,10 @@ using SignalCollectionFinished = boost::signals2::signal<void(const PlayerError&
 using SignalFilesDownloaded = boost::signals2::signal<void()>;
 
 class XmdsRequestSender;
-class StatsRecorder;
+namespace Stats
+{
+    class Recorder;
+}
 class FileCache;
 
 class CollectionInterval
@@ -34,7 +37,7 @@ class CollectionInterval
 
 public:
     CollectionInterval(XmdsRequestSender& xmdsSender,
-                       StatsRecorder& statsRecorder,
+                       Stats::Recorder& statsRecorder,
                        FileCache& fileCache,
                        const FilePath& resourceDirectory);
 
@@ -66,7 +69,7 @@ private:
 
 private:
     XmdsRequestSender& xmdsSender_;
-    StatsRecorder& statsRecorder_;
+    Stats::Recorder& statsRecorder_;
     FileCache& fileCache_;
     std::unique_ptr<JoinableThread> workerThread_;
     std::unique_ptr<Timer> intervalTimer_;

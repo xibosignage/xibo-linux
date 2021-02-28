@@ -32,8 +32,8 @@ void MediaImpl::start()
 
     if (options_.statEnabled)
     {
-        stat_.clear();
-        stat_.started = DateTime::now();
+        interval_.clear();
+        interval_.started = DateTime::now();
     }
 
     startTimer(options_.duration);
@@ -74,8 +74,8 @@ void MediaImpl::stop()
 
     if (options_.statEnabled)
     {
-        stat_.finished = DateTime::now();
-        statReady_(stat_);
+        interval_.finished = DateTime::now();
+        statReady_(interval_);
     }
 
     timer_->stop();

@@ -45,7 +45,7 @@ private:
 private:
     MediaOptions options_;
     std::unique_ptr<Timer> timer_;
-    PlayingStat stat_;
+    Stats::PlayingTime interval_;
     bool playing_;
 
     std::shared_ptr<Xibo::Widget> widget_;
