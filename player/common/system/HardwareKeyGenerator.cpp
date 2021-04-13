@@ -2,10 +2,13 @@
 
 #include "common/Utils.hpp"
 #include "common/system/System.hpp"
+#include "config/AppConfig.hpp"
 
 #include <boost/process/child.hpp>
 #include <boost/process/io.hpp>
 #include <regex>
+
+namespace bp = boost::process;
 
 HardwareKey HardwareKeyGenerator::generate()
 {
@@ -37,35 +40,47 @@ inline void HardwareKeyGenerator::nativeCpuid(unsigned int* eax,
 
 std::string HardwareKeyGenerator::volumeSerial()
 {
-    namespace bp = boost::process;
+    const std::string SERIAL_PREFIX{"ID_SERIAL_SHORT"};
 
-    bp::pipe volumeInfo;
-    bp::ipstream stream;
+    auto line = executeAndGrepFirstLine("udevadm info " + currentDrive(), SERIAL_PREFIX);
 
-    bp::child udevadm("udevadm info /dev/sda", bp::std_out > volumeInfo);
-    bp::child grep("grep ID_SERIAL_SHORT", bp::std_in<volumeInfo, bp::std_out> stream);
-
-    auto volumeSerial = retrieveVolumeSerial(stream);
-
-    udevadm.wait();
-    grep.wait();
-
-    return volumeSerial;
+    return retrieveResult(std::regex{SERIAL_PREFIX + "=(.+)"}, line);
 }
 
-std::string HardwareKeyGenerator::retrieveVolumeSerial(boost::process::ipstream& stream)
+std::string HardwareKeyGenerator::currentDrive()
+{
+    const std::string DEVICE_PREFIX{"/dev/"};
+
+    auto line = executeAndGrepFirstLine("df " + AppConfig::playerBinary(), DEVICE_PREFIX);
+
+    return DEVICE_PREFIX + retrieveResult(std::regex{DEVICE_PREFIX + "([^\\s]+)"}, line);
+}
+
+std::string HardwareKeyGenerator::retrieveResult(const std::regex& regex, const std::string& line)
 {
     const int SERIAL_CAPTURE_GROUP = 1;
-    const std::regex SERIAL_REGEX{"ID_SERIAL_SHORT=(.+)"};
-
-    std::string line;
-    std::getline(stream, line);
 
     std::smatch result;
-    if (std::regex_search(line, result, SERIAL_REGEX))
+    if (std::regex_search(line, result, regex))
     {
         return result[SERIAL_CAPTURE_GROUP].str();
     }
 
     return {};
+}
+
+std::string HardwareKeyGenerator::executeAndGrepFirstLine(const std::string& command, const std::string& grepSearch)
+{
+    bp::pipe pipe;
+    bp::ipstream stream;
+
+    bp::child commandProcess(command, bp::std_out > pipe);
+    bp::child grepProcess("grep " + grepSearch, bp::std_in<pipe, bp::std_out> stream);
+
+    commandProcess.wait();
+    grepProcess.wait();
+
+    std::string line;
+    std::getline(stream, line);
+    return line;
 }

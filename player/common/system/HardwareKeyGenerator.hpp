@@ -2,7 +2,8 @@
 
 #include "common/system/HardwareKey.hpp"
 
-#include <boost/process/io.hpp>
+#include <ios>
+#include <regex>
 #include <string>
 
 class HardwareKeyGenerator
@@ -15,5 +16,7 @@ private:
     static void nativeCpuid(unsigned int* eax, unsigned int* ebx, unsigned int* ecx, unsigned int* edx);
     static std::string macAddress();
     static std::string volumeSerial();
-    static std::string retrieveVolumeSerial(boost::process::ipstream& stream);
+    static std::string currentDrive();
+    static std::string executeAndGrepFirstLine(const std::string& command, const std::string& grepSearch);
+    static std::string retrieveResult(const std::regex& regex, const std::string& line);
 };
