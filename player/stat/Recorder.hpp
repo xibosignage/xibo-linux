@@ -1,7 +1,8 @@
 #pragma once
 
-#include "DataProvider.hpp"
-#include "PlayingRecords.hpp"
+#include "storage/DataProvider.hpp"
+#include "records/Records.hpp"
+#include "records/LayoutRecord.hpp"
 #include "PlayingTime.hpp"
 
 #include <boost/noncopyable.hpp>
@@ -13,15 +14,15 @@ namespace Stats
     {
     public:
         Recorder();
-        
-        void addLayoutRecord(std::unique_ptr<LayoutPlayingRecord> record);
-        void addMediaRecords(MediaPlayingRecords&& records);
+
+        void addLayoutRecord(std::unique_ptr<LayoutRecord> record);
+        void addMediaRecords(MediaRecords&& records);
         void removeFromQueue(size_t count);
         size_t recordsCount() const;
-        PlayingRecords records(size_t count) const;
+        Records records(size_t count) const;
 
     private:
-        std::unique_ptr<PlayingRecord> createPlayingRecord(const PlayingRecordDto& data) const;
+        std::unique_ptr<Record> createPlayingRecord(const RecordDto& data) const;
 
     private:
         mutable std::mutex locker_;

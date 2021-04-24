@@ -5,7 +5,7 @@
 namespace Stats
 {
     template <typename T>
-    class Records
+    class Container
     {
         using container = std::deque<T>;
 

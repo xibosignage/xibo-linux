@@ -1,14 +1,14 @@
 #include "Recorder.hpp"
 
-#include "DatabaseProvider.hpp"
-#include "DtoConverter.hpp"
-#include "XmlFormatter.hpp"
+#include "stat/records/XmlFormatter.hpp"
+#include "stat/storage/DatabaseProvider.hpp"
+#include "stat/storage/DtoConverter.hpp"
 
 using namespace Stats;
 
 Recorder::Recorder() : dataProvider_(std::make_unique<DatabaseProvider>()) {}
 
-void Recorder::addLayoutRecord(std::unique_ptr<LayoutPlayingRecord> record)
+void Recorder::addLayoutRecord(std::unique_ptr<LayoutRecord> record)
 {
     std::lock_guard<std::mutex> lock(locker_);
 
@@ -18,7 +18,7 @@ void Recorder::addLayoutRecord(std::unique_ptr<LayoutPlayingRecord> record)
     dataProvider_->save(converter.dto());
 }
 
-void Recorder::addMediaRecords(MediaPlayingRecords&& records)
+void Recorder::addMediaRecords(MediaRecords&& records)
 {
     std::lock_guard<std::mutex> lock(locker_);
 
@@ -49,11 +49,11 @@ size_t Recorder::recordsCount() const
     return dataProvider_->recordsCount();
 }
 
-PlayingRecords Recorder::records(size_t count) const
+Records Recorder::records(size_t count) const
 {
     std::lock_guard<std::mutex> lock(locker_);
 
-    PlayingRecords records;
+    Records records;
 
     for (auto&& data : dataProvider_->retrieve(count))
     {
@@ -67,16 +67,16 @@ PlayingRecords Recorder::records(size_t count) const
     return records;
 }
 
-std::unique_ptr<PlayingRecord> Recorder::createPlayingRecord(const PlayingRecordDto& data) const
+std::unique_ptr<Record> Recorder::createPlayingRecord(const RecordDto& data) const
 {
     PlayingTime interval{data.started, data.finished};
 
     switch (data.type)
     {
-        case PlayingRecordType::Layout:
-            return LayoutPlayingRecord::create(data.scheduleId, data.layoutId, interval, data.count);
-        case PlayingRecordType::Media:
-            return MediaPlayingRecord::create(
+        case RecordType::Layout:
+            return LayoutRecord::create(data.scheduleId, data.layoutId, interval, data.count);
+        case RecordType::Media:
+            return MediaRecord::create(
                 data.scheduleId, data.layoutId, data.mediaId.value(), interval, data.count);
 
         default: break;

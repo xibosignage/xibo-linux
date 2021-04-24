@@ -1,4 +1,4 @@
-#include "DatabaseProvider.hpp"
+#include "stat/storage/DatabaseProvider.hpp"
 
 #include "common/logger/Logging.hpp"
 
@@ -7,7 +7,7 @@
 namespace sqlite_orm
 {
     template <>
-    struct type_printer<Stats::PlayingRecordType> : public text_printer
+    struct type_printer<Stats::RecordType> : public text_printer
     {
     };
 
@@ -17,9 +17,9 @@ namespace sqlite_orm
     };
 
     template <>
-    struct statement_binder<Stats::PlayingRecordType>
+    struct statement_binder<Stats::RecordType>
     {
-        std::time_t bind(sqlite3_stmt* stmt, int index, const Stats::PlayingRecordType& value)
+        std::time_t bind(sqlite3_stmt* stmt, int index, const Stats::RecordType& value)
         {
             return statement_binder<std::string>().bind(stmt, index, Stats::recordTypeToString(value));
         }
@@ -35,9 +35,9 @@ namespace sqlite_orm
     };
 
     template <>
-    struct field_printer<Stats::PlayingRecordType>
+    struct field_printer<Stats::RecordType>
     {
-        std::string operator()(const Stats::PlayingRecordType& t) const
+        std::string operator()(const Stats::RecordType& t) const
         {
             return Stats::recordTypeToString(t);
         }
@@ -53,9 +53,9 @@ namespace sqlite_orm
     };
 
     template <>
-    struct row_extractor<Stats::PlayingRecordType>
+    struct row_extractor<Stats::RecordType>
     {
-        Stats::PlayingRecordType extract(const char* row_value)
+        Stats::RecordType extract(const char* row_value)
         {
             if (auto type = Stats::recordTypeFromSting(row_value))
             {
@@ -64,7 +64,7 @@ namespace sqlite_orm
             throw std::runtime_error("incorrect record type string (" + std::string(row_value) + ")");
         }
 
-        Stats::PlayingRecordType extract(sqlite3_stmt* stmt, int columnIndex)
+        Stats::RecordType extract(sqlite3_stmt* stmt, int columnIndex)
         {
             auto str = sqlite3_column_text(stmt, columnIndex);
             return this->extract((const char*)str);
@@ -101,15 +101,15 @@ inline auto initStorage(const std::string& path)
     using namespace sqlite_orm;
     return make_storage(path,
                         make_table("stats",
-                                   make_column("id", &PlayingRecordDto::id, primary_key()),
-                                   make_column("type", &PlayingRecordDto::type),
-                                   make_column("started", &PlayingRecordDto::started),
-                                   make_column("finished", &PlayingRecordDto::finished),
-                                   make_column("scheduleId", &PlayingRecordDto::scheduleId),
-                                   make_column("layoutId", &PlayingRecordDto::layoutId),
-                                   make_column("mediaId", &PlayingRecordDto::mediaId),
-                                   make_column("duration", &PlayingRecordDto::duration),
-                                   make_column("count", &PlayingRecordDto::count)));
+                                   make_column("id", &RecordDto::id, primary_key()),
+                                   make_column("type", &RecordDto::type),
+                                   make_column("started", &RecordDto::started),
+                                   make_column("finished", &RecordDto::finished),
+                                   make_column("scheduleId", &RecordDto::scheduleId),
+                                   make_column("layoutId", &RecordDto::layoutId),
+                                   make_column("mediaId", &RecordDto::mediaId),
+                                   make_column("duration", &RecordDto::duration),
+                                   make_column("count", &RecordDto::count)));
 }
 
 struct DatabaseProvider::PrivateData
@@ -127,9 +127,9 @@ DatabaseProvider::DatabaseProvider() : data_(std::make_unique<PrivateData>(initS
     data_->db.sync_schema(true);
 }
 
-DatabaseProvider::~DatabaseProvider() { }
+DatabaseProvider::~DatabaseProvider() {}
 
-void DatabaseProvider::save(const PlayingRecordDto& record)
+void DatabaseProvider::save(const RecordDto& record)
 {
     data_->db.insert(record);
 }
@@ -155,20 +155,20 @@ void DatabaseProvider::save(PlayingRecordDtoCollection&& records)
 
 PlayingRecordDtoCollection DatabaseProvider::retrieve(size_t count) const
 {
-    return data_->db.get_all<PlayingRecordDto>(limit(count));
+    return data_->db.get_all<RecordDto>(limit(count));
 }
 
 void DatabaseProvider::removeAll()
 {
-    data_->db.remove_all<PlayingRecordDto>();
+    data_->db.remove_all<RecordDto>();
 }
 
 void DatabaseProvider::remove(size_t count)
 {
-    data_->db.remove_all<PlayingRecordDto>(order_by(&PlayingRecordDto::id), limit(count));
+    data_->db.remove_all<RecordDto>(order_by(&RecordDto::id), limit(count));
 }
 
 size_t DatabaseProvider::recordsCount() const
 {
-    return data_->db.count<PlayingRecordDto>();
+    return data_->db.count<RecordDto>();
 }

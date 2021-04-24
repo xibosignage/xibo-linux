@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PlayingRecordType.hpp"
+#include "stat/records/RecordType.hpp"
 
 #include "common/dt/DateTime.hpp"
 
@@ -8,10 +8,10 @@
 
 namespace Stats
 {
-    struct PlayingRecordDto
+    struct RecordDto
     {
         int id;
-        PlayingRecordType type;
+        RecordType type;
         DateTime started;
         DateTime finished;
         int scheduleId;

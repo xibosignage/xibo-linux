@@ -2,7 +2,7 @@
 
 using namespace Stats;
 
-std::string XmlFormatter::format(const PlayingRecords& records) const
+std::string XmlFormatter::format(const Records& records) const
 {
     XmlNode root;
     auto&& stats = root.put_child("stats", XmlNode{});
@@ -18,9 +18,9 @@ std::string XmlFormatter::format(const PlayingRecords& records) const
     return Parsing::xmlTreeToString(root);
 }
 
-void XmlFormatter::visit(const LayoutPlayingRecord& record)
+void XmlFormatter::visit(const LayoutRecord& record)
 {
-    node_.put(Parsing::xmlAttr("type"), Stats::recordTypeToString(PlayingRecordType::Layout));
+    node_.put(Parsing::xmlAttr("type"), Stats::recordTypeToString(RecordType::Layout));
     node_.put(Parsing::xmlAttr("fromdt"), record.started().string("%Y-%m-%d %H:%M:%S"));
     node_.put(Parsing::xmlAttr("todt"), record.finished().string("%Y-%m-%d %H:%M:%S"));
     node_.put(Parsing::xmlAttr("scheduleid"), std::to_string(record.scheduleId()));
@@ -30,9 +30,9 @@ void XmlFormatter::visit(const LayoutPlayingRecord& record)
     node_.put(Parsing::xmlAttr("count"), std::to_string(record.count()));
 }
 
-void XmlFormatter::visit(const MediaPlayingRecord& record)
+void XmlFormatter::visit(const MediaRecord& record)
 {
-    node_.put(Parsing::xmlAttr("type"), Stats::recordTypeToString(PlayingRecordType::Media));
+    node_.put(Parsing::xmlAttr("type"), Stats::recordTypeToString(RecordType::Media));
     node_.put(Parsing::xmlAttr("fromdt"), record.started().string("%Y-%m-%d %H:%M:%S"));
     node_.put(Parsing::xmlAttr("todt"), record.finished().string("%Y-%m-%d %H:%M:%S"));
     node_.put(Parsing::xmlAttr("scheduleid"), std::to_string(record.scheduleId()));

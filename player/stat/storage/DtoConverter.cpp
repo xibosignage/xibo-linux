@@ -1,30 +1,30 @@
-#include "DtoConverter.hpp"
+#include "stat/storage/DtoConverter.hpp"
 
 using namespace Stats;
 
-PlayingRecordDto DtoConverter::dto() const
+RecordDto DtoConverter::dto() const
 {
     return dto_;
 }
 
-void DtoConverter::visit(const LayoutPlayingRecord& record)
+void DtoConverter::visit(const LayoutRecord& record)
 {
     fillGenericData(record);
 
     dto_.layoutId = record.id();
-    dto_.type = PlayingRecordType::Layout;
+    dto_.type = RecordType::Layout;
 }
 
-void DtoConverter::visit(const MediaPlayingRecord& record)
+void DtoConverter::visit(const MediaRecord& record)
 {
     fillGenericData(record);
 
     dto_.layoutId = record.parentId();
     dto_.mediaId = record.id();
-    dto_.type = PlayingRecordType::Media;
+    dto_.type = RecordType::Media;
 }
 
-void DtoConverter::fillGenericData(const PlayingRecord& record)
+void DtoConverter::fillGenericData(const Record& record)
 {
     dto_.started = record.started();
     dto_.finished = record.finished();

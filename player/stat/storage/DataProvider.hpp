@@ -1,17 +1,17 @@
 #pragma once
 
-#include "PlayingRecordDto.hpp"
-#include "PlayingRecordType.hpp"
+#include "RecordDto.hpp"
+#include "stat/records/RecordType.hpp"
 
 namespace Stats
 {
-    using PlayingRecordDtoCollection = std::vector<PlayingRecordDto>;
+    using PlayingRecordDtoCollection = std::vector<RecordDto>;
 
     class DataProvider
     {
     public:
         virtual ~DataProvider() = default;
-        virtual void save(const PlayingRecordDto& record) = 0;
+        virtual void save(const RecordDto& record) = 0;
         virtual void save(PlayingRecordDtoCollection&& records) = 0;
         virtual PlayingRecordDtoCollection retrieve(size_t count) const = 0;
         virtual void removeAll() = 0;

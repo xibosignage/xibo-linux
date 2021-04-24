@@ -4,22 +4,27 @@ find_package(SqliteOrm REQUIRED)
 
 add_library(${PROJECT_NAME}
     PlayingTime.hpp
-    XmlFormatter.cpp
-    XmlFormatter.hpp
     Recorder.cpp
     Recorder.hpp
-    DataProvider.hpp
-    PlayingRecord.hpp
-    PlayingRecord.cpp
-    PlayingRecords.hpp
-    Records.hpp
-    PlayingRecordType.cpp
-    PlayingRecordType.hpp
-    IRecordVisitor.hpp
-    DtoConverter.cpp
-    DtoConverter.hpp
-    DatabaseProvider.cpp
-    DatabaseProvider.hpp
+    records/XmlFormatter.cpp
+    records/XmlFormatter.hpp
+    records/Record.hpp
+    records/Record.cpp
+    records/LayoutRecord.hpp
+    records/LayoutRecord.cpp
+    records/MediaRecord.hpp
+    records/MediaRecord.cpp
+    records/Records.hpp
+    records/Container.hpp
+    records/RecordType.cpp
+    records/RecordType.hpp
+    records/RecordVisitor.hpp
+    storage/RecordDto.hpp
+    storage/DtoConverter.cpp
+    storage/DtoConverter.hpp
+    storage/DataProvider.hpp
+    storage/DatabaseProvider.cpp
+    storage/DatabaseProvider.hpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE dt sqlite_orm::sqlite_orm)

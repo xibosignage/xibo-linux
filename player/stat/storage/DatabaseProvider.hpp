@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DataProvider.hpp"
-#include "PlayingRecordType.hpp"
+#include "stat/records/RecordType.hpp"
 
 #include "common/dt/DateTime.hpp"
 
@@ -17,7 +17,7 @@ namespace Stats
         DatabaseProvider();
         ~DatabaseProvider();
 
-        void save(const PlayingRecordDto& record) override;
+        void save(const RecordDto& record) override;
         void save(PlayingRecordDtoCollection&& records) override;
         PlayingRecordDtoCollection retrieve(size_t count) const override;
         void removeAll() override;

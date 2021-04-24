@@ -15,7 +15,7 @@
 
 #include "cms/xmds/XmdsRequestSender.hpp"
 #include "stat/Recorder.hpp"
-#include "stat/XmlFormatter.hpp"
+#include "stat/records/XmlFormatter.hpp"
 
 namespace ph = std::placeholders;
 
