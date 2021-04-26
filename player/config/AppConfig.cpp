@@ -94,6 +94,11 @@ FilePath AppConfig::cachePath()
     return configDirectory() / "cacheFile.xml";
 }
 
+FilePath AppConfig::statsCache()
+{
+    return configDirectory() / "stats.sqlite";
+}
+
 FilePath AppConfig::additionalResourcesDirectory()
 {
 #if defined(SNAP_ENABLED)

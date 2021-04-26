@@ -209,6 +209,17 @@ parts:
       - -DUSE_SYSTEM_TZ_DB=ON
     after: [cmake]
 
+  sqlite-orm:
+    source: https://github.com/fnc12/sqlite_orm/archive/refs/tags/1.6.tar.gz
+    plugin: cmake
+    build-packages:
+      - libsqlite3-dev
+    stage-packages:
+      - libsqlite3-0
+    configflags:
+      - -DBUILD_TESTING=OFF
+    after: [cmake]
+
   player:
     source: player
     plugin: cmake
@@ -225,4 +236,4 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, spdlog, gtest, gstreamer, date-tz] 
+    after: [zmq, boost, spdlog, gtest, gstreamer, date-tz, sqlite-orm] 

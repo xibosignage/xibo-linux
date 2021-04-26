@@ -32,6 +32,7 @@ public:
     static FilePath playerSettingsPath();
     static FilePath schedulePath();
     static FilePath cachePath();
+    static FilePath statsCache();
 
     static std::string playerBinary();
     static std::string optionsBinary();

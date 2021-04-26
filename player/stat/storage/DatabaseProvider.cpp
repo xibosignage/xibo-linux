@@ -1,6 +1,7 @@
 #include "stat/storage/DatabaseProvider.hpp"
 
 #include "common/logger/Logging.hpp"
+#include "config/AppConfig.hpp"
 
 #include <charconv>
 
@@ -96,10 +97,10 @@ namespace sqlite_orm
 using namespace Stats;
 using namespace sqlite_orm;
 
-inline auto initStorage(const std::string& path)
+inline auto initStorage(const FilePath& path)
 {
     using namespace sqlite_orm;
-    return make_storage(path,
+    return make_storage(path.string(),
                         make_table("stats",
                                    make_column("id", &RecordDto::id, primary_key()),
                                    make_column("type", &RecordDto::type),
@@ -121,8 +122,7 @@ struct DatabaseProvider::PrivateData
     Storage db;
 };
 
-// TODO: probably move to config
-DatabaseProvider::DatabaseProvider() : data_(std::make_unique<PrivateData>(initStorage("stats.sqlite")))
+DatabaseProvider::DatabaseProvider() : data_(std::make_unique<PrivateData>(initStorage(AppConfig::statsCache())))
 {
     data_->db.sync_schema(true);
 }

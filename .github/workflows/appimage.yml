@@ -16,7 +16,7 @@ jobs:
       - name: Installing main dependencies
         run: |
           sudo apt-get update
-          sudo apt-get -y install software-properties-common apt-transport-https ca-certificates libglibmm-2.4-dev libssl-dev
+          sudo apt-get -y install software-properties-common apt-transport-https ca-certificates libglibmm-2.4-dev libssl-dev libsqlite3-dev
           sudo apt-get -y install gnupg curl libcurl4-gnutls-dev wget unzip libgtkmm-3.0-dev libwebkitgtk-3.0-dev libxss-dev
       - name: Installing newer boost
         run: |
@@ -110,6 +110,14 @@ jobs:
           tar -zxvf date-tz.tar.gz
           cd date-3.0.0
           cmake . -DBUILD_TZ_LIB=ON -DBUILD_SHARED_LIBS=ON -DUSE_SYSTEM_TZ_DB=ON
+          make -j4
+          sudo make install
+      - name: Installing sqlite-orm
+        run: |
+          curl -o sqlite-orm.tar.gz -SL https://github.com/fnc12/sqlite_orm/archive/refs/tags/1.6.tar.gz
+          tar -zxvf sqlite-orm.tar.gz 
+          cd sqlite_orm-1.6
+          cmake . -DBUILD_TESTING=OFF
           make -j4
           sudo make install
       - name: Update ldconfig cache
