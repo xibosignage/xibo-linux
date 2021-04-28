@@ -63,7 +63,9 @@ private:
     void onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles);
     void updateMediaInventory(const RequiredFiles::Result& requiredFilesResult);
     void onSchedule(const ResponseResult<Schedule::Result>& schedule);
-    void onSubmitStats(const ResponseResult<SubmitStats::Result>& statsResult);
+    void submitLogs();
+    void submitStats();
+    void notifyStatus();
     template <typename Result>
     void onSubmitted(std::string_view requestName, const ResponseResult<Result>& submitResult);
 

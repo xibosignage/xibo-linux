@@ -3,6 +3,7 @@
 #include "DataProvider.hpp"
 #include "stat/records/RecordType.hpp"
 
+#include "common/PlayerRuntimeError.hpp"
 #include "common/dt/DateTime.hpp"
 
 #include <sqlite_orm/sqlite_orm.h>
@@ -13,6 +14,7 @@ namespace Stats
     {
         struct PrivateData;
 
+        DECLARE_EXCEPTION(Stats::Database)
     public:
         DatabaseProvider();
         ~DatabaseProvider();

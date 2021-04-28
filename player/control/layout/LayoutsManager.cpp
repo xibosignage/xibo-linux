@@ -94,15 +94,29 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 
         layout->statReady().connect([this, layoutId, scheduleId](const Stats::PlayingTime& interval) {
-            statsRecorder_.addLayoutRecord(Stats::LayoutRecord::create(scheduleId, layoutId, interval));
+            try
+            {
+                statsRecorder_.addLayoutRecord(Stats::LayoutRecord::create(scheduleId, layoutId, interval));
+            }
+            catch (const std::exception& e)
+            {
+                Log::error(e.what());
+            }
         });
         layout->mediaStatsReady().connect([this, layoutId, scheduleId](const MediaPlayingTime& intervals) {
-            Stats::MediaRecords records;
-            for (auto&& [mediaId, interval] : intervals)
+            try
             {
-                records.add(Stats::MediaRecord::create(scheduleId, layoutId, mediaId, interval));
+                Stats::MediaRecords records;
+                for (auto&& [mediaId, interval] : intervals)
+                {
+                    records.add(Stats::MediaRecord::create(scheduleId, layoutId, mediaId, interval));
+                }
+                statsRecorder_.addMediaRecords(std::move(records));
             }
-            statsRecorder_.addMediaRecords(std::move(records));
+            catch (const std::exception& e)
+            {
+                Log::error(e.what());
+            }
         });
 
         layout->expired().connect([this, layoutId]() {

@@ -5,6 +5,8 @@
 #include "records/LayoutRecord.hpp"
 #include "PlayingTime.hpp"
 
+#include "common/PlayerRuntimeError.hpp"
+
 #include <boost/noncopyable.hpp>
 #include <mutex>
 
@@ -12,6 +14,7 @@ namespace Stats
 {
     class Recorder : private boost::noncopyable
     {
+        DECLARE_EXCEPTION(Stats::Recorder)
     public:
         Recorder();
 
@@ -23,6 +26,7 @@ namespace Stats
 
     private:
         std::unique_ptr<Record> createPlayingRecord(const RecordDto& data) const;
+        void checkIfCacheIsValid() const;
 
     private:
         mutable std::mutex locker_;

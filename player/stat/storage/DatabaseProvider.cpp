@@ -96,6 +96,7 @@ namespace sqlite_orm
 
 using namespace Stats;
 using namespace sqlite_orm;
+using namespace std::string_literals;
 
 inline auto initStorage(const FilePath& path)
 {
@@ -124,7 +125,14 @@ struct DatabaseProvider::PrivateData
 
 DatabaseProvider::DatabaseProvider() : data_(std::make_unique<PrivateData>(initStorage(AppConfig::statsCache())))
 {
-    data_->db.sync_schema(true);
+    try
+    {
+        data_->db.sync_schema(true);
+    }
+    catch (const std::exception& e)
+    {
+        throw Error{"error while syncing schema: "s + e.what()};
+    }
 }
 
 DatabaseProvider::~DatabaseProvider() {}
@@ -136,7 +144,7 @@ void DatabaseProvider::save(const RecordDto& record)
 
 void DatabaseProvider::save(PlayingRecordDtoCollection&& records)
 {
-    data_->db.transaction([&]() {
+    auto result = data_->db.transaction([&]() {
         try
         {
             for (auto&& record : records)
@@ -146,11 +154,12 @@ void DatabaseProvider::save(PlayingRecordDtoCollection&& records)
         }
         catch (std::exception& e)
         {
-            Log::error("[Stats::Database] Error while saving records to database: {}", e.what());
             return false;
         }
         return true;
     });
+
+    if (!result) throw Error{"database transaction failed"};
 }
 
 PlayingRecordDtoCollection DatabaseProvider::retrieve(size_t count) const
