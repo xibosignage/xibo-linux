@@ -3,6 +3,7 @@
 #include "MainLoop.hpp"
 
 #include "NotifyStatusInfo.hpp"
+#include "common/PlayerRuntimeError.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/dt/Timer.hpp"
 #include "common/fs/FileSystem.hpp"
@@ -14,13 +15,13 @@
 #include "config/AppConfig.hpp"
 
 #include "cms/xmds/XmdsRequestSender.hpp"
-#include "stat/StatsFormatter.hpp"
-#include "stat/StatsRecorder.hpp"
+#include "stat/Recorder.hpp"
+#include "stat/records/XmlFormatter.hpp"
 
 namespace ph = std::placeholders;
 
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
-                                       StatsRecorder& statsRecorder,
+                                       Stats::Recorder& statsRecorder,
                                        FileCache& fileCache,
                                        const FilePath& resourceDirectory) :
     xmdsSender_{xmdsSender},
@@ -96,25 +97,9 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             onSchedule(scheduleResult);
             onRequiredFiles(requiredFilesResult);
 
-            XmlLogsRetriever logsRetriever;
-            auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
-            onSubmitted("SubmitLogs", submitLogsResult);
-
-            if (!statsRecorder_.empty())
-            {
-                auto submitStatsResult = xmdsSender_.submitStats(statsRecorder_.records().string()).get();
-                statsRecorder_.clear();
-                onSubmitted("SubmitStats", submitStatsResult);
-            }
-
-            NotifyStatusInfo notifyInfo;
-            // FIXME: store it in collection interval until XMDS refactoring
-            notifyInfo.currentLayoutId = currentLayoutId_;
-            notifyInfo.deviceName = System::hostname();
-            notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor(resourceDirectory_);
-            notifyInfo.timezone = DateTime::currentTimezone();
-            auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
-            onSubmitted("NotifyStatus", notifyStatusResult);
+            submitLogs();
+            submitStats();
+            notifyStatus();
         }
         sessionFinished(displayError);
     }
@@ -235,6 +220,57 @@ void CollectionInterval::onSchedule(const ResponseResult<Schedule::Result>& sche
     {
         sessionFinished(error);
     }
+}
+
+void CollectionInterval::submitLogs()
+{
+    XmlLogsRetriever logsRetriever;
+    auto submitLogsResult = xmdsSender_.submitLogs(logsRetriever.retrieveLogs()).get();
+    onSubmitted("SubmitLogs", submitLogsResult);
+}
+
+void CollectionInterval::submitStats()
+{
+    try
+    {
+        const auto recordsCount = statsRecorder_.recordsCount();
+        if (recordsCount > 0)
+        {
+            const auto RecordsToSend = [recordsCount]() -> size_t {
+                if (recordsCount > 500)
+                    return 300;
+                else
+                    return recordsCount > 50 ? 50 : recordsCount;
+            }();
+
+            Log::debug("[CollectionInterval] Total records: {} Records to send {}", recordsCount, RecordsToSend);
+
+            auto records = statsRecorder_.records(RecordsToSend);
+            statsRecorder_.removeFromQueue(RecordsToSend);
+
+            Stats::XmlFormatter formatter;
+            auto submitStatsResult = xmdsSender_.submitStats(formatter.format(records)).get();
+            onSubmitted("SubmitStats", submitStatsResult);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        Log::error(e.what());
+        Log::error("[CollectionInterval] Failed to submit stats");
+    }
+}
+
+void CollectionInterval::notifyStatus()
+{
+    NotifyStatusInfo notifyInfo;
+    // FIXME: store it in collection interval until XMDS refactoring
+    notifyInfo.currentLayoutId = currentLayoutId_;
+    notifyInfo.deviceName = System::hostname();
+    notifyInfo.spaceUsageInfo = FileSystem::storageUsageFor(resourceDirectory_);
+    notifyInfo.timezone = DateTime::currentTimezone();
+
+    auto notifyStatusResult = xmdsSender_.notifyStatus(notifyInfo.string()).get();
+    onSubmitted("NotifyStatus", notifyStatusResult);
 }
 
 template <typename Result>

@@ -7,18 +7,15 @@
 #include "common/logger/Logging.hpp"
 #include "common/storage/FileCache.hpp"
 #include "schedule/Scheduler.hpp"
-#include "stat/StatsRecorder.hpp"
+#include "stat/Recorder.hpp"
 
 #include "config/AppConfig.hpp"
 
 LayoutsManager::LayoutsManager(Scheduler& scheduler,
-                               StatsRecorder& statsRecorder,
+                               Stats::Recorder& statsRecorder,
                                FileCache& fileCache,
                                bool statsEnabled) :
-    scheduler_(scheduler),
-    statsRecorder_(statsRecorder),
-    fileCache_(fileCache),
-    statsEnabled_{statsEnabled}
+    scheduler_(scheduler), statsRecorder_(statsRecorder), fileCache_(fileCache), statsEnabled_{statsEnabled}
 {
     scheduler_.layoutUpdated().connect(std::bind(&LayoutsManager::fetchMainLayout, this));
     scheduler_.overlaysUpdated().connect(std::bind(&LayoutsManager::fetchOverlays, this));
@@ -96,12 +93,29 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
         auto layout = parser.parseBy(layoutId);
         auto scheduleId = scheduler_.scheduleIdBy(layoutId);
 
-        layout->statReady().connect(
-            [=](const PlayingStat& stat) { statsRecorder_.addLayoutStat(scheduleId, layoutId, stat); });
-        layout->mediaStatsReady().connect([=](const MediaPlayingStats& stats) {
-            for (auto&& [mediaId, interval] : stats)
+        layout->statReady().connect([this, layoutId, scheduleId](const Stats::PlayingTime& interval) {
+            try
             {
-                statsRecorder_.addMediaStat(scheduleId, layoutId, mediaId, interval);
+                statsRecorder_.addLayoutRecord(Stats::LayoutRecord::create(scheduleId, layoutId, interval));
+            }
+            catch (const std::exception& e)
+            {
+                Log::error(e.what());
+            }
+        });
+        layout->mediaStatsReady().connect([this, layoutId, scheduleId](const MediaPlayingTime& intervals) {
+            try
+            {
+                Stats::MediaRecords records;
+                for (auto&& [mediaId, interval] : intervals)
+                {
+                    records.add(Stats::MediaRecord::create(scheduleId, layoutId, mediaId, interval));
+                }
+                statsRecorder_.addMediaRecords(std::move(records));
+            }
+            catch (const std::exception& e)
+            {
+                Log::error(e.what());
             }
         });
 

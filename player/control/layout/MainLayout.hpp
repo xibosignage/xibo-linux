@@ -2,15 +2,15 @@
 
 #include "control/region/Region.hpp"
 #include "control/widgets/Image.hpp"
-#include "stat/PlayingStat.hpp"
+#include "stat/PlayingTime.hpp"
 
 #include <boost/signals2/signal.hpp>
 #include <memory>
 
 using SignalLayoutExpired = boost::signals2::signal<void()>;
-using SignalLayoutStatReady = boost::signals2::signal<void(const PlayingStat&)>;
-using MediaPlayingStats = std::multimap<int, PlayingStat>;
-using SignalLayoutMediaStatsReady = boost::signals2::signal<void(const MediaPlayingStats&)>;
+using SignalLayoutStatReady = boost::signals2::signal<void(const Stats::PlayingTime&)>;
+using MediaPlayingTime = std::multimap<int, Stats::PlayingTime>;
+using SignalLayoutMediaStatsReady = boost::signals2::signal<void(const MediaPlayingTime&)>;
 
 namespace Xibo
 {
