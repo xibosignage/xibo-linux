@@ -153,6 +153,8 @@ parts:
     stage:
       - -usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
       - -usr/share/doc/libllvm10/changelog.Debian.gz
+      - -usr/share/doc/gcc-11-base/changelog.Debian.gz
+      - -lib/x86_64-linux-gnu/libgcc_s.so.1
     after: [g++-8]
 
   gst-plugins-base:

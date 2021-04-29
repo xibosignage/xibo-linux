@@ -24,8 +24,9 @@ MacAddress MacAddressFetcher::fetch()
 
         return MacAddress{retrieveMacAddress(socket, interfaceRequest)};
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
+        Log::info("Failed to get MAC address: {}", e.what());
         return UndefinedMacAddress;
     }
 }
