@@ -51,7 +51,7 @@ std::string HardwareKeyGenerator::currentDrive()
 {
     const std::string DEVICE_PREFIX{"/dev/"};
 
-    auto line = executeAndGrepFirstLine("df " + AppConfig::playerBinary(), DEVICE_PREFIX);
+    auto line = executeAndGrepFirstLine("df " + AppConfig::configDirectory().string(), DEVICE_PREFIX);
 
     return DEVICE_PREFIX + retrieveResult(std::regex{DEVICE_PREFIX + "([^\\s]+)"}, line);
 }

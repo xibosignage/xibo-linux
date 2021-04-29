@@ -18,19 +18,19 @@ slots:
 apps:
   xibo-player:
     command: bin/snap_run.sh xibo-watchdog
-    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl, mount-observe]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   disabled-watchdog:
     command: bin/snap_run.sh xibo-watchdog --disable-restart
-    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl, mount-observe]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   options:
     command: bin/xibo-options
-    plugs: [gsettings, network, home]
+    plugs: [gsettings, network, home, mount-observe]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
@@ -153,6 +153,8 @@ parts:
     stage:
       - -usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
       - -usr/share/doc/libllvm10/changelog.Debian.gz
+      - -usr/share/doc/gcc-11-base/changelog.Debian.gz
+      - -lib/x86_64-linux-gnu/libgcc_s.so.1
     after: [g++-8]
 
   gst-plugins-base:
