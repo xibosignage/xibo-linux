@@ -18,19 +18,19 @@ slots:
 apps:
   xibo-player:
     command: bin/snap_run.sh xibo-watchdog
-    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl, mount-observe]
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   disabled-watchdog:
     command: bin/snap_run.sh xibo-watchdog --disable-restart
-    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl, mount-observe]
+    plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
   options:
     command: bin/xibo-options
-    plugs: [gsettings, network, home, mount-observe]
+    plugs: [gsettings, network, home]
     slots: [dbus-daemon]
     extensions: [gnome-3-28]
 
