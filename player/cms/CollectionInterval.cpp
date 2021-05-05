@@ -23,16 +23,18 @@ namespace ph = std::placeholders;
 CollectionInterval::CollectionInterval(XmdsRequestSender& xmdsSender,
                                        Stats::Recorder& statsRecorder,
                                        FileCache& fileCache,
-                                       const FilePath& resourceDirectory) :
+                                       const FilePath& resourceDirectory,
+                                       const std::string& displayName) :
     xmdsSender_{xmdsSender},
     statsRecorder_{statsRecorder},
     fileCache_{fileCache},
+    resourceDirectory_{resourceDirectory},
+    displayName_{displayName},
     intervalTimer_{std::make_unique<Timer>()},
     collectInterval_{DefaultInterval},
     running_{false},
     status_{},
-    currentLayoutId_{EmptyLayoutId},
-    resourceDirectory_{resourceDirectory}
+    currentLayoutId_{EmptyLayoutId}
 {
     assert(intervalTimer_);
 }
@@ -61,7 +63,7 @@ void CollectionInterval::collectNow()
             Log::debug("[CollectionInterval] Started");
 
             auto registerDisplayResult =
-                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), "Display").get();
+                xmdsSender_.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), displayName_).get();
             onDisplayRegistered(registerDisplayResult);
         });
     }
