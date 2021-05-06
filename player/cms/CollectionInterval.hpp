@@ -39,7 +39,8 @@ public:
     CollectionInterval(XmdsRequestSender& xmdsSender,
                        Stats::Recorder& statsRecorder,
                        FileCache& fileCache,
-                       const FilePath& resourceDirectory);
+                       const FilePath& resourceDirectory,
+                       const std::string& displayName);
 
     bool running() const;
     void stop();
@@ -73,13 +74,16 @@ private:
     XmdsRequestSender& xmdsSender_;
     Stats::Recorder& statsRecorder_;
     FileCache& fileCache_;
+    FilePath resourceDirectory_;
+    std::string displayName_;
+
     std::unique_ptr<JoinableThread> workerThread_;
     std::unique_ptr<Timer> intervalTimer_;
     std::atomic_int collectInterval_;
     std::atomic_bool running_;
     CmsStatus status_;
     LayoutId currentLayoutId_;
-    FilePath resourceDirectory_;
+
     SignalSettingsUpdated settingsUpdated_;
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;

@@ -231,8 +231,8 @@ void XiboApp::checkResourceDirectory()
 
 std::unique_ptr<CollectionInterval> XiboApp::createCollectionInterval(XmdsRequestSender& xmdsManager)
 {
-    auto interval =
-        std::make_unique<CollectionInterval>(xmdsManager, *statsRecorder_, *fileCache_, cmsSettings_.resourcesPath());
+    auto interval = std::make_unique<CollectionInterval>(
+        xmdsManager, *statsRecorder_, *fileCache_, cmsSettings_.resourcesPath(), playerSettings_.displayName());
 
     interval->updateInterval(playerSettings_.collectInterval());
     playerSettings_.collectInterval().valueChanged().connect(

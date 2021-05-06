@@ -9,16 +9,15 @@
 #include "common/system/System.hpp"
 #include "config/AppConfig.hpp"
 
-const std::string DefaultDisplay = "Display";
-
 MainWindowController::MainWindowController(Gtk::Window* window, const Glib::RefPtr<Gtk::Builder>& ui) :
     ui_(ui),
     mainWindow_(window)
 {
-    settings_.fromFile(AppConfig::cmsSettingsPath());
+    cmsSettings_.fromFile(AppConfig::cmsSettingsPath());
+    playerSettings_.fromFile(AppConfig::playerSettingsPath());
 
     initUi();
-    updateControls(settings_);
+    updateControls(cmsSettings_);
     connectSignals();
 }
 
@@ -88,8 +87,9 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
     {
         XmdsRequestSender xmdsRequester{cmsAddress, key, displayId};
 
+                
         auto connectionResult =
-            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), DefaultDisplay)
+            xmdsRequester.registerDisplay(AppConfig::codeVersion(), AppConfig::releaseVersion(), playerSettings_.displayName())
                 .then([](auto future) {
                     auto [error, result] = future.get();
 
@@ -109,15 +109,15 @@ std::string MainWindowController::connectToCms(const std::string& cmsAddress,
 
 void MainWindowController::updateSettings()
 {
-    settings_.address().setValue(cmsAddressField_->get_text());
-    settings_.key().setValue(keyField_->get_text());
+    cmsSettings_.address().setValue(cmsAddressField_->get_text());
+    cmsSettings_.key().setValue(keyField_->get_text());
     std::string path = resourcesPathField_->get_text();
-    settings_.resourcesPath().setValue(path.empty() ? createDefaultResourceDir() : path);
-    settings_.displayId().setValue(displayIdField_->get_text());
+    cmsSettings_.resourcesPath().setValue(path.empty() ? createDefaultResourceDir() : path);
+    cmsSettings_.displayId().setValue(displayIdField_->get_text());
 
-    settings_.updateProxy(domainField_->get_text(), usernameField_->get_text(), passwordField_->get_text());
+    cmsSettings_.updateProxy(domainField_->get_text(), usernameField_->get_text(), passwordField_->get_text());
 
-    settings_.saveTo(AppConfig::cmsSettingsPath());
+    cmsSettings_.saveTo(AppConfig::cmsSettingsPath());
 }
 
 std::string MainWindowController::createDefaultResourceDir()
