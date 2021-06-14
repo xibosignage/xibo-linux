@@ -21,6 +21,7 @@ target_link_libraries(${PROJECT_NAME}
     schedule
     crypto
     xmr
+    commands
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

@@ -6,6 +6,7 @@
 
 #include "common/SoapField.hpp"
 #include "config/PlayerSettings.hpp"
+#include "commands/PredefinedCommands.hpp"
 
 namespace RegisterDisplay
 {
@@ -27,6 +28,7 @@ namespace RegisterDisplay
 
         Status status;
         PlayerSettings playerSettings;
+        PredefinedCommands predefinedCommands;
     };
 
     struct Request
@@ -59,4 +61,7 @@ public:
 
 protected:
     RegisterDisplay::Result parseBody(const XmlNode& node) override;
+
+private:
+    PredefinedCommands parseCommands(const XmlNode& commandsNode);
 };

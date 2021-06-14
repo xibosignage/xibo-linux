@@ -42,6 +42,7 @@ namespace XmdsResources
 
         const std::string ActivationMessage = "ActivationMessage";
         const std::string Display = "display";
+        const std::string Commands = "commands";
         const std::string DisplayAttrs = "<xmlattr>";
         const std::string Status = "status";
         const std::string StatusMessage = "message";
@@ -69,6 +70,12 @@ namespace XmdsResources
             const std::string PreventSleep = "preventSleep";
             const std::string DisplayName = "displayName";
             const std::string ScreenShotRequested = "screenShotRequested";
+        }
+
+        namespace Command
+        {
+            const std::string ExecutableString = "commandString";
+            const std::string ValidationString = "validationString";
         }
     }
 

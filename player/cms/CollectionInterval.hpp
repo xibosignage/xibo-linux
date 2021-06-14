@@ -11,6 +11,7 @@
 #include "cms/xmds/SubmitStats.hpp"
 #include "networking/ResponseResult.hpp"
 #include "schedule/LayoutSchedule.hpp"
+#include "commands/PredefinedCommands.hpp"
 
 #include "common/JoinableThread.hpp"
 #include "common/dt/Timer.hpp"
@@ -23,6 +24,7 @@ using SignalSettingsUpdated = boost::signals2::signal<void(const PlayerSettings&
 using SignalScheduleAvailable = boost::signals2::signal<void(LayoutSchedule)>;
 using SignalCollectionFinished = boost::signals2::signal<void(const PlayerError&)>;
 using SignalFilesDownloaded = boost::signals2::signal<void()>;
+using SignalPredefinedCommandsUpdated = boost::signals2::signal<void(PredefinedCommands)>;
 
 class XmdsRequestSender;
 namespace Stats
@@ -51,6 +53,7 @@ public:
     SignalScheduleAvailable& scheduleAvailable();
     SignalCollectionFinished& collectionFinished();
     SignalFilesDownloaded& filesDownloaded();
+    SignalPredefinedCommandsUpdated& predefinedCommandsUpdated();
 
     void setCurrentLayoutId(const LayoutId& currentLayoutId);
 
@@ -84,4 +87,5 @@ private:
     SignalScheduleAvailable scheduleAvailable_;
     SignalCollectionFinished collectionFinished_;
     SignalFilesDownloaded filesDownloaded_;
+    SignalPredefinedCommandsUpdated predefinedCommandsUpdated_;
 };
