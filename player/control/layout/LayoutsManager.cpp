@@ -44,6 +44,7 @@ void LayoutsManager::fetchMainLayout()
         }
         else
         {
+            // TODO: probably encapsulate in Scheduler
             fileCache_.markAsInvalid(std::to_string(id) + ".xlf");
             scheduler_.reloadQueue();
             mainLayoutFetched_(nullptr);
@@ -71,6 +72,7 @@ void LayoutsManager::fetchOverlays()
         }
         else
         {
+            // TODO: probably encapsulate in Scheduler
             fileCache_.markAsInvalid(std::to_string(id) + ".xlf");
             scheduler_.reloadQueue();
         }

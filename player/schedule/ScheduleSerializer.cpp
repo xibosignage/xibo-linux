@@ -1,9 +1,9 @@
 #include "ScheduleSerializer.hpp"
 
 #include "cms/xmds/Resources.hpp"  // TODO: remove dependency
-#include "common/parsing/Parsing.hpp"
 #include "common/dt/DateTime.hpp"
 #include "common/fs/FilePath.hpp"
+#include "common/parsing/Parsing.hpp"
 
 namespace Resources = XmdsResources::Schedule;
 
@@ -23,11 +23,16 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
 {
     XmlNode root;
     auto& scheduleNode = root.add_child(Resources::Schedule, {});
-    scheduleNode.put(Resources::Generated, schedule.generatedTime.string());
+    scheduleNode.put(Resources::Layout::Generated, schedule.generatedTime.string());
 
     for (auto&& layout : schedule.regularLayouts)
     {
-        scheduleNode.add_child(Resources::Layout, scheduledLayoutNode(layout));
+        scheduleNode.add_child(Resources::ScheduledLayout, scheduledLayoutNode(layout));
+    }
+
+    for (auto&& command : schedule.commands)
+    {
+        scheduleNode.add_child(Resources::ScheduledCommand, commandNode(command));
     }
 
     scheduleNode.add_child(Resources::Overlays, overlaysNode(schedule.overlayLayouts));
@@ -37,16 +42,27 @@ void ScheduleSerializer::scheduleToImpl(const LayoutSchedule& schedule, const Fi
     Parsing::xmlTreeToFile(path, root);
 }
 
+XmlNode ScheduleSerializer::commandNode(const ScheduledCommand& command)
+{
+    XmlNode node;
+
+    node.put(Resources::ScheduleId, command.scheduleId);
+    node.put(Resources::Command::StartDT, command.startDT.string());
+    node.put(Resources::Command::Code, static_cast<std::string>(command.code));
+
+    return node;
+}
+
 XmlNode ScheduleSerializer::scheduledLayoutNode(const ScheduledLayout& layout)
 {
     XmlNode node;
 
-    node.put(Resources::Id, layout.id);
-    node.put(Resources::StartDT, layout.startDT.string());
-    node.put(Resources::EndDT, layout.endDT.string());
+    node.put(Resources::Layout::Id, layout.id);
+    node.put(Resources::Layout::StartDT, layout.startDT.string());
+    node.put(Resources::Layout::EndDT, layout.endDT.string());
     node.put(Resources::ScheduleId, layout.scheduleId);
-    node.put(Resources::Priority, layout.priority);
-    node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));
+    node.put(Resources::Layout::Priority, layout.priority);
+    node.add_child(Resources::Layout::LocalDependants, dependantsNode(layout.dependants));
 
     return node;
 }
@@ -67,8 +83,8 @@ XmlNode ScheduleSerializer::defaultLayoutNode(const DefaultScheduledLayout& layo
 {
     XmlNode node;
 
-    node.put(Resources::Id, layout.id);
-    node.add_child(Resources::LocalDependants, dependantsNode(layout.dependants));
+    node.put(Resources::Layout::Id, layout.id);
+    node.add_child(Resources::Layout::LocalDependants, dependantsNode(layout.dependants));
 
     return node;
 }
@@ -79,7 +95,7 @@ XmlNode ScheduleSerializer::dependantsNode(const LayoutDependants& dependants)
 
     for (auto&& dependant : dependants)
     {
-        node.add(Resources::DependantFile, dependant);
+        node.add(Resources::Layout::DependantFile, dependant);
     }
 
     return node;

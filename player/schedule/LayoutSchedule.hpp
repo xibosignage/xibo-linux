@@ -14,6 +14,7 @@ struct LayoutSchedule
     LayoutDependants globalDependants;
     LayoutList regularLayouts;
     LayoutList overlayLayouts;
+    ScheduledCommandsList commands;
     DefaultScheduledLayout defaultLayout;
 };
 

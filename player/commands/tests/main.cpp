@@ -2,7 +2,6 @@
 #include <spdlog/sinks/null_sink.h>
 
 #include "common/logger/Logging.hpp"
-#include "commands/CommandImpl.hpp"
 
 int main(int argc, char* argv[])
 {

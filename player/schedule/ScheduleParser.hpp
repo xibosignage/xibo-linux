@@ -9,10 +9,7 @@ class FilePath;
 class ScheduleParser
 {
 public:
-    struct Error : PlayerRuntimeError
-    {
-        using PlayerRuntimeError::PlayerRuntimeError;
-    };
+    DECLARE_EXCEPTION(ScheduleParser)
 
     LayoutSchedule scheduleFrom(const FilePath& path);
     LayoutSchedule scheduleFrom(const std::string& xmlSchedule);
@@ -22,5 +19,6 @@ private:
     ScheduledLayout scheduledLayoutFrom(const XmlNode& layoutNode);
     DefaultScheduledLayout defaultLayoutFrom(const XmlNode& layoutNode);
     LayoutList overlayLayoutsFrom(const XmlNode& overlaysNode);
+    ScheduledCommand commandFrom(const XmlNode& overlaysNode);
     LayoutDependants dependantsFrom(const XmlNode& dependantsNode);
 };

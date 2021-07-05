@@ -30,3 +30,17 @@ bool operator!=(const ScheduledLayout& first, const ScheduledLayout& second)
 {
     return !(first == second);
 }
+
+bool operator==(const ScheduledCommand& first, const ScheduledCommand& second)
+{
+    if (first.scheduleId != second.scheduleId) return false;
+    if (first.startDT != second.startDT) return false;
+    if (first.code != second.code) return false;
+
+    return true;
+}
+
+bool operator!=(const ScheduledCommand& first, const ScheduledCommand& second)
+{
+    return !(first == second);
+}
