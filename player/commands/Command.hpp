@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <memory>
 
 class Command
 {
@@ -27,7 +28,10 @@ public:
     virtual ~Command() = default;
     virtual ExecutionResult execute() = 0;
     virtual void executeAsync(CommandExecuted&& callback) = 0;
+    virtual bool isTerminated() const = 0;
     virtual void terminate() = 0;
     virtual const std::string& executableString() const = 0;
     virtual const std::string& validationString() const = 0;
 };
+
+using CommandPtr = std::shared_ptr<Command>;

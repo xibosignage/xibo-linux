@@ -17,17 +17,29 @@ CommandImpl::CommandImpl(std::string commandString, std::string validationString
 {
 }
 
+// TODO: investigate lock-free solution
 Command::ExecutionResult CommandImpl::execute()
 {
     try
     {
-        ios_ = std::make_unique<boost::asio::io_service>();
+        std::unique_lock lock{processLock_};
+
+        if (!isTerminatedInternal()) throw Error{"command is already being executed"};
+
         boost::asio::streambuf output, error;
+        ios_ = std::make_unique<boost::asio::io_service>();
         process_ = std::make_unique<bp::child>(
             bp::shell(), bp::args({"-c", commandString_}), bp::std_out > output, bp::std_err > error, *ios_);
 
+        running_ = true; // FIXME: false on destruction
+        lock.unlock();
+
         ios_->run();
 
+        lock.lock();
+        running_ = false; 
+
+        // FIXME: probably use boost::group if the launched process also has children
         std::error_code ec;
         process_->wait(ec);
 
@@ -44,6 +56,10 @@ Command::ExecutionResult CommandImpl::execute()
 
         return validateExecutionResult(toString(output));
     }
+    catch (const PlayerRuntimeError& e)
+    {
+        return ExecutionResult{Status::Error, ExecutionError{-1, "failed to execute command: "s + e.message()}};
+    }
     catch (const std::exception& e)
     {
         return ExecutionResult{Status::Error, ExecutionError{-1, "failed to execute command: "s + e.what()}};
@@ -57,9 +73,24 @@ void CommandImpl::executeAsync(CommandExecuted&& callback)
     }).detach();
 }
 
-// TODO: exception here
+bool CommandImpl::isTerminated() const
+{
+    std::unique_lock lock{processLock_};
+
+    return isTerminatedInternal();
+}
+
+bool CommandImpl::isTerminatedInternal() const
+{
+    return !running_;
+}
+
 void CommandImpl::terminate()
 {
+    std::unique_lock lock{processLock_};
+
+    if (isTerminatedInternal()) return;
+
     if (process_ && process_->running())
     {
         process_->terminate();

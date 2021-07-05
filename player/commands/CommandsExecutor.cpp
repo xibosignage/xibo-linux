@@ -4,33 +4,70 @@
 
 #include "common/logger/Logging.hpp"
 
+CommandsExecutor::~CommandsExecutor()
+{
+    terminateAllCommands();
+}
+
 void CommandsExecutor::updatePredefinedCommands(PredefinedCommands&& commands)
 {
-    // FIXME: update only changed commands
-    // FIXME: what to do with commands in the process of execution
+    std::unique_lock lock{predefinedCommandsLock_};
     predefinedCommands_ = std::move(commands);
 }
 
 void CommandsExecutor::executeString(const std::string& commandString)
 {
-    auto command = std::make_shared<CommandImpl>(commandString);
-    processExecutionResult(commandString, command->execute());
+    Log::debug("[CommandsExecutor] Trying to execute random command '{}'", static_cast<std::string>(commandString));
+
+    execute(CommandDefinition{commandString, {}});
 }
 
 void CommandsExecutor::executeStringAsync(const std::string& commandString)
 {
-    auto command = std::make_shared<CommandImpl>(commandString);
-    command->executeAsync([this, commandString](const Command::ExecutionResult& result) {
-        processExecutionResult(commandString, result);
-    });
+    Log::debug("[CommandsExecutor] Trying to execute random command async '{}'",
+               static_cast<std::string>(commandString));
+
+    executeAsync(CommandDefinition{commandString, {}});
 }
 
-void CommandsExecutor::execute(const CommandCode& code)
+void CommandsExecutor::executePredefined(const CommandCode& code)
 {
+    Log::debug("[CommandsExecutor] Trying to execute predefined command '{}'", static_cast<std::string>(code));
+
+    executePredefinedImpl(code, [this](CommandDefinition definition) { execute(std::move(definition)); });
+}
+
+void CommandsExecutor::executePredefinedAsync(const CommandCode& code)
+{
+    Log::debug("[CommandsExecutor] Trying to execute predefined command async '{}'", static_cast<std::string>(code));
+
+    executePredefinedImpl(code, [this](CommandDefinition definition) { executeAsync(std::move(definition)); });
+}
+
+void CommandsExecutor::terminateAllCommands()
+{
+    for (auto&& command : commandsInExecution_)
+    {
+        try
+        {
+            command->terminate();
+        }
+        catch (const std::exception& e)
+        {
+            Log::error("Failed to terminate command '{}'", command->executableString());
+        }
+    }
+}
+
+void CommandsExecutor::executePredefinedImpl(const CommandCode& code, ExecutionMethod executionMethod)
+{
+    std::unique_lock lock{predefinedCommandsLock_};
     if (commandExists(code))
     {
-        auto& command = *predefinedCommands_.at(code);
-        processExecutionResult(command.executableString(), command.execute());
+        auto definition = commandDefinition(code);
+        lock.unlock();
+
+        executionMethod(std::move(definition));
     }
     else
     {
@@ -39,21 +76,23 @@ void CommandsExecutor::execute(const CommandCode& code)
     }
 }
 
-void CommandsExecutor::executeAsync(const CommandCode& code)
+void CommandsExecutor::execute(CommandDefinition definition)
 {
-    if (commandExists(code))
-    {
-        auto& command = *predefinedCommands_.at(code);
-        command.executeAsync(
-            [this, commandString = command.executableString()](const Command::ExecutionResult& result) {
-                processExecutionResult(commandString, result);
-            });
-    }
-    else
-    {
-        Log::error("[CommandsExecutor] Failed to execute non-existing command with code: {}",
-                   static_cast<std::string>(code));
-    }
+    auto command = CommandImpl::create(definition.executableString, definition.validationString);
+
+    addToExecutionSet(command);
+
+    processExecutionResult(command, command->execute());
+}
+
+void CommandsExecutor::executeAsync(CommandDefinition definition)
+{
+    auto command = CommandImpl::create(definition.executableString, definition.validationString);
+
+    addToExecutionSet(command);
+
+    command->executeAsync(
+        [this, command](const Command::ExecutionResult& result) { processExecutionResult(command, result); });
 }
 
 bool CommandsExecutor::commandExists(const CommandCode& code) const
@@ -61,19 +100,37 @@ bool CommandsExecutor::commandExists(const CommandCode& code) const
     return predefinedCommands_.count(code) > 0;
 }
 
-void CommandsExecutor::processExecutionResult(const std::string& commandString,
+CommandDefinition CommandsExecutor::commandDefinition(const CommandCode& code) const
+{
+    return predefinedCommands_.at(code);
+}
+
+void CommandsExecutor::addToExecutionSet(const CommandPtr& command)
+{
+    std::unique_lock lock{executionSetLock_};
+    commandsInExecution_.emplace(command);
+}
+
+void CommandsExecutor::removeFromExecutionSet(const CommandPtr& command)
+{
+    std::unique_lock lock{executionSetLock_};
+    commandsInExecution_.erase(command);
+}
+
+void CommandsExecutor::processExecutionResult(const CommandPtr& command,
                                               const Command::ExecutionResult& executionResult)
 {
     auto [status, error] = executionResult;
     if (status == Command::Status::Error)
     {
         Log::error("[CommandsExecutor] Command '{}' finished unsuccessfully (exit code: {}). Reason: {}",
-                   commandString,
+                   command->executableString(),
                    error.exitCode,
                    error.output);
     }
     else
     {
-        Log::debug("[CommandsExecutor] Command '{}' finished successfully", commandString);
+        Log::debug("[CommandsExecutor] Command '{}' finished successfully", command->executableString());
     }
+    removeFromExecutionSet(command);
 }

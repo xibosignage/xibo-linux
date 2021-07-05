@@ -64,6 +64,7 @@ TYPED_TEST(CommandTests, SuccessExecutionSimpleCommand)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Success);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, SuccessExecutionSimpleCommandValidation)
@@ -73,6 +74,7 @@ TYPED_TEST(CommandTests, SuccessExecutionSimpleCommandValidation)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Success);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, SuccessExecutionCommandWithArgs)
@@ -82,6 +84,7 @@ TYPED_TEST(CommandTests, SuccessExecutionCommandWithArgs)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Success);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, SuccessExecutionCommandWithArgsValidation)
@@ -91,6 +94,7 @@ TYPED_TEST(CommandTests, SuccessExecutionCommandWithArgsValidation)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Success);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, FailedExecutionUnknownCommand)
@@ -100,6 +104,7 @@ TYPED_TEST(CommandTests, FailedExecutionUnknownCommand)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Error);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, FailedExecutionPermissionError)
@@ -109,6 +114,7 @@ TYPED_TEST(CommandTests, FailedExecutionPermissionError)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Error);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, ProcessTerminationLoopedCommand)
@@ -123,6 +129,7 @@ TYPED_TEST(CommandTests, ProcessTerminationLoopedCommand)
 
     // NOTE: should it be treated as error?
     ASSERT_EQ(status, Command::Status::Error);
+    ASSERT_TRUE(command->isTerminated());
 }
 
 TYPED_TEST(CommandTests, ProcessSigkillLoopedCommand)
@@ -136,6 +143,7 @@ TYPED_TEST(CommandTests, ProcessSigkillLoopedCommand)
     auto [status, error] = this->execute(*command);
 
     ASSERT_EQ(status, Command::Status::Error);
+    ASSERT_TRUE(command->isTerminated());
 }
 
-// TODO: potential tests for multiple command execution
+// TODO: potential tests for calling execute/executeAsync multiple times
