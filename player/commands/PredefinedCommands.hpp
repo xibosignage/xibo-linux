@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Command.hpp"
 #include "CommandCode.hpp"
+#include "CommandDefinition.hpp"
 
 #include <map>
 #include <memory>
 
-using PredefinedCommands = std::map<CommandCode, std::shared_ptr<Command>>;
+using PredefinedCommands = std::map<CommandCode, CommandDefinition>;

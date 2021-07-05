@@ -13,3 +13,13 @@ inline bool operator<(const CommandCode& first, const CommandCode& second)
 {
     return static_cast<std::string>(first) < static_cast<std::string>(second);
 }
+
+inline bool operator==(const CommandCode& first, const CommandCode& second)
+{
+    return static_cast<std::string>(first) == static_cast<std::string>(second);
+}
+
+inline bool operator!=(const CommandCode& first, const CommandCode& second)
+{
+    return !(first == second);
+}

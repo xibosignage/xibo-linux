@@ -88,7 +88,7 @@ PredefinedCommands Soap::ResponseParser<RegisterDisplay::Result>::parseCommands(
         auto executableString = node.get<std::string>(Command::ExecutableString);
         auto validationString = node.get<std::string>(Command::ValidationString);
 
-        commands.emplace(CommandCode{code}, std::make_shared<CommandImpl>(executableString, validationString));
+        commands.emplace(CommandCode{code}, CommandDefinition{executableString, validationString});
     }
     return commands;
 }
