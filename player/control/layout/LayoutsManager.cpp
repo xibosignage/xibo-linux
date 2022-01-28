@@ -100,7 +100,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
             }
             catch (const std::exception& e)
             {
-                Log::error(e.what());
+                Log::error("[LayoutsManager] {}", e.what());
             }
         });
         layout->mediaStatsReady().connect([this, layoutId, scheduleId](const MediaPlayingTime& intervals) {
@@ -115,7 +115,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
             }
             catch (const std::exception& e)
             {
-                Log::error(e.what());
+                Log::error("[LayoutsManager] {}", e.what());
             }
         });
 
@@ -136,7 +136,7 @@ std::unique_ptr<Xibo::MainLayout> LayoutsManager::createLayout(int layoutId)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[LayoutsManager] {}", e.what());
         Log::info("[LayoutsManager] Check resource folder to find out what happened");
     }
 

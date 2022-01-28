@@ -29,8 +29,8 @@ std::string XmlLogsRetriever::formatLogs(const std::string& logs)
     }
     catch (std::exception& e)
     {
-        Log::error("[XmlLogsRetriever] Format logs error: ", e.what());
-        Log::trace(logs);
+        Log::error("[XmlLogsRetriever] Format logs error: {}", e.what());
+        Log::trace("[XmlLogsRetriever] {}", logs);
     }
 
     return {};

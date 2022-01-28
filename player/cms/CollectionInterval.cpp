@@ -257,7 +257,7 @@ void CollectionInterval::submitStats()
     }
     catch (const std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[CollectionInterval] {}", e.what());
         Log::error("[CollectionInterval] Failed to submit stats");
     }
 }

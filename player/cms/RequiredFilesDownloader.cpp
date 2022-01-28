@@ -26,7 +26,7 @@ bool RequiredFilesDownloader::onRegularFileDownloaded(const ResponseContentResul
     }
     else
     {
-        Log::error("[{}] Download error: {}", file.name());
+        Log::error("[{}] Download error: {}", file.name(), error);
         return false;
     }
 }
