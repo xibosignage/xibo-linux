@@ -16,7 +16,7 @@ LayoutSchedule LayoutSchedule::fromFile(const FilePath& path)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[LayoutSchedule] {}", e.what());
     }
     return {};
 }
@@ -30,7 +30,7 @@ LayoutSchedule LayoutSchedule::fromString(const std::string& string)
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[LayoutSchedule] {}", e.what());
     }
     return {};
 }
@@ -44,7 +44,7 @@ void LayoutSchedule::toFile(const FilePath& path) const
     }
     catch (std::exception& e)
     {
-        Log::error(e.what());
+        Log::error("[LayoutSchedule] {}", e.what());
     }
 }
 
