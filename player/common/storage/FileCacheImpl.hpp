@@ -4,6 +4,7 @@
 #include "common/storage/FileCache.hpp"
 
 #include <boost/noncopyable.hpp>
+#include <boost/thread/mutex.hpp>
 
 class FileCacheImpl : public FileCache, public XmlDefaultFileHandler, private boost::noncopyable
 {
@@ -31,6 +32,7 @@ private:
     void saveFileHashes(const FilePath& path);
 
 private:
+    boost::mutex fileCacheMutex_;
     XmlNode fileCache_;
     FilePath cacheFile_;
 };
