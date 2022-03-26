@@ -55,5 +55,4 @@ WORKDIR /app
 
 CMD mkdir build && cd build \
   && cmake ../player \
-  && sed -i 's@ \-I/usr/bin@@' common/dt/CMakeFiles/dt.dir/flags.make \
   && make
