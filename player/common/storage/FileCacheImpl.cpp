@@ -145,9 +145,12 @@ void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash,
     node.put(Md5Attr, hash);
     node.put(ValidAttr, hash == target);
 
+    /* critical section, access and modify file cache buffer */
+    fileCacheMutex_.lock();
     fileCache_.put_child(fullPath(filename), node);
 
     saveFileHashes(cacheFile_);
+    fileCacheMutex_.unlock();
 }
 
 void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash, const DateTime& lastUpdate)
@@ -157,9 +160,12 @@ void FileCacheImpl::addToCache(const std::string& filename, const Md5Hash& hash,
     node.put(LastUpdateAttr, lastUpdate.timestamp());
     node.put(ValidAttr, true);
 
+    /* critical section, access and modify file cache buffer */
+    fileCacheMutex_.lock();
     fileCache_.put_child(fullPath(filename), node);
 
     saveFileHashes(cacheFile_);
+    fileCacheMutex_.unlock();
 }
 
 void FileCacheImpl::loadFileHashes(const FilePath& path)
