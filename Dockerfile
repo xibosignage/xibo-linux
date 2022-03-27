@@ -49,10 +49,3 @@ RUN curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRY
   && cd cryptopp-CRYPTOPP_8_1_0 \
   && make -j4 \
   && make install
-
-VOLUME /app
-WORKDIR /app
-
-CMD mkdir build && cd build \
-  && cmake ../player \
-  && make
