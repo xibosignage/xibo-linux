@@ -49,3 +49,7 @@ RUN curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRY
   && cd cryptopp-CRYPTOPP_8_1_0 \
   && make -j4 \
   && make install
+
+RUN apt update -y --fix-missing \
+  && apt install -y packagekit-gtk3-module
+

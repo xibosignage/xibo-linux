@@ -9,8 +9,9 @@
 	// Set *default* container specific settings.json values on container create.
 	"settings": {},
 	
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [],
+	"extensions": [
+		"ms-vscode.cpptools"
+	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
@@ -19,7 +20,14 @@
 	// "postCreateCommand": "apt-get update && apt-get install -y curl",
 
 	"workspaceMount": "",
-	"runArgs": ["--volume=${localWorkspaceFolder}:/workspaces/${localWorkspaceFolderBasename}:Z"]
+	"runArgs": [
+    "--volume=${localWorkspaceFolder}:/workspaces/${localWorkspaceFolderBasename}:Z",
+    "--volume=/tmp/X11-unix:/tmp/.X11-unix:Z",
+    "-eDISPLAY=:0",
+    "--network=host",
+    "--privileged",
+    "-u=1000"
+  ]
 
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
 	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
