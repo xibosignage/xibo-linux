@@ -5,6 +5,8 @@ project(xibo-player)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
+
 find_package(PkgConfig REQUIRED)
 
 pkg_check_modules(GTKMM REQUIRED gtkmm-3.0>=3.22.0)

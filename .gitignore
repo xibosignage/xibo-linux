@@ -12,3 +12,4 @@ commits_config
 snapcraft.login
 .history
 third_party
+*.swp
