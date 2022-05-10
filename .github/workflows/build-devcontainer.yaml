@@ -1,0 +1,20 @@
+name: Build devcontainer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+
+      - name: Build devcontainer
+        run: |
+          docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker build . -t xibosignage/xibo-linux-vscode:latest
+          docker push xibosignage/xibo-linux-vscode:latest

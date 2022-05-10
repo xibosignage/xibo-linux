@@ -52,4 +52,3 @@ RUN curl -o cryptopp.tar.gz -SL https://github.com/weidai11/cryptopp/archive/CRY
 
 RUN apt update -y --fix-missing \
   && apt install -y packagekit-gtk3-module
-
