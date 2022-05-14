@@ -26,8 +26,8 @@
     "-eDISPLAY=:0",
     "--network=host",
     "--privileged",
-    "-u=1000"
-  ]
+    "-u=vscode"
+  ],
 
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
 	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
