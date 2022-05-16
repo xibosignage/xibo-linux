@@ -1,0 +1,29 @@
+{
+    "env": {
+        "myDefaultIncludePath": [
+            "${workspaceFolder}",
+            "${workspaceFolder}/include"
+        ],
+        "myCompilerPath": "/usr/local/bin/gcc-7"
+    },
+    "configurations": [
+        {
+            "name": "Default",
+            "compileCommands": "build/compile_commands.json",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/player"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "${default}"
+            ],
+            "compilerArgs": [],
+            "mergeConfigurations": false,
+            "compilerPath": "/usr/bin/g++",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
