@@ -13,8 +13,6 @@ jobs:
     - uses: actions/checkout@v2
     - uses: snapcore/action-build@v1
       id: build
-      with:
-        snapcraft-channel: edge # Note: we should remove this once 6.2 is released.
     - uses: snapcore/action-publish@v1
       with:
         store_login: ${{ secrets.STORE_LOGIN }}

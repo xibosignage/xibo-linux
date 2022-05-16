@@ -1,7 +1,6 @@
 *.autosave
 *.txt.user
 xibo-*.snap*
-snap
 gcov
 build*
 root
