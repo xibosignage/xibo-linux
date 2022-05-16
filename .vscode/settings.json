@@ -1,3 +1,10 @@
 {
-    "cmake.sourceDirectory": "${workspaceFolder}/player"
+    "cmake.sourceDirectory": "${workspaceFolder}/player",
+    "files.associations": {
+        "*.ipp": "cpp",
+        "*.tcc": "cpp",
+        "string_view": "cpp",
+        "variant": "cpp",
+        "istream": "cpp"
+    }
 }

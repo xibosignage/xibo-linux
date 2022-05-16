@@ -9,16 +9,14 @@ jobs:
   build:
     if: github.repository == 'xibosignage/xibo-linux'
     runs-on: ubuntu-latest
-    env: 
-      SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
     steps:
     - uses: actions/checkout@v2
     - uses: snapcore/action-build@v1
       id: build
       with:
         snapcraft-channel: edge # Note: we should remove this once 6.2 is released.
-    - name: Publish
-      run: |
-        snapcraft login
-        snapcraft upload ${{ steps.build.outputs.snap }}
-        snapcraft logout
+    - uses: snapcore/action-publish@v1
+      with:
+        store_login: ${{ secrets.STORE_LOGIN }}
+        snap: ${{ steps.build.outputs.snap }}
+        release: edge

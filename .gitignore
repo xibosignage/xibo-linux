@@ -12,3 +12,4 @@ snapcraft.login
 .history
 third_party
 *.swp
+exported.txt
