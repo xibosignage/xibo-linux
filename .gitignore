@@ -1,7 +1,6 @@
 *.autosave
 *.txt.user
 xibo-*.snap*
-*.AppImage*
 snap
 gcov
 build*

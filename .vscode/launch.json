@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "Launch Main",
+            "name": "Launch Player",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/bin/xibo-player",

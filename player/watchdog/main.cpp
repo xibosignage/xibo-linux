@@ -56,11 +56,6 @@ int main(int argc, char** argv)
 
 #if defined(SNAP_ENABLED)
         std::cout << "Running in SNAP environment" << std::endl;
-#elif defined(APPIMAGE_ENABLED)
-        std::cout << "Running in AppImage environment" << std::endl;
-        FilePath configDirPath{std::string{getenv("APPIMAGE")} + ".config"};
-        if (!FileSystem::exists(configDirPath))
-            throw PlayerRuntimeError{"XiboApp", "Config directory is not correctly setup in AppImage env"};
 #endif
 
         if (FileSystem::exists(AppConfig::cmsSettingsPath()) && vm.count("config-app") == 0)

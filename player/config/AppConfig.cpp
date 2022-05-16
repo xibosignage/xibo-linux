@@ -23,10 +23,9 @@ std::string AppConfig::releaseVersion()
 {
 #if defined(SNAP_ENABLED)
     return getenv("SNAP_VERSION");
-#elif defined(APPIMAGE_ENABLED)
-    return "1.8-R6";
 #else
-    return "dev";
+    // Update this with each release.
+    return std::string{"1.8 R"} + codeVersion() + GIT_HASH;
 #endif
 }
 
@@ -35,7 +34,8 @@ std::string AppConfig::codeVersion()
 #if defined(SNAP_ENABLED)
     return getenv("SNAP_REVISION");
 #else
-    return GIT_HASH;
+    // Update this with each release
+    return "6";
 #endif
 }
 
@@ -57,8 +57,6 @@ FilePath AppConfig::configDirectory()
 {
 #if defined(SNAP_ENABLED)
     return FilePath{getenv("SNAP_USER_COMMON")};
-#elif defined(APPIMAGE_ENABLED)
-    return FilePath{getenv("XDG_CONFIG_HOME")};
 #else
     return execDirectory();
 #endif
@@ -103,8 +101,6 @@ FilePath AppConfig::additionalResourcesDirectory()
 {
 #if defined(SNAP_ENABLED)
     return FilePath{getenv("SNAP")} / "share" / "xibo-player";
-#elif defined(APPIMAGE_ENABLED)
-    return FilePath{getenv("APPDIR")} / "usr" / "share" / "xibo-player";
 #else
     return execDirectory();
 #endif
@@ -124,10 +120,8 @@ FilePath AppConfig::execDirectory()
 {
 #if defined(SNAP_ENABLED)
     return FilePath{getenv("SNAP")} / "bin";
-#elif defined(APPIMAGE_ENABLED)
-    return FilePath{getenv("APPDIR")} / "usr" / "bin";
 #else
-    // workaround for those who starts the player out of snap and appimage
+    // workaround for those who starts the player out of snap
     char result[PATH_MAX];
     ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
     assert(count != -1);
