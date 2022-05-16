@@ -1,8 +1,4 @@
 # Xibo for Linux
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-4-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
-
 [![xibo-player](https://snapcraft.io/xibo-player/badge.svg)](https://snapcraft.io/xibo-player)
 
 Xibo for Linux is a Digital Signage Player for [Xibo](https://xibo.org.uk).
@@ -27,30 +23,8 @@ Please check that you're happy for your work to be available under the project l
 
 Let us know you'd like to contribute by [joining our community](https://community.xibo.org.uk/c/support/linux-player).
 
-## Contributors ✨
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tr>
-    <td align="center"><a href="https://xibo.org.uk"><img src="https://avatars0.githubusercontent.com/u/10400067?v=4" width="100px;" alt=""/><br /><sub><b>Dan Garner</b></sub></a><br /><a href="#business-dasgarner" title="Business development">💼</a></td>
-    <td align="center"><a href="http://springsignage.com"><img src="https://avatars1.githubusercontent.com/u/10450518?v=4" width="100px;" alt=""/><br /><sub><b>Alex Harrington</b></sub></a><br /><a href="#infra-alexharrington" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    <td align="center"><a href="https://github.com/DanielBW1"><img src="https://avatars2.githubusercontent.com/u/40995523?v=4" width="100px;" alt=""/><br /><sub><b>DanielBW1</b></sub></a><br /><a href="https://github.com/xibosignage/xibo-linux/issues?q=author%3ADanielBW1" title="Bug reports">🐛</a></td>
-    <td align="center"><a href="https://github.com/Stivius"><img src="https://avatars0.githubusercontent.com/u/8138923?v=4" width="100px;" alt=""/><br /><sub><b>Maxim Ivanov</b></sub></a><br /><a href="https://github.com/xibosignage/xibo-linux/commits?author=Stivius" title="Code">💻</a></td>
-  </tr>
-</table>
-
-<!-- markdownlint-enable -->
-<!-- prettier-ignore-end -->
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://allcontributors.org) specification.
-Contributions of any kind are welcome!
 
 # Build
-
 If you would like to work on the Player you can build it locally using the instructions below.
 
 ## Building from sources
@@ -63,20 +37,17 @@ We recommend you use snapcraft to build Xibo.
 - Run `snapcraft` in the root of the repository
 - A `.snap` file will be created which you can use to install from
 
-### Building manually
 
-We're unable to provide any support for building outside of the snapcraft build system. These notes are provided for your information.
+# Debugging
+We provide a VSCode dev container that has everything needed to build/debug the application using VSCode. This devcontainer uses a base image which is built from the `Dockerfile` in the root folder.
 
-NOTE: These libraries can require additional installations if you haven't such. We have tested only with listed libraries versions, however, it can be possible to build with newer or older versions as well.
-- `cmake>=3.14` cross-platform software for managing the build process
-- `gtk>=3.22` and `gtkmm>=3.22` GUI library and C++ bindings
-- `glib>=2.56` and `glibmm>=2.56` low-level system library written in C and C++ bindings
-- `gstreamer, gstreamer-base-plugins, gstreamer-good-plugins, gstreamer-bad-plugins>=1.14` multimedia framework for audio/video playback with plugins
-- `gstreamer1.0-libav`, `gstreamer1.0-gtk3`, `gstreamer1.0-gl`, `gstreamer1.0-vaapi`, `gstreamer1.0-alsa`, `gstreamer1.0-pulseaudio` needed for running/accelerating video content
-- `cryptopp=8.1` for crypto utils (RSA, RC4 etc.)
-- `cryptopp-pem`that is compatible with `cryptopp` version needed for PEM key format
-- `zeromq=4.3` distributed messaging
-- `spdlog=1.4.1` logging library
-- `gtest=1.8.1` for tests
-- `webkitgtk>=2.4.10` web content rendering
-- `Boost.System, Boost.Filesystem, Boost.Date_Time, Boost.Thread=1.70` 
+To debug this application using VSCode.
+
+1. Copy the settings folder from a working player install into the `/build/bin` folder, making sure you have `cmsSettings.xml` and `playerSettings.xml`. 
+2. Open `cmsSettings.xml` and adjust the `localLibrary` setting to be `/workspaces/vscode/build/bin/library`.
+3. Open the application directory using the remote containers plugin.
+4. Go to the aplication debug extesion at left panel and click on the green play button.
+
+Tutorial video: https://user-images.githubusercontent.com/6628028/162645464-5eadcb2b-a53a-450e-805f-9589fba6f8f0.mp4
+
+[Issue 260](https://github.com/xibosignage/xibo-linux/issues/260) will improve steps 1 and 2 so that the options app can be used.
