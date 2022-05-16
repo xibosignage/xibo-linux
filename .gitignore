@@ -1,7 +1,6 @@
 *.autosave
 *.txt.user
 xibo-*.snap*
-snap
 gcov
 build*
 root
@@ -12,3 +11,4 @@ snapcraft.login
 .history
 third_party
 *.swp
+exported.txt

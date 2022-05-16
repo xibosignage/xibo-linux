@@ -113,10 +113,7 @@ parts:
       make install
 
   gstreamer:
-    override-pull: |
-      snapcraftctl pull
-      git checkout 1.16.2
-    source: https://github.com/GStreamer/gstreamer.git
+    source: https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.16.2.tar.xz
     plugin: autotools
     configflags: ['--prefix=/usr', '--disable-gtk-doc']
     build-packages:
@@ -158,10 +155,7 @@ parts:
     after: [g++-8]
 
   gst-plugins-base:
-    override-pull: |
-      snapcraftctl pull
-      git checkout 1.16.2
-    source: https://github.com/GStreamer/gst-plugins-base.git
+    source: https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.16.2.tar.xz
     plugin: autotools
     configflags: ['--prefix=/usr', '--disable-gtk-doc']
     build-packages:
@@ -171,10 +165,7 @@ parts:
     after: [gstreamer]
 
   gst-libav:
-    override-pull: |
-      snapcraftctl pull
-      git checkout 1.16.2
-    source: https://github.com/GStreamer/gst-libav.git
+    source: https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.16.2.tar.xz
     plugin: autotools
     configflags: ['--prefix=/usr', '--disable-gtk-doc']
     build-packages:
@@ -187,10 +178,7 @@ parts:
     after: [gst-plugins-base]
 
   gst-plugins-good:
-    override-pull: |
-      snapcraftctl pull
-      git checkout 1.16.2
-    source: https://github.com/GStreamer/gst-plugins-good.git
+    source: https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.16.2.tar.xz
     plugin: autotools
     configflags: ['--prefix=/usr', '--disable-gtk-doc']
     build-packages:
