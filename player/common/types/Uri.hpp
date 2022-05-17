@@ -109,7 +109,7 @@ public:
     const std::string& path() const;
 
 private:
-    static std::string removeEscapedSymbols(std::string url);
+    static std::string unescape(const std::string &input);
 
 private:
     Scheme scheme_;

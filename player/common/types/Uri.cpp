@@ -5,37 +5,51 @@
 #include "common/types/internal/UriParser.hpp"
 
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/spirit/include/karma.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/karma_numeric.hpp>
+#include <boost/spirit/include/karma_uint.hpp>
+
+#include <string>
 #include <istream>
 
-std::string Uri::removeEscapedSymbols(std::string url)
-{
-    //    boost::replace_all(url, "%21", "!");
-    //    boost::replace_all(url, "%23", "#");
-    //    boost::replace_all(url, "%24", "$");
-    //    boost::replace_all(url, "%25", "%");
-    //    boost::replace_all(url, "%26", "&");
-    //    boost::replace_all(url, "%27", "'");
-    //    boost::replace_all(url, "%28", "(");
-    //    boost::replace_all(url, "%29", ")");
-    //    boost::replace_all(url, "%2A", "*");
-    //    boost::replace_all(url, "%2B", "+");
-    //    boost::replace_all(url, "%2C", ",");
-    boost::replace_all(url, "%2F", "/");
-    boost::replace_all(url, "%3A", ":");
-    //    boost::replace_all(url, "%3B", ";");
-    //    boost::replace_all(url, "%3D", "=");
-    //    boost::replace_all(url, "%3F", "?");
-    //    boost::replace_all(url, "%40", "@");
-    //    boost::replace_all(url, "%5B", "]");
-    //    boost::replace_all(url, "%5D", "[");
+namespace bsq = boost::spirit::qi;
+namespace bk = boost::spirit::karma;
 
-    return url;
+bsq::int_parser<unsigned char, 16, 2, 2> hex_byte;
+
+template <typename InputIterator>
+struct unescaped_string
+    : bsq::grammar<InputIterator, std::string(char const *)> {
+  unescaped_string() : unescaped_string::base_type(unesc_str) {
+    unesc_char.add("+", ' ');
+
+    unesc_str = *(unesc_char | "%" >> hex_byte | bsq::char_);
+  }
+
+  bsq::rule<InputIterator, std::string(char const *)> unesc_str;
+  bsq::symbols<char const, char const> unesc_char;
+};
+
+std::string Uri::unescape(const std::string &input) {
+  std::string retVal;
+  retVal.reserve(input.size());
+  typedef std::string::const_iterator iterator_type;
+
+  char const *start = "";
+  iterator_type beg = input.begin();
+  iterator_type end = input.end();
+  unescaped_string<iterator_type> p;
+
+  if (!bsq::parse(beg, end, p(start), retVal))
+    retVal = input;
+  return retVal;
 }
 
 Uri Uri::fromString(const std::string& str)
 {
     UriParser parser;
-    return parser.parse(removeEscapedSymbols(str));
+    return parser.parse(unescape(str));
 }
 
 Uri Uri::fromFile(const FilePath& path)
