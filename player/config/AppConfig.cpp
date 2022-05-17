@@ -1,5 +1,7 @@
 #include "AppConfig.hpp"
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #include "common/PlayerRuntimeError.hpp"
 #include "common/fs/FileSystem.hpp"
 #include "common/logger/Logging.hpp"
@@ -32,10 +34,13 @@ std::string AppConfig::releaseVersion()
 std::string AppConfig::codeVersion()
 {
 #if defined(SNAP_ENABLED)
+    if (boost::starts_with(getenv("SNAP_REVISION"), "x")) {
+        return "7";
+    }
     return getenv("SNAP_REVISION");
 #else
     // Update this with each release
-    return "6";
+    return "7";
 #endif
 }
 
