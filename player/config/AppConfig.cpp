@@ -105,7 +105,7 @@ FilePath AppConfig::statsCache()
 FilePath AppConfig::additionalResourcesDirectory()
 {
 #if defined(SNAP_ENABLED)
-    return FilePath{getenv("SNAP")} / "share" / "xibo-player";
+    return FilePath{getenv("SNAP")} / "usr" / "share" / "xibo-player";
 #else
     return execDirectory();
 #endif
@@ -124,7 +124,7 @@ FilePath AppConfig::uiFile()
 FilePath AppConfig::execDirectory()
 {
 #if defined(SNAP_ENABLED)
-    return FilePath{getenv("SNAP")} / "bin";
+    return FilePath{getenv("SNAP")} / "usr" / "bin";
 #else
     // workaround for those who starts the player out of snap
     char result[PATH_MAX];
