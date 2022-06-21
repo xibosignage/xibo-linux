@@ -8,9 +8,7 @@ add_library(${PROJECT_NAME}
 )
 
 find_library(DATE_TZ_LINK_LIBRARY NAMES date-tz)
-
-message("DATE_TZ_LINK_LIBRARY ${DATE_TZ_LINK_LIBRARY}")
-message("DATE_TZ_INCLUDE_DIR ${DATE_INCLUDE_DIR}")
+find_path(DATE_TZ_INCLUDE_DIR NAMES date)
 
 target_link_libraries(${PROJECT_NAME}
     Boost::date_time

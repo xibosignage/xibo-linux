@@ -1,5 +1,5 @@
 name: xibo-player
-base: core18
+base: core20
 version: 1.8-R7
 summary: Xibo Linux Player
 description: Xibo for Linux Digital Signage Player
@@ -17,22 +17,22 @@ slots:
 
 apps:
   xibo-player:
-    command: bin/snap_run.sh xibo-watchdog
+    command: usr/bin/snap_run.sh xibo-watchdog
     plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
 
   disabled-watchdog:
-    command: bin/snap_run.sh xibo-watchdog --disable-restart
+    command: usr/bin/snap_run.sh xibo-watchdog --disable-restart
     plugs: [gsettings, network, home, audio-playback, screen-inhibit-control, framebuffer, opengl]
     slots: [dbus-daemon]
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
 
   options:
-    command: bin/xibo-options
+    command: usr/bin/xibo-options
     plugs: [gsettings, network, home]
     slots: [dbus-daemon]
-    extensions: [gnome-3-28]
+    extensions: [gnome-3-38]
 
 parts:
   base:
@@ -45,61 +45,21 @@ parts:
       - curl 
       - wget
       - unzip
-      - libgtkmm-3.0-dev 
-      - libwebkitgtk-3.0-dev
       - libxss-dev
-      - libglibmm-2.4-dev
       - libssl-dev
+      - cmake
+      - g++
 
-  g++-8: # Ubuntu 18.04 has outdated gcc so we have to install it from PPA
-    plugin: nil
-    override-pull: |
-      add-apt-repository ppa:ubuntu-toolchain-r/test
-      apt-get update
-      apt-get install -y g++-8
-      update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-8 90
-      update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 90
-    after: [base]
-
-  cmake:
-    plugin: nil
-    override-pull: |
-      wget -nv https://apt.kitware.com/keys/kitware-archive-latest.asc -O Release.key
-      apt-key add - < Release.key
-      apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'
-      apt-get update
-      apt-get install -y cmake
-    after: [g++-8]
-
-  zmq: # Ubuntu 18.04 has outdated ZMQ so we are pulling it from official stable repo
-    plugin: nil
-    override-pull: |
-      sh -c "echo 'deb http://download.opensuse.org/repositories/network:/messaging:/zeromq:/release-stable/xUbuntu_18.04/ /' > /etc/apt/sources.list.d/network:messaging:zeromq:release-stable.list"
-      wget -nv https://download.opensuse.org/repositories/network:messaging:zeromq:release-stable/xUbuntu_18.04/Release.key -O Release.key
-      apt-key add - < Release.key
-      apt-get update
-      apt-get install -y libzmq3-dev
-    after: [cmake]
-
-  boost: # Ubuntu 18.04 has outdated boost so we have to install it from PPA
+  # FIXME: use from APT
+  boost:
     plugin: nil
     override-pull: |
       add-apt-repository ppa:mhier/libboost-latest
       apt-get update
       apt-get install -y libboost1.70-dev
-    after: [zmq]
+    after: [base]
 
-  spdlog: 
-    source: https://github.com/gabime/spdlog/archive/v1.4.1.tar.gz
-    plugin: cmake
-    after: [cmake]
-
-  gtest: 
-    source: https://codeload.github.com/google/googletest/tar.gz/release-1.8.1
-    source-type: tar
-    plugin: cmake
-    after: [cmake]
-
+  # FIXME: don't build in pull step
   cryptopp:
     plugin: nil
     override-pull: |
@@ -112,112 +72,47 @@ parts:
       make -j4 && \
       make install
 
-  gstreamer:
-    source: https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.16.2.tar.xz
-    plugin: autotools
-    configflags: ['--prefix=/usr', '--disable-gtk-doc']
-    build-packages:
-      - bison
-      - flex
-      - gettext
-      - liborc-0.4-dev
-      - libpulse-dev
-      - libxv-dev
-      - libtag1-dev
-      - libwavpack-dev
-      - libgl1-mesa-dev
-      - libglu1-mesa-dev
-      - libglew-dev
-    stage-packages:
-      - liborc-0.4-dev
-      - libasound2-dev
-      - libjpeg-dev
-      - libvpx-dev
-      - libvorbis-dev
-      - libogg-dev
-      - libpulse-dev
-      - libpulse0
-      - libwavpack-dev
-      - libtag1v5
-      - libopus-dev
-      - libtheora-dev
-      - libxv-dev
-      - libxdamage-dev
-      - libcdparanoia-dev
-      - libgl1-mesa-glx
-      - libglu1-mesa
-      - libglew2.0
-    stage:
-      - -usr/lib/x86_64-linux-gnu/libLLVM-10.so.1
-      - -usr/share/doc/libllvm10/changelog.Debian.gz
-      - -usr/share/doc/gcc-11-base/changelog.Debian.gz
-      - -lib/x86_64-linux-gnu/libgcc_s.so.1
-    after: [g++-8]
-
-  gst-plugins-base:
-    source: https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.16.2.tar.xz
-    plugin: autotools
-    configflags: ['--prefix=/usr', '--disable-gtk-doc']
-    build-packages:
-      - liborc-0.4-dev
-      - libfribidi-dev
-      - libpulse-dev
-    after: [gstreamer]
-
-  gst-libav:
-    source: https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.16.2.tar.xz
-    plugin: autotools
-    configflags: ['--prefix=/usr', '--disable-gtk-doc']
-    build-packages:
-      - yasm
-      - liborc-0.4-dev
-      - libpulse-dev
-      - libva-dev
-    stage-packages:
-      - libpulse0
-    after: [gst-plugins-base]
-
-  gst-plugins-good:
-    source: https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.16.2.tar.xz
-    plugin: autotools
-    configflags: ['--prefix=/usr', '--disable-gtk-doc']
-    build-packages:
-      - liborc-0.4-dev
-      - libpulse-dev
-    stage-packages:
-      - libpulse0
-    after: [gst-libav]
-
   date-tz:
     source: https://github.com/HowardHinnant/date/archive/v3.0.0.tar.gz
     plugin: cmake
     build-packages:
       - libcurl4-gnutls-dev
-    configflags:
+    cmake-parameters:
       - -DBUILD_TZ_LIB=ON
       - -DBUILD_SHARED_LIBS=ON
       - -DUSE_SYSTEM_TZ_DB=ON
-    after: [cmake]
+      - -DCMAKE_INSTALL_PREFIX=/usr
+    after: [base]
 
   sqlite-orm:
     source: https://github.com/fnc12/sqlite_orm/archive/refs/tags/1.6.tar.gz
     plugin: cmake
     build-packages:
       - libsqlite3-dev
-    stage-packages:
-      - libsqlite3-0
-    configflags:
+    cmake-parameters:
       - -DBUILD_TESTING=OFF
-    after: [cmake]
+      - -DCMAKE_INSTALL_PREFIX=/usr
+    after: [base]
+
+  # FIXME: this should be replaced with libwebkit2gtk
+  webkitgtk3:
+    plugin: nil
+    override-pull: |
+      echo "deb http://ru.archive.ubuntu.com/ubuntu/ bionic main universe" >> /etc/apt/sources.list
+      apt-get update
+      apt-get install -y libwebkitgtk-3.0-dev
+    after: [base]
 
   player:
     source: player
     plugin: cmake
-    configflags:
+    cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DAPP_ENV=SNAP
-    disable-parallel: true
+      - -DCMAKE_PREFIX_PATH=$SNAPCRAFT_STAGE/usr
+      - -DCMAKE_INSTALL_PREFIX=/usr
     stage-packages:
+      - libglu1-mesa
       - freeglut3
       - libzmq5
       - libboost1.70
@@ -226,4 +121,20 @@ parts:
       - libwebkitgtk-3.0-0
       - libgpm2 # gstreamer warning
       - libslang2 # gstreamer warning
-    after: [zmq, boost, spdlog, gtest, gstreamer, date-tz, sqlite-orm] 
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-gl
+      - gstreamer1.0-libav
+      - gstreamer1.0-gtk3
+      - libspdlog1
+    build-packages:
+      - libgtkmm-3.0-dev 
+      - libglibmm-2.4-dev
+      - libzmq3-dev
+      - libspdlog-dev
+      - libgtest-dev
+      - libgmock-dev
+      - libgstreamer-plugins-good1.0-dev
+      - libgstreamer-plugins-base1.0-dev
+      - libgstreamer1.0-dev
+    after: [webkitgtk3, boost, date-tz, sqlite-orm] 
