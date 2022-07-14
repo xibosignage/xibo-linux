@@ -19,6 +19,7 @@ public:
 private:
     void scheduleToImpl(const LayoutSchedule& schedule, const FilePath& path);
 
+    XmlNode commandNode(const ScheduledCommand& command);
     XmlNode scheduledLayoutNode(const ScheduledLayout& layout);
     XmlNode overlaysNode(const LayoutList& overlays);
     XmlNode defaultLayoutNode(const DefaultScheduledLayout& layout);

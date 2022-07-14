@@ -20,20 +20,31 @@ namespace XmdsResources
 
         const std::string ScheduleXml = "ScheduleXml";
         const std::string Schedule = "schedule";
-        const std::string Layout = "layout";
+        const std::string ScheduledLayout = "layout";
         const std::string DefaultLayout = "default";
         const std::string Overlays = "overlays";
         const std::string OverlayLayout = "overlay";
+        const std::string ScheduledCommand = "command";
         const std::string GlobalDependants = "dependants";
 
-        const std::string Generated = Parsing::xmlAttr("generated");
         const std::string ScheduleId = Parsing::xmlAttr("scheduleid");
-        const std::string Id = Parsing::xmlAttr("file");
-        const std::string Priority = Parsing::xmlAttr("priority");
-        const std::string StartDT = Parsing::xmlAttr("fromdt");
-        const std::string EndDT = Parsing::xmlAttr("todt");
-        const std::string LocalDependants = "dependents";
-        const std::string DependantFile = "file";
+
+        namespace Layout
+        {
+            const std::string Generated = Parsing::xmlAttr("generated");
+            const std::string Id = Parsing::xmlAttr("file");
+            const std::string Priority = Parsing::xmlAttr("priority");
+            const std::string StartDT = Parsing::xmlAttr("fromdt");
+            const std::string EndDT = Parsing::xmlAttr("todt");
+            const std::string LocalDependants = "dependents";
+            const std::string DependantFile = "file";
+        }
+
+        namespace Command
+        {
+            const std::string StartDT = Parsing::xmlAttr("date");
+            const std::string Code = Parsing::xmlAttr("code");
+        }
     }
 
     namespace RegisterDisplay
@@ -42,6 +53,7 @@ namespace XmdsResources
 
         const std::string ActivationMessage = "ActivationMessage";
         const std::string Display = "display";
+        const std::string Commands = "commands";
         const std::string DisplayAttrs = "<xmlattr>";
         const std::string Status = "status";
         const std::string StatusMessage = "message";
@@ -69,6 +81,12 @@ namespace XmdsResources
             const std::string PreventSleep = "preventSleep";
             const std::string DisplayName = "displayName";
             const std::string ScreenShotRequested = "screenShotRequested";
+        }
+
+        namespace Command
+        {
+            const std::string ExecutableString = "commandString";
+            const std::string ValidationString = "validationString";
         }
     }
 

@@ -1,7 +1,9 @@
 #include "RegisterDisplay.hpp"
 
 #include "cms/xmds/Resources.hpp"
+#include "commands/CommandImpl.hpp"
 #include "common/Utils.hpp"
+#include "common/parsing/Parsing.hpp"
 
 namespace Resources = XmdsResources::RegisterDisplay;
 namespace Settings = XmdsResources::RegisterDisplay::Settings;
@@ -71,6 +73,22 @@ RegisterDisplay::Result Soap::ResponseParser<RegisterDisplay::Result>::parseBody
         result.playerSettings.preventSleep().setValue(displayNode.get<bool>(Settings::PreventSleep));
         result.playerSettings.displayName().setValue(displayNode.get<std::string>(Settings::DisplayName));
     }
+    result.predefinedCommands = parseCommands(displayNode.get_child(Resources::Commands));
 
     return result;
+}
+
+PredefinedCommands Soap::ResponseParser<RegisterDisplay::Result>::parseCommands(const XmlNode& commandsNode)
+{
+    namespace Command = XmdsResources::RegisterDisplay::Command;
+
+    PredefinedCommands commands;
+    for (auto&& [code, node] : commandsNode)
+    {
+        auto executableString = node.get<std::string>(Command::ExecutableString);
+        auto validationString = node.get<std::string>(Command::ValidationString);
+
+        commands.emplace(CommandCode{code}, CommandDefinition{executableString, validationString});
+    }
+    return commands;
 }

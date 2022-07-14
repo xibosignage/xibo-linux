@@ -20,7 +20,7 @@ LayoutSchedule ScheduleParser::scheduleFrom(const FilePath& path)
     }
     catch (std::exception&)
     {
-        throw ScheduleParser::Error{"ScheduleParser", "Schedule is invalid"};
+        throw ScheduleParser::Error{"Schedule is invalid"};
     }
 }
 
@@ -32,7 +32,7 @@ LayoutSchedule ScheduleParser::scheduleFrom(const std::string& xmlSchedule)
     }
     catch (std::exception&)
     {
-        throw ScheduleParser::Error{"ScheduleParser", "Schedule is invalid"};
+        throw ScheduleParser::Error{"Schedule is invalid"};
     }
 }
 
@@ -41,16 +41,18 @@ LayoutSchedule ScheduleParser::scheduleFromImpl(const XmlNode& scheduleXml)
     LayoutSchedule schedule;
     auto scheduleNode = scheduleXml.get_child(Resources::Schedule);
 
-    schedule.generatedTime = DateTime::fromString(scheduleNode.get<std::string>(Resources::Generated));
+    schedule.generatedTime = DateTime::fromString(scheduleNode.get<std::string>(Resources::Layout::Generated));
 
     for (auto [name, node] : scheduleNode)
     {
-        if (name == Resources::Layout)
+        if (name == Resources::ScheduledLayout)
             schedule.regularLayouts.emplace_back(scheduledLayoutFrom(node));
         else if (name == Resources::DefaultLayout)
             schedule.defaultLayout = defaultLayoutFrom(node);
         else if (name == Resources::Overlays)
             schedule.overlayLayouts = overlayLayoutsFrom(node);
+        else if (name == Resources::ScheduledCommand)
+            schedule.commands.emplace_back(commandFrom(node));
         else if (name == Resources::GlobalDependants)
             schedule.globalDependants = dependantsFrom(node);
     }
@@ -63,12 +65,12 @@ ScheduledLayout ScheduleParser::scheduledLayoutFrom(const XmlNode& node)
     ScheduledLayout layout;
 
     layout.scheduleId = node.get<int>(Resources::ScheduleId);
-    layout.id = node.get<int>(Resources::Id);
-    layout.startDT = DateTime::fromString(node.get<std::string>(Resources::StartDT));
-    layout.endDT = DateTime::fromString(node.get<std::string>(Resources::EndDT));
-    layout.priority = node.get<int>(Resources::Priority);
+    layout.id = node.get<int>(Resources::Layout::Id);
+    layout.startDT = DateTime::fromString(node.get<std::string>(Resources::Layout::StartDT));
+    layout.endDT = DateTime::fromString(node.get<std::string>(Resources::Layout::EndDT));
+    layout.priority = node.get<int>(Resources::Layout::Priority);
 
-    if (auto dependants = node.get_child_optional(Resources::LocalDependants))
+    if (auto dependants = node.get_child_optional(Resources::Layout::LocalDependants))
     {
         layout.dependants = dependantsFrom(dependants.value());
     }
@@ -80,8 +82,8 @@ DefaultScheduledLayout ScheduleParser::defaultLayoutFrom(const XmlNode& node)
 {
     DefaultScheduledLayout layout;
 
-    layout.id = node.get<int>(Resources::Id);
-    if (auto dependants = node.get_child_optional(Resources::LocalDependants))
+    layout.id = node.get<int>(Resources::Layout::Id);
+    if (auto dependants = node.get_child_optional(Resources::Layout::LocalDependants))
     {
         layout.dependants = dependantsFrom(dependants.value());
     }
@@ -100,6 +102,17 @@ LayoutList ScheduleParser::overlayLayoutsFrom(const XmlNode& overlaysNode)
     }
 
     return overlayLayouts;
+}
+
+ScheduledCommand ScheduleParser::commandFrom(const XmlNode& commandNode)
+{
+    ScheduledCommand command;
+
+    command.scheduleId = commandNode.get<int>(Resources::ScheduleId);
+    command.startDT = DateTime::fromString(commandNode.get<std::string>(Resources::Command::StartDT));
+    command.code = CommandCode{commandNode.get<std::string>(Resources::Command::Code)};
+
+    return command;
 }
 
 LayoutDependants ScheduleParser::dependantsFrom(const XmlNode& dependantsNode)

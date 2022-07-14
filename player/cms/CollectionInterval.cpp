@@ -91,6 +91,9 @@ void CollectionInterval::onDisplayRegistered(const ResponseResult<RegisterDispla
             status_.registered = true;
             status_.lastChecked = DateTime::now();
 
+            MainLoop::pushToUiThread([this, commands = std::move(result.predefinedCommands)]() {
+                predefinedCommandsUpdated_(std::move(commands));
+            });
             MainLoop::pushToUiThread([this, result = std::move(result.playerSettings)]() { settingsUpdated_(result); });
 
             auto requiredFilesResult = xmdsSender_.requiredFiles().get();
@@ -162,6 +165,11 @@ SignalCollectionFinished& CollectionInterval::collectionFinished()
 SignalFilesDownloaded& CollectionInterval::filesDownloaded()
 {
     return filesDownloaded_;
+}
+
+SignalPredefinedCommandsUpdated& CollectionInterval::predefinedCommandsUpdated()
+{
+    return predefinedCommandsUpdated_;
 }
 
 void CollectionInterval::onRequiredFiles(const ResponseResult<RequiredFiles::Result>& requiredFiles)

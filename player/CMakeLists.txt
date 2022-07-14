@@ -78,6 +78,7 @@ endif()
 enable_testing()
 
 add_subdirectory(stat)
+add_subdirectory(commands)
 add_subdirectory(control)
 add_subdirectory(cms)
 add_subdirectory(schedule)

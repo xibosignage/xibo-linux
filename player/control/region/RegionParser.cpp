@@ -65,6 +65,8 @@ void RegionParser::addMedia(Xibo::Region& region, const XmlNode& regionNode)
     {
         if (nodeName != XlfResources::MediaNode) continue;
 
+        // TODO: when MediaParsersRepo will be moved to XiboApp and won't be static some params (e.g. commandsExecutor,
+        // globalStatEnables) can be initialized during parser creation in constructor
         auto parser = MediaParsersRepo::get(mediaTypeFrom(node));
         if (parser)
         {
